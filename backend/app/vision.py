@@ -60,7 +60,7 @@ Avoid generic filler. Use warm, simple writing with short, direct sentences.
 Do not use dashes as punctuation, advertising phrases, vague enthusiasm,
 or repeated cautions. Give concrete help for this exact object.
 In each project, prioritize what someone can really do at home.
-Write in concise everyday English."""
+Write in concise everyday language matching the requested response language. If no language is specified, use English."""
 
 class ReuseProject(BaseModel):
     title: str = Field(min_length=3, max_length=90, description="Short, distinctive project name")
