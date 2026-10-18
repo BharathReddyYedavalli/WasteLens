@@ -21,6 +21,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
   if (!results || !viewData) return null;
 
   const isUnavailable = results.listing_status === "unavailable";
+  const isPartial = results.listing_status === "partial";
   const active = filtered.some(place => place.id === selected) ? selected : null;
   const centers = results.facilities.filter(place => place.kind === "center").length;
   const dropoffs = results.facilities.length - centers;
@@ -40,8 +41,8 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
       </div>
     </div>
 
-    {isUnavailable && <div className="map-alert" role="status"><AlertCircle size={17}/>
-      <span>Recycling-location listings are temporarily unavailable, but the map can still display the ZIP area. Please retry later.</span></div>}
+    {(isUnavailable || isPartial) && <div className="map-alert" role="status"><AlertCircle size={17}/>
+      <span>{isPartial ? "Live location search is unavailable. Showing city published recycling sites near your ZIP code." : "The live recycling search is unavailable and there are no saved city listings for this area yet. Please retry later."}</span></div>}
     <div className="map-filters" aria-label="Filter collection locations">
       <button type="button" className={filter === "all" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("all")}>All <span>{results.facilities.length}</span></button>
@@ -54,11 +55,12 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
     <div className="map-explorer">
       <div className="facility-side-panel" aria-label="Scrollable list of mapped recycling locations">
         <div className="facility-side-heading">
-          <strong>{isUnavailable ? "Can't load places" : filtered.length ? "Places near you" : "No places found"}</strong>
+          <strong>{filtered.length ? "Places near you" : isUnavailable ? "Can't load places" : "No places found"}</strong>
           <small>Nearest first</small>
         </div>
         {filtered.length ? filtered.map((place, i) =>
-          <button key={place.id} type="button"
+          <div key={place.id} className="location-entry">
+          <button type="button"
             className={"location-card " + (active === place.id ? "picked" : "")}
             aria-pressed={active === place.id}
             onClick={() => onSelect(place.id)}>
@@ -67,15 +69,20 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
               <strong>{place.name}</strong>
               <small>{place.address}</small>
               <span className="location-meta"><LocateFixed size={13}/> {place.distance_miles.toFixed(1)} miles · {place.kind === "center" ? "Recycling center" : "Drop off spot"}</span>
+              {place.listing_source === "official" && <span className="official-source-tag">City published location</span>}
               {place.tagged_materials.length > 0 && <span className="location-tags">
-                <BatteryCharging size={12}/> OSM tags: {place.tagged_materials.slice(0,4).join(" · ")}
+                <BatteryCharging size={12}/> {place.listing_source === "official" ? "Listed materials:" : "OSM tags:"} {place.tagged_materials.slice(0,4).join(" · ")}
               </span>}
               {active === place.id && <>
-                {place.phone && <span className="location-phone">Listed phone (unverified): {place.phone}</span>}
-                <span className="location-caution">Confirm items accepted and hours before visiting.</span>
+                {place.phone && <span className="location-phone">Phone: {place.phone}</span>}
+                {place.access_note && <span className="location-caution">{place.access_note}</span>}
+                {place.coordinate_note && <span className="location-caution">{place.coordinate_note}</span>}
+                <span className="location-caution">Confirm the exact item and hours before visiting.</span>
               </>}
             </span>
           </button>
+          {active === place.id && place.source_url && <a className="facility-official-link" href={place.source_url} target="_blank" rel="noopener noreferrer">View {place.listing_source === "official" ? "city details" : "map record"}</a>}
+          </div>
         ) : <div className="no-map-results">
           <Recycle size={25}/>
           <strong>{isUnavailable ? "Can't load places right now" : "No places on this map yet"}</strong>
@@ -90,7 +97,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
     </div>
     <div className="map-disclaimer">
       <AlertCircle size={16}/>
-      <span>Map data comes from OpenStreetMap. Call before visiting to make sure a place takes your item.</span>
+      <span>Map tiles and some locations come from OpenStreetMap. Other locations are linked to official city websites. Confirm your item and any residency rules before visiting.</span>
     </div>
   </div>;
 }
