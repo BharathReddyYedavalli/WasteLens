@@ -63,6 +63,8 @@ h1,h2,h3,h4 { color: var(--wl-ink); }
   grid-template-columns: 244px minmax(0, 1fr);
 }
 .side-nav {
+  display: flex;
+  flex-direction: column;
   min-height: calc(100vh - 85px);
   padding: 34px 15px 24px;
   background: #fffefa;
@@ -96,7 +98,7 @@ h1,h2,h3,h4 { color: var(--wl-ink); }
   box-shadow: inset 3px 0 #38a658;
 }
 .nav-item.active svg { color: #278747; }
-.side-nav-bottom { border-top: 1px solid #e3efe7; padding-top: 13px; margin-top: 32px; }
+.side-nav-bottom { border-top: 1px solid #e3efe7; padding-top: 13px; margin-top: auto; }
 
 .page-content { min-width: 0; background: #edf9f1; }
 .shell { width: min(1160px, calc(100% - 76px)); margin: 0 auto; }
