@@ -33,8 +33,20 @@ Return the MOST SPECIFIC visible object name justified by the image (e.g.
 battery chemistry, hidden contents, recycling symbols, or material types
 you cannot visually verify. Material might be 'unknown'.
 Prioritize safe reuse and repair over discarding an intact reusable item.
-Provide 2–4 feasible, concrete reuse ideas tailored to this exact object,
-or fewer if unsafe or irrelevant. Provide 2–5 concrete disposal/preparation
+Provide 3–5 unique, realistic reuse projects tailored to the EXACT visible
+item and its plausible material/condition. Include a descriptive project title,
+what it becomes, why it is useful, a short list of tools/materials, 2–5 concrete
+steps, an estimated number of active minutes, and an honest difficulty level.
+Projects must not require cutting pressurized containers, damaging batteries,
+unsafe heating, handling chemicals, sharp electronics or hazardous waste.
+Don't encourage reusing single-use food packaging for food/drinks or suggest
+a project that requires properties not established by the photo.
+If the object is still durable and reusable (e.g. insulated water bottle),
+suggest continued reuse first; only suggest upcycling if truly appropriate.
+Use fewer or ZERO projects for unsafe/unidentified items rather than inventing
+unsafe or generic filler. In addition, keep brief 'reuse_ideas' summaries for
+backward compatibility with existing scan histories.
+Provide 2–5 concrete disposal/preparation
 steps specific to this item without asserting local curbside acceptance.
 If batteries, electronics, sharps, chemicals or hazardous content might be
 present, flag safe handling and require special collection or clarification.
@@ -46,6 +58,16 @@ Never claim local acceptance is known without verified location-specific data.
 Clearly state uncertainty when a photograph is insufficient.
 Avoid generic filler. Answer in concise everyday English."""
 
+class ReuseProject(BaseModel):
+    title: str = Field(min_length=3, max_length=90, description="Short, distinctive project name")
+    outcome: str = Field(min_length=5, max_length=180, description="What the object becomes and why it's useful")
+    materials_needed: list[str] = Field(default_factory=list, max_length=8)
+    steps: list[str] = Field(default_factory=list, max_length=6)
+    difficulty: Literal["Easy", "Moderate", "Advanced"] = "Easy"
+    minutes_estimate: int = Field(ge=1, le=480, description="Rough active project time, not a guarantee")
+    safety_note: str = Field(default="", max_length=250, description="Safety note if applicable")
+
+
 class ItemAnalysis(BaseModel):
     item_name: str = Field(description="Specific visible object, or 'Unidentified object'")
     visual_description: str = Field(description="One sentence grounded in visible features")
@@ -56,6 +78,10 @@ class ItemAnalysis(BaseModel):
     route_title: str
     disposal_steps: list[str]
     reuse_ideas: list[str]
+    reuse_projects: list[ReuseProject] = Field(
+        default_factory=list, max_length=5,
+        description="Object-specific and safe do-it-yourself reuse projects; empty when inappropriate"
+    )
     cautions: list[str]
     follow_up_question: str = Field(description="A useful question if identification or material is uncertain, otherwise empty")
     location_helpful: bool = Field(description="True for material-specific collection or local acceptance checks")
@@ -156,6 +182,8 @@ def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> I
     if not analysis.location_helpful:
         analysis.collection_search_term = ""
     if analysis.identification != "likely":
+        # Don't present unsafe projects for objects not identified well enough.
+        analysis.reuse_projects = []
         analysis.route = "needs_identification"
         analysis.route_title = "Confirm the item before disposing"
         analysis.location_helpful = False

@@ -341,9 +341,46 @@ export default function App() {
             <h3><Recycle size={20}/> How to dispose properly</h3>
             <ul>{analysis.disposal_steps.map((step, i) => <li key={i}>{step}</li>)}</ul>
           </article>
-          <article className="result-card blue">
-            <h3><Lightbulb size={20}/> Creative reuse ideas</h3>
-            <ul>{analysis.reuse_ideas.map((step, i) => <li key={i}>{step}</li>)}</ul>
+          <article className="result-card blue reuse-section">
+            <div className="reuse-heading">
+              <div>
+                <span className="eyebrow">MAKE SOMETHING USEFUL</span>
+                <h3><Lightbulb size={20}/> Personalized AI reuse projects</h3>
+                <p>Ideas for your <strong>{analysis.item_name}</strong>, generated from the photo and your object hint. Times are estimates.</p>
+              </div>
+              <span className="reuse-count">{analysis.reuse_projects?.length || 0} projects</span>
+            </div>
+            {analysis.reuse_projects?.length ? <div className="reuse-projects">
+              {analysis.reuse_projects.map((project, i) =>
+                <details key={i} className="reuse-project" open={i === 0}>
+                  <summary>
+                    <span className="reuse-project-index">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="reuse-project-summary">
+                      <strong>{project.title}</strong>
+                      <span>{project.outcome}</span>
+                    </span>
+                    <span className="reuse-project-meta">{project.difficulty} · ~{project.minutes_estimate} min</span>
+                    <ChevronDown size={17} className="reuse-chevron"/>
+                  </summary>
+                  <div className="reuse-project-body">
+                    <div>
+                      <h4>You'll need</h4>
+                      {project.materials_needed.length ? <ul>{project.materials_needed.map((x,j) => <li key={j}>{x}</li>)}</ul>
+                        : <p>No extra tools required.</p>}
+                    </div>
+                    <div>
+                      <h4>How to make it</h4>
+                      <ol>{project.steps.map((x,j) => <li key={j}>{x}</li>)}</ol>
+                    </div>
+                    {project.safety_note && <p className="reuse-safety"><ShieldAlert size={15}/>{project.safety_note}</p>}
+                  </div>
+                </details>)}
+            </div> : <div className="reuse-legacy">
+              {analysis.identification === "likely" && analysis.reuse_ideas.length > 0
+                ? <><p>This analysis contains brief reuse suggestions:</p><ul>{analysis.reuse_ideas.map((x,i)=><li key={i}>{x}</li>)}</ul></>
+                : <p>No safe, practical reuse project could be recommended for this item from the available information. Ask WasteLens for clarification if needed.</p>}
+            </div>}
+            <p className="reuse-disclaimer">AI-generated concepts, not verified instructions. Check the item's actual material and condition before attempting a project.</p>
           </article>
           {analysis.cautions.length > 0 && <article className="result-card muted">
             <h3><ShieldAlert size={20}/> Important to know</h3>

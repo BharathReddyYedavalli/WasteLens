@@ -32,7 +32,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
         <div>
           <span className="eyebrow">RECYCLE NEAR YOU</span>
           <h4>{results.location_label} <span className="map-zip">· {results.zip_code}</span></h4>
-          <p>Community-mapped drop-off locations near your approximate ZIP center</p>
+          <p>Searching up to ~{results.radius_miles.toFixed(0)} miles from the ZIP center · community-mapped locations</p>
         </div>
       </div>
       <div className="map-summary-stats">
@@ -81,7 +81,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
           <Recycle size={25}/>
           <strong>{isUnavailable ? "Live listings could not load" : "No matching locations returned"}</strong>
           <p>{isUnavailable ? "The ZIP map still works. Retry the search later." :
-            "Try All locations. OpenStreetMap may not have complete recycling records for this area."}</p>
+            "No locations returned within ~" + results.radius_miles.toFixed(0) + " miles. OpenStreetMap community coverage may be incomplete, and this doesn't mean recycling is unavailable."}</p>
         </div>}
       </div>
       <div className="map-visual">
@@ -91,7 +91,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
     </div>
     <div className="map-disclaimer">
       <AlertCircle size={15}/>
-      <span>These are community-mapped locations, not verified acceptance sites. ZIP and distances are approximate. Materials, contact details and opening hours may be inaccurate. Call ahead.</span>
+      <span>Locations come from OpenStreetMap (not a comprehensive business directory). ZIP and distances are approximate; material acceptance and operating hours are unverified. Call ahead.</span>
     </div>
   </div>;
 }
