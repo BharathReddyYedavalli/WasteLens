@@ -83,7 +83,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><UserPlus/></div>
         <div><h2>{signup ? "Create your account" : "Sign in to WasteLens"}</h2>
-          <p>Save scanned items and classification feedback for future reference.</p></div></div>
+          <p>Keep your scans together, so you can come back to them anytime.</p></div></div>
       <form className="auth-form" onSubmit={event => void authenticate(event)}>
         {signup && <label>Display name<input value={name} required minLength={2} maxLength={80}
           onChange={event => setName(event.target.value)} autoComplete="name"/></label>}
@@ -96,7 +96,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
       <button className="link-button" onClick={() => { setSignup(!signup); setError(""); }}>
         {signup ? "Already have an account? Sign in" : "New here? Create an account"}
       </button>
-      <p className="subtle-line"><LockKeyhole size={15}/> Passwords are securely hashed. Your scan history contains item results, not photos.</p>
+      <details className="account-privacy"><summary><LockKeyhole size={16}/> Your account and privacy</summary><p>Your password is securely hashed. Saved scans contain item results, not photos.</p></details>
       {error && <p className="inline-error" role="alert">{error}</p>}
     </section>;
   }
@@ -104,17 +104,17 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   if (mode === "history") {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><History/></div>
-        <div><h2>My scan history</h2><p>{scans.length} saved scans · newest first</p></div></div>
+        <div><h2>My scans</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
-      {scans.length === 0 && <p>No scans saved yet. Return to the Identifier and analyze an item while signed in.</p>}
+      {scans.length === 0 && <p>Nothing here yet. Scan your first item to save it.</p>}
       <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
         <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
         <p><strong>Material:</strong> {scan.analysis.material_guess}</p>
         <p><strong>Recommended route:</strong> {scan.analysis.route_title}</p>
-        <p><strong>Model:</strong> {scan.model_id}{scan.zip_code ? " · ZIP " + scan.zip_code : ""}</p>
+        {scan.zip_code && <p><strong>ZIP:</strong> {scan.zip_code}</p>}
         <p><strong>Classification feedback:</strong> {scan.feedback === "yes" ? "Correct" : scan.feedback === "no" ? "Incorrect" : "Not submitted"}</p>
         {scan.correction && <p><strong>Correction:</strong> {scan.correction}</p>}
-        <details><summary>View saved disposal and reuse advice</summary>
+        <details><summary>See the tips for this item</summary>
           <h4>Disposal</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
           <h4>Reuse</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
         </details>
