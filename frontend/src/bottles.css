@@ -1,0 +1,181 @@
+/* Bottle Returns and the illustrated long-scroll bottle story.
+   Original editorial visuals inspired by educational scrolling experiences.
+   No third-party illustrations, tracking scripts, or commercial APIs. */
+.deposit-page{padding:27px 0 85px;color:#173b39}
+.deposit-top{position:relative;isolation:isolate;min-height:280px;padding:40px clamp(25px,4vw,60px);background:linear-gradient(120deg,#cdf5da,#edfae7);border-radius:29px;
+  display:flex;align-items:center;justify-content:space-between;gap:25px;overflow:hidden}
+.deposit-top:before{content:"";position:absolute;z-index:-1;width:250px;height:250px;background:#ffd798;border-radius:44%;right:-35px;top:-95px;transform:rotate(-21deg)}
+.deposit-top-copy{max-width:670px}
+.deposit-kicker{display:inline-flex;gap:8px;align-items:center;font-size:12px;font-weight:900;letter-spacing:.09em;color:#1a6b57}
+.deposit-top h1{font:700 clamp(38px,5.5vw,65px)/1.06 "Fraunces",Georgia,serif;letter-spacing:-1.5px;color:#0c5144;margin:14px 0 15px}
+.deposit-top h1 em{color:#d2684a;font-style:italic}
+.deposit-top p{font-size:16px;font-weight:600;color:#376252;max-width:490px}
+.deposit-top-art{flex:0 0 205px;position:relative;height:190px;display:grid;place-items:center;color:#227d6d}
+.deposit-top-art>span{position:absolute;display:grid;place-items:center;border-radius:50%;color:#865121;background:#ffda78;font-weight:900;box-shadow:0 4px 0 #dca85b}
+.deposit-top-art>span:nth-child(1){left:10px;top:20px;width:49px;height:49px;transform:rotate(-15deg)}
+.deposit-top-art>span:nth-child(2){right:4px;top:5px;width:66px;height:66px;transform:rotate(18deg)}
+.deposit-top-art>span:nth-child(3){right:10px;bottom:1px;width:65px;height:65px;transform:rotate(-11deg)}
+.deposit-top-art svg{filter:drop-shadow(9px 7px 0 #94d8b1)}
+.deposit-callout{margin:18px 0 25px;display:flex;align-items:start;gap:11px;background:#fff6dc;border:1px solid #e9dbad;padding:14px 18px;border-radius:15px;color:#604d28}
+.deposit-callout svg{margin-top:2px;flex-shrink:0;color:#bd8644}
+.deposit-callout p{font-size:13px;line-height:1.7;margin:0;font-weight:600}
+.deposit-callout strong{font-weight:900}
+.deposit-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(310px,.85fr);gap:18px;align-items:start}
+.deposit-form-card,.deposit-result{border-radius:24px;border:1.5px solid #d9e9db;padding:clamp(19px,3vw,30px);background:#fffefa;box-shadow:0 7px 0 #e7eddf}
+.deposit-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.deposit-form-head h2{font:700 26px "Fraunces",Georgia,serif;color:#1b4d44;margin:0}
+.deposit-form-head span{font-weight:900;font-size:25px;color:#afd4c5}
+.deposit-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.deposit-fields label{display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:800;color:#2c594f}
+.deposit-fields label.wide{grid-column:1/-1}
+.deposit-fields select,.deposit-fields input{appearance:auto;padding:12px 13px;min-width:0;min-height:48px;border-radius:12px;border:1.5px solid #c7dfd4;background:#fafffb;color:#194a40;font:700 14px "Poppins",sans-serif}
+.deposit-fields select:hover,.deposit-fields input:hover{border-color:#1d8a75}
+.deposit-examples{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:18px}
+.deposit-examples span{font-size:12px;font-weight:800;color:#527468;margin-right:2px}
+.deposit-examples button{cursor:pointer;background:#e7f5e9;color:#286f50;border:1px solid #bedac8;border-radius:20px;padding:9px 12px;font-weight:800;font-size:11px}
+.deposit-examples button:hover{background:#ceead9}
+.deposit-result{background:linear-gradient(150deg,#294f80,#394c94);border-color:#3d60a1;color:#fff;box-shadow:0 7px 0 #dcdaf1;position:sticky;top:95px}
+.deposit-result.check{background:linear-gradient(145deg,#7e4d80,#573e86);border-color:#ae84bb}
+.deposit-result.no{background:linear-gradient(145deg,#476667,#344e62);border-color:#678586}
+.deposit-result-overline{font-size:12px;font-weight:900;letter-spacing:.095em;color:#e1e7ff}
+.deposit-amount{display:block;font:700 clamp(54px,6vw,78px)/1.1 "Fraunces",Georgia,serif;color:#ffdf83;margin:12px 0 10px}
+.deposit-result h2{color:white;font:700 20px/1.4 "Poppins",sans-serif;letter-spacing:-.4px;margin:0 0 14px}
+.deposit-result p{font-size:13px;font-weight:600;line-height:1.85;color:#f5f7ff;margin:0 0 18px}
+.deposit-mini-math{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:15px 0;border-top:1px solid #ffffff46;border-bottom:1px solid #ffffff46;font-size:12px;font-weight:800;color:#f6f7ff}
+.deposit-mini-math b{font-size:17px;color:#ffd881}
+.deposit-official{display:inline-flex;align-items:center;gap:9px;margin:20px 0 4px;color:#fff4ae;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:5px}
+.deposit-result-note{margin-top:16px;display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.65;color:#f5f9fd}
+.deposit-result-note svg{flex-shrink:0;margin-top:2px}
+.deposit-photo-helper{margin-top:28px;border:1.5px solid #e4daee;background:#f6efff;border-radius:22px;overflow:hidden}
+.deposit-photo-helper summary{list-style:none;cursor:pointer;padding:19px 23px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:15px;font-weight:900;color:#55417c}
+.deposit-photo-helper summary::-webkit-details-marker{display:none}
+.deposit-photo-helper summary span{font-size:12px;color:#76698b;font-weight:600;margin-left:auto}
+.deposit-photo-inside{border-top:1px solid #e7dbf0;padding:22px 24px;background:#fffdff}
+.deposit-photo-inside p{font-size:13px;color:#4f5271;line-height:1.7}
+.deposit-photo-controls{display:flex;gap:15px;align-items:center;flex-wrap:wrap;margin:18px 0}
+.deposit-photo-controls input{max-width:300px;font-size:12px}
+.deposit-photo-controls button{display:flex;gap:8px;align-items:center;background:#6b55a1;color:#fff;padding:12px 17px;border:0;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer}
+.deposit-photo-controls button:disabled{opacity:.5;cursor:not-allowed}
+.deposit-photo-inside small{font-size:11px;color:#5b6173;line-height:1.7;display:block}
+.deposit-ai-read{background:#eee8fe;padding:15px;border-radius:12px;color:#453c70}
+.deposit-ai-read strong{font-size:13px}
+.deposit-ai-read p{margin:6px 0}
+.deposit-error{margin:12px 0;padding:13px;border-radius:10px;background:#fff2ed;color:#a13828;font-weight:800}
+.deposit-after{margin:38px 0 0;padding:27px;display:flex;align-items:center;gap:30px;justify-content:space-between;background:#fff8e5;border-radius:20px;border:1px solid #efd8a1}
+.deposit-after h2{font:700 26px "Fraunces",Georgia,serif;margin:0 0 7px}
+.deposit-after p{font-size:13px;max-width:650px;line-height:1.7;margin:0;color:#675b3d}
+.deposit-after a{display:flex;align-items:center;gap:9px;white-space:nowrap;color:#795321;font-size:13px;font-weight:900;text-decoration:underline}
+/* Standalone illustrated scroll page */
+.journey-page{width:100%;margin:0;overflow:clip;position:relative;color:#162e34}
+.journey-progress{position:sticky;top:0;height:5px;background:#dfded1;z-index:80}
+.journey-progress span{height:100%;background:linear-gradient(90deg,#e87e5c,#e9bf62,#53b9a1,#7358ad);display:block;transition:width .12s linear}
+.journey-intro{min-height:calc(95svh - 120px);display:flex;align-items:center;justify-content:center;text-align:center;flex-direction:column;
+ background:radial-gradient(circle at 20% 20%,#f6d7f0,transparent 29%),radial-gradient(circle at 85% 80%,#bceada,transparent 35%),#fff5db;padding:90px 30px;position:relative}
+.journey-intro:before,.journey-intro:after{content:"";position:absolute;width:115px;height:115px;border:8px solid #f4c372;border-radius:50%;transform:rotate(20deg);opacity:.7}
+.journey-intro:before{top:10%;left:9%}.journey-intro:after{bottom:14%;right:8%;width:65px;height:65px;border-color:#b6a5ed}
+.journey-intro-stars{font-size:45px;color:#dc965b;margin-bottom:30px;letter-spacing:30px}
+.journey-tag{display:inline-flex;gap:9px;align-items:center;padding:10px 20px;background:#fff6ed;border:2px solid #dfc49a;border-radius:40px;font-size:12px;letter-spacing:.08em;font-weight:900;color:#79512b}
+.journey-intro h1{font:700 clamp(55px,8vw,114px)/.99 "Fraunces",Georgia,serif;letter-spacing:-3px;color:#234a4a;margin:30px 0 25px}
+.journey-intro h1 i{color:#e47859}
+.journey-intro p{font:600 clamp(16px,2.5vw,22px)/1.6 "Poppins",sans-serif;color:#506c60;max-width:650px}
+.journey-scroll{position:absolute;bottom:35px;display:flex;align-items:center;gap:10px;font-weight:800;font-size:13px;color:#3d655d;animation:journey-bob 2s infinite}
+@keyframes journey-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.journey-chapter{min-height:104svh;padding:120px clamp(20px,6vw,85px);position:relative;display:flex;align-items:center;overflow:hidden}
+.journey-chapter:after{content:"";position:absolute;width:400px;height:400px;border-radius:50%;opacity:.21;right:-140px;top:-180px;background:currentColor;pointer-events:none}
+.journey-chapter-inner{width:min(1200px,100%);margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,47%);gap:clamp(25px,6vw,80px);align-items:center}
+.chapter-mint{background:#c8f0e1;color:#176c60}
+.chapter-yellow{background:#fff2bf;color:#ab751f}
+.chapter-blue{background:#c8e8ed;color:#39819a}
+.chapter-peach{background:#ffe0cb;color:#ad5638}
+.chapter-purple{background:#e5d8f8;color:#7b65b2}
+.chapter-aqua{background:#c9eff0;color:#468b94}
+.chapter-lime{background:#dbf0b7;color:#4b875b}
+.chapter-orange{background:#ffd4a7;color:#b6692f}
+.chapter-navy{background:#253b68;color:#a8c7ff}
+.chapter-sunset{background:#f9d5d5;color:#ad6579}
+.journey-copy{position:relative;z-index:2}
+.journey-step{display:block;font-size:12px;font-weight:900;letter-spacing:.13em;color:inherit;margin-bottom:35px}
+.journey-year{font:800 clamp(67px,9vw,120px)/1 "Fraunces",Georgia,serif;color:inherit;opacity:.75;letter-spacing:-4px;margin-bottom:28px}
+.journey-copy h2{font:700 clamp(34px,4.5vw,59px)/1.15 "Fraunces",Georgia,serif;letter-spacing:-1.6px;margin:0 0 26px;color:#1e4145}
+.chapter-navy .journey-copy h2{color:#fff}
+.journey-copy>p{font:600 clamp(15px,1.7vw,18px)/1.85 "Poppins",sans-serif;color:#2e5858;max-width:590px}
+.chapter-navy .journey-copy>p{color:#e0ebff}
+.journey-fact{display:flex;align-items:flex-start;gap:13px;margin-top:33px;padding:20px;background:#ffffffa1;border:1px solid #fff8;border-radius:15px}
+.journey-fact strong{font-size:13px;line-height:1.7;font-weight:800;color:#284a44}
+.journey-fact svg{color:inherit;flex-shrink:0;margin-top:3px}
+.chapter-navy .journey-fact{background:#ffffff22;border-color:#ffffff35}
+.chapter-navy .journey-fact strong{color:#fff}
+.journey-source{display:inline-flex;gap:8px;align-items:center;color:inherit;margin-top:17px;font-size:11px;font-weight:900;text-underline-offset:4px;text-decoration:underline}
+.journey-art{height:min(500px,44vw);min-height:300px;position:relative;display:grid;place-items:center}
+.journey-svg{position:relative;width:min(100%,480px);height:auto;overflow:visible;filter:drop-shadow(10px 15px 0 #163e4f22);animation:journey-float 6s ease-in-out infinite}
+.journey-orbit{position:absolute;border-radius:50%;border:2px dashed currentColor;opacity:.25;transform:rotate(16deg)}
+.orbit-one{height:78%;width:83%;animation:journey-spin 34s linear infinite}
+.orbit-two{height:54%;width:62%;animation:journey-spin 25s linear infinite reverse}
+.journey-art-sparkle{font-size:36px;position:absolute;animation:journey-sparkle 3s ease-in-out infinite;color:inherit}
+.journey-art-sparkle.s1{top:17%;left:4%}.journey-art-sparkle.s2{bottom:14%;right:5%;font-size:55px;animation-delay:1s}
+@keyframes journey-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-13px) rotate(2deg)}}
+@keyframes journey-spin{to{transform:rotate(360deg)}}
+@keyframes journey-sparkle{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+.journey-quiz{min-height:110svh;text-align:center;position:relative;background:radial-gradient(circle at 50% 0,#ffe6ae,transparent 38%),#fffbed;padding:120px clamp(20px,5vw,75px) 70px;overflow:hidden}
+.journey-quiz-halo{position:absolute;font-size:330px;color:#f2d8a1;top:20px;right:-75px;opacity:.4;pointer-events:none}
+.journey-quiz h2{font:700 clamp(37px,5vw,68px)/1.17 "Fraunces",Georgia,serif;color:#284f4a;letter-spacing:-2px;margin:33px auto 20px;max-width:970px}
+.journey-quiz h2 i{color:#df7756}
+.journey-quiz-intro{font-size:16px;color:#576c5d;max-width:650px;margin:0 auto 40px;font-weight:600;line-height:1.8}
+.journey-quiz-card{background:#fff;border:1.5px solid #e4e9d8;border-radius:27px;padding:clamp(22px,4vw,51px);box-shadow:0 10px 0 #e5e9d7;text-align:left;max-width:810px;margin:0 auto}
+.journey-question{border:0;border-bottom:1px solid #e7ece2;padding:24px 0 26px;margin:0;min-width:0}
+.journey-question:first-child{padding-top:0}
+.journey-question legend{font-size:15px;font-weight:900;color:#284b43;padding:0 0 13px;display:flex;align-items:center;gap:14px;line-height:1.6}
+.journey-question legend>span{display:inline-grid;place-items:center;background:#ffdfac;border-radius:50%;height:33px;min-width:33px;color:#8d5725;font-weight:900}
+.journey-choices{display:grid;gap:10px}
+.journey-choice{cursor:pointer;display:flex;gap:13px;align-items:center;padding:13px 15px;border:1.5px solid #d9e9e0;border-radius:12px;background:#f9fffb;color:#35574b;font-weight:700;font-size:13px}
+.journey-choice:hover{background:#f0f9f3}
+.journey-choice.picked{background:#e1f5ea;border-color:#208b73}
+.journey-choice input{width:17px;height:17px;accent-color:#127b6a;flex-shrink:0}
+.journey-quiz-outcome{text-align:center;background:#fff0df;border:1px solid #f5cc98;padding:21px;margin-top:27px;border-radius:18px;color:#825333}
+.journey-quiz-outcome.passed{background:#e2f5e8;border-color:#7bc7a1;color:#1a7155}
+.journey-quiz-outcome strong{display:block;font:700 26px "Fraunces",Georgia,serif}
+.journey-quiz-outcome p{font-size:13px;font-weight:700}
+.journey-badge-earned{display:inline-flex;align-items:center;gap:9px;background:#fff7b9;padding:9px 14px;border-radius:20px;color:#755122;font-weight:900;font-size:13px}
+.journey-quiz-actions{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:30px}
+.journey-submit,.journey-login{background:#126e63;color:#fff;border:0;border-radius:13px;padding:16px 30px;font-weight:900;font-size:14px;cursor:pointer}
+.journey-submit:disabled{opacity:.4;cursor:not-allowed}
+.journey-retry{display:flex;align-items:center;gap:8px;background:#fff;color:#2f645d;border:1px solid #bcd5c9;border-radius:13px;padding:15px 22px;font-weight:900;cursor:pointer}
+.journey-login{padding:11px 17px;font-size:12px}
+.journey-quiz-error{font-weight:800;color:#b53828;text-align:center}
+.journey-end{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:100px;font:700 18px "Fraunces",Georgia,serif;color:#246253}
+@media(max-width:850px){
+ .deposit-layout{grid-template-columns:1fr}.deposit-result{position:static}
+ .deposit-top-art{flex-basis:145px}.deposit-top-art svg{width:85px}
+ .journey-chapter-inner{grid-template-columns:1fr;gap:15px}
+ .journey-chapter{padding:70px 30px}
+ .journey-art{height:310px;min-height:250px;max-width:470px;width:100%;margin:0 auto}
+ .journey-year{font-size:85px;margin-bottom:15px}
+}
+@media(max-width:580px){
+ .deposit-page{padding:16px 0 60px}
+ .deposit-top{min-height:230px;padding:28px}
+ .deposit-top h1{font-size:37px}
+ .deposit-top-art{display:none}
+ .deposit-fields{gap:11px}
+ .deposit-fields select,.deposit-fields input{font-size:12px}
+ .deposit-callout{padding:14px}
+ .deposit-after{flex-direction:column;align-items:start;gap:15px}
+ .deposit-photo-helper summary span{margin-left:0}
+ .journey-intro{min-height:83svh}
+ .journey-intro h1{font-size:54px;letter-spacing:-1.5px}
+ .journey-intro-stars{letter-spacing:12px;font-size:30px}
+ .journey-chapter{padding:76px 23px;min-height:100svh}
+ .journey-copy h2{font-size:40px}
+ .journey-copy>p{font-size:14px}
+ .journey-fact{padding:13px}
+ .journey-art{height:285px;min-height:250px}
+ .journey-quiz{padding:100px 16px 45px}
+ .journey-quiz h2{font-size:39px;letter-spacing:-1px}
+ .journey-question legend{font-size:13px}
+ .journey-quiz-card{padding:18px}
+ .journey-choice{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .journey-scroll,.journey-svg,.journey-orbit,.journey-art-sparkle{animation:none!important}
+ .journey-progress span{transition:none}
+}
