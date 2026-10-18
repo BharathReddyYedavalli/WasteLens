@@ -250,3 +250,43 @@ Feature branch `feat/leaderboard-xp-badges` provides:
 The homepage intro and repeated instruction text were shortened. A concise
 photo privacy notice remains visible because the Gemini free tier may use
 submitted image content for service improvement.
+
+
+## Community focused features (2026 redesign branch)
+
+WasteLens offers a route from *recognition* to a practical next step:
+
+1. **Three language flows**: choose English, Spanish or Hindi using the top bar.
+   The primary interface translates immediately. New Gemini scans and chat replies
+   are requested in the chosen language. Previously saved scans are not
+   retrospectively translated. Additional secondary UI/error text may remain in
+   English; this is not a certified professional translation.
+2. **Sort plan for every identified item**: an item specific preparation
+   checklist, copyable instructions and print output. A browser speech feature
+   can read it aloud using the user's selected language when the device has an
+   appropriate voice installed. Instructions are AI assisted and local rules
+   must still be confirmed before using a facility.
+3. **Private waste activity, not fictional impact**: your last seven calendar
+   days of scans and self reported actions. Optional CSV export can support
+   a school cafeteria audit or family waste review. An action is a personal
+   record, **not proof** the material was collected or processed.
+4. **Different visual identity**: responsive horizontal navigation, lively
+   teal, coral, yellow and lilac accent colors, Poppins interface text,
+   editorial display typography, small transitions and reduced motion support.
+   Confetti and XP remain available, but are secondary to useful actions.
+5. **Free collection map**: unchanged existing community and city sourced
+   finder. A map listing does not establish material acceptance or opening
+   hours. Confirm by contacting the facility before traveling.
+
+### Manual checks before publication
+
+* Switch to Spanish or Hindi, scan a new photo, and verify real Gemini advice
+  and chat replies. Automated tests cover language routing, not live model
+  translation quality.
+* Test mobile navigation, screen reader labels, keyboard skip link, copying,
+  printing and text-to-speech across the actual demo devices.
+* Sign in, scan and record an item, then confirm the seven-day activity report
+  updates and the CSV contains only date/count rows.
+* Check real drop off search coverage and local acceptance against official
+  recycling pages. Do not assert nationwide acceptance without verification.
+* Keep personal image data and API keys out of the public repo.

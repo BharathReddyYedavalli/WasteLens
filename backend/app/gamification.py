@@ -173,7 +173,6 @@ def personal_habits(request: Request):
 
     No images, geolocation, weights or inferred emissions are used.
     """
-    from collections import Counter
     from datetime import datetime, timezone, timedelta
 
     user = require_user(request)
@@ -191,8 +190,9 @@ def personal_habits(request: Request):
             (user["id"], dates[0]),
         ).fetchall()
         actions = db.execute(
-            "SELECT action, COUNT(*) AS n FROM scan_actions WHERE user_id=? GROUP BY action",
-            (user["id"],),
+            "SELECT action, COUNT(*) AS n FROM scan_actions WHERE user_id=? "
+            "AND created_at>=? GROUP BY action",
+            (user["id"], dates[0]),
         ).fetchall()
         totals = db.execute(
             "SELECT COUNT(*) FROM scans WHERE user_id=?", (user["id"],)
