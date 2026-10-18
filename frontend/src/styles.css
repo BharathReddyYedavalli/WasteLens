@@ -8,6 +8,11 @@
 @media(max-width:720px){.topbar{height:72px}.brand{font-size:23px}.brand-desc{font-size:11px}.intro{flex-direction:column;align-items:stretch;padding:26px 0}.model-picker{width:100%}.workspace{padding:13px;border-radius:13px}.workspace-head{padding:8px}.step-label{display:none}.camera-stage{height:370px}.result-title{align-items:start;flex-direction:column}.result-title h2{font-size:26px}.result-card{padding:18px}}
 @media(prefers-reduced-motion:no-preference){.button,.result-card,.picker select{transition:background-color .16s ease,box-shadow .16s ease}.workspace{animation:reveal .35s ease both}@keyframes reveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}}
 
+.material-correction{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:18px;background:#fffdf1;border:1px solid #e6d8a4;border-radius:12px;margin:15px 0 17px}
+.material-correction>div{flex:1 1 280px}.material-correction strong{font-size:13px}.material-correction p{font-size:11px;line-height:1.6;margin:4px 0 0;color:#725d31}
+.material-correction label{font-size:12px;font-weight:700}
+.material-correction select{width:min(260px,100%);padding:11px;border:1px solid #d5c493;border-radius:8px;background:white;font-size:12px}
+.correction-status,.correction-error{width:100%;font-size:11px;line-height:1.5;color:#337947}.correction-error{color:#a74132}
 /* First stage: optional object localization and human-confirmed cropping */
 .object-focus-stage .focus-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;touch-action:auto}
 .object-focus-stage .focus-overlay.drawing{touch-action:none;cursor:crosshair}

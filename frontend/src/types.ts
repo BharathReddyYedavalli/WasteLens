@@ -6,6 +6,9 @@ export type BoundingBox = [number, number, number, number]; // normalized xyxy
 export type CropRegion = { box: BoundingBox; source: "yolo" | "manual"; label: string; id?: string };
 export type Detection = { id: string; label: string; confidence: number; box: BoundingBox };
 export type DetectionResponse = { width: number; height: number; detections: Detection[]; notice: string };
+export type MaterialGuidanceResponse = {
+  material: string; category: string; guidance: Guidance; notice: string;
+};
 export type Classification = {
   image_region: "whole_photo" | "selected_object";
   model_id: string; material: string; category: string; review_required: boolean;

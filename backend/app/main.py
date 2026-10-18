@@ -15,6 +15,15 @@ def models():
     return {"default_model_id": DEFAULT_MODEL_ID, "models": [vars(m) for m in runner.options()],
             "notice": "Only checkpoint 2 has a reported notebook evaluation; no comparative benchmarking completed."}
 
+@app.get("/api/guidance/{material}")
+def material_guidance(material: str):
+    """Human-confirmed replacement for a wrong material prediction."""
+    if material not in CATEGORIES:
+        raise HTTPException(404, "Unknown material")
+    return {"material": material, "category": CATEGORIES[material], "guidance": guidance_for(material),
+            "notice": "Material selected by user, not inferred by an AI model. Verify local acceptance."}
+
+
 @app.get("/api/detectors")
 def detectors():
     return {"detectors": [detector_info()],
