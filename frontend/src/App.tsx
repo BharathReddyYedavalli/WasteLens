@@ -29,7 +29,6 @@ export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
-  const [mapSearchZip, setMapSearchZip] = useState("");
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
@@ -195,7 +194,6 @@ export default function App() {
     setFacilityError("");
     // ZIPs are resolved from the locally bundled US postal coordinate data,
     // so the map does not depend on a paid geocoder.
-    setMapSearchZip(location.trim());
     setFacilities(null);
     setSelectedFacility(null);
     try {
