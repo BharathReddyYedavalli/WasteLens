@@ -83,7 +83,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><UserPlus/></div>
         <div><h2>{signup ? "Create your account" : "Sign in to WasteLens"}</h2>
-          <p>Keep your scans together, so you can come back to them anytime.</p></div></div>
+          </div></div>
       <form className="auth-form" onSubmit={event => void authenticate(event)}>
         {signup && <label>Display name<input value={name} required minLength={2} maxLength={80}
           onChange={event => setName(event.target.value)} autoComplete="name"/></label>}
@@ -110,9 +110,9 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
       <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
         <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
         <p><strong>Material:</strong> {scan.analysis.material_guess}</p>
-        <p><strong>Recommended route:</strong> {scan.analysis.route_title}</p>
-        {scan.zip_code && <p><strong>ZIP:</strong> {scan.zip_code}</p>}
-        <p><strong>Classification feedback:</strong> {scan.feedback === "yes" ? "Correct" : scan.feedback === "no" ? "Incorrect" : "Not submitted"}</p>
+        <p><strong>What to do:</strong> {scan.analysis.route_title}</p>
+        
+        {scan.feedback && <p><strong>Your feedback:</strong> {scan.feedback === "yes" ? "Correct" : "Needs correction"}</p>}
         {scan.correction && <p><strong>Correction:</strong> {scan.correction}</p>}
         <details><summary>See the tips for this item</summary>
           <h4>Disposal</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
@@ -126,7 +126,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     if (user.role !== "admin") return <section className="account-card"><h2>Administrator access required</h2></section>;
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><ShieldCheck/></div>
-        <div><h2>Admin dashboard</h2><p>Registered accounts and classification feedback</p></div></div>
+        <div><h2>Admin dashboard</h2></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       <div className="admin-stats">
         <div><strong>{overview?.users ?? "…"}</strong><span>Accounts</span></div>
@@ -154,8 +154,8 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     <h2>My account</h2>
     <p><strong>Name:</strong> {user.name}</p>
     <p><strong>Email:</strong> {user.email}</p>
-    <p><strong>Role:</strong> {user.role}</p>
-    <p>Your scans and feedback are saved while you're signed in. Original photos are not stored.</p>
+    {user.role === "admin" && <p><strong>Role:</strong> Admin</p>}
+    <details className="account-privacy"><summary><LockKeyhole size={16}/> Privacy</summary><p>Your results are saved to your account. We do not save photos.</p></details>
     <button className="button outline" onClick={() => void logout()}>Sign out</button>
     {error && <p className="inline-error" role="alert">{error}</p>}
   </section>;

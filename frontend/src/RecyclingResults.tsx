@@ -32,7 +32,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
         <div className="map-summary-icon"><MapPin size={19}/></div>
         <div>
           <h4>{results.location_label} <span className="map-zip">· {results.zip_code}</span></h4>
-          <p>Showing places up to about {results.radius_miles.toFixed(0)} miles away</p>
+          <p>Within {results.radius_miles.toFixed(0)} miles</p>
         </div>
       </div>
       <div className="map-summary-stats">
@@ -41,22 +41,22 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
       </div>
     </div>
 
-    {(isUnavailable || isPartial) && <div className="map-alert" role="status"><AlertCircle size={17}/>
-      <span>{isPartial ? "Live location search is unavailable. Showing city published recycling sites near your ZIP code." : "The live recycling search is unavailable and there are no saved city listings for this area yet. Please retry later."}</span></div>}
-    <div className="map-filters" aria-label="Filter collection locations">
+    {isPartial && <div className="map-alert" role="status"><AlertCircle size={17}/>
+      <span>{isPartial ? "Some listings are offline. Showing city locations." : "Places aren't loading. Try again shortly."}</span></div>}
+    {results.facilities.length > 0 && <div className="map-filters" aria-label="Filter collection locations">
       <button type="button" className={filter === "all" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("all")}>All <span>{results.facilities.length}</span></button>
       <button type="button" className={filter === "centers" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("centers")}><Building2 size={14}/> Centers <span>{centers}</span></button>
       <button type="button" className={filter === "drop_off" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("drop_off")}><Recycle size={14}/> Drop off spots <span>{dropoffs}</span></button>
-    </div>
+    </div>}
 
     <div className="map-explorer">
       <div className="facility-side-panel" aria-label="Scrollable list of mapped recycling locations">
         <div className="facility-side-heading">
           <strong>{filtered.length ? "Places near you" : isUnavailable ? "Can't load places" : "No places found"}</strong>
-          <small>Nearest first</small>
+          
         </div>
         {filtered.length ? filtered.map((place, i) =>
           <div key={place.id} className="location-entry">
@@ -77,7 +77,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
                 {place.phone && <span className="location-phone">Phone: {place.phone}</span>}
                 {place.access_note && <span className="location-caution">{place.access_note}</span>}
                 {place.coordinate_note && <span className="location-caution">{place.coordinate_note}</span>}
-                <span className="location-caution">Confirm the exact item and hours before visiting.</span>
+                
               </>}
             </span>
           </button>
@@ -86,18 +86,18 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
         ) : <div className="no-map-results">
           <Recycle size={25}/>
           <strong>{isUnavailable ? "Can't load places right now" : "No places on this map yet"}</strong>
-          <p>{isUnavailable ? "The ZIP map still works. Retry the search later." :
-            "No locations returned within ~" + results.radius_miles.toFixed(0) + " miles. OpenStreetMap community coverage may be incomplete, and this doesn't mean recycling is unavailable."}</p>
+          <p>{isUnavailable ? "The map still works. Please try again soon." :
+            "We couldn't find a listed location nearby. There may still be recycling options in your area."}</p>
         </div>}
       </div>
       <div className="map-visual">
         <MapPanel data={viewData} selected={active} onSelect={onSelect}/>
-        <div className="map-corner-label"><span className="map-live-dot"/> Explore the map</div>
+        
       </div>
     </div>
-    <div className="map-disclaimer">
-      <AlertCircle size={16}/>
-      <span>Map tiles and some locations come from OpenStreetMap. Other locations are linked to official city websites. Confirm your item and any residency rules before visiting.</span>
-    </div>
+    <details className="map-visit-info">
+      <summary>Before you go</summary>
+      <p>Call to check whether the facility takes your item, its hours and any residency rules. Map locations may be approximate. Listings come from OpenStreetMap and city websites.</p>
+    </details>
   </div>;
 }

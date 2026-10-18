@@ -76,7 +76,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       <div className="assistant-logo"><Bot size={25}/></div>
       <div>
         <h1>Ask WasteLens</h1>
-        <p>Have a question about an item? Just ask.</p>
+        
       </div>
     </div>
     <div className="assistant-card">
@@ -85,7 +85,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
           <Sparkles size={18}/>
           <div>
             <strong>{scan ? `Let's talk about your ${scan.item_name.toLowerCase()}` : "What would you like to know?"}</strong>
-            <small>{scan ? "Ask about reusing it, recycling it or its parts." : "Scan an item for advice about that specific object."}</small>
+            
           </div>
         </div>
         <button type="button" className="context-action" onClick={onScan}>{scan ? "View scan" : "Scan an object"}</button>
@@ -94,7 +94,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         {messages.length === 0 ? <div className="assistant-welcome">
           <MessageCircle size={34}/>
           <h2>{scan ? "Anything else you want to know?" : "What's on your mind?"}</h2>
-          <p>{scan ? "Ask about the item you just scanned." : "Try one of these questions, or write your own."}</p>
+          
           <div className="chat-suggestions">
             {(scan ? startingPrompts : generalPrompts).map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
@@ -105,7 +105,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
           {message.role === "assistant" && <span className="mini-avatar"><Bot size={15}/></span>}
           <div className="chat-bubble">{message.text}</div>
         </div>)}
-        {busy && <div className="chat-wait" role="status"><Bot size={17}/> Thinking about your question…</div>}
+        {busy && <div className="chat-wait" role="status"><Bot size={17}/> Thinking…</div>}
       </div>
       {error && <div role="alert" className="chat-error"><AlertTriangle size={16}/>{error}</div>}
       {!configured && <div className="chat-error"><AlertTriangle size={16}/> Start your Python backend and configure your Gemini API key to chat.</div>}
@@ -114,7 +114,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         <textarea id="ask-input" rows={2} maxLength={1200}
           value={input} onChange={event => setInput(event.target.value)}
           onKeyDown={onKeyDown} disabled={busy}
-          placeholder="Ask me anything about waste or reuse…" />
+          placeholder="Ask a question…" />
         <button aria-label="Send message" title="Send message" type="submit"
           disabled={busy || !configured || !input.trim()}><ArrowUp size={19}/></button>
       </form>
