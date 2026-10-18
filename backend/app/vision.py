@@ -126,9 +126,16 @@ def prepare_photo(image_bytes: bytes) -> bytes:
         raise InvalidPhoto("The image could not be opened. Choose a valid JPG, PNG or WebP.") from exc
 
 
-def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> ItemAnalysis:
+LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "hi": "Hindi"}
+
+
+def analyze_photo(
+    image_bytes: bytes, model_id: str, object_hint: str = "", language: str = "en"
+) -> ItemAnalysis:
     if model_id not in MODELS:
         raise InvalidPhoto("Unsupported AI model selection.")
+    if language not in LANGUAGE_NAMES:
+        raise InvalidPhoto("Unsupported language.")
     if len(object_hint) > 160:
         raise InvalidPhoto("The object hint must be 160 characters or fewer.")
     if not configured():
@@ -143,6 +150,11 @@ def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> I
         raise AIUnavailable("Install the AI SDK with: pip install -r backend/requirements.txt") from exc
 
     user_prompt = (
+        "Write the object name, descriptions, directions, reuse projects, materials, "
+        "cautions and follow up question in " + LANGUAGE_NAMES[language] + ". "
+        "Keep the JSON field keys, enum values including identification and route, "
+        "and ReuseProject.difficulty (Easy, Moderate, Advanced) in English. "
+        "Write concise, grammatically natural phrasing for that language. "
         "Analyze the photographed object and suggest reuse and safe end-of-life handling. "
         "This is a U.S. household item; local recycling policies have NOT been supplied. "
         + ("Intended item description from user: " + object_hint if object_hint.strip() else
