@@ -273,7 +273,7 @@ def test_zero_osm_locations_is_not_a_provider_outage(client, monkeypatch):
     monkeypatch.setattr(places, "fetch_json", lambda *a,**kw: {"elements":[]})
     response = client.get("/api/facilities?zip_code=75033")
     assert response.status_code == 200
-    assert response.json()["listing_status"] == "no_results"
+    assert response.json()["listing_status"] == "ok"
     assert response.json()["radius_miles"] == 28.0
     assert response.json()["facilities"]  # Real local government records remain visible
     places.resolve_zip.cache_clear()

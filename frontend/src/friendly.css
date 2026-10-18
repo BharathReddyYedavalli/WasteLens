@@ -512,3 +512,7 @@ footer span:first-child {font-family:"Fredoka","Nunito",sans-serif;font-size:17p
 .official-source-tag {display:inline-block;align-self:flex-start;margin-top:6px;padding:5px 9px;border-radius:20px;background:#e4f5e8;color:#237845;font-size:12px;font-weight:900}
 .facility-official-link {display:inline-flex;width:max-content;margin-top:9px;padding:7px 10px;border:1px solid #c1e2c9;border-radius:9px;background:#f4fff7;color:#1f7742;font-size:13px;font-weight:900;text-decoration:none}
 .facility-official-link:hover {background:#e7f8ea;text-decoration:underline}
+
+.location-entry {background:#fff;border-bottom:1px solid #e4ede6}
+.location-entry .location-card {border-bottom:0}
+.location-entry .facility-official-link {margin:0 14px 14px}

@@ -203,6 +203,8 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
     matches = sorted(official + community, key=lambda item: item["distance_miles"])[:60]
     if listing_status == "unavailable" and matches:
         listing_status = "partial"
+    elif listing_status == "no_results" and matches:
+        listing_status = "ok"
 
     return {
         "zip_code": zip_code,

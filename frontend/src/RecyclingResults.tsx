@@ -59,7 +59,8 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
           <small>Nearest first</small>
         </div>
         {filtered.length ? filtered.map((place, i) =>
-          <button key={place.id} type="button"
+          <div key={place.id} className="location-entry">
+          <button type="button"
             className={"location-card " + (active === place.id ? "picked" : "")}
             aria-pressed={active === place.id}
             onClick={() => onSelect(place.id)}>
@@ -77,10 +78,11 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
                 {place.access_note && <span className="location-caution">{place.access_note}</span>}
                 {place.coordinate_note && <span className="location-caution">{place.coordinate_note}</span>}
                 <span className="location-caution">Confirm the exact item and hours before visiting.</span>
-                {place.source_url && <a className="facility-official-link" href={place.source_url} target="_blank" rel="noreferrer" onClick={event => event.stopPropagation()}>View {place.listing_source === "official" ? "city details" : "map record"}</a>}
               </>}
             </span>
           </button>
+          {active === place.id && place.source_url && <a className="facility-official-link" href={place.source_url} target="_blank" rel="noopener noreferrer">View {place.listing_source === "official" ? "city details" : "map record"}</a>}
+          </div>
         ) : <div className="no-map-results">
           <Recycle size={25}/>
           <strong>{isUnavailable ? "Can't load places right now" : "No places on this map yet"}</strong>
