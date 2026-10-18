@@ -18,6 +18,14 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Admin": { es: "Administración", hi: "व्यवस्थापक" },
   "Choose language": { es: "Elegir idioma", hi: "भाषा चुनें" },
   "Know what goes where.": { es: "Cada cosa en su lugar.", hi: "हर चीज़ की सही जगह।" },
+  "Before you toss it, scan it.": {
+    es: "Antes de tirarlo, escanéalo.",
+    hi: "फेंकने से पहले स्कैन करें।"
+  },
+  "See how to reuse it, sort it, or find a place nearby.": {
+    es: "Descubre cómo reutilizarlo, clasificarlo o buscar un centro cercano.",
+    hi: "जानें कि इसे दोबारा कैसे इस्तेमाल करें, कहाँ छाँटें या कहाँ जमा करें।"
+  },
   "Snap it. Sort it. Make it count.": { es: "Toma una foto. Clasifica. Haz la diferencia.", hi: "तस्वीर लें। सही छाँटें। बदलाव लाएँ।" },
   "A smarter way to handle everyday stuff.": { es: "Una forma más fácil de decidir qué hacer con cada objeto.", hi: "रोज़मर्रा की चीज़ों का सही उपयोग जानें।" },
   "Take a picture": { es: "Toma una foto", hi: "तस्वीर लें" },
@@ -154,7 +162,6 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Ask a question…": { es: "Haz una pregunta…", hi: "कोई सवाल पूछें…" },
   "Scan an object": { es: "Escanear un objeto", hi: "चीज़ स्कैन करें" },
   "View scan": { es: "Ver escaneo", hi: "स्कैन देखें" },
-  "Clear chat": { es: "Borrar chat", hi: "चैट मिटाएँ" },
   "Sign in to WasteLens": { es: "Entrar en WasteLens", hi: "WasteLens में लॉग इन" },
   "Create your account": { es: "Crea tu cuenta", hi: "अपना खाता बनाएँ" },
   "Display name": { es: "Nombre", hi: "दिखने वाला नाम" },
@@ -163,9 +170,7 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Sign up": { es: "Registrarme", hi: "साइन अप" },
   "My account": { es: "Mi cuenta", hi: "मेरा खाता" },
   "Sign out": { es: "Salir", hi: "लॉग आउट" },
-  "New here? Create an account": { es: "¿Primera vez? Crea una cuenta", hi: "नए हैं? खाता बनाएँ" },
   "Already have an account? Sign in": { es: "¿Ya tienes cuenta? Entra", hi: "पहले से खाता है? लॉग इन करें" },
-  "Your account and privacy": { es: "Tu cuenta y privacidad", hi: "खाता और गोपनीयता" },
   "Check local rules": { es: "Consulta las normas locales", hi: "स्थानीय नियम जाँचें" },
   "Share this guide": { es: "Compartir esta guía", hi: "यह गाइड साझा करें" },
 };

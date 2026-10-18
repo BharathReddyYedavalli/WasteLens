@@ -298,8 +298,8 @@ export default function App() {
       {view === "identifier" ? <>
       <div className="intro">
         <div className="intro-copy">
-          <h1>{t("Know what goes where.")}</h1>
-          <p>{t("A smarter way to handle everyday stuff.")}</p>
+          <h1>{t("Before you toss it, scan it.")}</h1>
+          <p>{t("See how to reuse it, sort it, or find a place nearby.")}</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>

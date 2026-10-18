@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BarChart3, Download, HeartHandshake, Recycle, ScanLine } from "lucide-react";
 import { useLanguage } from "./i18n";
-import { readJson } from "./AccountArea";
+
 
 type Day = { day: string; scans: number; actions: number };
 type Habits = {
@@ -17,7 +17,11 @@ export default function HabitSnapshot() {
   useEffect(() => {
     let active = true;
     fetch("/api/habits", { credentials:"same-origin" })
-      .then(r => readJson<Habits>(r))
+      .then(async r => {
+        const data = await r.json();
+        if (!r.ok) throw new Error("Could not load activity.");
+        return data as Habits;
+      })
       .then(r => { if (active) setData(r); })
       .catch(() => { if (active) setError("Could not load activity."); });
     return () => { active = false; };
