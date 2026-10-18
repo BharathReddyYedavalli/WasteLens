@@ -516,3 +516,58 @@ footer span:first-child {font-family:"Fredoka","Nunito",sans-serif;font-size:17p
 .location-entry {background:#fff;border-bottom:1px solid #e4ede6}
 .location-entry .location-card {border-bottom:0}
 .location-entry .facility-official-link {margin:0 14px 14px}
+
+/* Leaderboard. Compact statistics and badges without crowded cards. */
+.league-page{padding:34px 0 48px;display:grid;gap:20px}
+.league-title{display:flex;gap:16px;align-items:center}
+.league-icon{width:58px;height:58px;border-radius:17px;background:#d9f3e1;display:grid;place-items:center;color:#24904a}
+.league-title h1{font:600 clamp(32px,4vw,42px) "Fredoka","Nunito",sans-serif;margin:0}
+.league-title p{font-size:15px;color:#4b7058;margin:3px 0}
+.level-panel{padding:25px 28px;border-radius:22px;color:#fff;background:linear-gradient(110deg,#17462e,#2b9450)}
+.level-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.level-label{font-size:11px;font-weight:900;letter-spacing:1px;color:#d3f1db}
+.level-top h2{color:#fff;font:500 33px "Fredoka","Nunito",sans-serif;margin:3px 0 14px}
+.level-top>strong{display:flex;gap:9px;align-items:center;font-size:21px}
+.level-track{height:12px;background:#ffffff45;border-radius:20px;overflow:hidden}
+.level-track span{display:block;height:100%;border-radius:20px;background:#c7f1a9}
+.level-next{display:block;margin-top:9px;font-size:13px;color:#e1f6e7}
+.league-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.league-stats>div{display:flex;flex-direction:column;gap:6px;padding:19px 22px;border:1px solid #d7eadd;background:#fffefa;border-radius:17px}
+.league-stats svg{color:#319950}.league-stats strong{font:600 32px "Fredoka","Nunito",sans-serif}
+.league-stats span{font-size:13px;color:#587561;font-weight:800}
+.badge-panel,.league-ranking{border-radius:21px;background:#fffefa;border:1px solid #d7eadd;padding:23px 26px}
+.badge-panel h2,.league-ranking h2{font:500 26px "Fredoka","Nunito",sans-serif;margin:0}
+.badge-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:18px}
+.reward-badge{padding:20px 8px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;background:#f8fdf9;border:1px solid #dceee0;border-radius:14px}
+.reward-badge-icon{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:#ddf5e4;color:#268946}
+.reward-badge strong{font-size:12px;line-height:1.3;font-weight:900}
+.reward-badge small{color:#587861;font-size:11px}
+.reward-badge.locked{opacity:.57;filter:grayscale(.55)}
+.league-ranking-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:#41985a}
+.league-ranking-heading p{color:#5a7760;font-size:13px;margin:2px 0}
+.rank-list{display:grid;gap:8px}
+.rank-entry{display:flex;align-items:center;gap:13px;padding:14px;border-radius:13px;border:1px solid #e3efe6;background:#f9fdfa}
+.rank-entry.its-you{background:#e1f5e8;border-color:#a7dcb4}
+.rank-number{width:35px;text-align:center;font-size:15px;font-weight:900;flex-shrink:0}
+.rank-user{flex:1;min-width:0;display:grid;gap:3px}
+.rank-user strong{font-weight:900;font-size:15px;overflow-wrap:anywhere}
+.rank-user span{font-size:12px;color:#53765f}
+.rank-xp{font-weight:900;color:#207d42;font-size:17px;white-space:nowrap}
+.rank-empty{text-align:center;padding:26px;color:#5e7967}
+.privacy-toggle{display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #e1ede5;margin-top:17px;padding-top:19px}
+.privacy-toggle strong{font-size:15px}
+.privacy-toggle p{font-size:12px;color:#58735e;margin:2px 0}
+.league-fine-print{font-size:12px;color:#52745d;line-height:1.65;margin:0}
+.league-guest{display:grid;justify-items:center;text-align:center;gap:9px;border:1px solid #d7eadd;background:#fffefa;border-radius:21px;padding:32px}
+.league-guest svg{color:#319950}.league-guest h2{font:500 27px "Fredoka","Nunito",sans-serif;margin:0}
+.league-guest p{color:#53745f;margin:0 0 8px}
+.action-choices{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}
+.action-choices .button{min-height:43px;padding:9px 15px;font-size:13px}
+.action-confirmed{color:#298149!important;font-weight:800}
+.action-info summary{font-size:12px;color:#517960;cursor:pointer}
+.action-info p{font-size:12px}
+.result-meta-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:17px}
+.result-meta-line .material-line{margin:0}
+.earned-xp{display:flex;align-items:center;gap:7px;border-radius:18px;padding:10px 13px;color:#18793b;background:#e1f5e6;font-weight:900;font-size:13px}
+@media(max-width:900px){.badge-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.badge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.league-page{padding:22px 0}.badge-panel,.league-ranking{padding:19px 16px}.level-panel{padding:21px 18px}.league-stats>div{padding:15px 10px}.league-stats strong{font-size:27px}.privacy-toggle{flex-direction:column;align-items:stretch}.privacy-toggle button{width:100%}.rank-entry{gap:8px;padding:12px 9px}.rank-number{width:30px}.rank-xp{font-size:14px}}

@@ -135,3 +135,9 @@ def report_action(scan_id: int, payload: ActionRequest, request: Request):
             (scan_id, user["id"], payload.action),
         )
     return {"scan_id": scan_id, "action": payload.action, "self_reported": True}
+
+
+def xp_for_scan(scan_id: int) -> int:
+    with database() as db:
+        reward = db.execute("SELECT xp FROM scan_rewards WHERE scan_id=?", (scan_id,)).fetchone()
+    return int(reward["xp"]) if reward else 0
