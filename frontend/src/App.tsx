@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
@@ -11,6 +11,7 @@ import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
 import BadgeCelebration from "./BadgeCelebration";
 import SortPlan from "./SortPlan";
+import AuditKit from "./AuditKit";
 import { LANGUAGES, useLanguage } from "./i18n";
 
 type PhotoPreview = { file: File; src: string };
@@ -32,7 +33,7 @@ export default function App() {
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard">("identifier");
+  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
@@ -286,6 +287,8 @@ export default function App() {
           onClick={() => { stopCamera(); setView("history"); }}><History size={19}/> {t("My activity")}</button>
         <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"} aria-current={view === "leaderboard" ? "page" : undefined}
           onClick={() => { stopCamera(); setView("leaderboard"); }}><Trophy size={19}/> {t("Leaderboard")}</button>
+        <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"} aria-current={view === "audit" ? "page" : undefined}
+          onClick={() => { stopCamera(); setView("audit"); }}><ClipboardList size={19}/> {t("Waste audit")}</button>
         {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
           onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={19}/> {t("Admin")}</button>}
         <div className="side-nav-bottom">
@@ -506,7 +509,7 @@ export default function App() {
           <RecyclingResults results={facilities}
                 selected={selectedFacility} onSelect={setSelectedFacility}/>
         </div>
-      </section> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
+      </section> : view === "audit" ? <AuditKit/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>

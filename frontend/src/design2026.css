@@ -190,3 +190,53 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
   .rank-entry{transition:background-color .2s ease,transform .2s ease}
   .rank-entry:hover{transform:translateX(3px)}
 }
+
+/* Standalone community audit. Friendly tally controls with no student data. */
+.audit-kit{padding:33px 0 70px;display:grid;gap:22px;animation:wl-reveal .4s ease}
+.audit-hero{display:flex;align-items:center;gap:22px;background:#f1eaff;border-radius:26px;padding:27px 32px}
+.audit-icon{width:70px;height:70px;border-radius:19px;display:grid;place-items:center;background:#9b87df;color:#fff;transform:rotate(-6deg);flex-shrink:0}
+.audit-hero h1{font:700 clamp(31px,4vw,46px)/1.1 "Fraunces",Georgia,serif;color:#3b326a;margin:0 0 9px}
+.audit-hero p{font-size:14px;color:#545077;font-weight:600;margin:0}
+.audit-session{display:grid;gap:8px;max-width:550px}
+.audit-session label{font-weight:800;font-size:14px;color:#315b54}
+.audit-session label span{font-size:12px;font-weight:500}
+.audit-session input{background:#fff;border:1px solid #bdddd0;border-radius:13px;padding:14px 17px}
+.audit-count-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.audit-count-row>div{display:grid;gap:0}
+.audit-count-row strong{font:700 66px/1 "Fraunces",Georgia,serif;color:#185b52}
+.audit-count-row>div span{font-size:12px;font-weight:800;color:#386c60}
+.audit-count-row p{font-size:13px;color:#415b51;margin:0 0 7px}
+.audit-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.audit-option{min-height:158px;display:grid;justify-items:center;align-content:center;gap:7px;padding:14px 7px;
+  background:#fffef9;border:2px solid var(--audit-accent);border-radius:18px;box-shadow:0 5px 0 var(--audit-accent);cursor:pointer;color:#233e37;
+  transition:transform .16s ease,box-shadow .16s ease}
+.audit-option:hover{transform:translateY(-4px);box-shadow:0 9px 0 var(--audit-accent)}
+.audit-option:active{transform:translateY(2px);box-shadow:0 2px 0 var(--audit-accent)}
+.audit-option-emoji{font-size:28px}
+.audit-option strong{font-size:13px;font-weight:800;text-align:center}
+.audit-option-count{font:700 22px "Fraunces",serif;color:#2c5f58}
+.audit-actions{display:flex;gap:11px;flex-wrap:wrap}
+.audit-actions button{display:flex;align-items:center;gap:8px;border:1px solid #cddfd4;background:#fff;border-radius:12px;padding:11px 15px;color:#285b51;font-size:12px;font-weight:800;cursor:pointer}
+.audit-actions button:hover:not(:disabled){background:#e9f7ee}
+.audit-actions button:disabled{opacity:.4}
+.audit-actions .audit-reset{color:#ac503f;border-color:#edd0c6}
+.audit-results{padding:27px 30px;background:#fffef9;border:1.5px solid #dfe6d6;border-radius:24px;box-shadow:0 5px 0 #e8eadf}
+.audit-results h2{font:700 29px "Fraunces",Georgia,serif;color:#184f48;margin:0 0 20px}
+.audit-empty{font-size:14px;color:#526b60}
+.audit-bars{display:grid;gap:17px}
+.audit-bar-row{display:grid;grid-template-columns:110px minmax(0,1fr) 48px;align-items:center;gap:14px;font-weight:700;font-size:12px}
+.audit-bar-track{height:17px;border-radius:12px;background:#f0f1e8;overflow:hidden}
+.audit-bar-track span{display:block;height:100%;border-radius:12px;transition:width .25s ease}
+.audit-bar-row strong{text-align:right;font-size:14px;color:#28524a}
+.audit-note{margin-top:24px;border-top:1px solid #e0e9df;padding-top:13px}
+.audit-note summary{color:#406358;font-weight:800;font-size:12px;cursor:pointer}
+.audit-note p{font-size:12px;line-height:1.7;color:#526a5f;max-width:730px}
+@media(max-width:750px){.audit-options{grid-template-columns:repeat(3,minmax(0,1fr))}.audit-option{min-height:137px}}
+@media(max-width:480px){.audit-hero{padding:21px;gap:13px}.audit-icon{width:52px;height:52px}.audit-options{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-count-row{align-items:flex-start;flex-direction:column}.audit-results{padding:20px}.audit-bar-row{grid-template-columns:78px minmax(0,1fr) 40px;gap:8px}}
+@media(prefers-reduced-motion:reduce){.audit-kit{animation:none}.audit-option,.audit-bar-track span{transition:none!important}.audit-option:hover{transform:none}}
+@media print{
+  .audit-kit,.audit-kit *{visibility:visible!important}
+  .audit-kit{position:absolute;top:0;left:0;width:100%;padding:0;background:#fff}
+  .audit-options,.audit-actions,.audit-session input,.audit-session label,.audit-note{display:none!important}
+  .audit-results{box-shadow:none;border:0;padding:0}
+}

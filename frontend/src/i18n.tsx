@@ -130,6 +130,35 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Places near you": { es: "Lugares cercanos", hi: "आसपास के स्थान" },
   "No places found": { es: "No encontramos lugares", hi: "कोई स्थान नहीं मिला" },
   "Location details": { es: "Datos del lugar", hi: "स्थान का विवरण" },
+  "Waste audit": { es: "Auditoría de residuos", hi: "कचरा सर्वेक्षण" },
+  "Count what you see during a cleanup or lunch period. No photos needed.": {
+    es: "Cuenta los objetos durante la limpieza o el almuerzo. No necesitas fotos.",
+    hi: "सफ़ाई या लंच के दौरान चीज़ें गिनें। फोटो की ज़रूरत नहीं।"
+  },
+  "Audit name": { es: "Nombre del conteo", hi: "सर्वेक्षण का नाम" },
+  "Example: Cafeteria lunch": { es: "Ejemplo: Almuerzo escolar", hi: "उदाहरण: स्कूल का लंच" },
+  "Items counted": { es: "Objetos contados", hi: "गिनी गई चीज़ें" },
+  "Tap a category for each item you observe.": {
+    es: "Toca una categoría por cada objeto que veas.",
+    hi: "हर देखी गई चीज़ के लिए श्रेणी चुनें।"
+  },
+  "Recycling": { es: "Reciclaje", hi: "रीसायकल" },
+  "Compost": { es: "Compostaje", hi: "खाद" },
+  "Trash": { es: "Basura", hi: "कचरा" },
+  "Reuse": { es: "Reutilizar", hi: "दोबारा उपयोग" },
+  "Not sure": { es: "No sé", hi: "पता नहीं" },
+  "Undo last": { es: "Deshacer", hi: "पिछला हटाएँ" },
+  "Export CSV": { es: "Exportar CSV", hi: "CSV निर्यात करें" },
+  "Print results": { es: "Imprimir", hi: "प्रिंट करें" },
+  "Clear audit": { es: "Borrar conteo", hi: "सर्वेक्षण मिटाएँ" },
+  "Clear this audit?": { es: "¿Borrar este conteo?", hi: "सर्वेक्षण मिटाएँ?" },
+  "What you counted": { es: "Tu conteo", hi: "आपकी गिनती" },
+  "Tap a category above to start.": { es: "Toca una categoría para empezar.", hi: "शुरू करने के लिए श्रेणी चुनें।" },
+  "About these numbers": { es: "Sobre estos números", hi: "इन आँकड़ों के बारे में" },
+  "Counts are entered by people, not checked by AI. They do not prove recycling or carbon savings. This audit stays in this browser until cleared.": {
+    es: "Las cifras las introduce una persona. No demuestran reciclaje ni ahorro de carbono. Se guardan solo en este navegador hasta que las borres.",
+    hi: "ये आँकड़े लोगों ने दर्ज किए हैं। ये रीसायकल या कार्बन बचत का प्रमाण नहीं हैं। मिटाने तक यह सर्वेक्षण इसी ब्राउज़र में रहेगा।"
+  },
   "Listen": { es: "Escuchar", hi: "सुनें" },
   "Stop reading": { es: "Detener lectura", hi: "पढ़ना रोकें" },
   "Copied!": { es: "¡Copiado!", hi: "कॉपी हो गया!" },
