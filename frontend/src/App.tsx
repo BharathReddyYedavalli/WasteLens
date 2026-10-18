@@ -5,7 +5,7 @@ import {
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
-import RecyclingResults, {type MapsConfig} from "./RecyclingResults";
+import RecyclingResults from "./RecyclingResults";
 import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 
@@ -29,8 +29,6 @@ export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
-  const [mapSearchZip, setMapSearchZip] = useState("");
-  const [mapsConfig, setMapsConfig] = useState<MapsConfig | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
@@ -44,18 +42,6 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    let active = true;
-    fetch("/api/maps/status")
-      .then(async response => {
-        if (!response.ok) throw new Error("Map configuration unavailable.");
-        return (await response.json()) as MapsConfig;
-      })
-      .then(data => { if (active) setMapsConfig(data); })
-      .catch(() => { if (active) setMapsConfig({configured: false, embed_key: ""}); });
-    return () => { active = false; };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -206,9 +192,8 @@ export default function App() {
     }
     setFacilityBusy(true);
     setFacilityError("");
-    // Map search starts immediately, independently of the optional community
-    // ZIP coordinate lookup and the OpenStreetMap facility list.
-    setMapSearchZip(location.trim());
+    // ZIPs are resolved from the locally bundled US postal coordinate data,
+    // so the map does not depend on a paid geocoder.
     setFacilities(null);
     setSelectedFacility(null);
     try {
@@ -366,19 +351,16 @@ export default function App() {
           </article>}
           <article className="result-card green" id="nearby">
             <h3><MapPin size={20}/> Find nearby collection options</h3>
-            <p>Enter a US ZIP code to explore mapped recycling locations here on WasteLens. The map and facility cards stay on this page. Acceptance of this specific item is not verified.</p>
+            <p>Enter a US ZIP code to open a full interactive map with nearby recycling locations and an in-page facility list. No payment method, redirects or location permission needed.</p>
             <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
               <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-                placeholder="Enter 5-digit ZIP, e.g. 75063" value={location}
+                placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
                 onChange={event => setLocation(event.target.value)}/>
               <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
             </form>
-            {facilityError && (mapsConfig?.configured && mapSearchZip
-              ? <p className="community-warning">Community listing unavailable: {facilityError}. The Google Maps search below is independent.</p>
-              : <ErrorText message={facilityError}/>)}
-            <RecyclingResults zip={mapSearchZip} config={mapsConfig} results={facilities}
-                selected={selectedFacility} onSelect={setSelectedFacility}
-                searchTerm={analysis?.collection_search_term ?? "recycling centers"}/>
+            {facilityError && <ErrorText message={facilityError}/>}
+            <RecyclingResults results={facilities}
+                selected={selectedFacility} onSelect={setSelectedFacility}/>
             <p className="finder-note">Locations from OpenStreetMap community data. Distance is approximate, from the ZIP centroid. Actual acceptance and operating hours must be confirmed.</p>
           </article>
           <article className="result-card muted">
@@ -410,22 +392,19 @@ export default function App() {
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
         <span className="eyebrow">NEARBY DROP-OFF OPTIONS</span>
-        <h1><MapPin size={28}/> Nearby Recycling Centers</h1>
-        <p>Search for possible recycling facilities by US ZIP code. Click a result or a pin to view its details without leaving WasteLens.</p>
+        <h1><MapPin size={28}/> Find Recycling Locations</h1>
+        <p>Explore nearby collection centers and drop-off points on an interactive map. Search by ZIP, select a card or pin, and review details without leaving WasteLens.</p>
         <div className="finder-card">
           <form className="finder-form" onSubmit={event => void searchFacilities(event)}>
             <label htmlFor="sidebar-zip">ZIP code</label>
             <input id="sidebar-zip" aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-              placeholder="Enter 5-digit ZIP, e.g. 75063" value={location}
+              placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
               onChange={event => setLocation(event.target.value)}/>
             <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
           </form>
-          {facilityError && (mapsConfig?.configured && mapSearchZip
-              ? <p className="community-warning">Community listing unavailable: {facilityError}. The Google Maps search below is independent.</p>
-              : <ErrorText message={facilityError}/>)}
-          <RecyclingResults zip={mapSearchZip} config={mapsConfig} results={facilities}
-                selected={selectedFacility} onSelect={setSelectedFacility}
-                searchTerm={analysis?.collection_search_term ?? "recycling centers"}/>
+          {facilityError && <ErrorText message={facilityError}/>}
+          <RecyclingResults results={facilities}
+                selected={selectedFacility} onSelect={setSelectedFacility}/>
           <p className="finder-note">OpenStreetMap community data. ZIP-center distances are approximate. Listed facilities may not accept your particular item.</p>
         </div>
       </section> : view === "chat" ? null : <AccountArea user={user} mode={view}

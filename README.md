@@ -115,52 +115,27 @@ git switch --track origin/feat/wastelens-unified
 
 If the branch already exists locally, use `git switch feat/wastelens-unified` followed by `git pull --ff-only`. Verify you have no other local changes that would be overwritten before switching.
 
-## Optional official Google Maps Embed API
+## Completely free, embedded recycling finder
 
-This branch supports Google Maps **search mode embedded inside WasteLens**. It
-works directly from a typed 5-digit US ZIP, independently of the community
-ZIP-to-coordinate service. Google provides the map and its own interactive
-search results **inside the embedded iframe**. The separate OSM-derived card
-list may differ and is explicitly marked as an independent source; the map
-iframe does not expose Google's result data to our React application.
+**No Google Maps billing, no Google Maps API key, no Google Maps Embed API.**
+WasteLens uses:
+- **Leaflet** for the interactive in-page map, location pins, popups and synchronized results panel.
+- **OpenStreetMap** standard map tiles and community recycling data through public Overpass instances.
+- **zipcodes** (MIT-licensed Python package with embedded US ZIP coordinates) for offline postal lookups, avoiding unreliable per-search ZIP geocoding API calls. Approximate ZIP centers may be incomplete or stale. See https://pypi.org/project/zipcodes/ .
+- A 15-minute in-memory Overpass search cache to reduce load on public community servers.
 
-**Important billing distinction:** Google's Maps Embed API has no per-request
-usage charges, but using it **requires a billing-enabled Google Cloud project**
-and a *separate* Google Cloud API key. Your free Gemini/AI Studio key is
-not sufficient. Do not enable billing unless you want to accept the Cloud
-account requirements. Without a Maps key, the app still offers the existing
-OpenStreetMap/Leaflet results and map where the community providers work.
+In both AI Identifier and the standalone Nearby Centers sidebar, enter a **five-digit US ZIP** such as `75033` or `75063`. The website displays a large map and scrollable facility list, with in-page location selection and optional filters for recycling centers versus drop-off points. No map search redirects and no payment method are required. A facility appearing in the map **does not prove** it accepts the particular item; all tags, contact details and hours are unverified community contributions.
 
-To enable Google Maps on your local PC:
+If both public Overpass endpoints are temporarily unavailable, the ZIP map will still display at the approximate center with an explicit unavailability notice; we never invent businesses. Public OSM servers have fair-use restrictions and no service guarantee. This is appropriate for a small demo but should not be described as unlimited, nationwide guaranteed business coverage. In particular:
+- OSM tile usage policy: https://operations.osmfoundation.org/policies/tiles/
+- Community Overpass servers may rate-limit and have outages. Do not run high-volume automated searches.
+- Show OSM and GeoNames attribution when using data from the embedded ZIP library, and don't prefetch map tiles.
+- Before public high-traffic deployment, choose appropriate hosted/self-hosted tiles and a cached facility database.
 
-1. Follow Google's official setup:
-   https://developers.google.com/maps/documentation/embed/quickstart
-   and https://developers.google.com/maps/documentation/embed/embedding-map
-2. Enable **Maps Embed API** in Google Cloud Console; create a **dedicated**
-   Google Maps API key (NOT the Gemini key).
-3. Restrict the key to **Maps Embed API** and **HTTP referrers** for
-   `http://localhost:5173/*` and `http://localhost:5174/*` while testing.
-   Add your actual production website domain if later deployed. Google Maps
-   Embed keys are transmitted to the browser by design; never use an
-   unrestricted credential.
-4. Edit the existing root `.env` file using `notepad .env` and append:
-   `GOOGLE_MAPS_EMBED_KEY=your-dedicated-key`.
-   Keep your original `GEMINI_API_KEY` and optional admin settings untouched.
-5. Restart Uvicorn and refresh WasteLens. Check
-   `http://127.0.0.1:8000/api/maps/status` for `"configured": true`.
-6. Search for ZIP `75033`. Google's iframe should appear even if the
-   independent community directory cannot locate that ZIP.
-
-Google Maps Embed API is for an interactive map, NOT structured business cards
-and verified item acceptance. Google's Places API is a separate service with
-its own pricing, requirements and usage terms. Neither map provider confirms
-what a location accepts.
-
-### Graceful admin setup
-
-If the root `.env` contains only one admin setting, or the
-`WASTELENS_ADMIN_PASSWORD` is under 12 characters, the backend logs a
-warning and continues running the other app features. Admin creation is skipped
-until valid email and 12+ character password are provided and the server
-restarts. If the admin email is already associated with a standard account,
-choose an unused email instead. Never disclose your `.env` file.
+To update on Windows, leave `.env` alone and switch from the parent branch after checking `git status`:
+```powershell
+git fetch origin
+git switch --track origin/feat/free-polished-recycling-map
+.\\.venv\\Scripts\\python.exe -m pip install -r backend/requirements.txt
+```
+Then restart Uvicorn and the Vite frontend. Your Gemini and admin credentials are unchanged.

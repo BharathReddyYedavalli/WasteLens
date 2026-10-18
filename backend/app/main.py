@@ -100,17 +100,3 @@ async def ai_chat(payload: ChatRequest):
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
 
-
-@app.get("/api/maps/status")
-def maps_status():
-    # Embed keys are visible in the browser by design: restrict by referrer
-    # and API in Google Cloud. Never use the secret Gemini API key here.
-    key = os.environ.get("GOOGLE_MAPS_EMBED_KEY", "").strip()
-    if key in ("paste-your-maps-embed-key-here", "your-maps-embed-key"):
-        key = ""
-    return {
-        "configured": bool(key),
-        "embed_key": key,
-        "provider": "Google Maps Embed API" if key else "OpenStreetMap fallback",
-        "note": "Google Maps Embed requires a separate Cloud API key and billing-enabled project; Embed requests have no per-request charge.",
-    }

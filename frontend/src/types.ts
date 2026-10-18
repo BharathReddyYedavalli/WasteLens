@@ -40,6 +40,7 @@ export type AdminFeedback = {
 export type Facility = {
   id: string; name: string; address: string; latitude: number; longitude: number;
   distance_miles: number; tagged_materials: string[];
+  kind: "center" | "drop_off"; phone: string;
   verified_acceptance: false; note: string;
 };
 export type FacilitySearchResponse = {
@@ -47,4 +48,5 @@ export type FacilitySearchResponse = {
   center: { latitude: number; longitude: number };
   facilities: Facility[];
   provider: string; acceptance_verified: false; notice: string;
+  listing_status: "ok" | "unavailable";
 };
