@@ -601,7 +601,7 @@ footer span:first-child {font-family:"Fredoka","Nunito",sans-serif;font-size:17p
   .badge-toast-medal{width:48px;height:48px}.badge-toast-message strong{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.confetti-piece{display:none}.badge-toast{animation:none}}
 
-/* Less secondary clutter while important explanations remain easy to find. */
+/* Reduce secondary copy without hiding relevant safety information. */
 .brand-desc,.side-nav-title{display:none}
 .intro{min-height:150px}
 .intro-copy p{font-weight:700;color:#2a6240}

@@ -355,10 +355,10 @@ export default function App() {
         </details>
         <div className="photo-privacy-summary"><ShieldAlert size={16}/> Photos go to Google Gemini when you scan. Free tier data may be used to improve Google's services.</div>
         <details className="privacy-details">
-          <summary>More about photo privacy <ChevronDown size={15}/></summary>
+          <summary>Photo privacy <ChevronDown size={15}/></summary>
           <p>Avoid faces and personal details in your photos. WasteLens does not save the photo. {user ? "Your item results are saved to your account." : "Sign in if you want to save your item results."}</p>
         </details>
-        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>No API key configured. Add <code>GEMINI_API_KEY</code> to the root <code>.env</code> file and restart the Python backend.</span></div>}
+        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>Add your Gemini API key in the <code>.env</code> file and restart the backend.</span></div>}
         {statusError && <ErrorText message={statusError}/>}
         {cameraError && <ErrorText message={cameraError}/>}
         {error && <ErrorText message={error}/>}
@@ -396,7 +396,7 @@ export default function App() {
             </div>
             {analysis.reuse_projects?.length ? <div className="reuse-projects">
               {analysis.reuse_projects.map((project, i) =>
-                <details key={i} className="reuse-project" open={i === 0}>
+                <details key={i} className="reuse-project">
                   <summary>
                     <span className="reuse-project-index">{String(i + 1).padStart(2, "0")}</span>
                     <span className="reuse-project-summary">
@@ -435,7 +435,7 @@ export default function App() {
             
             <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
               <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-                placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
+                placeholder="ZIP code, like 75033" value={location}
                 onChange={event => setLocation(event.target.value)}/>
               <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Looking…" : "Search"}</button>
             </form>
@@ -459,7 +459,7 @@ export default function App() {
             {correctChoice === "no" && !feedbackSent && <div className="correction-form">
               <label htmlFor="feedbackCorrection">What was the item? (optional)</label>
               <input id="feedbackCorrection" maxLength={160} value={correction}
-                placeholder="e.g. reusable insulated water bottle"
+                placeholder="Example: insulated water bottle"
                 onChange={event => setCorrection(event.target.value)}/>
               <button className="button primary" disabled={feedbackBusy}
                 onClick={() => void submitFeedback(false)}>Submit feedback</button>
@@ -491,7 +491,7 @@ export default function App() {
           <form className="finder-form" onSubmit={event => void searchFacilities(event)}>
             <label htmlFor="sidebar-zip">Your ZIP code</label>
             <input id="sidebar-zip" aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-              placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
+              placeholder="ZIP code, like 75033" value={location}
               onChange={event => setLocation(event.target.value)}/>
             <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Looking…" : "Search"}</button>
           </form>
