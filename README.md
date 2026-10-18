@@ -166,3 +166,30 @@ For updated code on Windows, switch to the new branch, install backend
 requirements, restart Uvicorn, then run `npm run dev` under frontend.
 Automated tests use mocked provider data and do not verify production Overpass
 availability or a real Gemini image response.
+
+
+## Friendly visual refresh (October 2026)
+
+The independent `feat/friendly-visual-refresh` branch changes actual React
+copy, the global layout, and the typography. It is **not** a cosmetic
+rearrangement of existing cards.
+
+- New rounded **Fredoka** for brand, hero and section headings; **Nunito**
+  for readable body text and controls. Fonts are served by Google Fonts with
+  system font fallbacks.
+- Larger navigation, buttons and explanatory text; simpler camera instructions
+  and more conversational names across the identifier, chat, map and accounts.
+- One warm green visual system, accessible focus treatment, mobile adjustments,
+  subtle transitions with reduced-motion support.
+- Optional model settings and secondary explanations use disclosure controls.
+  The important Google Gemini free-tier photo data notice remains **visible**
+  before identifying an item.
+- Removed repeated technical map paragraphs from the primary workflow;
+  the attribution and the reminder to confirm acceptance remain visible.
+- No changes to Gemini integration, map APIs, account security or saved data.
+  Back end chat/vision writing instructions were also adjusted to avoid
+  filler text and em dash punctuation.
+
+Automated CI confirms TypeScript builds and mock backend tests. **No visual
+browser screenshot or real Gemini analysis was verified by CI**; test the
+appearance and browser behavior locally on desktop and mobile before merging.

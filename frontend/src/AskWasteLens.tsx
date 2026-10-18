@@ -75,9 +75,8 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
     <div className="assistant-heading">
       <div className="assistant-logo"><Bot size={25}/></div>
       <div>
-        <span className="eyebrow">YOUR SUSTAINABILITY ASSISTANT</span>
         <h1>Ask WasteLens</h1>
-        <p>Have a question about recycling, composting or creative reuse? Ask away.</p>
+        <p>Have a question about an item? Just ask.</p>
       </div>
     </div>
     <div className="assistant-card">
@@ -85,8 +84,8 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         <div className="context-main">
           <Sparkles size={18}/>
           <div>
-            <strong>{scan ? `Talking about: ${scan.item_name}` : "General waste and recycling questions"}</strong>
-            <small>{scan ? `Based on your latest scan · material: ${scan.material_guess}` : "Scan an object first for more specific answers."}</small>
+            <strong>{scan ? `Let's talk about your ${scan.item_name.toLowerCase()}` : "What would you like to know?"}</strong>
+            <small>{scan ? "Ask about reusing it, recycling it or its parts." : "Scan an item for advice about that specific object."}</small>
           </div>
         </div>
         <button type="button" className="context-action" onClick={onScan}>{scan ? "View scan" : "Scan an object"}</button>
@@ -94,8 +93,8 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
           <MessageCircle size={34}/>
-          <h2>{scan ? "What would you like to know about this item?" : "What can I help you sort?"}</h2>
-          <p>{scan ? "Ask about its parts, safe disposal, or ideas to reuse it. I'll remember the scan details." : "I can help you think through common waste, reuse, and recycling questions."}</p>
+          <h2>{scan ? "Anything else you want to know?" : "What's on your mind?"}</h2>
+          <p>{scan ? "Ask about the item you just scanned." : "Try one of these questions, or write your own."}</p>
           <div className="chat-suggestions">
             {(scan ? startingPrompts : generalPrompts).map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
@@ -115,12 +114,12 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         <textarea id="ask-input" rows={2} maxLength={1200}
           value={input} onChange={event => setInput(event.target.value)}
           onKeyDown={onKeyDown} disabled={busy}
-          placeholder="Ask a question about your item… (Enter to send)" />
+          placeholder="Ask me anything about waste or reuse…" />
         <button aria-label="Send message" title="Send message" type="submit"
           disabled={busy || !configured || !input.trim()}><ArrowUp size={19}/></button>
       </form>
       <div className="chat-footer">
-        <small>Conversation is kept in this browser session. Questions, scan summaries and recent replies are sent to Gemini; photos are not resent by chat. Free-tier data policies apply. Check local rules for recycling acceptance.</small>
+        <details className="chat-privacy"><summary>About your chat</summary><p>Chats stay in this browser session. Your questions and scan details are sent to Gemini, but your photo is not sent again. Google may use free tier content to improve its products. Check local recycling rules before acting.</p></details>
         {messages.length > 0 && <button type="button" disabled={busy} onClick={() => {setMessages([]);setError("");}}><Trash2 size={14}/> Clear chat</button>}
       </div>
     </div>

@@ -228,48 +228,39 @@ export default function App() {
   const analysis = result?.analysis;
   return <div className="site">
     <header className="topbar">
-      <button type="button" className="brand" onClick={() => setView("identifier")}><Leaf size={26} strokeWidth={2.5}/><strong>WasteLens</strong></button>
-      <span className="brand-desc">See it. Sort it. Sustain it.</span>
+      <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
+      <span className="brand-desc">Less waste starts here.</span>
     </header>
     <div className="site-layout">
       <aside className="side-nav" aria-label="WasteLens navigation">
-        <div className="side-nav-title">WASTELENS TOOLS</div>
+        <div className="side-nav-title">Explore</div>
         <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"} aria-current={view === "identifier" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("identifier"); }}><ScanLine size={18}/> AI Identifier</button>
+          onClick={() => { stopCamera(); setView("identifier"); }}><ScanLine size={19}/> Scan an item</button>
         <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"} aria-current={view === "chat" ? "page" : undefined}
           onClick={() => { stopCamera(); setView("chat"); }}><MessageCircle size={18}/> Ask WasteLens</button>
         <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"} aria-current={view === "finder" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("finder"); }}><MapPin size={18}/> Nearby Centers</button>
+          onClick={() => { stopCamera(); setView("finder"); }}><MapPin size={19}/> Find a drop off</button>
         <button type="button" className={view === "history" ? "nav-item active" : "nav-item"} aria-current={view === "history" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("history"); }}><History size={18}/> My History</button>
+          onClick={() => { stopCamera(); setView("history"); }}><History size={19}/> My scans</button>
         {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
-          onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={18}/> Admin</button>}
+          onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={19}/> Admin</button>}
         <div className="side-nav-bottom">
           <button type="button" className={view === "account" ? "nav-item active" : "nav-item"}
-          onClick={() => { stopCamera(); setView("account"); }}><UserRound size={18}/> {user ? user.name : "Sign In / Sign Up"}</button>
+          onClick={() => { stopCamera(); setView("account"); }}><UserRound size={19}/> {user ? user.name : "Sign in"}</button>
         </div>
       </aside>
       <div className="page-content">
     <main id="home" className="shell">
       {view === "identifier" ? <>
       <div className="intro">
-        <div>
-          <span className="eyebrow">SMARTER WASTE SORTING</span>
-          <h1>Know where it goes.</h1>
-          <p>Take a photo of an everyday item. AI can help you recognize it, find creative ways to reuse it, and explore safer disposal options.</p>
+        <div className="intro-copy">
+          <h1>Not sure where it goes?</h1>
+          <p>Show us what you're holding. We'll help you figure out what it is, how to reuse it, and what to do with it next.</p>
         </div>
-        <div className="model-picker">
-          <label htmlFor="model">Vision AI</label>
-          <div className="picker">
-            <select id="model" value={model} disabled={!status || busy} onChange={event => {
-              setModel(event.target.value); setResult(null);
-            }}>
-              {(status?.models ?? [{id: initialModel, name: "Gemini 3.8 Flash"}]).map(option =>
-                <option key={option.id} value={option.id}>{option.name}</option>)}
-            </select>
-            <ChevronDown size={15}/>
-          </div>
-          <small>Uses Google's free API tier while your project remains within its usage limits.</small>
+        <div className="intro-art" aria-hidden="true">
+          <span className="intro-art-circle one"></span>
+          <span className="intro-art-circle two"></span>
+          <Recycle size={58} strokeWidth={1.8}/>
         </div>
       </div>
 
@@ -277,44 +268,62 @@ export default function App() {
         <div className="workspace-head">
           <div className="head-with-icon">
             <div className="round-icon"><Camera size={19}/></div>
-            <div><h2>AI Identifier</h2><p>Show a single object clearly, or describe the one you mean.</p></div>
+            <div><h2>Take a picture</h2><p>Try to show one item at a time.</p></div>
           </div>
-          <span className="step-label">STEP 01 / IDENTIFY</span>
         </div>
         <div className="camera-stage">
           {camera ? <video ref={videoRef} autoPlay muted playsInline aria-label="Live camera preview"/> :
             preview ? <img src={preview.src} alt="Your selected item photograph"/> :
             <div className="camera-empty">
               <div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
-              <h3>Ready when you are</h3>
-              <p>Open the camera or upload a clear photo of what you'd like to sort.</p>
+              <h3>What are we looking at?</h3>
+              <p>Use your camera or choose a photo to get started.</p>
             </div>}
         </div>
 
         <div className="camera-controls">
           <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label="Upload item photo"/>
           {!camera && !preview && <>
-            <button className="button primary" type="button" onClick={() => void startCamera()}><Camera size={17}/> Open camera</button>
-            <button className="button outline" type="button" onClick={() => uploadRef.current?.click()}><Upload size={17}/> Upload photo</button>
+            <button className="button primary" type="button" onClick={() => void startCamera()}><Camera size={18}/> Use camera</button>
+            <button className="button outline" type="button" onClick={() => uploadRef.current?.click()}><Upload size={18}/> Choose a photo</button>
           </>}
           {camera && <>
-            <button className="button primary" type="button" onClick={capture}><Camera size={17}/> Click picture</button>
+            <button className="button primary" type="button" onClick={capture}><Camera size={18}/> Take picture</button>
             <button className="button outline" type="button" onClick={stopCamera}>Close camera</button>
           </>}
           {preview && <>
             <button className="button primary" type="button" onClick={() => void analyze()} disabled={busy || !status?.configured}>
-              {busy ? "Identifying object…" : <><Sparkles size={17}/> Identify with AI</>}
+              {busy ? "Taking a look…" : <><Sparkles size={18}/> Identify item</>}
             </button>
-            <button className="button outline" type="button" onClick={reset} disabled={busy}><RotateCcw size={17}/> Take another photo</button>
+            <button className="button outline" type="button" onClick={reset} disabled={busy}><RotateCcw size={18}/> Try another photo</button>
           </>}
         </div>
         {preview && <div className="hint-area">
-          <label htmlFor="hint">Which object should AI focus on? <span>(optional)</span></label>
+          <label htmlFor="hint">Which item should we look at? <span>Optional</span></label>
           <input id="hint" maxLength={160} value={hint} disabled={busy}
             onChange={event => {setHint(event.target.value); setResult(null);}}
-            placeholder="e.g. the blue water bottle, not my shirt"/>
+            placeholder="Example: The blue bottle I'm holding"/>
         </div>}
-        <p className="privacy-line"><ShieldAlert size={15}/> Your photo is sent to Google's Gemini API only when you click Identify. On the free tier, Google may use submitted content to improve its products. Don't include faces or private details. {user ? "Your item analysis is saved to your account; the photo is not stored by WasteLens." : "Sign in before scanning to save your results."}</p>
+        <details className="model-options">
+          <summary><span>Change AI model</span><ChevronDown size={17}/></summary>
+          <div className="model-picker">
+            <label htmlFor="model">Choose a model</label>
+            <div className="picker">
+              <select id="model" value={model} disabled={!status || busy} onChange={event => {
+                setModel(event.target.value); setResult(null);
+              }}>
+                {(status?.models ?? [{id: initialModel, name: "Gemini 3.8 Flash"}]).map(option =>
+                  <option key={option.id} value={option.id}>{option.name}</option>)}
+              </select>
+              <ChevronDown size={16}/>
+            </div>
+          </div>
+        </details>
+        <div className="photo-privacy-summary"><ShieldAlert size={16}/> When you identify an item, its photo goes to Google Gemini. Google's free tier may use photos to improve its products.</div>
+        <details className="privacy-details">
+          <summary>More about photo privacy <ChevronDown size={15}/></summary>
+          <p>Avoid faces and personal details in your photos. WasteLens does not save the photo. {user ? "Your item results are saved to your account." : "Sign in if you want to save your item results."}</p>
+        </details>
         {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>No API key configured. Add <code>GEMINI_API_KEY</code> to the root <code>.env</code> file and restart the Python backend.</span></div>}
         {statusError && <ErrorText message={statusError}/>}
         {cameraError && <ErrorText message={cameraError}/>}
@@ -322,7 +331,6 @@ export default function App() {
       </div>
 
       {analysis && <section className="results" aria-live="polite">
-        <span className="eyebrow">YOUR RESULTS</span>
         <div className="result-title">
           <div>
             <h2>{analysis.item_name}</h2>
@@ -330,25 +338,24 @@ export default function App() {
           </div>
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
-        <div className="material-line"><strong>Likely material:</strong> {analysis.material_guess}</div>
+        <div className="material-line"><strong>Material:</strong> {analysis.material_guess}</div>
         <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
-          <MessageCircle size={17}/> Ask WasteLens about this item
+          <MessageCircle size={18}/> Ask a question about this item
         </button>
         {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
         {analysis.follow_up_question && <div className="question"><strong>One thing to check:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
           <article className="result-card orange">
-            <h3><Recycle size={20}/> How to dispose properly</h3>
+            <h3><Recycle size={21}/> What to do with it</h3>
             <ul>{analysis.disposal_steps.map((step, i) => <li key={i}>{step}</li>)}</ul>
           </article>
           <article className="result-card blue reuse-section">
             <div className="reuse-heading">
               <div>
-                <span className="eyebrow">MAKE SOMETHING USEFUL</span>
-                <h3><Lightbulb size={20}/> Personalized AI reuse projects</h3>
-                <p>Ideas for your <strong>{analysis.item_name}</strong>, generated from the photo and your object hint. Times are estimates.</p>
+                <h3><Lightbulb size={21}/> Give it another life</h3>
+                <p>Projects you can try with your {analysis.item_name.toLowerCase()}.</p>
               </div>
-              <span className="reuse-count">{analysis.reuse_projects?.length || 0} projects</span>
+              {Boolean(analysis.reuse_projects?.length) && <span className="reuse-count">{analysis.reuse_projects!.length} ideas</span>}
             </div>
             {analysis.reuse_projects?.length ? <div className="reuse-projects">
               {analysis.reuse_projects.map((project, i) =>
@@ -380,29 +387,28 @@ export default function App() {
                 ? <><p>This analysis contains brief reuse suggestions:</p><ul>{analysis.reuse_ideas.map((x,i)=><li key={i}>{x}</li>)}</ul></>
                 : <p>No safe, practical reuse project could be recommended for this item from the available information. Ask WasteLens for clarification if needed.</p>}
             </div>}
-            <p className="reuse-disclaimer">AI-generated concepts, not verified instructions. Check the item's actual material and condition before attempting a project.</p>
+            <details className="reuse-fine-print"><summary>Before you try an idea</summary><p>These suggestions are generated by AI. Check the item's material and condition, and use caution with tools and anything sharp or electrical.</p></details>
           </article>
           {analysis.cautions.length > 0 && <article className="result-card muted">
-            <h3><ShieldAlert size={20}/> Important to know</h3>
+            <h3><ShieldAlert size={21}/> A few things to check</h3>
             <ul>{analysis.cautions.map((caution, i) => <li key={i}>{caution}</li>)}</ul>
           </article>}
           <article className="result-card green" id="nearby">
-            <h3><MapPin size={20}/> Find nearby collection options</h3>
-            <p>Enter a US ZIP code to open a full interactive map with nearby recycling locations and an in-page facility list. No payment method, redirects or location permission needed.</p>
+            <h3><MapPin size={21}/> Find somewhere nearby</h3>
+            <p>Enter your ZIP code to look for places that may accept this item.</p>
             <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
               <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
                 placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
                 onChange={event => setLocation(event.target.value)}/>
-              <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
+              <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Looking…" : "Search"}</button>
             </form>
             {facilityError && <ErrorText message={facilityError}/>}
             <RecyclingResults results={facilities}
                 selected={selectedFacility} onSelect={setSelectedFacility}/>
-            <p className="finder-note">Locations from OpenStreetMap community data. Distance is approximate, from the ZIP centroid. Actual acceptance and operating hours must be confirmed.</p>
           </article>
           <article className="result-card muted">
-            <h3><Check size={20}/> Did we identify your item correctly?</h3>
-            <p>Help us understand how often the AI recognizes items correctly. Your answer is visible to the WasteLens administrator if you're signed in.</p>
+            <h3><Check size={21}/> Did we get it right?</h3>
+            <p>Tell us if the item matches your photo. Signed in feedback can be seen by the site administrator.</p>
             <div className="feedback-actions">
               <button className={"button " + (correctChoice === "yes" ? "primary" : "outline")}
                 disabled={feedbackBusy} onClick={() => { setCorrectChoice("yes"); void submitFeedback(true); }}>
@@ -423,26 +429,24 @@ export default function App() {
             </div>}
             {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
-            {!user && <p className="finder-note">To record feedback and save future scans, use Sign In / Sign Up above before identifying an item.</p>}
+            {!user && <p className="finder-note">Sign in before scanning to save your results and feedback.</p>}
           </article>
         </div>
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
-        <span className="eyebrow">NEARBY DROP-OFF OPTIONS</span>
-        <h1><MapPin size={28}/> Find Recycling Locations</h1>
-        <p>Explore nearby collection centers and drop-off points on an interactive map. Search by ZIP, select a card or pin, and review details without leaving WasteLens.</p>
+        <h1><MapPin size={30}/> Find a drop off</h1>
+        <p>Type your ZIP code to find nearby recycling spots. Choose a place to see it on the map.</p>
         <div className="finder-card">
           <form className="finder-form" onSubmit={event => void searchFacilities(event)}>
-            <label htmlFor="sidebar-zip">ZIP code</label>
+            <label htmlFor="sidebar-zip">Your ZIP code</label>
             <input id="sidebar-zip" aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
               placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
               onChange={event => setLocation(event.target.value)}/>
-            <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
+            <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Looking…" : "Search"}</button>
           </form>
           {facilityError && <ErrorText message={facilityError}/>}
           <RecyclingResults results={facilities}
                 selected={selectedFacility} onSelect={setSelectedFacility}/>
-          <p className="finder-note">OpenStreetMap community data. ZIP-center distances are approximate. Listed facilities may not accept your particular item.</p>
         </div>
       </section> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
@@ -452,8 +456,8 @@ export default function App() {
           onScan={() => setView("identifier")}/>
       </div>
       <footer>
-        <span>WasteLens · Experimental vision AI prototype</span>
-        <span>Disposal advice is provisional; local rules and item condition matter.</span>
+        <span>WasteLens</span>
+        <span>Every item deserves a better ending.</span>
       </footer>
     </main>
       </div>

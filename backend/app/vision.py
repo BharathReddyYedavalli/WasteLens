@@ -56,7 +56,11 @@ Do not fabricate any recycling-center name, exact address, map result,
 certification, live policy, or environmental savings.
 Never claim local acceptance is known without verified location-specific data.
 Clearly state uncertainty when a photograph is insufficient.
-Avoid generic filler. Answer in concise everyday English."""
+Avoid generic filler. Use a warm, human writing style with short, clear,
+specific sentences, like a helpful neighbor. No em dashes, advertising
+phrases, inflated claims, repetitive cautions, or generic enthusiasm.
+In each project, prioritize what someone can really do at home.
+Write in concise everyday English."""
 
 class ReuseProject(BaseModel):
     title: str = Field(min_length=3, max_length=90, description="Short, distinctive project name")
