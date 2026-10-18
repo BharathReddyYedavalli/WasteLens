@@ -1,0 +1,162 @@
+"""Gemini image understanding and structured, item-specific reuse/disposal ideas.
+
+No image is stored to disk; requests are forwarded to the Gemini API only when
+a user explicitly clicks Analyze. Free-tier image data may be used by Google to
+improve their services. Never log photo bytes, API keys or provider responses.
+"""
+from __future__ import annotations
+
+from io import BytesIO
+import os
+from pathlib import Path
+from typing import Literal
+
+from PIL import Image, ImageOps, UnidentifiedImageError
+from pydantic import BaseModel, Field, ValidationError
+
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_MODEL = "gemini-2.5-flash"
+MODELS = {
+    DEFAULT_MODEL: "Gemini 2.5 Flash · recommended",
+    "gemini-2.5-flash-lite": "Gemini 2.5 Flash-Lite · faster alternative",
+}
+MAX_BYTES = 8 * 1024 * 1024
+MAX_PIXELS = 25_000_000
+
+PROMPT = """You are WasteLens, an image-based assistant for US household waste sorting.
+Focus on the item the person intends to sort, not the person's shirt or room.
+If there are multiple objects and no clear target, state that you are uncertain
+and ask which object they mean. An optional user-supplied object hint identifies
+the target but does not establish its material or disposal eligibility.
+Return the MOST SPECIFIC visible object name justified by the image (e.g.
+'insulated reusable water bottle', not 'metal'). Do not guess brands, coatings,
+battery chemistry, hidden contents, recycling symbols, or material types
+you cannot visually verify. Material might be 'unknown'.
+Prioritize safe reuse and repair over discarding an intact reusable item.
+Provide 2–4 feasible, concrete reuse ideas tailored to this exact object,
+or fewer if unsafe or irrelevant. Provide 2–5 concrete disposal/preparation
+steps specific to this item without asserting local curbside acceptance.
+If batteries, electronics, sharps, chemicals or hazardous content might be
+present, flag safe handling and require special collection or clarification.
+Do not instruct users to dismantle dangerous objects.
+Compost is conditional on exact food/material and local compost rules.
+Do not fabricate any recycling-center name, exact address, map result,
+certification, live policy, or environmental savings.
+Never claim local acceptance is known without verified location-specific data.
+Clearly state uncertainty when a photograph is insufficient.
+Avoid generic filler. Answer in concise everyday English."""
+
+class ItemAnalysis(BaseModel):
+    item_name: str = Field(description="Specific visible object, or 'Unidentified object'")
+    visual_description: str = Field(description="One sentence grounded in visible features")
+    material_guess: str = Field(description="Likely material, or unknown; qualify visual uncertainty")
+    identification: Literal["likely", "uncertain", "multiple_items"]
+    route: Literal["reuse_first", "check_recycling", "check_compost", "special_dropoff",
+                   "general_trash_check", "needs_identification"]
+    route_title: str
+    disposal_steps: list[str]
+    reuse_ideas: list[str]
+    cautions: list[str]
+    follow_up_question: str = Field(description="A useful question if identification or material is uncertain, otherwise empty")
+    location_helpful: bool = Field(description="True for material-specific collection or local acceptance checks")
+    collection_search_term: str = Field(description="Generic search terms for potential facilities, never a facility name; empty if unneeded")
+
+
+class InvalidPhoto(Exception):
+    pass
+
+
+class AIUnavailable(Exception):
+    def __init__(self, reason: str, status_code: int = 503):
+        self.reason = reason
+        self.status_code = status_code
+        super().__init__(reason)
+
+
+def configured() -> bool:
+    return bool(os.environ.get("GEMINI_API_KEY", "").strip())
+
+
+def prepare_photo(image_bytes: bytes) -> bytes:
+    if not image_bytes or len(image_bytes) > MAX_BYTES:
+        raise InvalidPhoto("Use a JPG, PNG or WebP photograph no larger than 8 MB.")
+    try:
+        image = Image.open(BytesIO(image_bytes))
+        image.load()
+        if image.width < 24 or image.height < 24 or image.width * image.height > MAX_PIXELS:
+            raise InvalidPhoto("Image dimensions are unsupported; use a photo under 25 megapixels.")
+        oriented = ImageOps.exif_transpose(image).convert("RGB")
+        oriented.thumbnail((1280, 1280), Image.Resampling.LANCZOS)
+        buf = BytesIO()
+        oriented.save(buf, format="JPEG", quality=85, optimize=True)
+        return buf.getvalue()
+    except InvalidPhoto:
+        raise
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
+        raise InvalidPhoto("The image could not be opened. Choose a valid JPG, PNG or WebP.") from exc
+
+
+def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> ItemAnalysis:
+    if model_id not in MODELS:
+        raise InvalidPhoto("Unsupported AI model selection.")
+    if len(object_hint) > 160:
+        raise InvalidPhoto("The object hint must be 160 characters or fewer.")
+    if not configured():
+        raise AIUnavailable("A Gemini API key is required. Add GEMINI_API_KEY to your local .env file.")
+    safe_jpeg = prepare_photo(image_bytes)
+    # Deliberately import lazily: app/tests work without the optional provider dependency.
+    try:
+        from google import genai
+        from google.genai import types
+        from google.genai.errors import APIError
+    except ImportError as exc:
+        raise AIUnavailable("Install the AI SDK with: pip install -r backend/requirements.txt") from exc
+
+    user_prompt = (
+        "Analyze the photographed object and suggest reuse and safe end-of-life handling. "
+        "This is a U.S. household item; local recycling policies have NOT been supplied. "
+        + ("Intended item description from user: " + object_hint if object_hint.strip() else
+           "If several objects are present, focus on the prominent object only when clear.")
+    )
+    try:
+        client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        response = client.models.generate_content(
+            model=model_id,
+            contents=[
+                types.Part.from_bytes(data=safe_jpeg, mime_type="image/jpeg"),
+                user_prompt,
+            ],
+            config=types.GenerateContentConfig(
+                system_instruction=PROMPT,
+                response_mime_type="application/json",
+                response_schema=ItemAnalysis,
+                temperature=0.2,
+                max_output_tokens=1800,
+            ),
+        )
+        if not response.text:
+            raise AIUnavailable("The AI did not return an item analysis. Try another clear photo.", 502)
+        analysis = ItemAnalysis.model_validate_json(response.text)
+    except APIError as exc:
+        code = getattr(exc, "code", None)
+        if code == 429:
+            raise AIUnavailable("Free-tier limit reached. Wait before trying another photo.", 429) from exc
+        if code in (400, 401, 403):
+            raise AIUnavailable("The Gemini API key, selected model, or project permissions need attention.", 502) from exc
+        raise AIUnavailable("The image analysis service is currently unavailable. Try again later.", 502) from exc
+    except (ValueError, ValidationError) as exc:
+        raise AIUnavailable("The AI returned an invalid result. Try analyzing the item again.", 502) from exc
+    except AIUnavailable:
+        raise
+    except Exception as exc:
+        raise AIUnavailable("Could not reach the AI provider. Check your connection and try again.", 502) from exc
+
+    # Do not manufacture a location or assume every item should be sent to a recycler.
+    if not analysis.location_helpful:
+        analysis.collection_search_term = ""
+    if analysis.identification != "likely":
+        analysis.route = "needs_identification"
+        analysis.route_title = "Confirm the item before disposing"
+        analysis.location_helpful = False
+        analysis.collection_search_term = ""
+    return analysis

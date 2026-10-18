@@ -1,74 +1,57 @@
-"""WasteLens local API. No model is loaded until first classification request."""
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from .inference import DEFAULT_MODEL_ID, InvalidImage, ModelUnavailable, decode_image, parse_crop_box, runner
-from .object_focus import DetectorUnavailable, detector_info, detect_objects
-from .guidance import CATEGORIES, guidance_for
+"""WasteLens's free-tier Gemini prototype API: image analysis, not local facility verification."""
+from pathlib import Path
+import os
 
-app = FastAPI(title="WasteLens AI API", version="0.1.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from starlette.concurrency import run_in_threadpool
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
+
+from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
+
+app = FastAPI(
+    title="WasteLens Vision AI",
+    version="0.2.0",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+)
+
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "service": "WasteLens local inference API"}
-
-@app.get("/api/models")
-def models():
-    return {"default_model_id": DEFAULT_MODEL_ID, "models": [vars(m) for m in runner.options()],
-            "notice": "Only checkpoint 2 has a reported notebook evaluation; no comparative benchmarking completed."}
-
-@app.get("/api/guidance/{material}")
-def material_guidance(material: str):
-    """Human-confirmed replacement for a wrong material prediction."""
-    if material not in CATEGORIES:
-        raise HTTPException(404, "Unknown material")
-    return {"material": material, "category": CATEGORIES[material], "guidance": guidance_for(material),
-            "notice": "Material selected by user, not inferred by an AI model. Verify local acceptance."}
+    return {"ok": True, "service": "WasteLens Gemini prototype"}
 
 
-@app.get("/api/detectors")
-def detectors():
-    return {"detectors": [detector_info()],
-            "notice": "Generic COCO object detector. May miss specific waste or return unrelated household objects."}
-
-
-@app.post("/api/detect")
-async def detect(image: UploadFile = File(...)):
-    if image.content_type not in {"image/jpeg", "image/png", "image/webp"}:
-        raise HTTPException(415, "Please upload a JPEG, PNG, or WebP image")
-    content = await image.read(8 * 1024 * 1024 + 1)
-    try:
-        img = decode_image(content)
-        found = detect_objects(img)
-        return {"width": img.width, "height": img.height, "detections": found,
-                "notice": "YOLO detects common objects, not all waste types. Select the intended item or draw a crop manually."}
-    except InvalidImage as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except DetectorUnavailable as exc:
-        raise HTTPException(503, str(exc)) from exc
-
-
-@app.post("/api/classify")
-async def classify(image: UploadFile = File(...), model_id: str = Form(DEFAULT_MODEL_ID), crop_box: str | None = Form(None)):
-    if image.content_type not in {"image/jpeg", "image/png", "image/webp"}:
-        raise HTTPException(415, "Please upload a JPEG, PNG, or WebP image")
-    content = await image.read(8 * 1024 * 1024 + 1)
-    try:
-        selected_crop = parse_crop_box(crop_box)
-        candidates = runner.predict(content, model_id, selected_crop)
-    except InvalidImage as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except ModelUnavailable as exc:
-        raise HTTPException(503, str(exc)) from exc
-    top = candidates[0]
-    label = str(top["label"])
-    # 0.70 is a conservative demo heuristic, NOT a calibrated threshold.
-    uncertain = float(top["score"]) < 0.70
+@app.get("/api/ai/status")
+def ai_status():
     return {
-        "model_id": model_id,
-        "image_region": "selected_object" if selected_crop is not None else "whole_photo",
-        "material": label,
-        "category": CATEGORIES[label],
-        "review_required": uncertain,
-        "top_predictions": candidates,
-        "guidance": guidance_for(label),
-        "notice": "Model scores are uncalibrated. Item identity and local disposal acceptance require human confirmation.",
+        "configured": configured(),
+        "default_model": DEFAULT_MODEL,
+        "models": [{"id": id, "name": name} for id, name in MODELS.items()],
+        "privacy_notice": "Photos are sent to Google's Gemini API only when you analyze them. Google's free tier may use content to improve its products.",
     }
+
+
+@app.post("/api/ai/analyze")
+async def ai_analyze(
+    image: UploadFile = File(...),
+    model_id: str = Form(DEFAULT_MODEL),
+    object_hint: str = Form(""),
+):
+    if image.content_type not in {"image/jpeg", "image/png", "image/webp"}:
+        raise HTTPException(415, "Upload a JPG, PNG or WebP image.")
+    if model_id not in MODELS:
+        raise HTTPException(400, "Unsupported AI model selection.")
+    if len(object_hint) > 160:
+        raise HTTPException(400, "Object hint must be at most 160 characters.")
+    payload = await image.read(MAX_BYTES + 1)
+    if len(payload) > MAX_BYTES:
+        raise HTTPException(413, "Photo must be 8 MB or smaller.")
+    try:
+        result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint)
+        return {"model_id": model_id, "analysis": result.model_dump(), "local_facilities_verified": False}
+    except InvalidPhoto as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except AIUnavailable as exc:
+        raise HTTPException(exc.status_code, exc.reason) from exc
