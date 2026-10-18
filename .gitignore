@@ -10,3 +10,7 @@ __pycache__/
 frontend/node_modules/
 frontend/dist/
 .DS_Store
+
+# Never commit personal camera evaluation images or per-image labels
+benchmark_photos/
+benchmark_results/

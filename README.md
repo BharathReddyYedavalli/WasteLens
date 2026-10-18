@@ -138,3 +138,21 @@ Restart the Python API, then refresh the React page. Photograph or upload an ite
 **Ultralytics' YOLO code and pretrained models are licensed AGPL-3.0 or under paid Enterprise terms.** WasteLens is otherwise MIT licensed, and the repository currently remains private. This branch is for exploratory local testing; the application licensing cannot automatically remain plain MIT if it incorporates Ultralytics under AGPL. Review https://www.ultralytics.com/license and resolve licensing and source disclosure requirements **before integrating/merging this optional module into a publicly deployed product**. Alternatives include an appropriately licensed detection model.
 
 Tests without installing YOLO use mocked detector responses, so passing CI validates API/cropping contracts but **not YOLO's true detection accuracy or real-world speed**.
+
+## Accuracy audit (before claiming the classifier works on phones)
+
+The checkpoint 2 notebook's internal evaluation reported 98.6%, but the training data did not cover arbitrary everyday items and used no augmentation in its final fine-tuning. The eight-way classifier always returns a trained class, even for items outside those classes. Scores are **not calibrated probabilities**.
+
+For independent evidence, place *new* correctly labeled camera images in your local `benchmark_photos/` directory, organized into folders named after the eight labels. Do not put images used for training in this folder. Add a `.crop.json` sidecar with normalized bounds if testing a crop. Examples:
+
+```text
+benchmark_photos/
+  metal/
+    aluminum_can_01.jpg
+  plastic/
+    empty_bottle_01.jpg
+```
+
+Run `python scripts/benchmark_camera_photos.py` from the project root after installing all four model checkpoints. The script writes a private CSV with image-level predictions, raw model scores and per-model accuracy on the **same** test photos. It does not improve the model by itself, and small samples do not prove accuracy. Keep personal photos private: these folders are git-ignored.
+
+The result page also lets a user correct a wrong material; this changes the associated guidance for that session, not the model. It should not be mistaken for an automated accuracy improvement.
