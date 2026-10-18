@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Award, CheckCircle2, Leaf, LockKeyhole, ScanLine, Sparkles, Trophy, Users } from "lucide-react";
 import type { LeaderboardResponse, SessionUser, WasteLensBadge } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
+import { useLanguage } from "./i18n";
 
 function Badge({ badge }: { badge: WasteLensBadge }) {
   return <div className={"reward-badge " + (badge.unlocked ? "unlocked" : "locked")}>
@@ -12,6 +13,7 @@ function Badge({ badge }: { badge: WasteLensBadge }) {
 }
 
 export default function Leaderboard({ user, onSignIn }: {user: SessionUser | null;onSignIn:()=>void}) {
+  const { t } = useLanguage();
   const [data, setData] = useState<LeaderboardResponse|null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -37,11 +39,11 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
   }
   return <section className="league-page">
     <div className="league-title"><span className="league-icon"><Trophy size={29}/></span>
-      <div><h1>Leaderboard</h1></div></div>
+      <div><h1>{t("Leaderboard")}</h1></div></div>
     {data?.me ? <>
       <div className="level-panel">
         <div className="level-top"><div><span className="level-label">YOUR PROGRESS</span>
-          <h2>Level {data.me.level}</h2></div>
+          <h2>{t("Level")} {data.me.level}</h2></div>
           <strong><Sparkles size={22}/>{data.me.xp.toLocaleString()} XP</strong>
         </div>
         <div className="level-track" role="progressbar" aria-label="Progress to next level"
@@ -51,18 +53,18 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
         <small className="level-next">{data.me.level_goal-data.me.level_progress} XP to level {data.me.level+1}</small>
       </div>
       <div className="league-stats">
-        <div><ScanLine size={21}/><strong>{data.me.scans}</strong><span>Scans</span></div>
-        <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>Actions logged</span></div>
-        <div><Award size={21}/><strong>{data.me.badges.filter(b => b.unlocked).length}</strong><span>Badges</span></div>
+        <div><ScanLine size={21}/><strong>{data.me.scans}</strong><span>{t("Scans")}</span></div>
+        <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>{t("Actions logged")}</span></div>
+        <div><Award size={21}/><strong>{data.me.badges.filter(b => b.unlocked).length}</strong><span>{t("Badges")}</span></div>
       </div>
-      <section className="badge-panel"><h2>Your badges</h2><div className="badge-grid">
+      <section className="badge-panel"><h2>{t("Your badges")}</h2><div className="badge-grid">
         {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
       </div></section>
     </> : <div className="league-guest"><Leaf size={32}/><h2>Join the challenge</h2>
       <p>Sign in to earn XP and collect badges as you scan.</p>
       <button className="button primary" type="button" onClick={onSignIn}>Sign in</button></div>}
     <section className="league-ranking">
-      <div className="league-ranking-heading"><div><h2>Top scanners</h2></div><Users size={25}/></div>
+      <div className="league-ranking-heading"><div><h2>{t("Top scanners")}</h2></div><Users size={25}/></div>
       {data?.leaders.length ? <div className="rank-list">{data.leaders.map(person=>
         <div key={person.rank} className={"rank-entry "+(person.is_you?"its-you":"")}>
           <span className="rank-number">{person.rank===1?"🏆":"#"+person.rank}</span>
@@ -73,11 +75,11 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       {data?.me && <div className="privacy-toggle"><div><strong>Show me on the leaderboard</strong>
         <p>{data.me.visible ? "Your display name and scores are visible to visitors." : "Your progress is private until you join."}</p></div>
         <button className={"button "+(data.me.visible?"outline":"primary")} type="button"
-          disabled={busy} onClick={()=>void toggle()}>{busy?"Saving…":data.me.visible?"Leave leaderboard":"Join leaderboard"}</button>
+          disabled={busy} onClick={()=>void toggle()}>{busy?"Saving…":data.me.visible?t("Leave leaderboard"):t("Join leaderboard")}</button>
       </div>}
     </section>
     <details className="league-rules">
-      <summary>How XP works</summary>
+      <summary>{t("How XP works")}</summary>
       <p>You earn {data?.rules.xp_per_scan ?? 20} XP for a new photo when the item is identified confidently.
       Up to {data?.rules.daily_limit ?? 10} rewarded scans a day. Scanning the same photo again earns nothing.
       Recycling actions are self reported. CO₂ savings cannot be measured from photos.</p>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { AlertCircle, BatteryCharging, Building2, LocateFixed, MapPin, Recycle } from "lucide-react";
 import MapPanel from "./MapPanel";
+import { useLanguage } from "./i18n";
 import type { FacilitySearchResponse } from "./types";
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
 type Filter = "all" | "centers" | "drop_off";
 
 export default function RecyclingResults({ results, selected, onSelect }: Props) {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<Filter>("all");
   const filtered = useMemo(() => results
     ? results.facilities.filter(place => filter === "all" ||
@@ -96,7 +98,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
       </div>
     </div>
     <details className="map-visit-info">
-      <summary>Before you go</summary>
+      <summary>{t("Before you go")}</summary>
       <p>Call to check whether the facility takes your item, its hours and any residency rules. Map locations may be approximate. Listings come from OpenStreetMap and city websites.</p>
     </details>
   </div>;

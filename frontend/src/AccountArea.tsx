@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, History, LockKeyhole, ShieldCheck, UserPlus } from "lucide-react";
 import type { SessionUser, SavedScan, AdminOverview, AdminUser, AdminFeedback } from "./types";
+import { useLanguage } from "./i18n";
 
 export const actionHeaders = { "Content-Type": "application/json", "X-WasteLens-Request": "1" };
 
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
+  const { t } = useLanguage();
   const [signup, setSignup] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -82,19 +84,19 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   if (!user) {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><UserPlus/></div>
-        <div><h2>{signup ? "Create your account" : "Sign in to WasteLens"}</h2>
+        <div><h2>{signup ? t("Create your account") : t("Sign in to WasteLens")}</h2>
           </div></div>
       <form className="auth-form" onSubmit={event => void authenticate(event)}>
-        {signup && <label>Display name<input value={name} required minLength={2} maxLength={80}
+        {signup && <label>{t("Display name")}<input value={name} required minLength={2} maxLength={80}
           onChange={event => setName(event.target.value)} autoComplete="name"/></label>}
-        <label>Email<input type="email" required value={email} onChange={event => setEmail(event.target.value)} autoComplete="email"/></label>
-        <label>Password<input type="password" required minLength={signup ? 10 : 1} maxLength={256}
+        <label>{t("Email")}<input type="email" required value={email} onChange={event => setEmail(event.target.value)} autoComplete="email"/></label>
+        <label>{t("Password")}<input type="password" required minLength={signup ? 10 : 1} maxLength={256}
           value={password} onChange={event => setPassword(event.target.value)}
           autoComplete={signup ? "new-password" : "current-password"}/></label>
-        <button className="button primary" disabled={busy}>{busy ? "Please wait…" : (signup ? "Sign up" : "Sign in")}</button>
+        <button className="button primary" disabled={busy}>{busy ? "Please wait…" : (signup ? t("Sign up") : t("Sign in"))}</button>
       </form>
       <button className="link-button" onClick={() => { setSignup(!signup); setError(""); }}>
-        {signup ? "Already have an account? Sign in" : "New here? Create an account"}
+        {signup ? t("Already have an account? Sign in") : t("New here? Create an account")}
       </button>
       <details className="account-privacy"><summary><LockKeyhole size={16}/> Your account and privacy</summary><p>Your password is securely hashed. Saved scans contain item results, not photos.</p></details>
       {error && <p className="inline-error" role="alert">{error}</p>}
@@ -104,7 +106,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   if (mode === "history") {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><History/></div>
-        <div><h2>My scans</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
+        <div><h2>{t("My scans")}</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       {scans.length === 0 && <p>Nothing here yet. Scan your first item to save it.</p>}
       <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
@@ -151,12 +153,12 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   }
 
   return <section className="account-card">
-    <h2>My account</h2>
+    <h2>{t("My account")}</h2>
     <p><strong>Name:</strong> {user.name}</p>
     <p><strong>Email:</strong> {user.email}</p>
     {user.role === "admin" && <p><strong>Role:</strong> Admin</p>}
     <details className="account-privacy"><summary><LockKeyhole size={16}/> Privacy</summary><p>Your results are saved to your account. We do not save photos.</p></details>
-    <button className="button outline" onClick={() => void logout()}>Sign out</button>
+    <button className="button outline" onClick={() => void logout()}>{t("Sign out")}</button>
     {error && <p className="inline-error" role="alert">{error}</p>}
   </section>;
 }
