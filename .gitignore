@@ -1,0 +1,12 @@
+# downloaded model weights, logs and credentials
+models/
+.env
+.env.*
+!.env.example
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+frontend/node_modules/
+frontend/dist/
+.DS_Store

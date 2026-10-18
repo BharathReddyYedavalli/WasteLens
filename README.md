@@ -1,72 +1,122 @@
 # WasteLens
 
-**Planning stage · 2026 Congressional App Challenge**
+**Early prototype — photo-based waste classification for the Congressional App Challenge 2026.**
 
-WasteLens is a proposed camera-first waste-sorting web application that helps people answer three practical questions: **What is this item? Where should it go? And where can I take it if special collection is needed?**
+WasteLens is a camera-first website that helps people answer **what material is this?**, **how should I handle it?**, and **where can I find a suitable collection option?** It reuses the trained MobileNetV3 research models from [Garbage-Crew](https://github.com/BharathReddyYedavalli/Garbage-Crew) without modifying that original repository.
 
-This is a **separate repository** inspired by the existing [Garbage-Crew robotics project](https://github.com/BharathReddyYedavalli/Garbage-Crew). The original project will not be modified.
+The user experience is inspired by GreenByte: a large camera panel, clear sorting results, disposal tips, creative reuse ideas and optional nearby collection search. The interface uses **Poppins**.
 
-> **Status:** This README describes planned features only. There is no application code or working WasteLens web service yet.
+## Current implementation
 
-## Why build it?
+- Live browser camera with permission request, capture button and upload fallback; responsive mobile/desktop layout.
+- Model dropdown with four original model variants: MobileNetV3 checkpoints 1, 2, 3, and quantized TorchScript.
+- A Python FastAPI endpoint actually runs the selected **trusted** model on uploaded images. No fake inference results.
+- Shows one of eight **material classes** (battery, glass, metal, organic waste, paper/cardboard, plastic, textiles, trash), uncalibrated model score and alternate material possibilities.
+- Conditional disposal/reuse guidelines with U.S. EPA links and conservative hazardous-material handling.
+- Optional Google Maps location **search** (not a verified nearest-site or confirmed acceptance finder); not shown for normal trash or home-compost suggestions.
+- No accounts, saved history, local-recycling eligibility database, exact object detector, or actual real-time YOLO processing yet.
 
-Recycling programs vary by community and material. A visual recognition model alone cannot determine if a particular item is accepted in a curbside bin. WasteLens aims to connect image classification with local, material-specific disposal guidance and clear uncertainty.
+## Get started (Windows/macOS/Linux)
 
-## Planned user experience
+Requires: Node.js 22+, Python 3.11+; Python packages below. CUDA is **not** required; initial model runs on CPU.
 
-1. **Scan:** Open the camera (or upload a photo) and capture one item.
-2. **Identify:** Run a waste-image model and show the predicted material class, model score, and a correction control. Do not label the result as an exact object unless a separate item model supports it.
-3. **Sort:** Show a provisional disposal route: compost, local curbside recycling, special collection, reuse/donation, or trash. Safety and local collection rules override naive class-to-bin mappings.
-4. **Find nearby collection:** Ask for approximate location/ZIP code only when needed; show genuine candidate facilities and verify material acceptance before recommending a drop-off. Provide a map/directions link.
-5. **Track (later):** Let the user confirm how the item was disposed of, and optionally save history and badges.
+**1. Clone the new repo**
 
-The default experience should avoid unnecessary location prompts for general trash or household composting.
+```bash
+git clone https://github.com/BharathReddyYedavalli/WasteLens.git
+cd WasteLens
+```
 
-## Existing machine-learning foundation
+If you are reviewing a pull request, check out the relevant feature branch first.
 
-The read-only [Garbage-Crew repository](https://github.com/BharathReddyYedavalli/Garbage-Crew) contains:
+**2. Download your best-documented model**
 
-- Fine-tuned **MobileNetV3** PyTorch image classifier for eight classes: battery, glass, metal, organic_waste, paper_cardboard, plastic, textiles, and trash.
-- TorchScript and quantized model files, plus optional YOLO object detection.
-- Raspberry Pi camera and mechanical waste-sorting controller code, which are **not required** for the website.
-- A training notebook reporting **98.6% accuracy on an internal 1,600-image evaluation set**. This result is not yet validated on diverse real-world phone or webcam images, so it must not be advertised as general camera accuracy.
+```bash
+python scripts/download_models.py
+```
 
-**Important:** Eight material labels do not identify an exact item such as "soda can" or "plastic bottle." Specific-object recognition is a separate research and engineering task.
+This downloads **checkpoint 2** (~17 MB) from the public Garbage-Crew repository and checks its Git blob SHA-1 against the original committed file. To enable all four dropdown choices:
 
-## Candidate technical architecture
+```bash
+python scripts/download_models.py --all
+```
 
-- **Frontend:** React, TypeScript and Vite; web camera using browser `getUserMedia`, with photo upload fallback.
-- **Typography:** **Poppins**, with lively green/white color palette, legible UI and polished restrained animations.
-- **Initial model API:** Python FastAPI with PyTorch/TorchScript loading the existing MobileNetV3 classifier.
-- **Possible alternative:** Convert and verify ONNX model for `onnxruntime-web` on-device inference after the API pipeline is working.
-- **Disposal data:** Source-backed material guidance with region-specific acceptance and safe handling.
-- **Collection discovery:** Explore Google Places and/or verified municipal/industry directories. A place being called a "recycling center" does not prove it accepts a specific item.
-- **Maps:** Directions link only to real places.
+These downloads are **read-only**: the Garbage-Crew repository is never edited, and checkpoint files are ignored by git in WasteLens. If direct downloads are blocked, clone Garbage-Crew next to WasteLens and set the environment variable `WASTELENS_MODEL_DIR` to its `models` folder before starting the API. Only use weights you trust.
 
-All provider, cost, model-conversion and deployment decisions remain unconfirmed until tested.
+**3. Start the Python AI server** (terminal 1)
 
-## Safety and scientific limitations
+```bash
+python -m venv .venv
+```
 
-- Always offer "not sure" and a user correction control; softmax confidence is not guaranteed to be calibrated.
-- Never automatically route lithium-ion or other potentially hazardous batteries to household bins; verify chemistry and consult [U.S. EPA guidance](https://www.epa.gov/recycle/used-household-batteries).
-- Plastic and glass recyclability depends on local programs, not material appearance alone.
-- Food scraps, meat, compostable packaging and household compost systems can have different requirements; do not assume all organic waste is suitable for home composting.
-- No invented facilities, disposal actions, environmental savings, model accuracy, or claimed local acceptance.
-- All inferred item labels and recommendations require testing and source attribution.
+Activate the environment:
 
-## Planned milestones (nothing built yet)
+- **Windows PowerShell:** `.\.venv\Scripts\Activate.ps1`
+- **macOS/Linux:** `source .venv/bin/activate`
 
-1. Camera and upload interface.
-2. Actual MobileNetV3 inference with unit, integration and independent photo tests.
-3. Clear prediction cards with calibrated uncertainty/manual corrections.
-4. Local disposal rules and recycler/donation/hazardous-drop-off finder.
-5. Personal history, badges and optional community features.
-6. Production deployment and mobile usability testing.
+Then:
 
-## Licensing
+```bash
+pip install -r backend/requirements.txt
+python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
+```
 
-WasteLens source is intended to be MIT licensed. The original Garbage-Crew project, training data, third-party software, models, fonts and map services each retain their own applicable licenses and attribution obligations. Nothing from the original repository has been copied into WasteLens.
+Verify at `http://127.0.0.1:8000/api/health` or `http://127.0.0.1:8000/api/docs`.
 
-## Development rule
+**4. Start the React frontend** (terminal 2)
 
-Build and verify each feature end-to-end before starting the next. Do not display mocked classifications, made-up recycling facilities or incomplete placeholder screens as real results.
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the exact `Local:` URL Vite prints (typically `http://localhost:5173`). Do not close either terminal. Vite proxies `/api` requests to the Python server at port 8000.
+
+**5. Test**
+
+1. Open the camera or upload a real image.
+2. Select "MobileNetV3 · evaluated checkpoint 2" (default).
+3. Click **Identify item** and observe an actual model result.
+4. Check the disposal guidance and, if relevant, enter a ZIP code for a maps search.
+5. Test a few different waste photos and an unfamiliar/non-waste photo. Report misclassifications — don't assume the model is always correct.
+
+```bash
+cd backend
+python -m pytest -q
+cd ../frontend
+npm run build
+```
+
+## Checkpoint accuracy and model selection
+
+The original training notebook reports approximately **98.6%** on an internal evaluation set of **1,600 images**, corresponding to checkpoint **2**. This is **not** verified out-of-distribution accuracy and does **not** prove that checkpoint 2 outperforms checkpoint 1, checkpoint 3, or the quantized checkpoint. Checkpoint 2 is the **best-documented** option, not yet the scientifically confirmed highest-performing option. We will compare all four on the *same independent, real-world* photo set before assigning a 'best' label.
+
+YOLO weights in Garbage-Crew are generic detection checkpoints; they aren't a substitute for the eight-class waste image classifier and are intentionally excluded from this model-selection dropdown for now.
+
+## Technical design and limitations
+
+- Preprocessing matches the original classifier's **224×224 RGB resize and ImageNet normalization**. Photos are sent to the locally running API for inference, not saved to a database.
+- The backend loads full-precision checkpoints using `torch.load(..., weights_only=False)`. This can execute code from pickled model files, so it is restricted to trusted first-party weights downloaded with integrity checks. **Never load user-uploaded model weights.**
+- Images over 8 MB or with invalid/corrupt formats are rejected. The model predicts **material**, not specific item identity, recycling acceptance, battery chemistry, or hazardous ingredients.
+- Softmax is an **uncalibrated** score, not a validated probability. The demo warns at a raw score below 70%; this is a heuristic, not a proven safety threshold.
+- Recycler searches open Google Maps with the user-supplied city/ZIP and material keywords. **No facility is presented as verified**, and users must confirm material acceptance before visiting.
+- Home composting and ordinary trash do not automatically trigger location requests.
+- Location policies, take-back offerings, model behavior, usage limits and real-world camera support must be tested before public claims.
+
+## Roadmap
+
+1. Verify every model with cross-platform real photos, benchmark confidence and latency, choose highest-performing default **based on evidence**.
+2. Improve exact-object identification using explicitly trained classes or human-confirmed labels.
+3. Integrate a verified, material-specific U.S. recycling-location dataset/API and local curbside rules.
+4. Add account-optional disposal tracking and badges based on user-confirmed actions.
+5. Deploy API/frontend over HTTPS and test mobile cameras on iOS/Android.
+
+## Attributions
+
+- Original ML + robotics: [Garbage-Crew](https://github.com/BharathReddyYedavalli/Garbage-Crew) (MIT, separate project).
+- U.S. EPA reference guidance: [How Do I Recycle Common Recyclables?](https://www.epa.gov/recycle/how-do-i-recycle-common-recyclables), [Used Household Batteries](https://www.epa.gov/recycle/used-household-batteries), [Composting at Home](https://www.epa.gov/recycle/composting-home).
+- Poppins typography is loaded via Google Fonts and subject to its font license; no font binaries are redistributed by this repository.
+- This application uses AI coding assistance. Disclose assistance accurately in competition materials.
+
+Licensed under MIT (see `LICENSE`).
