@@ -16,6 +16,7 @@ CHECKPOINTS = {
     "mobilenetv3_garbage_classifier_3.pt": "6a49c2c4071293a86c067abe4c9b1410119eae8e",
     "mobilenetv3_quantized_scripted.pt": "802cbdfc03c72ec13b3d65d8c0c5168dbd4a7cec",
 }
+DETECTORS = {"yolo11n.pt": "45b273b46165267f2d4c90df94468b547f43cf67"}
 OUTPUT = Path(__file__).resolve().parents[1] / "models"
 
 def git_blob_sha(content: bytes) -> str:
@@ -42,7 +43,11 @@ def download(name: str, sha: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--all", action="store_true", help="Download all classifier versions for dropdown comparison")
+    parser.add_argument("--detector", action="store_true", help="Download optional YOLO11n object detector")
     args = parser.parse_args()
-    names = CHECKPOINTS if args.all else {next(iter(CHECKPOINTS)): next(iter(CHECKPOINTS.values()))}
+    names = (CHECKPOINTS if args.all else
+             {} if args.detector else {next(iter(CHECKPOINTS)): next(iter(CHECKPOINTS.values()))})
+    if args.detector:
+        names = {**names, **DETECTORS}
     for filename, checksum in names.items():
         download(filename, checksum)

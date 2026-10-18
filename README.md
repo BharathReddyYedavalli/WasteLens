@@ -120,3 +120,21 @@ YOLO weights in Garbage-Crew are generic detection checkpoints; they aren't a su
 - This application uses AI coding assistance. Disclose assistance accurately in competition materials.
 
 Licensed under MIT (see `LICENSE`).
+## Optional: isolate the photographed object with YOLO11n
+
+The `feat/yolo-object-focus` branch adds **optional** object localization before the existing eight-material MobileNetV3 classifier. Nothing is auto-selected; the user can choose a YOLO-detected bounding box or draw a manual crop. If the detector misses an object, the full-photo classifier still works. The YOLO box is **not background segmentation**, and COCO object classes do not include all waste items.
+
+Install the additional Python package into the *same active virtual environment*:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements-detection.txt
+python scripts/download_models.py --detector
+```
+
+Restart the Python API, then refresh the React page. Photograph or upload an item, select **Find objects (YOLO)** and choose a detection, or **Select area manually** and drag a rectangle. Click **Identify item**. The Python backend crops the original, correctly oriented photo before resizing to 224×224 for MobileNetV3.
+
+### Licensing warning: important before deployment
+
+**Ultralytics' YOLO code and pretrained models are licensed AGPL-3.0 or under paid Enterprise terms.** WasteLens is otherwise MIT licensed, and the repository currently remains private. This branch is for exploratory local testing; the application licensing cannot automatically remain plain MIT if it incorporates Ultralytics under AGPL. Review https://www.ultralytics.com/license and resolve licensing and source disclosure requirements **before integrating/merging this optional module into a publicly deployed product**. Alternatives include an appropriately licensed detection model.
+
+Tests without installing YOLO use mocked detector responses, so passing CI validates API/cropping contracts but **not YOLO's true detection accuracy or real-world speed**.

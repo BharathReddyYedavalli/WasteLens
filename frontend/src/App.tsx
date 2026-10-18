@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Camera, CheckCircle2, ChevronDown, CircleHelp, ExternalLink, ImagePlus, Leaf, MapPin, Recycle, RotateCcw, Search, ShieldAlert, X } from "lucide-react";
-import type { Classification, ModelCatalog } from "./types";
+import type { Classification, ModelCatalog, CropRegion } from "./types";
+import ObjectFocus from "./ObjectFocus";
 
 const label = (s: string) => s.replaceAll("_", " ").replace(/\b\w/g, l => l.toUpperCase());
 const defaultModel = "mobilenetv3-v2";
@@ -21,6 +22,7 @@ export default function App() {
   const [cameraError, setCameraError] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [result, setResult] = useState<Classification | null>(null);
+  const [crop, setCrop] = useState<CropRegion | null>(null);
   const [inferenceError, setInferenceError] = useState("");
   const [busy, setBusy] = useState(false);
   const [location, setLocation] = useState("");
@@ -50,7 +52,7 @@ export default function App() {
     setCamera(false);
   }
   async function startCamera() {
-    setCameraError(""); setInferenceError(""); setResult(null); setPreview(null); setCorrected(false);
+    setCameraError(""); setInferenceError(""); setResult(null); setPreview(null); setCrop(null); setCorrected(false);
     if (!navigator.mediaDevices?.getUserMedia) { setCameraError("Camera is unavailable in this browser. Use HTTPS, localhost, or upload a photo."); return; }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
@@ -66,7 +68,7 @@ export default function App() {
       setInferenceError("Choose a JPEG, PNG, or WebP photo smaller than 8 MB."); return;
     }
     stopCamera();
-    setResult(null); setInferenceError(""); setCorrected(false);
+    setResult(null); setCrop(null); setInferenceError(""); setCorrected(false);
     setPreview(previous => { if (previous) URL.revokeObjectURL(previous.src); return { file, src: URL.createObjectURL(file) }; });
   }
   function onUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -87,6 +89,7 @@ export default function App() {
     try {
       const form = new FormData();
       form.append("image", preview.file); form.append("model_id", selectedModel);
+      if (crop) form.append("crop_box", JSON.stringify(crop.box));
       const response = await fetch("/api/classify", { method: "POST", body: form });
       const body = await response.json();
       if (!response.ok) throw new Error(typeof body.detail === "string" ? body.detail : "Could not analyze the image");
@@ -98,7 +101,7 @@ export default function App() {
   function reset() {
     stopCamera();
     setPreview(prev => { if (prev) URL.revokeObjectURL(prev.src); return null; });
-    setResult(null); setInferenceError(""); setCameraError(""); setCorrected(false);
+    setResult(null); setCrop(null); setInferenceError(""); setCameraError(""); setCorrected(false);
   }
   const installed = catalog?.models.filter(m => m.available) ?? [];
   const activeModel = catalog?.models.find(m => m.id === selectedModel);
@@ -122,11 +125,10 @@ export default function App() {
       </div>
       <div className="workspace">
         <div className="workspace-head"><div className="head-with-icon"><div className="round-icon"><Camera size={19}/></div><div><h2>Identifier</h2><p>Show one item clearly in the frame</p></div></div><span className="step-label">STEP 01 / IDENTIFY</span></div>
-        <div className="camera-stage">
-          {camera ? <video ref={videoRef} autoPlay muted playsInline aria-label="Live camera preview" /> :
-           preview ? <img src={preview.src} alt="Waste item uploaded or captured for classification" /> :
-           <div className="camera-empty"><div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div><h3>Your camera is ready</h3><p>Start your camera or upload an image of the item you want to sort.</p></div>}
-        </div>
+        {preview ? <ObjectFocus key={preview.src} src={preview.src} file={preview.file}
+          crop={crop} disabled={busy} onChange={next => {setCrop(next);setResult(null);setInferenceError("");}} /> :
+          <div className="camera-stage">{camera ? <video ref={videoRef} autoPlay muted playsInline aria-label="Live camera preview" /> :
+            <div className="camera-empty"><div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div><h3>Your camera is ready</h3><p>Start your camera or upload an image of the item you want to sort.</p></div>}</div>}
         <div className="camera-controls">
           <input hidden ref={uploadRef} accept="image/jpeg,image/png,image/webp" type="file" onChange={onUpload} aria-label="Upload waste photo" />
           {!preview && !camera && <><button className="button primary" onClick={() => void startCamera()}><Camera size={17}/> Open camera</button><button className="button outline" onClick={() => uploadRef.current?.click()}><ImagePlus size={17}/> Upload photo</button></>}
@@ -141,7 +143,7 @@ export default function App() {
       </div>
       {result && <section className="results" aria-live="polite">
         <span className="eyebrow">YOUR RESULTS</span>
-        <div className="result-title"><div><h2>{label(result.material)}</h2><p>AI material prediction · {result.top_predictions[0]?.score ? Math.round(result.top_predictions[0].score*100) : 0}% uncalibrated model score</p></div><span className="type-badge"><Recycle size={16}/>{result.category}</span></div>
+        <div className="result-title"><div><h2>{label(result.material)}</h2><p>AI material prediction · {result.top_predictions[0]?.score ? Math.round(result.top_predictions[0].score*100) : 0}% uncalibrated model score · {result.image_region === "selected_object" ? "Selected object crop" : "Entire photograph"}</p></div><span className="type-badge"><Recycle size={16}/>{result.category}</span></div>
         {result.review_required ? <div className="uncertain"><ShieldAlert size={18}/> Low model certainty — verify this item before following the suggestions.</div> : <p className="result-caution">The predicted material isn't proof of the exact item or that it can go in your curbside bin.</p>}
         <div className="stack">
           <article className="result-card orange"><h3><Recycle size={20}/> How to dispose properly</h3><strong>{result.guidance.headline}</strong><ul>{result.guidance.instructions.map(s=><li key={s}>{s}</li>)}</ul><p className="warning">{result.guidance.caution}</p><a target="_blank" rel="noreferrer" href={result.guidance.source_url}>Read U.S. EPA guidance <ExternalLink size={14}/></a></article>
