@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
 import MapPanel from "./MapPanel";
+import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 
 type PhotoPreview = { file: File; src: string };
@@ -26,7 +27,7 @@ export default function App() {
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [view, setView] = useState<"identifier" | "account" | "history" | "admin">("identifier");
+  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
@@ -226,13 +227,27 @@ export default function App() {
   return <div className="site">
     <header className="topbar">
       <button type="button" className="brand" onClick={() => setView("identifier")}><Leaf size={26} strokeWidth={2.5}/><strong>WasteLens</strong></button>
-      <nav className="top-nav" aria-label="WasteLens navigation">
-        <button className={view === "identifier" ? "active" : ""} onClick={() => setView("identifier")}><Camera size={15}/> Identifier</button>
-        <button className={view === "history" ? "active" : ""} onClick={() => setView("history")}><History size={15}/> My History</button>
-        {user?.role === "admin" && <button className={view === "admin" ? "active" : ""} onClick={() => setView("admin")}><ShieldCheck size={15}/> Admin</button>}
-        <button className={view === "account" ? "active" : ""} onClick={() => setView("account")}><UserRound size={15}/> {user ? user.name : "Sign In / Sign Up"}</button>
-      </nav>
+      <span className="brand-desc">See it. Sort it. Sustain it.</span>
     </header>
+    <div className="site-layout">
+      <aside className="side-nav" aria-label="WasteLens navigation">
+        <div className="side-nav-title">WASTELENS TOOLS</div>
+        <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"} aria-current={view === "identifier" ? "page" : undefined}
+          onClick={() => { stopCamera(); setView("identifier"); }}><ScanLine size={18}/> AI Identifier</button>
+        <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"} aria-current={view === "chat" ? "page" : undefined}
+          onClick={() => { stopCamera(); setView("chat"); }}><MessageCircle size={18}/> Ask WasteLens</button>
+        <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"} aria-current={view === "finder" ? "page" : undefined}
+          onClick={() => { stopCamera(); setView("finder"); }}><MapPin size={18}/> Nearby Centers</button>
+        <button type="button" className={view === "history" ? "nav-item active" : "nav-item"} aria-current={view === "history" ? "page" : undefined}
+          onClick={() => { stopCamera(); setView("history"); }}><History size={18}/> My History</button>
+        {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
+          onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={18}/> Admin</button>}
+        <div className="side-nav-bottom">
+          <button type="button" className={view === "account" ? "nav-item active" : "nav-item"}
+          onClick={() => { stopCamera(); setView("account"); }}><UserRound size={18}/> {user ? user.name : "Sign In / Sign Up"}</button>
+        </div>
+      </aside>
+      <div className="page-content">
     <main id="home" className="shell">
       {view === "identifier" ? <>
       <div className="intro">
@@ -314,6 +329,9 @@ export default function App() {
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
         <div className="material-line"><strong>Likely material:</strong> {analysis.material_guess}</div>
+        <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
+          <MessageCircle size={17}/> Ask WasteLens about this item
+        </button>
         {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
         {analysis.follow_up_question && <div className="question"><strong>One thing to check:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
@@ -384,13 +402,50 @@ export default function App() {
           </article>
         </div>
       </section>}
-      </> : <AccountArea user={user} mode={view}
+      </> : view === "finder" ? <section className="finder-screen">
+        <span className="eyebrow">NEARBY DROP-OFF OPTIONS</span>
+        <h1><MapPin size={28}/> Nearby Recycling Centers</h1>
+        <p>Search for possible recycling facilities by US ZIP code. Click a result or a pin to view its details without leaving WasteLens.</p>
+        <div className="finder-card">
+          <form className="finder-form" onSubmit={event => void searchFacilities(event)}>
+            <label htmlFor="sidebar-zip">ZIP code</label>
+            <input id="sidebar-zip" aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
+              placeholder="Enter 5-digit ZIP, e.g. 75063" value={location}
+              onChange={event => setLocation(event.target.value)}/>
+            <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
+          </form>
+          {facilityError && <ErrorText message={facilityError}/>}
+          {facilities && <div className="map-search-results">
+            <div className="facility-list" aria-label="Nearby mapped collection locations">
+              <h4>{facilities.facilities.length} potential locations near {facilities.location_label}</h4>
+              {facilities.facilities.length === 0 && <p>No locations returned. This does not mean none exist.</p>}
+              {facilities.facilities.map(place => <button type="button" key={place.id}
+                className={"facility-item " + (selectedFacility === place.id ? "selected" : "")}
+                onClick={() => setSelectedFacility(place.id)}>
+                <strong>{place.name}</strong>
+                <span>{place.address}</span>
+                <span>{place.distance_miles.toFixed(1)} miles from ZIP center</span>
+                {place.tagged_materials.length > 0 && <span>OSM tags: {place.tagged_materials.join(", ")}</span>}
+                {selectedFacility === place.id && <small>Acceptance and hours are not verified. Contact the facility first.</small>}
+              </button>)}
+            </div>
+            <MapPanel data={facilities} selected={selectedFacility} onSelect={setSelectedFacility}/>
+          </div>}
+          <p className="finder-note">OpenStreetMap community data. ZIP-center distances are approximate. Listed facilities may not accept your particular item.</p>
+        </div>
+      </section> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
+      <div hidden={view !== "chat"}>
+        <AskWasteLens scan={analysis ?? null} model={model} configured={Boolean(status?.configured)}
+          onScan={() => setView("identifier")}/>
+      </div>
       <footer>
         <span>WasteLens · Experimental vision AI prototype</span>
         <span>Disposal advice is provisional; local rules and item condition matter.</span>
       </footer>
     </main>
+      </div>
+    </div>
   </div>;
 }

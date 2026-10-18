@@ -13,6 +13,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 from .accounts import bootstrap_admin, get_user, initialize, record_scan, router as account_router
 from .places import router as places_router
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
+from .chat import ChatRequest, answer_chat
 
 
 @asynccontextmanager
@@ -81,3 +82,20 @@ async def ai_analyze(
         raise HTTPException(400, str(exc)) from exc
     except AIUnavailable as exc:
         raise HTTPException(exc.status_code, exc.reason) from exc
+
+
+@app.post("/api/ai/chat")
+async def ai_chat(payload: ChatRequest):
+    if payload.model_id not in MODELS:
+        raise HTTPException(400, "Unsupported AI model selection.")
+    if not payload.question.strip():
+        raise HTTPException(400, "Ask a question before sending.")
+    try:
+        answer = await run_in_threadpool(answer_chat, payload)
+        return {"answer": answer, "model_id": payload.model_id,
+                "context_used": payload.scan is not None,
+                "local_facilities_verified": False}
+    except AIUnavailable as exc:
+        raise HTTPException(exc.status_code, exc.reason) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
