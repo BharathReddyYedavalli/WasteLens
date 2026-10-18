@@ -501,3 +501,8 @@ footer span:first-child {font-family:"Fredoka","Nunito",sans-serif;font-size:17p
   html {scroll-behavior:auto;}
   *,*::before,*::after {animation:none!important;transition:none!important;}
 }
+
+/* Keep the free-tier photo disclosure visible before the camera is submitted. */
+.photo-privacy-summary {display:flex;gap:9px;align-items:flex-start;max-width:700px;margin:15px auto 0;color:#3a6248;font-size:13px;line-height:1.6;font-weight:700;}
+.photo-privacy-summary svg {color:#4e8561;flex-shrink:0;margin-top:1px;}
+.privacy-details {margin-top:0;}

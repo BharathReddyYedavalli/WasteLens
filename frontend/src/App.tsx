@@ -319,9 +319,10 @@ export default function App() {
             </div>
           </div>
         </details>
+        <div className="photo-privacy-summary"><ShieldAlert size={16}/> When you identify an item, its photo goes to Google Gemini. Google's free tier may use photos to improve its products.</div>
         <details className="privacy-details">
-          <summary><ShieldAlert size={16}/> How your photo is handled <ChevronDown size={15}/></summary>
-          <p>Your photo is sent to Google Gemini when you select Identify item. Google may use free tier content to improve its products. Avoid faces and private details. WasteLens does not store your photo. {user ? "Your item results are saved to your account." : "Sign in if you'd like to save your results."}</p>
+          <summary>More about photo privacy <ChevronDown size={15}/></summary>
+          <p>Avoid faces and personal details in your photos. WasteLens does not save the photo. {user ? "Your item results are saved to your account." : "Sign in if you want to save your item results."}</p>
         </details>
         {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>No API key configured. Add <code>GEMINI_API_KEY</code> to the root <code>.env</code> file and restart the Python backend.</span></div>}
         {statusError && <ErrorText message={statusError}/>}
