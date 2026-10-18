@@ -222,3 +222,31 @@ reliable licensed points of interest source or regularly updated offline data.
 The backend uses a logging warning for external provider request errors
 to help diagnose firewalls, timeouts and HTTP error codes in the terminal.
 No Google Maps billing or additional API key is used.
+
+
+## XP, badges and Leaderboard
+
+Feature branch `feat/leaderboard-xp-badges` provides:
+
+* XP for a newly recognized photo on a signed-in account (20 XP when the
+  item is confidently identified, at most 10 rewarded scans per UTC day).
+  Duplicate photo uploads, unidentified objects and guest scans earn no XP.
+  A user-scoped image digest prevents repeat rewards without storing photos.
+* Persistent progress and level every 100 XP, with badges earned after
+  1, 5, 10, 25 and 50 rewarded scans.
+* Leaderboard privacy **off by default**. Users must opt in to publish only
+  their chosen display name, level, XP, scan counts, and self-reported action
+  count. Email, ZIP codes, scan results and photos are never published.
+* A single self-reported outcome per scan: recycled, reused, composted or
+  donated. Revising the outcome updates the one activity record and awards
+  **no extra XP**. It is an honor-system record, not verification.
+* No false carbon-impact estimates. CO₂ saved is explicitly shown as
+  **Not measured** until defensible material, weight and processing data
+  are available. Scanning is not assumed to mean recycling.
+* Safe database upgrade on restart, preserving historical scans and users.
+  Historical scans remain visible, but scans made before XP was added do
+  not retroactively earn points because no photo hashes existed for de-duplication.
+
+The homepage intro and repeated instruction text were shortened. A concise
+photo privacy notice remains visible because the Gemini free tier may use
+submitted image content for service improvement.

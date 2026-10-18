@@ -34,7 +34,7 @@ export type VisionResponse = {
   model_id: string;
   analysis: ItemAnalysis;
   local_facilities_verified: false;
-  scan_id: number | null;
+  scan_id: number | null; earned_xp?: number;
 };
 
 export type SessionUser = { id: number; name: string; email: string; role: "user" | "admin" };
@@ -64,3 +64,8 @@ export type FacilitySearchResponse = {
   listing_status: "ok" | "no_results" | "partial" | "unavailable";
   radius_miles: number;
 };
+
+export type WasteLensBadge = {id:string;name:string;description:string;threshold:number;unlocked:boolean};
+export type LeaderboardPerson = {rank:number;name:string;xp:number;level:number;scans:number;actions:number;badges:number;is_you:boolean};
+export type MyProgress = {scans:number;rewarded_scans:number;xp:number;actions:number;level:number;level_progress:number;level_goal:number;visible:boolean;badges:WasteLensBadge[];carbon_kg:number|null};
+export type LeaderboardResponse = {leaders:LeaderboardPerson[];me:MyProgress|null;rules:{xp_per_scan:number;daily_limit:number;note:string}};

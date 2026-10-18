@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
 import RecyclingResults from "./RecyclingResults";
 import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
+import Leaderboard from "./Leaderboard";
 
 type PhotoPreview = { file: File; src: string };
 const initialModel = "gemini-3.8-flash";
@@ -27,7 +28,7 @@ export default function App() {
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin">("identifier");
+  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
@@ -37,6 +38,9 @@ export default function App() {
   const [correction, setCorrection] = useState("");
   const [feedbackError, setFeedbackError] = useState("");
   const [feedbackBusy, setFeedbackBusy] = useState(false);
+  const [recordedAction, setRecordedAction] = useState("");
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -101,6 +105,8 @@ export default function App() {
     setFeedbackSent(null);
     setCorrectChoice(null);
     setFeedbackError("");
+    setRecordedAction("");
+    setActionError("");
   }
 
   async function startCamera() {
@@ -172,6 +178,8 @@ export default function App() {
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Analysis failed");
       setResult(data as VisionResponse);
+      setRecordedAction("");
+      setActionError("");
       setFeedbackSent(null);
       setCorrectChoice(null);
       setFeedbackError("");
@@ -225,6 +233,21 @@ export default function App() {
     } finally { setFeedbackBusy(false); }
   }
 
+  async function markAction(action: string) {
+    if (!result?.scan_id || !user || actionBusy) return;
+    setActionBusy(true);
+    setActionError("");
+    try {
+      await readJson(await fetch("/api/scans/" + result.scan_id + "/action", {
+        method: "POST", headers: actionHeaders, credentials: "same-origin",
+        body: JSON.stringify({action}),
+      }));
+      setRecordedAction(action);
+    } catch (reason) {
+      setActionError(reason instanceof Error ? reason.message : "Could not save that action.");
+    } finally {setActionBusy(false);}
+  }
+
   const analysis = result?.analysis;
   return <div className="site">
     <header className="topbar">
@@ -242,6 +265,8 @@ export default function App() {
           onClick={() => { stopCamera(); setView("finder"); }}><MapPin size={19}/> Find a drop off</button>
         <button type="button" className={view === "history" ? "nav-item active" : "nav-item"} aria-current={view === "history" ? "page" : undefined}
           onClick={() => { stopCamera(); setView("history"); }}><History size={19}/> My scans</button>
+        <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"} aria-current={view === "leaderboard" ? "page" : undefined}
+          onClick={() => { stopCamera(); setView("leaderboard"); }}><Trophy size={19}/> Leaderboard</button>
         {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
           onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={19}/> Admin</button>}
         <div className="side-nav-bottom">
@@ -255,7 +280,7 @@ export default function App() {
       <div className="intro">
         <div className="intro-copy">
           <h1>Not sure where it goes?</h1>
-          <p>Show us what you're holding. We'll help you figure out what it is, how to reuse it, and what to do with it next.</p>
+          <p>Snap a photo. Find out what to do with it.</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>
@@ -268,7 +293,7 @@ export default function App() {
         <div className="workspace-head">
           <div className="head-with-icon">
             <div className="round-icon"><Camera size={19}/></div>
-            <div><h2>Take a picture</h2><p>Try to show one item at a time.</p></div>
+            <div><h2>Take a picture</h2></div>
           </div>
         </div>
         <div className="camera-stage">
@@ -277,7 +302,7 @@ export default function App() {
             <div className="camera-empty">
               <div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
               <h3>What are we looking at?</h3>
-              <p>Use your camera or choose a photo to get started.</p>
+              <p>Use your camera or upload a photo.</p>
             </div>}
         </div>
 
@@ -319,7 +344,7 @@ export default function App() {
             </div>
           </div>
         </details>
-        <div className="photo-privacy-summary"><ShieldAlert size={16}/> When you identify an item, its photo goes to Google Gemini. Google's free tier may use photos to improve its products.</div>
+        <div className="photo-privacy-summary"><ShieldAlert size={16}/> Photos go to Google Gemini when you scan. Free tier data may be used to improve Google's services.</div>
         <details className="privacy-details">
           <summary>More about photo privacy <ChevronDown size={15}/></summary>
           <p>Avoid faces and personal details in your photos. WasteLens does not save the photo. {user ? "Your item results are saved to your account." : "Sign in if you want to save your item results."}</p>
@@ -338,7 +363,10 @@ export default function App() {
           </div>
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
-        <div className="material-line"><strong>Material:</strong> {analysis.material_guess}</div>
+        <div className="result-meta-line">
+          <span className="material-line"><strong>Material:</strong> {analysis.material_guess}</span>
+          {Boolean(result?.earned_xp) && <span className="earned-xp"><Sparkles size={17}/> +{result?.earned_xp} XP earned</span>}
+        </div>
         <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
           <MessageCircle size={18}/> Ask a question about this item
         </button>
@@ -353,7 +381,7 @@ export default function App() {
             <div className="reuse-heading">
               <div>
                 <h3><Lightbulb size={21}/> Give it another life</h3>
-                <p>Projects you can try with your {analysis.item_name.toLowerCase()}.</p>
+                <p>Try something new with this item.</p>
               </div>
               {Boolean(analysis.reuse_projects?.length) && <span className="reuse-count">{analysis.reuse_projects!.length} ideas</span>}
             </div>
@@ -395,7 +423,7 @@ export default function App() {
           </article>}
           <article className="result-card green" id="nearby">
             <h3><MapPin size={21}/> Find somewhere nearby</h3>
-            <p>Enter your ZIP code to look for places that may accept this item.</p>
+            <p>Enter your ZIP code.</p>
             <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
               <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
                 placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
@@ -408,7 +436,7 @@ export default function App() {
           </article>
           <article className="result-card muted">
             <h3><Check size={21}/> Did we get it right?</h3>
-            <p>Tell us if the item matches your photo. Signed in feedback can be seen by the site administrator.</p>
+            <p>Does this match your photo?</p>
             <div className="feedback-actions">
               <button className={"button " + (correctChoice === "yes" ? "primary" : "outline")}
                 disabled={feedbackBusy} onClick={() => { setCorrectChoice("yes"); void submitFeedback(true); }}>
@@ -429,8 +457,22 @@ export default function App() {
             </div>}
             {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
-            {!user && <p className="finder-note">Sign in before scanning to save your results and feedback.</p>}
+            {!user && <p className="finder-note">Sign in to save scans and earn XP.</p>}
           </article>
+          {user && result?.scan_id && <article className="result-card action-card">
+            <h3><Check size={21}/> What did you do with it?</h3>
+            <div className="action-choices">
+              {(["recycled", "reused", "composted", "donated"] as const).map(choice =>
+                <button type="button" key={choice} className={"button " + (recordedAction === choice ? "primary" : "outline")}
+                  disabled={actionBusy} onClick={() => void markAction(choice)}>
+                  {choice[0].toUpperCase() + choice.slice(1)}
+                </button>
+              )}
+            </div>
+            {recordedAction && <p className="action-confirmed">Saved as {recordedAction}.</p>}
+            {actionError && <p className="inline-error" role="alert">{actionError}</p>}
+            <details className="action-info"><summary>About tracking</summary><p>Actions are self reported. Scanning alone does not mean the item was recycled.</p></details>
+          </article>}
         </div>
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
@@ -448,7 +490,7 @@ export default function App() {
           <RecyclingResults results={facilities}
                 selected={selectedFacility} onSelect={setSelectedFacility}/>
         </div>
-      </section> : view === "chat" ? null : <AccountArea user={user} mode={view}
+      </section> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
