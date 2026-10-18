@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Check, History, LockKeyhole, ShieldCheck, UserPlus } from "lucide-react";
 import type { SessionUser, SavedScan, AdminOverview, AdminUser, AdminFeedback } from "./types";
 import { useLanguage } from "./i18n";
+import HabitSnapshot from "./HabitSnapshot";
 
 export const actionHeaders = { "Content-Type": "application/json", "X-WasteLens-Request": "1" };
 
@@ -108,6 +109,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
       <div className="head-with-icon"><div className="round-icon"><History/></div>
         <div><h2>{t("My scans")}</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
+      <HabitSnapshot/>
       {scans.length === 0 && <p>Nothing here yet. Scan your first item to save it.</p>}
       <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
         <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
