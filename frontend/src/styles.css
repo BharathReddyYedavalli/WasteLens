@@ -128,3 +128,16 @@ footer{display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap;paddin
 .finder-note{font-size:11px;color:#69816f;line-height:1.8;margin-top:17px}
 @media(max-width:900px){.site-layout{grid-template-columns:175px minmax(0,1fr)}.side-nav{padding:22px 9px}.nav-item{padding:11px 8px}}
 @media(max-width:700px){.site-layout{display:block}.side-nav{position:static;min-height:0;padding:10px;display:flex;gap:8px;overflow-x:auto;border-bottom:1px solid #dcebdd;border-right:0}.side-nav-title,.side-nav-note{display:none}.nav-item{white-space:nowrap;width:auto;flex-shrink:0;padding:9px 12px;margin:0;font-size:11px}.nav-item svg{width:15px}.assistant-screen,.finder-screen{padding:21px 0}.assistant-heading h1,.finder-screen h1{font-size:23px}.assistant-context{padding:13px}.assistant-messages{padding:17px 12px;min-height:320px}.chat-turn{max-width:95%}.assistant-composer{margin:0 11px 10px}.chat-footer{padding:0 13px 14px}.finder-card{padding:17px}}
+
+/* Embedded Google search with independent community-directory sidebar */
+.google-embedded-map{width:100%;min-height:460px;height:100%;border:0;background:#edf5ef}
+.google-map-frame{min-height:460px;border-radius:0;overflow:hidden;width:100%}
+.google-map-only{margin-top:16px;border:1px solid #d5e7dd;border-radius:12px;overflow:hidden}
+.google-map-only .google-embedded-map{height:510px}
+.recycling-map-results{margin-top:19px}
+.recycling-map-results .map-search-results{margin-top:0}
+.recycling-map-results .facility-list{min-height:460px}
+.community-warning{font-size:11px;color:#886536;background:#fff9e8;padding:12px;border-radius:9px;border:1px solid #e9d5a2}
+.google-map-note{font-size:11px;color:#688471;line-height:1.6;margin:10px 0}
+.google-map-setup{font-size:11px;line-height:1.7;color:#6e846f;background:#f7faf6;border:1px dashed #cee3d1;border-radius:10px;padding:14px;margin:12px 0}
+@media(max-width:760px){.google-embedded-map,.google-map-frame{min-height:350px;height:350px}.google-map-only .google-embedded-map{height:350px}}

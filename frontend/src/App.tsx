@@ -5,7 +5,7 @@ import {
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
-import MapPanel from "./MapPanel";
+import RecyclingResults, {type MapsConfig} from "./RecyclingResults";
 import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 
@@ -29,6 +29,8 @@ export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
+  const [mapSearchZip, setMapSearchZip] = useState("");
+  const [mapsConfig, setMapsConfig] = useState<MapsConfig | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
@@ -42,6 +44,18 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/maps/status")
+      .then(async response => {
+        if (!response.ok) throw new Error("Map configuration unavailable.");
+        return (await response.json()) as MapsConfig;
+      })
+      .then(data => { if (active) setMapsConfig(data); })
+      .catch(() => { if (active) setMapsConfig({configured: false, embed_key: ""}); });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -192,6 +206,9 @@ export default function App() {
     }
     setFacilityBusy(true);
     setFacilityError("");
+    // Map search starts immediately, independently of the optional community
+    // ZIP coordinate lookup and the OpenStreetMap facility list.
+    setMapSearchZip(location.trim());
     setFacilities(null);
     setSelectedFacility(null);
     try {
@@ -356,23 +373,12 @@ export default function App() {
                 onChange={event => setLocation(event.target.value)}/>
               <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
             </form>
-            {facilityError && <ErrorText message={facilityError}/>}
-            {facilities && <div className="map-search-results">
-              <div className="facility-list" aria-label="Nearby mapped collection locations">
-                <h4>{facilities.facilities.length} potential locations near {facilities.location_label}</h4>
-                {facilities.facilities.length === 0 && <p>No mapped locations were returned for this ZIP. This does not mean none exist.</p>}
-                {facilities.facilities.map(place => <button type="button" key={place.id}
-                    className={"facility-item " + (selectedFacility === place.id ? "selected" : "")}
-                    onClick={() => setSelectedFacility(place.id)}>
-                    <strong>{place.name}</strong>
-                    <span>{place.address}</span>
-                    <span>{place.distance_miles.toFixed(1)} miles from ZIP center</span>
-                    {place.tagged_materials.length > 0 && <span>OSM tags: {place.tagged_materials.join(", ")}</span>}
-                    {selectedFacility === place.id && <small>Acceptance and hours not verified. Contact the facility before visiting.</small>}
-                  </button>)}
-              </div>
-              <MapPanel data={facilities} selected={selectedFacility} onSelect={setSelectedFacility}/>
-            </div>}
+            {facilityError && (mapsConfig?.configured && mapSearchZip
+              ? <p className="community-warning">Community listing unavailable: {facilityError}. The Google Maps search below is independent.</p>
+              : <ErrorText message={facilityError}/>)}
+            <RecyclingResults zip={mapSearchZip} config={mapsConfig} results={facilities}
+                selected={selectedFacility} onSelect={setSelectedFacility}
+                searchTerm={analysis?.collection_search_term ?? "recycling centers"}/>
             <p className="finder-note">Locations from OpenStreetMap community data. Distance is approximate, from the ZIP centroid. Actual acceptance and operating hours must be confirmed.</p>
           </article>
           <article className="result-card muted">
@@ -414,23 +420,12 @@ export default function App() {
               onChange={event => setLocation(event.target.value)}/>
             <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
           </form>
-          {facilityError && <ErrorText message={facilityError}/>}
-          {facilities && <div className="map-search-results">
-            <div className="facility-list" aria-label="Nearby mapped collection locations">
-              <h4>{facilities.facilities.length} potential locations near {facilities.location_label}</h4>
-              {facilities.facilities.length === 0 && <p>No locations returned. This does not mean none exist.</p>}
-              {facilities.facilities.map(place => <button type="button" key={place.id}
-                className={"facility-item " + (selectedFacility === place.id ? "selected" : "")}
-                onClick={() => setSelectedFacility(place.id)}>
-                <strong>{place.name}</strong>
-                <span>{place.address}</span>
-                <span>{place.distance_miles.toFixed(1)} miles from ZIP center</span>
-                {place.tagged_materials.length > 0 && <span>OSM tags: {place.tagged_materials.join(", ")}</span>}
-                {selectedFacility === place.id && <small>Acceptance and hours are not verified. Contact the facility first.</small>}
-              </button>)}
-            </div>
-            <MapPanel data={facilities} selected={selectedFacility} onSelect={setSelectedFacility}/>
-          </div>}
+          {facilityError && (mapsConfig?.configured && mapSearchZip
+              ? <p className="community-warning">Community listing unavailable: {facilityError}. The Google Maps search below is independent.</p>
+              : <ErrorText message={facilityError}/>)}
+          <RecyclingResults zip={mapSearchZip} config={mapsConfig} results={facilities}
+                selected={selectedFacility} onSelect={setSelectedFacility}
+                searchTerm={analysis?.collection_search_term ?? "recycling centers"}/>
           <p className="finder-note">OpenStreetMap community data. ZIP-center distances are approximate. Listed facilities may not accept your particular item.</p>
         </div>
       </section> : view === "chat" ? null : <AccountArea user={user} mode={view}

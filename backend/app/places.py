@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import math
+from functools import lru_cache
 import re
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -18,7 +19,7 @@ from fastapi import APIRouter, HTTPException, Query
 router = APIRouter(prefix="/api")
 
 
-def fetch_json(url: str, data: bytes | None = None, timeout: float = 12):
+def fetch_json(url: str, data: bytes | None = None, timeout: float = 12, zip_lookup: bool = False):
     request = Request(
         url, data=data,
         headers={
@@ -32,11 +33,42 @@ def fetch_json(url: str, data: bytes | None = None, timeout: float = 12):
         with urlopen(request, timeout=timeout) as response:
             return json.load(response)
     except HTTPError as exc:
-        if exc.code == 404:
-            raise HTTPException(404, "ZIP code not found.") from exc
+        if exc.code == 404 and zip_lookup:
+            raise HTTPException(404, "ZIP was not listed by the primary community directory.") from exc
         raise HTTPException(503, "The map data provider is temporarily unavailable.") from exc
     except (URLError, TimeoutError, ValueError, OSError) as exc:
         raise HTTPException(503, "Could not reach the map provider. Try again shortly.") from exc
+
+
+@lru_cache(maxsize=300)
+def resolve_zip(zip_code: str) -> tuple[float, float, str]:
+    """Low-volume ZIP lookup; missing provider records are not proof a ZIP is invalid."""
+    try:
+        location = fetch_json(f"https://api.zippopotam.us/us/{zip_code}", zip_lookup=True)
+        places = location.get("places") or []
+        if places:
+            item = places[0]
+            return (
+                float(item["latitude"]), float(item["longitude"]),
+                ", ".join(part for part in (item.get("place name"), item.get("state abbreviation")) if part)
+            )
+    except HTTPException as exc:
+        if exc.status_code != 404:
+            raise
+
+    # Nominatim is a low-volume fallback; cache hits to avoid repeat requests.
+    result = fetch_json(
+        "https://nominatim.openstreetmap.org/search?" +
+        urlencode({"postalcode": zip_code, "country": "United States", "format": "json", "limit": "1"}),
+        timeout=12,
+    )
+    if isinstance(result, list) and result:
+        row = result[0]
+        return float(row["lat"]), float(row["lon"]), str(row.get("display_name", zip_code))[:120]
+    raise HTTPException(
+        404, "Our community directory could not locate this ZIP; that does not "
+        "mean it is invalid. Use Google Maps or try a nearby ZIP."
+    )
 
 
 def distance_km(lat1, lng1, lat2, lng2):
@@ -53,14 +85,7 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
     """Search genuinely mapped nearby recycling facilities by US ZIP centroid."""
     if not re.fullmatch(r"\d{5}", zip_code):
         raise HTTPException(422, "Enter a five-digit US ZIP code.")
-    location = fetch_json(f"https://api.zippopotam.us/us/{zip_code}")
-    places = location.get("places") or []
-    if not places:
-        raise HTTPException(404, "ZIP code not found.")
-    center_lat = float(places[0]["latitude"])
-    center_lng = float(places[0]["longitude"])
-    city = places[0].get("place name", "")
-    state = places[0].get("state abbreviation", "")
+    center_lat, center_lng, location_label = resolve_zip(zip_code)
     # The ZIP centroid is approximate, not a precise address or personal location.
     # OSM's tags do NOT verify that a business accepts the photographed item.
     query = (
@@ -127,7 +152,7 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
     results.sort(key=lambda x: x["distance_miles"])
     return {
         "zip_code": zip_code,
-        "location_label": ", ".join(part for part in (city, state) if part),
+        "location_label": location_label,
         "center": {"latitude": center_lat, "longitude": center_lng},
         "facilities": results[:60],
         "provider": "OpenStreetMap community data",
