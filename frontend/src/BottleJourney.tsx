@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, Award, ExternalLink, Leaf, RefreshCw, Sparkles, Waves } from "lucide-react";
 import type { SessionUser, WasteLensBadge } from "./types";
+import { useLanguage } from "./i18n";
 import { actionHeaders } from "./AccountArea";
 
 const chapters=[
@@ -28,6 +29,51 @@ const quiz=[
   {id:"state",question:"What's essential before returning a deposit bottle?",
     options:[["anywhere","Return it in any deposit state"],["same_state","Confirm the deposit was paid in that state"],["all_plastic","All plastic bottles qualify"]]},
 ];
+
+type ChapterTranslation = {title:string; description:string; fact:string};
+const translatedChapters: Record<"es"|"hi",ChapterTranslation[]> = {
+  es: [
+    {title:"¿A dónde va tu botella?",description:"Un envase pequeño tiene una historia muy larga. Desliza para seguir el camino.",fact:"Tal vez ya pagaste un depósito reembolsable al comprar tu bebida."},
+    {title:"Esas monedas tienen una misión.",description:"En ciertos estados, pagas el precio de la bebida y un depósito separado. Si devuelves el envase, puedes recuperar ese depósito.",fact:"Diez estados de EE. UU. tienen programas de depósito para bebidas."},
+    {title:"Oregón comienza una revolución.",description:"La basura en playas y carreteras era un problema. Oregón aprobó la primera ley de devolución de envases de EE. UU. en 1971.",fact:"Hoy Oregón devuelve 10¢ por cada envase elegible."},
+    {title:"No todos los envases valen lo mismo.",description:"California devuelve 5¢ por envases de menos de 24 onzas y 10¢ por los más grandes. Ciertas cajas y bolsas de vino o licor valen 25¢.",fact:"Importan el tamaño y el tipo de envase."},
+    {title:"Una botella de agua puede valer cero.",description:"Míchigan tiene un depósito de 10¢ para bebidas elegibles, pero excluye el agua natural y los jugos comunes. Una foto no garantiza dinero.",fact:"La tarifa del estado no se aplica a todos los envases."},
+    {title:"Una moneda vuelve. Otra no.",description:"Hawái cobra un depósito reembolsable de 5¢ y una tarifa separada de 1¢ que no se devuelve.",fact:"La tarifa extra ayuda a financiar el sistema de reciclaje."},
+    {title:"Antes de ir, revisa el envase.",description:"Comprueba la bebida, el tamaño y el material. Busca la marca de reembolso y confirma dónde se compró. Vacía el envase antes de devolverlo.",fact:"Nueva York no reembolsa un depósito que no se pagó en Nueva York."},
+    {title:"De vuelta al sistema.",description:"Puedes llevar los envases elegibles a comercios o centros de devolución participantes. Algunas máquinas los cuentan por ti.",fact:"Vermont devuelve 15¢ por envases elegibles de bebidas espirituosas."},
+    {title:"¿Qué sucede después?",description:"Los envases se clasifican para reciclar vidrio, metal y plástico por separado. Un retorno no demuestra un ahorro exacto de carbono.",fact:"En Oregón, ciertos vinos en lata son elegibles desde 2025."},
+    {title:"Pequeños retornos. Mejores hábitos.",description:"Rellena lo que puedas. Devuelve lo que sea elegible. Recicla lo demás siguiendo las normas locales. Y comparte lo aprendido.",fact:"¿Listo para poner a prueba lo que sabes?"},
+  ],
+  hi: [
+    {title:"आपकी बोतल कहाँ जाती है?",description:"एक छोटी बोतल की कहानी बहुत लंबी हो सकती है। नीचे जाकर इसकी यात्रा देखें।",fact:"हो सकता है आपने पेय खरीदते समय वापसी योग्य जमा राशि पहले ही दी हो।"},
+    {title:"उस छोटे सिक्के का काम है।",description:"जमा शुल्क वाले राज्यों में पेय की कीमत के साथ अलग राशि ली जाती है। पात्र बोतल लौटाने पर वह राशि वापस मिल सकती है।",fact:"अमेरिका के 10 राज्यों में बोतल जमा कार्यक्रम हैं।"},
+    {title:"ओरेगन से एक नई शुरुआत।",description:"सड़कों और समुद्र तटों पर कचरा बड़ी समस्या था। ओरेगन ने 1971 में अमेरिका का पहला बोतल जमा कानून पारित किया।",fact:"आज ओरेगन में पात्र बोतल पर 10 सेंट मिलते हैं।"},
+    {title:"हर बोतल की रकम समान नहीं होती।",description:"कैलिफ़ोर्निया में 24 औंस से छोटी पात्र बोतल पर 5 सेंट और बड़ी पर 10 सेंट मिलते हैं। शराब के कुछ बॉक्स और पाउच पर 25 सेंट मिलते हैं।",fact:"बोतल का आकार और पैकेजिंग मायने रखते हैं।"},
+    {title:"पानी की बोतल पर शून्य भी मिल सकता है।",description:"मिशिगन में कुछ पेयों पर 10 सेंट जमा है, लेकिन साधारण पानी और जूस की बोतलें शामिल नहीं हैं। फोटो से वापसी की गारंटी नहीं मिलती।",fact:"राज्य की जमा दर हर बोतल पर लागू नहीं होती।"},
+    {title:"एक सिक्का लौटता है, दूसरा नहीं।",description:"हवाई में 5 सेंट वापसी योग्य जमा और अलग 1 सेंट शुल्क लगता है। केवल 5 सेंट वापस मिलते हैं।",fact:"अतिरिक्त शुल्क रीसायकल कार्यक्रम चलाने में मदद करता है।"},
+    {title:"जमा करने से पहले जाँचें।",description:"पेय, आकार और सामग्री देखें। लेबल पर वापसी चिह्न खोजें और पता करें कहाँ खरीदा था। बोतल खाली रखें।",fact:"न्यूयॉर्क में दूसरे राज्य में खरीदी बोतल पर वापसी नहीं मिलती।"},
+    {title:"बोतल वापस सिस्टम में।",description:"पात्र बोतलें भाग लेने वाली दुकानों या जमा केंद्रों में लौटाई जा सकती हैं। कुछ मशीनें बोतलें गिनती हैं।",fact:"वर्मोंट में पात्र स्पिरिट बोतलों पर 15 सेंट मिलते हैं।"},
+    {title:"इसके बाद क्या होता है?",description:"जमा की गई बोतलों को रीसायकल के लिए छाँटा जाता है। काँच, धातु और प्लास्टिक के रास्ते अलग हैं। केवल जमा करने से कार्बन बचत की सही मात्रा पता नहीं चलती।",fact:"ओरेगन में कुछ वाइन कैन 2025 से पात्र हैं।"},
+    {title:"छोटी वापसी, अच्छी आदतें।",description:"जो चीज़ दोबारा भर सकते हैं, भरें। पात्र बोतलें लौटाएँ। बाकी स्थानीय नियमों के अनुसार रीसायकल करें। दूसरों को भी सिखाएँ।",fact:"क्या आप अपना ज्ञान जाँचना चाहेंगे?"},
+  ],
+};
+const translatedQuiz: Record<"es"|"hi",{question:string;options:string[]}[]> = {
+  es:[
+    {question:"En California, ¿cuánto vale un envase elegible de 24 onzas?",options:["5 centavos","10 centavos","25 centavos"]},
+    {question:"¿Una botella común de agua natural recibe 10¢ en Míchigan?",options:["Sí, todas","No, el agua natural no está incluida","Solo si es azul"]},
+    {question:"¿Qué regla especial tiene Oregón?",options:["Toda botella de vino está incluida","Ciertos vinos en lata pueden estar incluidos","Ningún vino está incluido"]},
+    {question:"¿Hawái devuelve la tarifa adicional de 1¢?",options:["Sí, devuelve 6¢","No, solo devuelve el depósito de 5¢","No existe ningún depósito"]},
+    {question:"¿Qué debes comprobar antes de devolver una botella?",options:["Puedo devolverla en cualquier estado","Que se pagó el depósito en ese estado","Toda botella de plástico está incluida"]},
+  ],
+  hi:[
+    {question:"कैलिफ़ोर्निया में 24 औंस की पात्र बोतल पर कितने सेंट मिलते हैं?",options:["5 सेंट","10 सेंट","25 सेंट"]},
+    {question:"क्या मिशिगन में साधारण पानी की बोतल पर 10 सेंट मिलते हैं?",options:["हाँ, हर बोतल पर","नहीं, साधारण पानी शामिल नहीं है","सिर्फ नीली बोतल पर"]},
+    {question:"ओरेगन का कौन सा नियम सही है?",options:["हर वाइन बोतल शामिल है","कुछ वाइन के धातु कैन पात्र हैं","कोई वाइन पात्र नहीं है"]},
+    {question:"क्या हवाई अलग 1 सेंट शुल्क वापस करता है?",options:["हाँ, 6 सेंट वापस","नहीं, केवल 5 सेंट जमा राशि","कोई जमा शुल्क नहीं है"]},
+    {question:"बोतल जमा करने से पहले क्या जाँचना चाहिए?",options:["किसी भी राज्य में लौटाएँ","उस राज्य में जमा राशि दी गई थी","हर प्लास्टिक बोतल पात्र है"]},
+  ],
+};
+
 function Illustrated({kind}:{kind:string}){
   return <div className={"journey-art scene-"+kind} aria-hidden="true">
     <span className="journey-orbit orbit-one"/><span className="journey-orbit orbit-two"/>
@@ -63,6 +109,7 @@ function Illustrated({kind}:{kind:string}){
 type QuizResult={score:number;total:number;passed:boolean;earned_xp:number;
   unlocked_badge:WasteLensBadge|null;signed_in:boolean;message:string};
 export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser|null;onUnlock:(badge:WasteLensBadge)=>void;onSignIn:()=>void}){
+  const { language,t } = useLanguage();
   const wrapper=useRef<HTMLDivElement>(null);
   const [progress,setProgress]=useState(0);
   const [selected,setSelected]=useState<Record<string,string>>({});
@@ -111,20 +158,20 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
     <div className="journey-intro">
       <div className="journey-intro-stars" aria-hidden="true">✦　✧　✦</div>
       <span className="journey-tag"><Waves size={18}/> A WASTELENS SCROLL STORY</span>
-      <h1>The secret life<br/>of a <i>bottle.</i></h1>
-      <p>One bottle. Ten states. A surprisingly big adventure.</p>
-      <span className="journey-scroll"><ArrowDown size={22}/> Scroll to begin</span>
+      <h1>{language==="en"?<>The secret life<br/>of a <i>bottle.</i></>:language==="es"?<>La vida secreta<br/>de una <i>botella.</i></>:<>एक बोतल की<br/><i>अनकही कहानी।</i></>}</h1>
+      <p>{language==="en"?"One bottle. Ten states. A surprisingly big adventure.":language==="es"?"Una botella. Diez estados. Una gran aventura.":"एक बोतल। दस राज्य। एक लंबी यात्रा।"}</p>
+      <span className="journey-scroll"><ArrowDown size={22}/> {t("Scroll to begin")}</span>
     </div>
     {chapters.map((chapter,index)=><section key={chapter.id} className={"journey-chapter chapter-"+chapter.color}>
       <div className="journey-chapter-inner">
         <div className="journey-copy">
           <span className="journey-step">CHAPTER {String(index+1).padStart(2,"0")} / {chapter.eyebrow}</span>
           <div className="journey-year">{chapter.year}</div>
-          <h2>{chapter.title}</h2>
-          <p>{chapter.description}</p>
-          <div className="journey-fact"><Sparkles size={20}/><strong>{chapter.fact}</strong></div>
+          <h2>{language==="en"?chapter.title:translatedChapters[language][index].title}</h2>
+          <p>{language==="en"?chapter.description:translatedChapters[language][index].description}</p>
+          <div className="journey-fact"><Sparkles size={20}/><strong>{language==="en"?chapter.fact:translatedChapters[language][index].fact}</strong></div>
           <a href={chapter.source} target="_blank" rel="noopener noreferrer" className="journey-source">
-            From the official source <ExternalLink size={15}/>
+            {t("From the official source")} <ExternalLink size={15}/>
           </a>
         </div>
         <Illustrated kind={chapter.symbol}/>
@@ -132,34 +179,34 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
     </section>)}
     <section className="journey-quiz" id="bottle-quiz">
       <span className="journey-quiz-halo" aria-hidden="true">✷</span>
-      <span className="journey-tag"><Award size={19}/> YOU MADE IT!</span>
-      <h2>You've traveled with the bottle.<br/><i>Now it's your turn.</i></h2>
-      <p className="journey-quiz-intro">Answer five quick questions. Get at least four right to earn the Bottle Explorer badge and 30 XP once.</p>
+      <span className="journey-tag"><Award size={19}/> {t("YOU MADE IT!")}</span>
+      <h2>{language==="en"?<>You've traveled with the bottle.<br/><i>Now it's your turn.</i></>:language==="es"?<>Seguiste el viaje de la botella.<br/><i>Ahora te toca a ti.</i></>:<>आपने बोतल की यात्रा देख ली।<br/><i>अब आपकी बारी है।</i></>}</h2>
+      <p className="journey-quiz-intro">{language==="en"?"Answer five quick questions. Get at least four right to earn the Bottle Explorer badge and 30 XP once.":language==="es"?"Responde cinco preguntas. Con cuatro respuestas correctas ganas una sola vez la insignia Explorador de botellas y 30 XP.":"पाँच छोटे सवालों के जवाब दें। कम से कम चार सही होने पर एक बार बोतल खोजकर्ता बैज और 30 XP मिलेंगे।"}</p>
       <div className="journey-quiz-card">
         {quiz.map((q,index)=><fieldset key={q.id} className="journey-question" disabled={loading||Boolean(result?.passed)}>
-          <legend><span>{String(index+1).padStart(2,"0")}</span>{q.question}</legend>
+          <legend><span>{String(index+1).padStart(2,"0")}</span>{language==="en"?q.question:translatedQuiz[language][index].question}</legend>
           <div className="journey-choices">
-            {q.options.map(([answer,label])=><label key={answer} className={"journey-choice "+(selected[q.id]===answer?"picked":"")}>
+            {q.options.map(([answer,label],i)=><label key={answer} className={"journey-choice "+(selected[q.id]===answer?"picked":"")}>
               <input type="radio" name={q.id} checked={selected[q.id]===answer}
                 onChange={()=>{setSelected(prev=>({...prev,[q.id]:answer}));setResult(null);}}/>
-              <span>{label}</span>
+              <span>{language==="en"?label:translatedQuiz[language][index].options[i]}</span>
             </label>)}
           </div>
         </fieldset>)}
         {result&&<div className={"journey-quiz-outcome "+(result.passed?"passed":"")} role="status">
           <strong>{result.score} out of {result.total} correct</strong>
-          <p>{result.message}</p>
+          <p>{language==="en"?result.message:result.unlocked_badge?"¡Badge earned!":result.passed?"¡Excelente!":language==="es"?"Revisa las respuestas e inténtalo otra vez.":"जवाब जाँचें और फिर प्रयास करें।"}</p>
           {result.unlocked_badge&&<span className="journey-badge-earned"><Award size={19}/> Bottle Explorer · +30 XP</span>}
-          {result.passed&&!result.signed_in&&<button type="button" className="journey-login" onClick={onSignIn}>Sign in to earn the badge</button>}
+          {result.passed&&!result.signed_in&&<button type="button" className="journey-login" onClick={onSignIn}>{t("Sign in to earn the badge")}</button>}
         </div>}
         {error&&<p role="alert" className="journey-quiz-error">{error}</p>}
         <div className="journey-quiz-actions">
           <button type="button" className="journey-submit" disabled={loading||quiz.some(q=>!selected[q.id])||Boolean(result?.passed)}
-            onClick={()=>void submit()}>{loading?"Checking…":awarded?"Check answers":"Finish quiz"}</button>
-          {result&&!result.passed&&<button type="button" className="journey-retry" onClick={retry}><RefreshCw size={18}/> Try again</button>}
+            onClick={()=>void submit()}>{loading?"…":awarded?t("Check answers"):t("Finish quiz")}</button>
+          {result&&!result.passed&&<button type="button" className="journey-retry" onClick={retry}><RefreshCw size={18}/> {t("Try again")}</button>}
         </div>
       </div>
-      <div className="journey-end"><Leaf size={26}/><span>That's the journey. The next bottle is yours.</span></div>
+      <div className="journey-end"><Leaf size={26}/><span>{language==="en"?"That's the journey. The next bottle is yours.":language==="es"?"Hasta aquí el viaje. La próxima botella depende de ti.":"यात्रा पूरी हुई। अगली बोतल आपके हाथ में है।"}</span></div>
     </section>
   </div>;
 }
