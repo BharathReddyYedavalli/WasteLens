@@ -7,6 +7,7 @@ actual OSM Overpass responses. No fabricated business listings or acceptance.
 from __future__ import annotations
 
 import json
+import logging
 import math
 import re
 import time
@@ -18,6 +19,9 @@ from urllib.request import Request, urlopen
 import zipcodes
 from fastapi import APIRouter, HTTPException, Query
 
+from .official_places import nearby_official_sites
+
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 OVERPASS_SERVERS = (
     "https://overpass-api.de/api/interpreter",
@@ -40,6 +44,7 @@ def fetch_json(url: str, data: bytes | None = None, timeout: float = 15):
         with urlopen(request, timeout=timeout) as response:
             return json.load(response)
     except (HTTPError, URLError, TimeoutError, ValueError, OSError) as exc:
+        logger.warning("Public location provider request failed for %s: %s", url, exc)
         raise HTTPException(503, "The community recycling-location provider is temporarily unavailable.") from exc
 
 
@@ -92,7 +97,7 @@ def _query_overpass(center_lat: float, center_lng: float, quarter_hour: int, rad
                 return result
         except HTTPException:
             continue
-    raise HTTPException(503, "Both community recycling-location providers are unavailable.")
+    raise HTTPException(503, "Public recycling-location providers are unavailable.")
 
 
 def _parse_facilities(data: dict, center_lat: float, center_lng: float) -> list[dict]:
@@ -148,6 +153,10 @@ def _parse_facilities(data: dict, center_lat: float, center_lng: float) -> list[
             "tagged_materials": materials,
             "phone": phone,
             "verified_acceptance": False,
+            "listing_source": "community",
+            "source_url": f"https://www.openstreetmap.org/{feature_type}/{feature_id}",
+            "access_note": "",
+            "coordinate_note": "",
             "note": "Community-mapped location. Materials, phone and opening hours are not verified.",
         })
         visited.add((feature_type, feature_id))
@@ -165,19 +174,36 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
     try:
         lat, lng, slot = round(center_lat, 6), round(center_lng, 6), int(time.time() // 900)
         data = _query_overpass(lat, lng, slot, radius_m=20000)
-        matches = _parse_facilities(data, center_lat, center_lng)
-        if not matches:
-            # Many US suburbs have no mapped recycling points inside 12 miles.
-            # Search a wider area rather than incorrectly implying none exist.
+        community = _parse_facilities(data, center_lat, center_lng)
+        if not community:
+            # Search farther when OSM has no mapped recycling points nearby.
             wider_data = _query_overpass(lat, lng, slot, radius_m=45000)
-            matches = _parse_facilities(wider_data, center_lat, center_lng)
+            community = _parse_facilities(wider_data, center_lat, center_lng)
             radius_miles = 28.0
-        listing_status = "ok" if matches else "no_results"
+        listing_status = "ok" if community else "no_results"
     except HTTPException:
-        # A failed response is not the same as an area without recycling sites.
-        matches = []
+        # Keep source-backed local facilities even when volunteer servers fail.
+        community = []
+        radius_miles = 28.0
         listing_status = "unavailable"
-        error = "OpenStreetMap location listings are temporarily unavailable. The map still works; please retry later."
+        error = "Live map listings are unavailable right now. We can still show places published by local governments where available."
+
+    official = nearby_official_sites(center_lat, center_lng, radius_miles, distance_km)
+    # Favor the official record when a community pin refers to the same site.
+    community = [
+        place for place in community
+        if not any(
+            distance_km(
+                place["latitude"], place["longitude"],
+                known["latitude"], known["longitude"]
+            ) < 0.25
+            for known in official
+        )
+    ]
+    matches = sorted(official + community, key=lambda item: item["distance_miles"])[:60]
+    if listing_status == "unavailable" and matches:
+        listing_status = "partial"
+
     return {
         "zip_code": zip_code,
         "location_label": label,
@@ -185,10 +211,10 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
         "facilities": matches,
         "radius_miles": radius_miles,
         "listing_status": listing_status,
-        "provider": "OpenStreetMap community data",
+        "provider": "Local government listings and OpenStreetMap",
         "acceptance_verified": False,
         "notice": error or (
-            "Mapped places are potential collection options, not verified acceptors of your item. "
-            "Some recycling businesses may be missing from OpenStreetMap. Contact a location before visiting."
+            "Map pins are potential drop off options, not confirmation that a specific item is accepted. "
+            "City listings cover only selected cities; community maps may be incomplete. Call ahead."
         ),
     }

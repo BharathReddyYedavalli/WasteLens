@@ -193,3 +193,32 @@ rearrangement of existing cards.
 Automated CI confirms TypeScript builds and mock backend tests. **No visual
 browser screenshot or real Gemini analysis was verified by CI**; test the
 appearance and browser behavior locally on desktop and mobile before merging.
+
+
+## Verified city listing fallback for ZIP 75033
+
+The free recycling finder now supplements community OSM listings with **two
+actual local recycling facilities published on city government websites**.
+Unlike map-only data, these remain available in the sidebar during an Overpass
+outage. They are only offered when geographically near the requested ZIP; there
+is no fabricated nationwide list.
+
+* Frisco Environmental Collection Center, 6616 Walnut Street. Official
+  city source: https://www.friscotexas.gov/1144/Environmental-Collection-Center
+  Approximate pin: https://junkscout.io/facility/f_manual_5bd8288de838/
+* Plano Republic Services Recycling Drop Off, 4200 E. 14th Street. Official
+  city source: https://www.plano.gov/recycling-drop-off-locations
+  Approximate pin: https://recyclefind.com/listings/republic-services-plano-recycling-facility-plano-tx-4219
+
+Source labels, specific access notes, official source links and approximate
+pin notes are displayed with the results. In normal searches, results from
+live OSM are combined with official entries and physically overlapping pins
+are removed. If OSM fails, the status is `partial` if there are official
+entries and `unavailable` if none exist. An empty OSM result is not proof
+the city has no facilities. The curated list is a **small starting set, not
+nationwide coverage**. Real production nationwide coverage requires a more
+reliable licensed points of interest source or regularly updated offline data.
+
+The backend uses a logging warning for external provider request errors
+to help diagnose firewalls, timeouts and HTTP error codes in the terminal.
+No Google Maps billing or additional API key is used.

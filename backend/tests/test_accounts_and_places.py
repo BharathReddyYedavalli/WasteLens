@@ -133,15 +133,15 @@ def test_finder_uses_real_provider_data_not_fake_locations(client, monkeypatch):
     places.resolve_zip.cache_clear()
     places._query_overpass.cache_clear()
     monkeypatch.setattr(places.zipcodes, "matching", lambda zip_code: [
-        {"lat": "32.95", "long": "-96.80", "city": "Irving", "state": "TX"}
+        {"lat": "37.20", "long": "-93.28", "city": "Springfield", "state": "MO"}
     ])
     seen = []
     def stub(url, data=None, timeout=15):
         seen.append((url, data))
         return {"elements": [
-            {"type": "node", "id": 42, "lat": 32.96, "lon": -96.81,
+            {"type": "node", "id": 42, "lat": 37.21, "lon": -93.29,
              "tags": {"name": "Actual mapped recycler", "amenity": "recycling", "recycling_type": "centre", "phone": "+1-555-0100"}},
-            {"type": "node", "id": 44, "lat": 32.95, "lon": -96.80,
+            {"type": "node", "id": 44, "lat": 37.20, "lon": -93.28,
              "tags": {"amenity": "recycling", "access": "private"}},
         ]}
     monkeypatch.setattr(places, "fetch_json", stub)
@@ -200,10 +200,12 @@ def test_provider_outage_keeps_base_map_available(client, monkeypatch):
     response = client.get("/api/facilities?zip_code=75033")
     assert response.status_code == 200
     body = response.json()
-    assert body["listing_status"] == "unavailable"
-    assert body["facilities"] == []
+    assert body["listing_status"] == "partial"
+    assert len(body["facilities"]) >= 1
+    assert any("Frisco Environmental Collection Center" == item["name"] for item in body["facilities"])
+    assert all(item["listing_source"] == "official" for item in body["facilities"])
     assert body["center"]["latitude"] == 33.19
-    assert "temporarily unavailable" in body["notice"]
+    assert "unavailable" in body["notice"]
     places.resolve_zip.cache_clear()
     places._query_overpass.cache_clear()
 
@@ -253,7 +255,8 @@ def test_retry_wider_map_radius_if_no_locations_initially(client, monkeypatch):
     body = response.json()
     assert body["listing_status"] == "ok"
     assert body["radius_miles"] == 28.0
-    assert len(body["facilities"]) == 1
+    assert any(item["name"] == "Mapped recycling drop-off" for item in body["facilities"])
+    assert any(item["listing_source"] == "official" for item in body["facilities"])
     assert "around:20000" in queries[0]
     assert "around:45000" in queries[1]
     places.resolve_zip.cache_clear()
@@ -272,6 +275,7 @@ def test_zero_osm_locations_is_not_a_provider_outage(client, monkeypatch):
     assert response.status_code == 200
     assert response.json()["listing_status"] == "no_results"
     assert response.json()["radius_miles"] == 28.0
+    assert response.json()["facilities"]  # Real local government records remain visible
     places.resolve_zip.cache_clear()
     places._query_overpass.cache_clear()
 
@@ -280,3 +284,44 @@ def test_overpass_fallback_includes_current_endpoint():
     from app import places
     assert "https://overpass.private.coffee/api/interpreter" in places.OVERPASS_SERVERS
     assert "https://overpass.kumi.systems/api/interpreter" not in places.OVERPASS_SERVERS
+
+
+
+def test_city_fallback_returns_real_sources_without_network(client, monkeypatch):
+    from app import places
+    from fastapi import HTTPException
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+    monkeypatch.setattr(places.zipcodes, "matching", lambda postal: [
+        {"lat": "33.183", "long": "-96.845", "city": "Frisco", "state": "TX"}
+    ])
+    def failed(*args, **kwargs):
+        raise HTTPException(503, "Overpass unavailable")
+    monkeypatch.setattr(places, "_query_overpass", failed)
+    data = client.get("/api/facilities?zip_code=75033").json()
+    assert data["listing_status"] == "partial"
+    assert len(data["facilities"]) > 0
+    frisco = next(x for x in data["facilities"] if x["id"] == "official-frisco-ecc")
+    assert frisco["address"].startswith("6616 Walnut Street")
+    assert frisco["source_url"] == "https://www.friscotexas.gov/1144/Environmental-Collection-Center"
+    assert frisco["latitude"] != data["center"]["latitude"]
+    assert frisco["verified_acceptance"] is False
+    assert "residency" in frisco["access_note"]
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+
+
+def test_remote_postal_search_does_not_invent_fallback(client, monkeypatch):
+    from app import places
+    from fastapi import HTTPException
+    places.resolve_zip.cache_clear()
+    monkeypatch.setattr(places.zipcodes, "matching", lambda postal: [
+        {"lat": "47.610", "long": "-122.33", "city": "Seattle", "state": "WA"}
+    ])
+    def failed(*args, **kwargs):
+        raise HTTPException(503, "Overpass unavailable")
+    monkeypatch.setattr(places, "_query_overpass", failed)
+    data = client.get("/api/facilities?zip_code=98101").json()
+    assert data["listing_status"] == "unavailable"
+    assert data["facilities"] == []
+    places.resolve_zip.cache_clear()

@@ -53,12 +53,14 @@ export type Facility = {
   distance_miles: number; tagged_materials: string[];
   kind: "center" | "drop_off"; phone: string;
   verified_acceptance: false; note: string;
+  listing_source?: "official" | "community";
+  source_url?: string; access_note?: string; coordinate_note?: string;
 };
 export type FacilitySearchResponse = {
   zip_code: string; location_label: string;
   center: { latitude: number; longitude: number };
   facilities: Facility[];
   provider: string; acceptance_verified: false; notice: string;
-  listing_status: "ok" | "no_results" | "unavailable";
+  listing_status: "ok" | "no_results" | "partial" | "unavailable";
   radius_miles: number;
 };

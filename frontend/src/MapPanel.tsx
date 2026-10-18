@@ -76,6 +76,29 @@ export default function MapPanel({ data, selected, onSelect }: Props) {
         phone.textContent = "Unverified phone: " + place.phone;
         popup.append(phone);
       }
+      if (place.listing_source === "official") {
+        const source = document.createElement("p");
+        source.textContent = "Published on an official city website.";
+        popup.append(source);
+      }
+      if (place.access_note) {
+        const access = document.createElement("p");
+        access.textContent = place.access_note;
+        popup.append(access);
+      }
+      if (place.coordinate_note) {
+        const coordinate = document.createElement("small");
+        coordinate.textContent = place.coordinate_note;
+        popup.append(coordinate);
+      }
+      if (place.source_url && place.source_url.startsWith("https://")) {
+        const link = document.createElement("a");
+        link.href = place.source_url;
+        link.textContent = place.listing_source === "official" ? "City details" : "OpenStreetMap record";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        popup.append(link);
+      }
       const caution = document.createElement("p");
       caution.className = "map-popup-caution";
       caution.textContent = "Call to confirm this item is accepted.";
