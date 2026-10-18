@@ -10,6 +10,7 @@ import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
 import BadgeCelebration from "./BadgeCelebration";
+import SortPlan from "./SortPlan";
 import { LANGUAGES, useLanguage } from "./i18n";
 
 type PhotoPreview = { file: File; src: string };
@@ -390,10 +391,7 @@ export default function App() {
         {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
         {analysis.follow_up_question && <div className="question"><strong>One thing to check:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
-          <article className="result-card orange">
-            <h3><Recycle size={21}/> {t("What to do with it")}</h3>
-            <ul>{analysis.disposal_steps.map((step, i) => <li key={i}>{step}</li>)}</ul>
-          </article>
+          <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
           <article className="result-card blue reuse-section">
             <div className="reuse-heading">
               <div>
