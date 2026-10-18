@@ -1,0 +1,81 @@
+/* Bottle returns uses warm amber and aquatic blue rather than a generic dashboard. */
+.bottle-page{display:grid;gap:24px;padding:32px 0 70px;animation:wl-reveal .4s ease}
+.bottle-hero{display:flex;align-items:center;gap:24px;border-radius:30px;background:#e6efff;border:1px solid #d2def8;padding:clamp(25px,4.5vw,45px);
+  position:relative;overflow:hidden}
+.bottle-hero:after{content:"";position:absolute;width:180px;height:180px;background:#fbd27a;opacity:.7;border-radius:45%;right:-90px;top:-60px;transform:rotate(-25deg)}
+.bottle-hero-icon{width:85px;height:85px;display:grid;place-items:center;border-radius:23px;background:#f7ab63;
+  color:#fff;box-shadow:7px 8px 0 #d2e2f3;transform:rotate(-7deg);flex:0 0 auto}
+.bottle-hero small,.bottle-bag-heading small,.bottle-answer small{font:800 10px "Poppins",sans-serif;letter-spacing:1.3px;color:#5468a0}
+.bottle-hero h1{font:700 clamp(31px,4.6vw,50px)/1.1 "Fraunces",Georgia,serif;letter-spacing:-1px;color:#263f73;margin:8px 0}
+.bottle-hero p{font-weight:600;color:#4c6080;font-size:14px;line-height:1.7;margin:0;max-width:600px}
+.bottle-grid{display:grid;grid-template-columns:minmax(240px,.75fr) minmax(380px,1.25fr);gap:20px;align-items:start}
+.bottle-card,.bottle-bag{background:#fffefa;border-radius:24px;border:1.5px solid #dce6db;padding:26px 28px;box-shadow:0 7px 0 #e8e9df}
+.bottle-card h2{font:700 20px/1.4 "Poppins",sans-serif;color:#193e43;display:flex;gap:12px;align-items:center;margin:0 0 18px}
+.bottle-number{background:#d8f2ec;color:#0e796e;width:37px;height:37px;flex-shrink:0;display:grid;place-items:center;border-radius:12px;font-weight:800}
+.bottle-number.orange{background:#ffddc3;color:#a65728}
+.bottle-card>label,.bottle-fields>label{display:grid;gap:7px;font-size:12px;font-weight:800;color:#365a56}
+.bottle-card select,.bottle-card input,.bottle-return-action input{min-width:0;max-width:100%;width:100%;height:43px;
+  border-radius:11px;border:1.5px solid #c4d9d0;padding:8px 12px;background:#fff;color:#193e3d;font:600 13px "Poppins",sans-serif}
+.bottle-card select:focus-visible,.bottle-card input:focus-visible{border-color:#148679}
+.bottle-help{font:500 12px/1.7 "Poppins",sans-serif;color:#58706a;max-width:670px}
+.bottle-card>.bottle-help{margin:12px 0 16px}
+.bottle-camera{height:230px;overflow:hidden;background:#1e3d37;border-radius:17px;display:grid;place-items:center;border:2px solid #a8d5c4}
+.bottle-camera video,.bottle-camera img{width:100%;height:100%;object-fit:contain}
+.bottle-camera-placeholder{display:grid;justify-items:center;gap:8px;color:#dcf6ec;font-weight:600;font-size:13px;padding:23px;text-align:center}
+.bottle-controls{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}
+.bottle-controls button,.bottle-actions button,.bottle-actions a,.bottle-return-action button{display:flex;justify-content:center;align-items:center;gap:8px;
+  border-radius:11px;border:1.5px solid #c8ddcf;padding:11px 14px;color:#21564e;background:#fff;font-size:12px;font-weight:800;text-decoration:none;cursor:pointer}
+.bottle-controls button:hover,.bottle-actions button:hover,.bottle-actions a:hover{background:#edf7ed;transform:translateY(-1px)}
+.bottle-ai,.bottle-check,.bottle-actions .bottle-primary{display:flex;align-items:center;justify-content:center;gap:9px;
+  border:0;border-radius:12px;padding:13px 16px;background:#127e76;color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #0d5751}
+.bottle-ai{width:100%;margin:12px 0 14px}
+.bottle-ai:hover:not(:disabled),.bottle-check:hover:not(:disabled){background:#0d6f65;transform:translateY(-1px)}
+.bottle-ai:disabled,.bottle-check:disabled{opacity:.45;cursor:not-allowed}
+.bottle-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:19px}
+.bottle-fields>label:last-child{grid-column:1/-1;max-width:250px}
+.bottle-check{width:100%;margin-top:20px;background:#226f9c;box-shadow:0 4px 0 #1a4e6b}
+.bottle-check:hover:not(:disabled){background:#185e8d!important}
+.bottle-info{background:#ebf8ed;color:#21664b;padding:11px 13px;border-radius:12px;font-size:12px;font-weight:700;line-height:1.6}
+.bottle-error{color:#9d3c2e;background:#ffebe7;padding:12px;border-radius:12px;font-size:12px;font-weight:700}
+.bottle-answer{padding:27px 31px;border:2px solid #b6d6c9;border-radius:24px;background:#edf9f1;box-shadow:0 6px 0 #ddeddc;animation:wl-reveal .3s ease}
+.bottle-answer.bottle-not_covered,.bottle-answer.bottle-no_program{background:#fff7e8;border-color:#edcf9a}
+.bottle-answer.bottle-needs_check,.bottle-answer.bottle-program_needs_check{background:#f8f1ff;border-color:#ded0ed}
+.bottle-answer-head{display:flex;justify-content:space-between;align-items:center;gap:18px}
+.bottle-answer h2{font:700 clamp(25px,3.5vw,32px) "Fraunces",serif;color:#193e3c;margin:5px 0}
+.bottle-answer p{font-size:13px;line-height:1.75;color:#335951;max-width:820px}
+.bottle-price{display:grid;justify-items:end;min-width:150px}
+.bottle-price strong{font:700 clamp(30px,5vw,48px)/1.1 "Fraunces",serif;color:#137d6a}
+.bottle-price span{font-weight:700;font-size:11px;color:#5a7262;text-align:right}
+.bottle-formula{font-size:12px;font-weight:800;color:#316354}
+.bottle-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.bottle-actions button{background:#194c69;color:white;border-color:#194c69}
+.bottle-actions a{background:#fff}
+.bottle-caution{display:flex;align-items:flex-start;gap:7px;font-size:11px!important;color:#597068!important}
+.bottle-caution svg{flex:0 0 auto;margin-top:3px}
+.bottle-bag{background:#fff1dd;border-color:#f0d9b1}
+.bottle-bag-heading{display:flex;justify-content:space-between;align-items:center;color:#9b7041}
+.bottle-bag h2{font:700 clamp(26px,3vw,34px) "Fraunces",serif;color:#4d4337;margin:5px 0 17px}
+.bottle-totals{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:23px}
+.bottle-totals>div{background:white;border-radius:15px;display:grid;gap:5px;padding:20px;border:1px solid #eddcbf}
+.bottle-totals span{font-size:12px;font-weight:700;color:#6d6253}
+.bottle-totals strong{font:700 33px "Fraunces",serif;color:#3b664b}
+.bottle-entry{display:flex;align-items:flex-start;gap:12px;border-top:1px solid #e0cbad;padding:16px 4px}
+.bottle-entry-info{display:grid;gap:5px;flex:1}
+.bottle-entry-info>strong{font-size:14px;color:#4d4737}
+.bottle-entry-info>span{font-size:12px;color:#655b4d}
+.bottle-complete{color:#1a8164!important;font-weight:800;display:flex;align-items:center;gap:7px}
+.bottle-return-action{display:flex;gap:9px;align-items:end;flex-wrap:wrap;margin-top:8px}
+.bottle-return-action label{font-size:11px;font-weight:800;color:#654b36}
+.bottle-return-action input{max-width:150px;display:block;margin-top:6px;height:41px}
+.bottle-return-action button{background:#236c5a;color:white;border-color:#236c5a}
+.bottle-trash{border:0;border-radius:10px;color:#a26451;background:#fff5e5;padding:8px;cursor:pointer}
+.bottle-trash:hover{background:#fce0c7}
+@media(max-width:900px){.bottle-grid{grid-template-columns:1fr}.bottle-page{padding:18px 0 55px}.bottle-camera{height:300px}}
+@media(max-width:550px){
+  .bottle-hero{padding:22px;gap:14px}.bottle-hero-icon{width:55px;height:55px}.bottle-hero-icon svg{width:29px}
+  .bottle-hero h1{font-size:31px}.bottle-card,.bottle-bag{padding:20px}
+  .bottle-fields{grid-template-columns:1fr}.bottle-fields>label:last-child{grid-column:auto}
+  .bottle-camera{height:240px}.bottle-answer{padding:21px}
+  .bottle-price{min-width:90px}.bottle-totals strong{font-size:27px}.bottle-totals>div{padding:13px}
+}
+@media(prefers-reduced-motion:reduce){.bottle-page,.bottle-answer{animation:none!important}.bottle-controls button:hover{transform:none!important}}
