@@ -57,10 +57,12 @@ def test_xp_only_for_new_likely_photos_and_account_login(client, monkeypatch):
     first = scan(b"image number 1")
     assert first.status_code == 200
     assert first.json()["earned_xp"] == 20
+    assert [badge["name"] for badge in first.json()["unlocked_badges"]] == ["First Find"]
     assert first.json()["scan_id"] is not None
 
     replay = scan(b"image number 1")
     assert replay.json()["earned_xp"] == 0
+    assert replay.json()["unlocked_badges"] == []
     state = client.get("/api/leaderboard").json()
     assert state["leaders"] == []  # private by default
     assert state["me"]["xp"] == 20
@@ -72,6 +74,7 @@ def test_xp_only_for_new_likely_photos_and_account_login(client, monkeypatch):
     monkeypatch.setattr(main, "analyze_photo", lambda *args: prediction("uncertain"))
     unknown = scan(b"new image but unidentified")
     assert unknown.json()["earned_xp"] == 0
+    assert unknown.json()["unlocked_badges"] == []
     assert client.get("/api/leaderboard").json()["me"]["xp"] == 20
 
     assert client.post("/api/auth/logout",headers=HEADERS).status_code == 200
@@ -79,16 +82,23 @@ def test_xp_only_for_new_likely_photos_and_account_login(client, monkeypatch):
     logged_out = scan(b"anonymous scan")
     assert logged_out.json()["scan_id"] is None
     assert logged_out.json()["earned_xp"] == 0
+    assert logged_out.json()["unlocked_badges"] == []
 
 
 def test_badges_levels_and_daily_cap(client):
     person = signup(client, "Scanned A Lot", "scanner@example.org")
+    from app.gamification import new_badges_for_scan
     for index in range(11):
         scan_id = record_scan(
             person["id"], "model", prediction().model_dump(),
             photo_digest=hashlib.sha256(("image"+str(index)).encode()).hexdigest()
         )
         assert xp_for_scan(scan_id) == (20 if index < 10 else 0)
+        awarded = new_badges_for_scan(scan_id)
+        if index in (0,4,9):
+            assert [badge["threshold"] for badge in awarded] == [index+1]
+        else:
+            assert awarded == []
     me = client.get("/api/leaderboard").json()["me"]
     assert me["scans"] == 11
     assert me["xp"] == 200

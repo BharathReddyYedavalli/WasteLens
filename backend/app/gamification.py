@@ -141,3 +141,27 @@ def xp_for_scan(scan_id: int) -> int:
     with database() as db:
         reward = db.execute("SELECT xp FROM scan_rewards WHERE scan_id=?", (scan_id,)).fetchone()
     return int(reward["xp"]) if reward else 0
+
+
+
+def new_badges_for_scan(scan_id: int) -> list[dict]:
+    """Only the scan which crosses an award threshold returns a new badge.
+
+    This derives unlocks from the saved reward row, so a repeated image,
+    uncertain scan, or a reload cannot trigger a second celebration.
+    """
+    with database() as db:
+        reward = db.execute(
+            "SELECT user_id FROM scan_rewards WHERE scan_id=?", (scan_id,)
+        ).fetchone()
+        if not reward:
+            return []
+        rewarded_count = db.execute(
+            """SELECT COUNT(*) FROM scan_rewards
+               WHERE user_id=? AND scan_id<=?""",
+            (reward["user_id"], scan_id),
+        ).fetchone()[0]
+    return [
+        badge for badge in _badges(rewarded_count)
+        if badge["threshold"] == rewarded_count and badge["unlocked"]
+    ]

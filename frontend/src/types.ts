@@ -35,6 +35,7 @@ export type VisionResponse = {
   analysis: ItemAnalysis;
   local_facilities_verified: false;
   scan_id: number | null; earned_xp?: number;
+  unlocked_badges?: WasteLensBadge[];
 };
 
 export type SessionUser = { id: number; name: string; email: string; role: "user" | "admin" };
