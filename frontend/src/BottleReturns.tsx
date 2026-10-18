@@ -87,12 +87,12 @@ export default function BottleReturns() {
   return <section className="deposit-page">
     <div className="deposit-top">
       <div className="deposit-top-copy"><span className="deposit-kicker"><Coins size={17}/> 10 STATE BOTTLE GUIDE</span>
-        <h1>Is that bottle <em>worth something?</em></h1>
-        <p>Check what you might get back when you return a drink container.</p></div>
+        <h1>{t("Is that bottle worth something?")}</h1>
+        <p>{t("Check what you might get back when you return a drink container.")}</p></div>
       <div className="deposit-top-art" aria-hidden="true"><span>5¢</span><span>10¢</span><span>25¢</span><GlassWater size={100}/></div>
     </div>
     <div className="deposit-callout" role="note"><CircleHelp size={22}/><p>
-      <strong>Not every state has bottle deposits.</strong> Only 10 do. And even in those states, the drink, container and purchase location matter.
+      <strong>{t("Not every state has bottle deposits.")}</strong> {t("Only 10 do. And even in those states, the drink, container and purchase location matter.")}
     </p></div>
     <div className="deposit-layout">
       <div className="deposit-form-card">
@@ -105,17 +105,17 @@ export default function BottleReturns() {
           </label>
           <label>{t("What's inside?")}
             <select value={drink} onChange={e=>setDrink(e.target.value as Drink)}>
-              {drinks.map(d=><option key={d.value} value={d.value}>{d.name}</option>)}
+              {drinks.map(d=><option key={d.value} value={d.value}>{t(d.name)}</option>)}
             </select>
           </label>
           <label>{t("Container type")}
             <select value={material} onChange={e=>setMaterial(e.target.value as Material)}>
-              {materials.map(d=><option key={d.value} value={d.value}>{d.name}</option>)}
+              {materials.map(d=><option key={d.value} value={d.value}>{t(d.name)}</option>)}
             </select>
           </label>
           {material==="plastic"&&<label className="wide">{t("Plastic type")}
             <select value={resin} onChange={e=>setResin(e.target.value as Resin)}>
-              <option value="unknown">I don't know</option>
+              <option value="unknown">{t("I don't know")}</option>
               <option value="pet1">PET #1</option><option value="hdpe2">HDPE #2</option>
               <option value="other">Something else</option>
             </select>
@@ -130,42 +130,42 @@ export default function BottleReturns() {
           </label>
           <label className="wide">{t("Was the deposit paid in that state?")}
             <select value={paid} onChange={e=>setPaid(e.target.value as typeof paid)}>
-              <option value="unsure">Not sure</option><option value="yes">Yes, a deposit was charged</option>
-              <option value="no">No, it wasn't</option>
+              <option value="unsure">{t("Not sure")}</option><option value="yes">{t("Yes, a deposit was charged")}</option>
+              <option value="no">{t("No, it wasn't")}</option>
             </select>
           </label>
         </div>
-        <div className="deposit-examples"><span>Try one:</span>
+        <div className="deposit-examples"><span>{t("Try one:")}</span>
           <button type="button" onClick={()=>{setDrink("soda");setMaterial("aluminum");setOunces("12");setCount("12");setPaid("unsure");}}>12 soda cans</button>
           <button type="button" onClick={()=>{setDrink("water");setMaterial("plastic");setResin("pet1");setOunces("16.9");setCount("24");setPaid("unsure");}}>24 water bottles</button>
         </div>
       </div>
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
-        <div className="deposit-result-overline">YOUR REFUND CHECK</div>
+        <div className="deposit-result-overline">{t("YOUR REFUND CHECK")}</div>
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
-          <h2>{result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected"}</h2>
+          <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
           <p>{result.reason}</p>
           <div className="deposit-mini-math"><span>{result.count.toLocaleString()} containers</span><b>×</b><span>{result.per_container_cents}¢ each</span></div>
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
-            <Link2 size={16}/> Read {result.state}'s official rules
+            <Link2 size={16}/> {t("Read the official state rules")} · {result.state}
           </a>
         </>:<><strong className="deposit-amount">?</strong><p>Choose a valid size and amount to check.</p></>}
         <div className="deposit-result-note"><ShieldCheck size={18}/> A photo or label alone cannot confirm a refund. Your local return location makes the final decision.</div>
       </div>
     </div>
     <details className="deposit-photo-helper">
-      <summary><Camera size={21}/> Have the bottle with you? <span>Read its label with your camera</span></summary>
+      <summary><Camera size={21}/> {t("Have the bottle with you?")} <span>{t("Read its label with your camera")}</span></summary>
       <div className="deposit-photo-inside">
         <p>Take a close picture of the drink name and size. Gemini can suggest the details, but you'll confirm them above.</p>
         <div className="deposit-photo-controls">
           <input aria-label="Bottle label photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={selectPhoto}/>
           <button type="button" disabled={!photo||reading} onClick={()=>void readLabel()}>
-            <Sparkles size={17}/>{reading?"Reading…":"Read label"}
+            <Sparkles size={17}/>{reading?t("Reading…"):t("Read label")}
           </button>
         </div>
         {suggestion&&<div className="deposit-ai-read" role="status">
-          <strong>Check these details above</strong>
+          <strong>{t("Check these details above")}</strong>
           <p>{suggestion.visible_mark? "Visible print: "+suggestion.visible_mark:"No refund text could be read clearly."}</p>
           <p>{suggestion.guidance}</p>
         </div>}
