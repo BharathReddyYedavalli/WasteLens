@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
-import { Camera, CheckCircle2, ChevronDown, CircleHelp, ExternalLink, ImagePlus, Leaf, MapPin, Recycle, RotateCcw, Search, ShieldAlert, UploadCloud, X } from "lucide-react";
+import { Camera, CheckCircle2, ChevronDown, CircleHelp, ExternalLink, ImagePlus, Leaf, MapPin, Recycle, RotateCcw, Search, ShieldAlert, X } from "lucide-react";
 import type { Classification, ModelCatalog } from "./types";
 
 const label = (s: string) => s.replaceAll("_", " ").replace(/\b\w/g, l => l.toUpperCase());
