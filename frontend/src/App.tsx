@@ -115,7 +115,7 @@ export default function App() {
           <label htmlFor="model">AI Model</label>
           <div className="picker"><select id="model" value={selectedModel} onChange={e => { setSelectedModel(e.target.value); setResult(null); }} disabled={!catalog || busy}>
             {(catalog?.models ?? [{id: defaultModel, name: "MobileNetV3 · evaluated checkpoint 2", available: false, note: ""}]).map(m =>
-              <option value={m.id} key={m.id}>{m.name}{m.available ? "" : " (not installed)"}</option>)
+              <option value={m.id} key={m.id}>{m.name}{m.available ? "" : " (not installed)"}</option>)}
           </select><ChevronDown size={15}/></div>
           <small>{activeModel?.note ?? "Checkpoint 2 is the best-documented model. Other checkpoints have not been compared."}</small>
         </div>
