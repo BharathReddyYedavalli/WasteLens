@@ -130,12 +130,27 @@ def test_actions_belong_to_owner_and_do_not_increase_xp(client):
     assert client.get("/api/leaderboard").json()["me"]["actions"] == 0
 
 
-def test_existing_user_database_migrates_without_data_loss(client):
+def test_existing_user_database_migrates_without_data_loss(tmp_path, monkeypatch):
     import app.accounts as accounts
-    path = accounts.db_path()
+    path = tmp_path / "legacy-db.sqlite3"
+    monkeypatch.setenv("WASTELENS_DB", str(path))
+    with sqlite3.connect(path) as db:
+        db.execute("""CREATE TABLE users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'user',
+            created_at TEXT NOT NULL
+        )""")
+        db.execute("""INSERT INTO users(id,name,email,password_hash,role,created_at)
+                      VALUES (42,'Existing Member','old@example.org','hash','user','2025-02-01')""")
+    accounts.initialize()  # real migration from an earlier database schema
     with sqlite3.connect(path) as db:
         fields = [row[1] for row in db.execute("PRAGMA table_info(users)")]
         assert "leaderboard_visible" in fields
+        assert db.execute("SELECT name FROM users WHERE id=42").fetchone()[0] == "Existing Member"
+        assert db.execute("SELECT leaderboard_visible FROM users WHERE id=42").fetchone()[0] == 0
         assert "scan_rewards" in {
             row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
         }
