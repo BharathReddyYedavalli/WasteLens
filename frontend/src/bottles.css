@@ -181,3 +181,7 @@
 }
 
 .shell.story-shell{width:100%!important;max-width:none!important;margin:0}
+
+.deposit-state-tip{margin-top:13px;border:1px solid #ffffff52;border-radius:12px;padding:10px 13px}
+.deposit-state-tip summary{cursor:pointer;color:#ffeaaf;font-weight:800;font-size:12px}
+.deposit-state-tip p{margin:10px 0 2px;font-size:12px;line-height:1.65}

@@ -23,6 +23,7 @@ def test_ten_state_soda_deposits(state,expected):
     assert out["per_container_cents"]==expected
     assert out["total_cents"]==expected
     assert out["source_url"].startswith("https://")
+    assert out["state_tip"]
 
 def test_state_specific_edge_cases():
     assert len(STATE_SOURCES)==10

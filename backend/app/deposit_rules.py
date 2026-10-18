@@ -24,6 +24,20 @@ STATE_SOURCES = {
     "OR": ("Oregon", "https://www.oregon.gov/olcc/pages/bottle-bill-redeemable.aspx"),
     "VT": ("Vermont", "https://dec.vermont.gov/waste-management/solid/product-stewardship/vermonts-bottle-bill"),
 }
+
+STATE_TIPS = {
+    "CA": "CalRecycle allows payment by count for up to 50 containers of each common material type per transaction. Higher amounts may be paid by weight.",
+    "CT": "Connecticut changed its refund from 5¢ to 10¢ in January 2024. Size limits differ for carbonated and still drinks.",
+    "HI": "Hawaii's separate 1¢ container fee is not refundable. Check for the HI 5¢ mark and eligible materials.",
+    "IA": "Iowa covers carbonated and alcoholic beverages. Its state DNR maintains an approved redemption center directory.",
+    "ME": "Maine generally refunds 15¢ on wine and spirits, 5¢ on other covered drinks. Some local cider and blueberry juice are excluded.",
+    "MA": "Massachusetts has a 5¢ deposit on covered carbonated drinks. Some redemption centers may deduct processing fees.",
+    "MI": "Michigan retailers generally accept eligible containers of the brand, type and size they sell, up to $25 in returns per person each day.",
+    "NY": "New York refunds only deposits paid in New York. Retailers have obligations for eligible products of the same type and brand.",
+    "OR": "Oregon includes qualifying wine in metal cans since July 2025. Different beverages have different size limits.",
+    "VT": "Vermont updated its eligible materials in July 2026. Transitional rules for previously labeled cartons and pouches run through July 2027.",
+}
+
 DRINK = Literal["soda", "water", "sparkling_water", "beer", "cider", "juice",
                 "sports_energy", "coffee_tea", "wine", "liquor", "mixed_alcohol",
                 "milk", "other"]
@@ -178,7 +192,7 @@ def calculate(info: DepositRequest) -> dict:
         "state": state_name, "state_code": info.state,
         "status": status, "per_container_cents": cents,
         "total_cents": amount, "count": info.count,
-        "reason": reason, "source_url": url,
+        "reason": reason, "source_url": url, "state_tip": STATE_TIPS[info.state],
         "amount_is_confirmed": False,  # Eligibility is modeled, never proof of payout.
         "label": "Refund estimate" if status == "yes" else "Possible value, not confirmed" if status == "check" else "No deposit estimated",
         "note": "A return location must accept the eligible container. These are eligibility estimates, not payment guarantees.",

@@ -8,7 +8,7 @@ type Drink = "soda"|"water"|"sparkling_water"|"beer"|"cider"|"juice"|"sports_ene
 type Material = "aluminum"|"glass"|"plastic"|"carton"|"pouch"|"other";
 type Resin = "pet1"|"hdpe2"|"other"|"unknown";
 type DepositResult = { state:string;state_code:DepositStateCode;status:"yes"|"no"|"check";per_container_cents:number;
- total_cents:number;count:number;reason:string;source_url:string;amount_is_confirmed:boolean;label:string;note:string };
+ total_cents:number;count:number;reason:string;source_url:string;state_tip:string;amount_is_confirmed:boolean;label:string;note:string };
 type LabelSuggestion = {drink:Drink;material:Material;resin:Resin;ounces:number|null;visible_mark:string;
   confidence:"clear"|"uncertain";guidance:string};
 const STATES: {code:DepositStateCode; name:string}[] = [
@@ -150,6 +150,10 @@ export default function BottleReturns() {
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
             <Link2 size={16}/> {t("Read the official state rules")} · {result.state}
           </a>
+          <details className="deposit-state-tip">
+            <summary>{t("One useful state tip")}</summary>
+            <p>{result.state_tip}</p>
+          </details>
         </>:<><strong className="deposit-amount">?</strong><p>Choose a valid size and amount to check.</p></>}
         <div className="deposit-result-note"><ShieldCheck size={18}/> A photo or label alone cannot confirm a refund. Your local return location makes the final decision.</div>
       </div>

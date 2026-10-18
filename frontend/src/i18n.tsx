@@ -132,6 +132,9 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Location details": { es: "Datos del lugar", hi: "स्थान का विवरण" },
   "Waste audit": { es: "Auditoría de residuos", hi: "कचरा सर्वेक्षण" },
 
+  "One useful state tip":{es:"Un consejo de tu estado",hi:"राज्य का एक जरूरी नियम"},
+  "Is that bottle worth something?":{es:"¿Cuánto vale devolver esta botella?",hi:"इस बोतल से कितने पैसे मिलेंगे?"},
+  "Pass the bottle quiz":{es:"Supera el cuestionario",hi:"बोतल क्विज़ पास करें"},
   "Bottle Explorer": { es:"Explorador de botellas", hi:"बोतल खोजकर्ता" },
   "Check your container": { es:"Revisa tu envase", hi:"बोतल की जाँच करें" },
   "Ready to return them?": { es:"¿Listo para devolverlos?", hi:"वापस जमा करने के लिए तैयार?" },
