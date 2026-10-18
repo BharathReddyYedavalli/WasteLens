@@ -274,7 +274,14 @@ WasteLens offers a route from *recognition* to a practical next step:
    teal, coral, yellow and lilac accent colors, Poppins interface text,
    editorial display typography, small transitions and reduced motion support.
    Confetti and XP remain available, but are secondary to useful actions.
-5. **Free collection map**: unchanged existing community and city sourced
+5. **Community waste audit**: a separate page for schools, families and
+   cleanups. Count items as recycling, compost, trash, reuse or unsure,
+   use Undo, export the observation log as CSV or print the summary.
+   Nothing is sent to WasteLens accounts or its backend; the audit is kept
+   in this browser's local storage until cleared. After the page is
+   loaded, the tally itself works without calling external services.
+   Manual observations are not verified waste diversion.
+6. **Free collection map**: unchanged existing community and city sourced
    finder. A map listing does not establish material acceptance or opening
    hours. Confirm by contacting the facility before traveling.
 
