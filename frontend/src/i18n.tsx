@@ -63,6 +63,8 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Take this guide with you": { es: "Llévate esta guía", hi: "यह गाइड अपने साथ रखें" },
   "Save or print": { es: "Guardar o imprimir", hi: "सहेजें या प्रिंट करें" },
   "Copy steps": { es: "Copiar pasos", hi: "चरण कॉपी करें" },
+  "Listen": { es: "Escuchar", hi: "सुनें" },
+  "Stop reading": { es: "Detener lectura", hi: "पढ़ना रोकें" },
   "Copied!": { es: "¡Copiado!", hi: "कॉपी हो गया!" },
   "Finished": { es: "Terminado", hi: "पूरा" },
   "steps done": { es: "pasos completados", hi: "चरण पूरे" },
