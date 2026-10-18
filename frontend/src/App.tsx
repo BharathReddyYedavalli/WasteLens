@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, ExternalLink, Leaf, Lightbulb,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine
 } from "lucide-react";
 import type { StatusResponse, VisionResponse } from "./types";
+import AskWasteLens from "./AskWasteLens";
+import FinderView from "./FinderView";
 
 type PhotoPreview = { file: File; src: string };
 const initialModel = "gemini-3.8-flash";
@@ -18,6 +20,7 @@ function ErrorText({ message }: { message: string }) {
 }
 
 export default function App() {
+  const [view, setView] = useState<"scan" | "chat" | "finder">("scan");
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
   const [model, setModel] = useState(initialModel);
@@ -160,7 +163,23 @@ export default function App() {
       <a className="brand" href="#home"><Leaf size={26} strokeWidth={2.5}/><strong>WasteLens</strong></a>
       <span className="brand-desc">See it. Sort it. Sustain it.</span>
     </header>
+    <div className="site-layout">
+    <aside className="side-nav" aria-label="WasteLens navigation">
+      <div className="side-nav-title">EXPLORE</div>
+      <button type="button" className={view === "scan" ? "nav-item active" : "nav-item"}
+        aria-current={view === "scan" ? "page" : undefined}
+        onClick={() => setView("scan")}><ScanLine size={18}/> AI Identifier</button>
+      <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"}
+        aria-current={view === "chat" ? "page" : undefined}
+        onClick={() => {stopCamera();setView("chat");}}><MessageCircle size={18}/> Ask WasteLens</button>
+      <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"}
+        aria-current={view === "finder" ? "page" : undefined}
+        onClick={() => {stopCamera();setView("finder");}}><MapPin size={18}/> Recycling Finder</button>
+      <p className="side-nav-note">More tools can be added here as we build and test them.</p>
+    </aside>
+    <div className="page-content">
     <main id="home" className="shell">
+      {view === "scan" && <>
       <div className="intro">
         <div>
           <span className="eyebrow">SMARTER WASTE SORTING</span>
@@ -240,6 +259,7 @@ export default function App() {
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
         <div className="material-line"><strong>Likely material:</strong> {analysis.material_guess}</div>
+        <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}><MessageCircle size={17}/> Ask WasteLens about this item</button>
         {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
         {analysis.follow_up_question && <div className="question"><strong>One thing to check:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
@@ -273,10 +293,17 @@ export default function App() {
           </article>
         </div>
       </section>}
+      </>}
+      <div hidden={view !== "chat"}>
+        <AskWasteLens scan={analysis ?? null} model={model} configured={Boolean(status?.configured)} onScan={() => setView("scan")} />
+      </div>
+      {view === "finder" && <FinderView scan={analysis ?? null} />}
       <footer>
         <span>WasteLens · Experimental vision AI prototype</span>
         <span>Disposal advice is provisional; local rules and item condition matter.</span>
       </footer>
     </main>
+    </div>
+    </div>
   </div>;
 }

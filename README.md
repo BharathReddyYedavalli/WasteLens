@@ -2,7 +2,7 @@
 
 WasteLens is a **camera-first, experimental** web app for recognizing household objects and offering **item-specific** reuse and disposal suggestions. It uses the **Google Gemini API's free tier** for a first prototype rather than the original Garbage-Crew MobileNet/YOLO models. Those experiments are preserved in earlier branches.
 
-The app has Poppins typography, a minimal green/white camera interface, and four possible stages: **photo → AI object identification → tailored reuse/disposal guidance → optional search for potential collection facilities**.
+The app has Poppins typography, a minimal green/white camera interface, a left sidebar with AI Identifier / Ask WasteLens / Recycling Finder, and four possible stages: **photo → AI object identification → tailored reuse/disposal guidance → optional search for potential collection facilities**.
 
 > **Current status:** Backend/frontend and mocked automated tests are implemented. Actual Google Gemini image calls require a personal API key, and have **not yet been end-to-end tested** against live images on this branch. This is not a certified recycling decision system.
 
@@ -72,3 +72,27 @@ This new AI branch preserves the earlier MobileNetV3, optional YOLO, benchmarkin
 ## License
 
 Project-specific source: MIT (see LICENSE). Google Gemini service and third-party libraries/fonts are governed by their own terms.
+
+## Ask WasteLens — Scan-aware AI chatbot (new feature branch)
+
+The **Ask WasteLens** sidebar tab runs on the existing Gemini API key through `POST /api/ai/chat`. It works for general waste questions without scanning first, but after a scan it also receives the **latest unverified scan summary**, enabling follow-ups such as "Can I recycle the cap?" or "How do I reuse this bottle?".
+
+- Chats maintain up to 12 recent messages in the browser during the current page session; there is **no backend chat database**.
+- Chat requests send question, limited message history and optional scan **metadata** to Gemini. The camera photo is **not resent** by the chat endpoint.
+- A new scan resets the prior object's chat history. Use the Clear chat button to clear the current conversation.
+- Suggestions are not verified local collection rules or professional hazardous-waste instructions. The assistant must ask for uncertain material details instead of inventing them.
+- The **Recycling Finder** sidebar supports ZIP/city input and a material-specific Google Maps search link. It does **not** validate centers or embed live locations; call each facility to confirm acceptance.
+- Tests exercise backend validation, scan context, history bounds, errors, and mocked chat replies; browser-based Gemini responses must still be tested manually.
+
+### Windows update instructions
+
+While on `feat/free-vision-ai`, verify `git status` first; then:
+```powershell
+git fetch origin
+git switch --track origin/feat/ask-wastelens-chat
+```
+If `git switch --track` reports an existing local branch, use `git switch feat/ask-wastelens-chat` and `git pull --ff-only`.
+
+Stop/restart both local backend and Vite frontend after changing branches. Your existing ignored root `.env` and Gemini API key are reused; no new key is needed. Confirm `GET /api/ai/status` still reports `configured: true` before testing the chat.
+
+Do **not** use this unauthenticated API endpoint on a publicly reachable server without a user identity, rate limiting, abuse protection and input logging/privacy policies appropriate to the product.
