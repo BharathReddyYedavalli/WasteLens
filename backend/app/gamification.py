@@ -165,3 +165,50 @@ def new_badges_for_scan(scan_id: int) -> list[dict]:
         badge for badge in _badges(rewarded_count)
         if badge["threshold"] == rewarded_count and badge["unlocked"]
     ]
+
+
+@router.get("/habits")
+def personal_habits(request: Request):
+    """Count scans and voluntarily logged outcomes without asserting diversion.
+
+    No images, geolocation, weights or inferred emissions are used.
+    """
+    from collections import Counter
+    from datetime import datetime, timezone, timedelta
+
+    user = require_user(request)
+    today = datetime.now(timezone.utc).date()
+    dates = [(today - timedelta(days=offset)).isoformat() for offset in range(6, -1, -1)]
+    with database() as db:
+        scan_rows = db.execute(
+            "SELECT substr(created_at,1,10) AS day, COUNT(*) AS n FROM scans WHERE user_id=? "
+            "AND created_at>=? GROUP BY substr(created_at,1,10)",
+            (user["id"], dates[0]),
+        ).fetchall()
+        action_rows = db.execute(
+            "SELECT substr(created_at,1,10) AS day, COUNT(*) AS n FROM scan_actions "
+            "WHERE user_id=? AND created_at>=? GROUP BY substr(created_at,1,10)",
+            (user["id"], dates[0]),
+        ).fetchall()
+        actions = db.execute(
+            "SELECT action, COUNT(*) AS n FROM scan_actions WHERE user_id=? GROUP BY action",
+            (user["id"],),
+        ).fetchall()
+        totals = db.execute(
+            "SELECT COUNT(*) FROM scans WHERE user_id=?", (user["id"],)
+        ).fetchone()[0]
+    scans_by_day = {row["day"]: row["n"] for row in scan_rows}
+    actions_by_day = {row["day"]: row["n"] for row in action_rows}
+    recorded = {row["action"]: row["n"] for row in actions}
+    return {
+        "days": [
+            {"day": day, "scans": scans_by_day.get(day, 0),
+             "actions": actions_by_day.get(day, 0)} for day in dates
+        ],
+        "seven_day_scans": sum(scans_by_day.values()),
+        "seven_day_actions": sum(actions_by_day.values()),
+        "total_scans": totals,
+        "recorded_actions": recorded,
+        "reuse_and_donation": recorded.get("reused", 0) + recorded.get("donated", 0),
+        "verified_impact": False,
+    }
