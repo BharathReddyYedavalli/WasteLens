@@ -33,7 +33,7 @@ function csvCell(value: string): string {
   return '"' + safe.replaceAll('"','""') + '"';
 }
 export default function AuditKit() {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const [audit,setAudit] = useState<Audit>(loadAudit);
   useEffect(() => {
     try {window.localStorage.setItem(STORAGE_KEY,JSON.stringify(audit));} catch { /* full or blocked */ }
