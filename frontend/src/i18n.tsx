@@ -145,7 +145,6 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Number of containers": { es:"Cantidad de envases", hi:"कितनी बोतलें हैं?" },
   "Was the deposit paid in that state?": { es:"¿Pagaste el depósito en ese estado?", hi:"क्या उस राज्य में जमा शुल्क दिया था?" },
   "Plastic type": { es:"Tipo de plástico", hi:"प्लास्टिक का प्रकार" },
-  "Is that bottle worth something?": { es:"¿Cuánto vale devolverla?", hi:"इस बोतल से कितना वापस मिलेगा?" },
   "Check what you might get back when you return a drink container.": {
     es:"Descubre cuánto podrías recuperar al devolver un envase.",
     hi:"बोतल जमा करने पर कितने पैसे वापस मिल सकते हैं, जानें।"
