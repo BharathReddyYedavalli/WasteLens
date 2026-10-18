@@ -14,3 +14,9 @@ frontend/dist/
 # Never commit personal camera evaluation images or per-image labels
 benchmark_photos/
 benchmark_results/
+
+# Local private user accounts, history and SQLite write-ahead files
+backend/data/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
