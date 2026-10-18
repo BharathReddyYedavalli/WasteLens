@@ -308,7 +308,6 @@ def test_city_fallback_returns_real_sources_without_network(client, monkeypatch)
     assert frisco["verified_acceptance"] is False
     assert "residency" in frisco["access_note"]
     places.resolve_zip.cache_clear()
-    places._query_overpass.cache_clear()
 
 
 def test_remote_postal_search_does_not_invent_fallback(client, monkeypatch):
