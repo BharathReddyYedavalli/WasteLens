@@ -297,3 +297,60 @@ WasteLens offers a route from *recognition* to a practical next step:
 * Check real drop off search coverage and local acceptance against official
   recycling pages. Do not assert nationwide acceptance without verification.
 * Keep personal image data and API keys out of the public repo.
+
+
+## Bottle Returns and Bottle Journey (October 2026)
+
+**10 US states**, each with linked official program information: CA, CT,
+HI, IA, ME, MA, MI, NY, OR, and VT. No other states are represented as
+having a statewide deposit. This is a reference tool, not a payment service.
+
+### Bottle Returns tab
+
+Choose purchase state, beverage, packaging type, size in fluid ounces,
+count and whether the deposit was actually paid there. A state-specific
+backend rule engine computes eligible refund value in integer cents.
+For ambiguous products or unknown deposits it returns **check**, not a
+confirmed refund. If the deposit was not paid there, the estimate is $0.
+The **official government source URL** is included in each result. The
+checker deliberately does not attempt to identify every brand or distributor
+or make claims about refund locations' real-time acceptance. Some states
+also have retailer-specific limits or product exemptions that cannot be
+inferred from these fields. Consult the linked state page before traveling.
+
+Optional photo label reader uses the configured Gemini API to suggest
+drink type, material, printed deposit message and capacity only if visibly
+legible, before the human checks those values. No AI-derived label or image
+establishes whether the deposit was paid in the selected state.
+
+### A Bottle's Journey tab
+
+An original **long illustrated scroll experience** tells a ten-chapter story,
+with current source links for claims and original embedded vector drawings
+rather than copying Neal.fun assets. At the very bottom is a five-question
+quiz. Correct answers are validated by the backend. Four out of five earns
+the Bottle Explorer badge and **30 XP exactly once** for each signed-in
+user. Anonymous visitors can learn and submit but cannot earn account XP.
+Badge progress contributes to the existing XP and opt-in leaderboard.
+The 2026 source and language translations should be reviewed regularly as
+laws can change.
+
+### Official rules consulted
+
+* California https://calrecycle.ca.gov/bevcontainer/
+* Connecticut https://portal.ct.gov/DEEP/Reduce-Reuse-Recycle/Bottles/Connecticut-Bottle-Bill
+* Hawaii https://health.hawaii.gov/hi5/consumers/
+* Iowa https://www.iowadnr.gov/environmental-protection/land-quality/recycling/bottle-deposit-law
+* Maine https://www1.maine.gov/dep/sustainability/bottlebill/index.html
+* Massachusetts https://www.mass.gov/deposit-bottle-can-recycling
+* Michigan https://www.michigan.gov/egle/faqs/recycling/bottle-deposit-law
+* New York https://dec.ny.gov/environmental-protection/recycling-composting/bottle-bill
+* Oregon https://www.oregon.gov/olcc/pages/bottle-bill-redeemable.aspx
+* Vermont https://dec.vermont.gov/waste-management/solid/product-stewardship/vermonts-bottle-bill
+
+Validation covers ten-state baseline rates, selected exceptions and size
+boundaries, user paid-deposit conditions, signed-in quiz reward uniqueness,
+and camera helper error codes using mock AI output. It does **not** prove
+live Gemini label recognition, redemption location operations, accessibility
+audits, or visual appearance on all browser sizes. Run those manually before
+the Congressional App Challenge demonstration.

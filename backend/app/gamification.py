@@ -7,7 +7,7 @@ No photos, email addresses or precise locations appear in rankings.
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .accounts import database, get_user, require_same_origin_action, require_user
 
@@ -50,9 +50,11 @@ def _user_stats(db, user_id: int):
         """SELECT
            (SELECT COUNT(*) FROM scans WHERE user_id=?) AS scans,
            (SELECT COUNT(*) FROM scan_rewards WHERE user_id=?) AS rewarded_scans,
-           (SELECT COALESCE(SUM(xp), 0) FROM scan_rewards WHERE user_id=?) AS xp,
-           (SELECT COUNT(*) FROM scan_actions WHERE user_id=?) AS actions""",
-        (user_id, user_id, user_id, user_id),
+           (SELECT COALESCE(SUM(xp), 0) FROM scan_rewards WHERE user_id=?) +
+           (SELECT COALESCE(SUM(xp), 0) FROM quiz_awards WHERE user_id=?) AS xp,
+           (SELECT COUNT(*) FROM scan_actions WHERE user_id=?) AS actions,
+           (SELECT COUNT(*) FROM quiz_awards WHERE user_id=?) AS quiz_badges""",
+        (user_id, user_id, user_id, user_id, user_id, user_id),
     ).fetchone()
     return dict(counts)
 
@@ -62,11 +64,12 @@ def leaderboard(request: Request):
     user = get_user(request)
     with database() as db:
         rows = db.execute(
-            """SELECT u.id, u.name, COALESCE(SUM(r.xp),0) AS xp,
-                      COUNT(r.scan_id) AS rewarded_scans
-               FROM users u LEFT JOIN scan_rewards r ON r.user_id=u.id
-               WHERE u.role='user' AND u.leaderboard_visible=1
-               GROUP BY u.id ORDER BY xp DESC, rewarded_scans DESC, u.id ASC LIMIT 30"""
+            """SELECT u.id, u.name,
+                      (SELECT COALESCE(SUM(xp),0) FROM scan_rewards WHERE user_id=u.id) +
+                      (SELECT COALESCE(SUM(xp),0) FROM quiz_awards WHERE user_id=u.id) AS xp,
+                      (SELECT COUNT(*) FROM scan_rewards WHERE user_id=u.id) AS rewarded_scans
+               FROM users u WHERE u.role='user' AND u.leaderboard_visible=1
+               ORDER BY xp DESC, rewarded_scans DESC, u.id ASC LIMIT 30"""
         ).fetchall()
         # Aggregate only self-reported actions, not independently verified recycling.
         published = []
@@ -76,7 +79,7 @@ def leaderboard(request: Request):
                 "rank": rank, "name": record["name"], "xp": record["xp"],
                 "level": 1 + record["xp"] // 100,
                 "scans": stats["scans"], "actions": stats["actions"],
-                "badges": sum(b["unlocked"] for b in _badges(record["rewarded_scans"])),
+                "badges": sum(b["unlocked"] for b in _badges(record["rewarded_scans"])) + stats["quiz_badges"],
                 "is_you": bool(user and record["id"] == user["id"]),
             })
         me = None
@@ -90,7 +93,13 @@ def leaderboard(request: Request):
                 **stats, "level": 1 + xp // 100, "level_progress": xp % 100,
                 "level_goal": 100,
                 "visible": bool(setting["leaderboard_visible"]),
-                "badges": _badges(stats["rewarded_scans"]),
+                "badges": _badges(stats["rewarded_scans"]) + [{
+                    "id": "bottle-explorer",
+                    "name": "Bottle Explorer",
+                    "description": "Pass the bottle journey quiz",
+                    "threshold": 0,
+                    "unlocked": bool(stats["quiz_badges"]),
+                }],
                 "carbon_kg": None,
             }
     return {
@@ -211,4 +220,53 @@ def personal_habits(request: Request):
         "recorded_actions": recorded,
         "reuse_and_donation": recorded.get("reused", 0) + recorded.get("donated", 0),
         "verified_impact": False,
+    }
+
+
+QUIZ_ID = "bottle_journey_v1"
+QUIZ_ANSWERS = ("ca10", "mi_no", "or_can", "hi_fee", "same_state")
+
+
+class QuizSubmission(BaseModel):
+    answers: list[str] = Field(min_length=5, max_length=5)
+
+
+@router.get("/deposit/quiz/progress")
+def bottle_quiz_progress(request: Request):
+    user = get_user(request)
+    if not user:
+        return {"signed_in": False, "awarded": False, "xp": 0}
+    with database() as db:
+        row = db.execute("SELECT xp FROM quiz_awards WHERE user_id=?", (user["id"],)).fetchone()
+    return {"signed_in": True, "awarded": bool(row), "xp": int(row["xp"]) if row else 0}
+
+
+@router.post("/deposit/quiz/submit")
+def submit_bottle_quiz(payload: QuizSubmission, request: Request):
+    require_same_origin_action(request)
+    score = sum(a == b for a, b in zip(payload.answers, QUIZ_ANSWERS))
+    passed = score >= 4
+    user = get_user(request)
+    unlocked = False
+    if passed and user:
+        with database() as db:
+            cursor = db.execute(
+                """INSERT OR IGNORE INTO quiz_awards(user_id,quiz_id,xp,awarded_at)
+                   VALUES (?,?,?,datetime('now'))""",
+                (user["id"], QUIZ_ID, 30),
+            )
+            unlocked = cursor.rowcount == 1
+    return {
+        "score": score, "total": len(QUIZ_ANSWERS), "passed": passed,
+        "earned_xp": 30 if unlocked else 0,
+        "unlocked_badge": ({
+            "id": "bottle-explorer", "name": "Bottle Explorer",
+            "description": "Passed the bottle journey quiz", "unlocked": True,
+            "threshold": 0
+        } if unlocked else None),
+        "signed_in": bool(user),
+        "message": ("Badge earned!" if unlocked else
+                    "Good job! Sign in to earn XP." if passed and not user else
+                    "Quiz completed. Your reward was already collected." if passed else
+                    "Almost there. Look back through the journey and try again."),
     }
