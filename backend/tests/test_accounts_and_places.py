@@ -129,16 +129,18 @@ def test_other_user_cannot_change_scan(client, monkeypatch):
 
 
 def test_finder_uses_real_provider_data_not_fake_locations(client, monkeypatch):
-    import app.places as places
+    from app import places
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+    monkeypatch.setattr(places.zipcodes, "matching", lambda zip_code: [
+        {"lat": "32.95", "long": "-96.80", "city": "Irving", "state": "TX"}
+    ])
     seen = []
-    def stub(url, data=None, timeout=12, **kwargs):
+    def stub(url, data=None, timeout=15):
         seen.append((url, data))
-        if "zippopotam" in url:
-            return {"places": [{"latitude": "32.95", "longitude": "-96.80",
-                                "place name": "Irving", "state abbreviation": "TX"}]}
         return {"elements": [
             {"type": "node", "id": 42, "lat": 32.96, "lon": -96.81,
-             "tags": {"name": "Actual mapped recycler", "amenity": "recycling"}},
+             "tags": {"name": "Actual mapped recycler", "amenity": "recycling", "recycling_type": "centre", "phone": "+1-555-0100"}},
             {"type": "node", "id": 44, "lat": 32.95, "lon": -96.80,
              "tags": {"amenity": "recycling", "access": "private"}},
         ]}
@@ -149,55 +151,72 @@ def test_finder_uses_real_provider_data_not_fake_locations(client, monkeypatch):
     data = response.json()
     assert len(data["facilities"]) == 1
     assert data["facilities"][0]["name"] == "Actual mapped recycler"
+    assert data["facilities"][0]["kind"] == "center"
+    assert data["facilities"][0]["phone"] == "+1-555-0100"
     assert data["facilities"][0]["verified_acceptance"] is False
-    assert len(seen) == 2 and seen[1][1] is not None
-
-
-def test_zip_lookup_falls_back_when_first_provider_has_missing_record(monkeypatch):
-    from app import places
-    from fastapi import HTTPException
-    calls = []
-    def mock_lookup(url, data=None, timeout=12, **kwargs):
-        calls.append(url)
-        if "zippopotam" in url:
-            raise HTTPException(404, "Missing provider record")
-        if "nominatim" in url:
-            return [{"lat": "33.183", "lon": "-96.845", "display_name": "Frisco, Texas 75033"}]
-        return {"elements": []}
-    monkeypatch.setattr(places, "fetch_json", mock_lookup)
+    assert data["listing_status"] == "ok"
+    assert len(seen) == 1 and seen[0][1] is not None
     places.resolve_zip.cache_clear()
-    lat, lon, display = places.resolve_zip("75033")
+    places._query_overpass.cache_clear()
+
+
+def test_zip_offline_lookup_does_not_call_network(monkeypatch):
+    from app import places
+    def fail_online(*args, **kwargs):
+        raise AssertionError("ZIP lookup must not call the network")
+    monkeypatch.setattr(places, "fetch_json", fail_online)
+    monkeypatch.setattr(places.zipcodes, "matching", lambda postal: [
+        {"lat": "33.183", "long": "-96.845", "city": "Frisco", "state": "TX"}
+    ])
+    places.resolve_zip.cache_clear()
+    lat, lon, label = places.resolve_zip("75033")
     assert round(lat, 3) == 33.183
     assert round(lon, 3) == -96.845
-    assert "Frisco" in display
-    assert len(calls) == 2
+    assert label == "Frisco, TX"
     places.resolve_zip.cache_clear()
 
 
-def test_missing_zip_provider_is_not_declared_invalid(monkeypatch):
+def test_missing_zip_is_not_declared_invalid(monkeypatch):
+    from app import places
+    monkeypatch.setattr(places.zipcodes, "matching", lambda postal: [])
+    places.resolve_zip.cache_clear()
+    with pytest.raises(Exception) as exc:
+        places.resolve_zip("75033")
+    assert "does not prove" in str(exc.value.detail)
+    places.resolve_zip.cache_clear()
+
+
+def test_provider_outage_keeps_base_map_available(client, monkeypatch):
     from app import places
     from fastapi import HTTPException
-    def missing(url, data=None, timeout=12, **kwargs):
-        if "zippopotam" in url:
-            raise HTTPException(404, "Provider data missing")
-        return []
-    monkeypatch.setattr(places, "fetch_json", missing)
     places.resolve_zip.cache_clear()
-    with pytest.raises(HTTPException) as exc:
-        places.resolve_zip("75033")
-    assert "does not" in exc.value.detail
-    places.resolve_zip.cache_clear()
-
-
-def test_maps_key_status_does_not_expose_gemini_key(client, monkeypatch):
-    monkeypatch.setenv("GOOGLE_MAPS_EMBED_KEY", "maps-only-browser-restricted-example")
-    response = client.get("/api/maps/status")
+    places._query_overpass.cache_clear()
+    monkeypatch.setattr(places.zipcodes, "matching", lambda postal: [
+        {"lat": "33.19", "long": "-96.83", "city": "Frisco", "state": "TX"}
+    ])
+    def unavailable(url, data=None, timeout=15):
+        raise HTTPException(503, "Community provider is down")
+    monkeypatch.setattr(places, "fetch_json", unavailable)
+    response = client.get("/api/facilities?zip_code=75033")
     assert response.status_code == 200
-    assert response.json()["configured"] is True
-    assert response.json()["embed_key"] == "maps-only-browser-restricted-example"
-    assert "GEMINI_API_KEY" not in response.text
-    monkeypatch.delenv("GOOGLE_MAPS_EMBED_KEY", raising=False)
-    assert client.get("/api/maps/status").json()["configured"] is False
+    body = response.json()
+    assert body["listing_status"] == "unavailable"
+    assert body["facilities"] == []
+    assert body["center"]["latitude"] == 33.19
+    assert "temporarily unavailable" in body["notice"]
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+
+
+def test_zip_library_contains_key_real_zips():
+    # Real bundled offline US postal dataset; prevents repeat of a known
+    # API-only ZIP lookup failure observed in the live WasteLens demo.
+    from app import places
+    places.resolve_zip.cache_clear()
+    for postal in ("75033", "75063"):
+        lat, lon, label = places.resolve_zip(postal)
+        assert 24 < lat < 50 and -125 < lon < -65 and label
+    places.resolve_zip.cache_clear()
 
 
 def test_incomplete_admin_configuration_warns_but_does_not_crash(client, monkeypatch):
