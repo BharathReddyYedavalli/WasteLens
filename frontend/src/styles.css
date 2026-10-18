@@ -195,3 +195,31 @@ footer{display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap;paddin
 .map-disclaimer svg{flex-shrink:0;margin-top:1px}
 @media(max-width:870px){.map-explorer{grid-template-columns:minmax(205px,38%) 1fr}.map-summary-stats strong{font-size:20px}}
 @media(max-width:620px){.map-explorer{display:flex;flex-direction:column-reverse;height:auto}.map-visual{height:340px;flex-shrink:0}.map-visual .modern-map{min-height:340px;height:340px}.facility-side-panel{max-height:310px;border-top:1px solid #e5eee7;border-right:0}.map-summary{padding:14px}.map-summary-loc{gap:8px}.map-summary h4{font-size:12px}.map-filters{padding:9px}.map-filter{font-size:9px;padding:7px}.map-corner-label{top:9px;left:9px}}
+
+/* Personalized photo-grounded reuse projects */
+.reuse-section{padding:24px!important}
+.reuse-heading{display:flex;justify-content:space-between;align-items:start;gap:15px}
+.reuse-heading h3{margin:5px 0 8px!important}
+.reuse-heading p{font-size:12px;line-height:1.7;color:#667c70;margin:0}
+.reuse-count{white-space:nowrap;font-size:10px;font-weight:700;padding:7px 11px;border-radius:50px;background:#dff3e7;color:#258c4b}
+.reuse-projects{display:grid;gap:12px;margin-top:20px}
+.reuse-project{background:white;border:1px solid #dceee5;border-radius:13px;overflow:hidden;box-shadow:0 6px 22px #183d2910}
+.reuse-project[open]{border-color:#a6d9bb}
+.reuse-project summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px}
+.reuse-project summary::-webkit-details-marker{display:none}
+.reuse-project-index{display:grid;place-items:center;border-radius:10px;background:#e7f6ee;color:#278348;min-width:40px;height:40px;font-size:15px;font-weight:700}
+.reuse-project-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.reuse-project-summary strong{font-size:13px;color:#1f3a2a}
+.reuse-project-summary>span{font-size:11px;color:#657d6c;line-height:1.5}
+.reuse-project-meta{white-space:nowrap;border-radius:20px;padding:5px 8px;background:#f2f7f3;color:#4f7c5c;font-weight:600;font-size:10px}
+.reuse-chevron{flex-shrink:0;color:#678f73;transition:transform .2s}
+.reuse-project[open] .reuse-chevron{transform:rotate(180deg)}
+.reuse-project-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:20px;padding:16px 20px 19px;border-top:1px solid #eaf0eb}
+.reuse-project-body h4{font-size:11px;color:#277a48;margin:0 0 8px}
+.reuse-project-body ul,.reuse-project-body ol{padding-left:17px;margin:0}
+.reuse-project-body li,.reuse-project-body p{font-size:11px;color:#435a4a;line-height:1.8;margin-bottom:5px}
+.reuse-safety{grid-column:1/-1;padding:10px 12px;display:flex;gap:8px;background:#fff6e8;border-radius:9px;color:#876431!important}
+.reuse-safety svg{flex-shrink:0}
+.reuse-legacy{margin-top:15px;font-size:12px}
+.reuse-disclaimer{font-size:10px;color:#758477;line-height:1.8;margin:18px 0 0}
+@media(max-width:700px){.reuse-project-body{grid-template-columns:1fr;gap:14px}.reuse-project-meta{white-space:normal;max-width:80px;text-align:center}.reuse-section{padding:16px!important}.reuse-heading{flex-direction:column}}

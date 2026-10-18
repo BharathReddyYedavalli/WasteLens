@@ -139,3 +139,30 @@ git switch --track origin/feat/free-polished-recycling-map
 .\\.venv\\Scripts\\python.exe -m pip install -r backend/requirements.txt
 ```
 Then restart Uvicorn and the Vite frontend. Your Gemini and admin credentials are unchanged.
+
+## More reliable free recycling search + object-specific reuse guides
+
+Branch `feat/reuse-guides-and-finder-reliability` updates two user-facing features:
+
+- The original `overpass.kumi.systems` fallback has been replaced by the operator's
+  current endpoint `overpass.private.coffee` (see the [OSM Overpass instance list](https://wiki.openstreetmap.org/wiki/Overpass_API)).
+  The code also tries another available public global endpoint on a failure.
+  A search that returns no mapped locations within roughly 12 miles retries
+  out to roughly 28 miles. Real empty results (`no_results`) are distinguished
+  from provider outages (`unavailable`). Public map facilities may still be
+  missing; this is not a guaranteed nationwide business directory.
+- A new `reuse_projects` field is returned in the **same Gemini photo-analysis
+  call**, with 3–5 specific practical ideas *when safe and appropriate*. Each
+  project contains a title, useful outcome, materials, instructions, difficulty,
+  approximate minutes and an optional safety caveat. The page displays projects
+  as expandable, mobile-friendly cards under the scanned item.
+- Unidentified objects omit structured projects, and previous saved scans
+  without `reuse_projects` still display their older `reuse_ideas` summaries.
+  All content is AI-generated, not guaranteed accurate. Check material,
+  safety and applicability before attempting a project.
+
+No new API keys, payment methods, provider subscriptions, or database migrations.
+For updated code on Windows, switch to the new branch, install backend
+requirements, restart Uvicorn, then run `npm run dev` under frontend.
+Automated tests use mocked provider data and do not verify production Overpass
+availability or a real Gemini image response.

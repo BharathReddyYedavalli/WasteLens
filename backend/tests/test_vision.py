@@ -21,3 +21,31 @@ def test_uncertainty_is_explicit():
         location_helpful=False, collection_search_term=""
     )
     assert example.identification == "uncertain"
+
+
+
+def test_reuse_project_schema_and_backwards_compatibility():
+    from app.vision import ReuseProject
+    project = ReuseProject(
+        title="Desk cable holder",
+        outcome="Organize cables using a clean, empty container.",
+        materials_needed=["empty container", "tape"],
+        steps=["Wash and dry the empty container.", "Place cables inside."],
+        difficulty="Easy", minutes_estimate=10,
+    )
+    assert project.minutes_estimate == 10
+    assert project.safety_note == ""
+    with pytest.raises(Exception):
+        ReuseProject(
+            title="Bad project", outcome="Extremely risky and unsafe idea",
+            minutes_estimate=0,
+        )
+    legacy = ItemAnalysis(
+        item_name="Plastic container", visual_description="Empty transparent container",
+        material_guess="Plastic (unverified)", identification="likely",
+        route="reuse_first", route_title="Keep using",
+        disposal_steps=[], reuse_ideas=["Use for organization."], cautions=[],
+        follow_up_question="", location_helpful=False, collection_search_term=""
+    )
+    assert legacy.reuse_projects == []
+    assert legacy.model_dump()["reuse_projects"] == []

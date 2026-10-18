@@ -226,3 +226,57 @@ def test_incomplete_admin_configuration_warns_but_does_not_crash(client, monkeyp
     with pytest.warns(RuntimeWarning, match="Incomplete admin"):
         bootstrap_admin()
     assert client.get("/api/health").status_code == 200
+
+
+
+def test_retry_wider_map_radius_if_no_locations_initially(client, monkeypatch):
+    from app import places
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+    monkeypatch.setattr(places.zipcodes, "matching", lambda z: [
+        {"lat": "33.19", "long": "-96.83", "city": "Frisco", "state": "TX"}
+    ])
+    queries = []
+    def fake_overpass(url, data=None, timeout=15):
+        from urllib.parse import parse_qs
+        query = parse_qs(data.decode("utf-8"))["data"][0]
+        queries.append(query)
+        if "around:20000" in query:
+            return {"elements": []}
+        return {"elements": [
+            {"type":"node","id":127,"lat":33.35,"lon":-96.7,
+             "tags":{"name":"Mapped recycling drop-off", "amenity":"recycling"}}
+        ]}
+    monkeypatch.setattr(places, "fetch_json", fake_overpass)
+    response = client.get("/api/facilities?zip_code=75033")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["listing_status"] == "ok"
+    assert body["radius_miles"] == 28.0
+    assert len(body["facilities"]) == 1
+    assert "around:20000" in queries[0]
+    assert "around:45000" in queries[1]
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+
+
+def test_zero_osm_locations_is_not_a_provider_outage(client, monkeypatch):
+    from app import places
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+    monkeypatch.setattr(places.zipcodes, "matching", lambda z: [
+        {"lat": "33.19", "long": "-96.83", "city": "Frisco", "state": "TX"}
+    ])
+    monkeypatch.setattr(places, "fetch_json", lambda *a,**kw: {"elements":[]})
+    response = client.get("/api/facilities?zip_code=75033")
+    assert response.status_code == 200
+    assert response.json()["listing_status"] == "no_results"
+    assert response.json()["radius_miles"] == 28.0
+    places.resolve_zip.cache_clear()
+    places._query_overpass.cache_clear()
+
+
+def test_overpass_fallback_includes_current_endpoint():
+    from app import places
+    assert "https://overpass.private.coffee/api/interpreter" in places.OVERPASS_SERVERS
+    assert "https://overpass.kumi.systems/api/interpreter" not in places.OVERPASS_SERVERS

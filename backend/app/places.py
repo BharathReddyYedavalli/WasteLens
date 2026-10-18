@@ -21,7 +21,8 @@ from fastapi import APIRouter, HTTPException, Query
 router = APIRouter(prefix="/api")
 OVERPASS_SERVERS = (
     "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+    "https://overpass.osm.jp/api/interpreter",
 )
 
 
@@ -72,15 +73,15 @@ def distance_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
 
 
 @lru_cache(maxsize=200)
-def _query_overpass(center_lat: float, center_lng: float, quarter_hour: int) -> dict:
+def _query_overpass(center_lat: float, center_lng: float, quarter_hour: int, radius_m: int = 20000) -> dict:
     # Cache searches for approx. 15 min so our student prototype doesn't
     # needlessly overload volunteer-operated Overpass community servers.
     query = (
         "[out:json][timeout:20];("
-        f'nwr(around:20000,{center_lat:.6f},{center_lng:.6f})["amenity"="recycling"];'
-        f'nwr(around:20000,{center_lat:.6f},{center_lng:.6f})["shop"="recycling"];'
-        f'nwr(around:20000,{center_lat:.6f},{center_lng:.6f})["recycling:electrical_items"="yes"];'
-        f'nwr(around:20000,{center_lat:.6f},{center_lng:.6f})["recycling:batteries"="yes"];'
+        f'nwr(around:{radius_m},{center_lat:.6f},{center_lng:.6f})["amenity"="recycling"];'
+        f'nwr(around:{radius_m},{center_lat:.6f},{center_lng:.6f})["shop"="recycling"];'
+        f'nwr(around:{radius_m},{center_lat:.6f},{center_lng:.6f})["recycling:electrical_items"="yes"];'
+        f'nwr(around:{radius_m},{center_lat:.6f},{center_lng:.6f})["recycling:batteries"="yes"];'
         ");out center 250;"
     )
     body = urlencode({"data": query}).encode("utf-8")
@@ -160,26 +161,34 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
         raise HTTPException(422, "Enter a five-digit US ZIP code.")
     center_lat, center_lng, label = resolve_zip(zip_code)
     error = None
+    radius_miles = 12.4
     try:
-        data = _query_overpass(round(center_lat, 6), round(center_lng, 6), int(time.time() // 900))
+        lat, lng, slot = round(center_lat, 6), round(center_lng, 6), int(time.time() // 900)
+        data = _query_overpass(lat, lng, slot, radius_m=20000)
         matches = _parse_facilities(data, center_lat, center_lng)
-        listing_status = "ok"
+        if not matches:
+            # Many US suburbs have no mapped recycling points inside 12 miles.
+            # Search a wider area rather than incorrectly implying none exist.
+            wider_data = _query_overpass(lat, lng, slot, radius_m=45000)
+            matches = _parse_facilities(wider_data, center_lat, center_lng)
+            radius_miles = 28.0
+        listing_status = "ok" if matches else "no_results"
     except HTTPException:
-        # Keep the underlying map usable and explicitly tell the user about
-        # missing search results, rather than blaming the ZIP.
+        # A failed response is not the same as an area without recycling sites.
         matches = []
         listing_status = "unavailable"
-        error = "Community recycling listings are temporarily unavailable. The ZIP map still works; try again later."
+        error = "OpenStreetMap location listings are temporarily unavailable. The map still works; please retry later."
     return {
         "zip_code": zip_code,
         "location_label": label,
         "center": {"latitude": center_lat, "longitude": center_lng},
         "facilities": matches,
+        "radius_miles": radius_miles,
         "listing_status": listing_status,
         "provider": "OpenStreetMap community data",
         "acceptance_verified": False,
         "notice": error or (
             "Mapped places are potential collection options, not verified acceptors of your item. "
-            "Contact a location before visiting."
+            "Some recycling businesses may be missing from OpenStreetMap. Contact a location before visiting."
         ),
     }

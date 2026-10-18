@@ -5,6 +5,16 @@ export type StatusResponse = {
   models: VisionModel[];
   privacy_notice: string;
 };
+export type ReuseProject = {
+  title: string;
+  outcome: string;
+  materials_needed: string[];
+  steps: string[];
+  difficulty: "Easy" | "Moderate" | "Advanced";
+  minutes_estimate: number;
+  safety_note: string;
+};
+
 export type ItemAnalysis = {
   item_name: string;
   visual_description: string;
@@ -14,6 +24,7 @@ export type ItemAnalysis = {
   route_title: string;
   disposal_steps: string[];
   reuse_ideas: string[];
+  reuse_projects?: ReuseProject[];
   cautions: string[];
   follow_up_question: string;
   location_helpful: boolean;
@@ -48,5 +59,6 @@ export type FacilitySearchResponse = {
   center: { latitude: number; longitude: number };
   facilities: Facility[];
   provider: string; acceptance_verified: false; notice: string;
-  listing_status: "ok" | "unavailable";
+  listing_status: "ok" | "no_results" | "unavailable";
+  radius_miles: number;
 };
