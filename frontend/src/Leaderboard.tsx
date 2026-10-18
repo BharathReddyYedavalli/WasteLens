@@ -9,7 +9,7 @@ function Badge({ badge }: { badge: WasteLensBadge }) {
   return <div className={"reward-badge " + (badge.unlocked ? "unlocked" : "locked")}>
     <span className="reward-badge-icon">{badge.unlocked ? <Award size={24}/> : <LockKeyhole size={22}/>}</span>
     <strong>{t(badge.name)}</strong>
-    <small>{badge.unlocked ? t("Unlocked") : badge.threshold + " " + t("Scans")}</small>
+    <small>{badge.unlocked ? t("Unlocked") : badge.id === "bottle-explorer" ? t("Pass the bottle quiz") : badge.threshold + " " + t("Scans")}</small>
   </div>;
 }
 

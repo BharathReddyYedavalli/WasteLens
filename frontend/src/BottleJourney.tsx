@@ -181,6 +181,7 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
       <span className="journey-quiz-halo" aria-hidden="true">✷</span>
       <span className="journey-tag"><Award size={19}/> {t("YOU MADE IT!")}</span>
       <h2>{language==="en"?<>You've traveled with the bottle.<br/><i>Now it's your turn.</i></>:language==="es"?<>Seguiste el viaje de la botella.<br/><i>Ahora te toca a ti.</i></>:<>आपने बोतल की यात्रा देख ली।<br/><i>अब आपकी बारी है।</i></>}</h2>
+      {!user && <p className="journey-signin-reminder">{language==="en"?"Sign in before the quiz to save your badge and XP.":language==="es"?"Entra antes de jugar para guardar la insignia y los XP.":"बैज और XP पाने के लिए क्विज़ से पहले लॉग इन करें।"} <button type="button" onClick={onSignIn}>{t("Sign in")}</button></p>}
       <p className="journey-quiz-intro">{language==="en"?"Answer five quick questions. Get at least four right to earn the Bottle Explorer badge and 30 XP once.":language==="es"?"Responde cinco preguntas. Con cuatro respuestas correctas ganas una sola vez la insignia Explorador de botellas y 30 XP.":"पाँच छोटे सवालों के जवाब दें। कम से कम चार सही होने पर एक बार बोतल खोजकर्ता बैज और 30 XP मिलेंगे।"}</p>
       <div className="journey-quiz-card">
         {quiz.map((q,index)=><fieldset key={q.id} className="journey-question" disabled={loading||Boolean(result?.passed)}>
@@ -195,7 +196,7 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
         </fieldset>)}
         {result&&<div className={"journey-quiz-outcome "+(result.passed?"passed":"")} role="status">
           <strong>{result.score} out of {result.total} correct</strong>
-          <p>{language==="en"?result.message:result.unlocked_badge?"¡Badge earned!":result.passed?"¡Excelente!":language==="es"?"Revisa las respuestas e inténtalo otra vez.":"जवाब जाँचें और फिर प्रयास करें।"}</p>
+          <p>{language==="en"?result.message:result.unlocked_badge?(language==="es"?"¡Insignia desbloqueada!":"बैज मिला!") :result.passed?(language==="es"?"¡Excelente!":"बहुत बढ़िया!") :language==="es"?"Revisa las respuestas e inténtalo otra vez.":"जवाब जाँचें और फिर प्रयास करें।"}</p>
           {result.unlocked_badge&&<span className="journey-badge-earned"><Award size={19}/> Bottle Explorer · +30 XP</span>}
           {result.passed&&!result.signed_in&&<button type="button" className="journey-login" onClick={onSignIn}>{t("Sign in to earn the badge")}</button>}
         </div>}

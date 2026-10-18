@@ -30,6 +30,9 @@ def inspect_deposit_photo(data: bytes) -> DepositPhotoSuggestion:
         from google import genai
         from google.genai import types
         from google.genai.errors import APIError
+    except ImportError as exc:
+        raise AIUnavailable("Install backend AI requirements to scan labels.", 503) from exc
+    try:
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         response = client.models.generate_content(
             model=DEFAULT_MODEL,
@@ -60,7 +63,5 @@ def inspect_deposit_photo(data: bytes) -> DepositPhotoSuggestion:
         raise AIUnavailable("The photo reader could not interpret the label.", 502) from exc
     except AIUnavailable:
         raise
-    except ImportError as exc:
-        raise AIUnavailable("Install backend AI requirements to scan labels.", 503) from exc
     except Exception as exc:
         raise AIUnavailable("Could not read that photo. Try entering the details manually.", 502) from exc
