@@ -131,7 +131,7 @@ def test_other_user_cannot_change_scan(client, monkeypatch):
 def test_finder_uses_real_provider_data_not_fake_locations(client, monkeypatch):
     import app.places as places
     seen = []
-    def stub(url, data=None, timeout=12):
+    def stub(url, data=None, timeout=12, **kwargs):
         seen.append((url, data))
         if "zippopotam" in url:
             return {"places": [{"latitude": "32.95", "longitude": "-96.80",
@@ -151,3 +151,59 @@ def test_finder_uses_real_provider_data_not_fake_locations(client, monkeypatch):
     assert data["facilities"][0]["name"] == "Actual mapped recycler"
     assert data["facilities"][0]["verified_acceptance"] is False
     assert len(seen) == 2 and seen[1][1] is not None
+
+
+def test_zip_lookup_falls_back_when_first_provider_has_missing_record(monkeypatch):
+    from app import places
+    from fastapi import HTTPException
+    calls = []
+    def mock_lookup(url, data=None, timeout=12, **kwargs):
+        calls.append(url)
+        if "zippopotam" in url:
+            raise HTTPException(404, "Missing provider record")
+        if "nominatim" in url:
+            return [{"lat": "33.183", "lon": "-96.845", "display_name": "Frisco, Texas 75033"}]
+        return {"elements": []}
+    monkeypatch.setattr(places, "fetch_json", mock_lookup)
+    places.resolve_zip.cache_clear()
+    lat, lon, display = places.resolve_zip("75033")
+    assert round(lat, 3) == 33.183
+    assert round(lon, 3) == -96.845
+    assert "Frisco" in display
+    assert len(calls) == 2
+    places.resolve_zip.cache_clear()
+
+
+def test_missing_zip_provider_is_not_declared_invalid(monkeypatch):
+    from app import places
+    from fastapi import HTTPException
+    def missing(url, data=None, timeout=12, **kwargs):
+        if "zippopotam" in url:
+            raise HTTPException(404, "Provider data missing")
+        return []
+    monkeypatch.setattr(places, "fetch_json", missing)
+    places.resolve_zip.cache_clear()
+    with pytest.raises(HTTPException) as exc:
+        places.resolve_zip("75033")
+    assert "does not" in exc.value.detail
+    places.resolve_zip.cache_clear()
+
+
+def test_maps_key_status_does_not_expose_gemini_key(client, monkeypatch):
+    monkeypatch.setenv("GOOGLE_MAPS_EMBED_KEY", "maps-only-browser-restricted-example")
+    response = client.get("/api/maps/status")
+    assert response.status_code == 200
+    assert response.json()["configured"] is True
+    assert response.json()["embed_key"] == "maps-only-browser-restricted-example"
+    assert "GEMINI_API_KEY" not in response.text
+    monkeypatch.delenv("GOOGLE_MAPS_EMBED_KEY", raising=False)
+    assert client.get("/api/maps/status").json()["configured"] is False
+
+
+def test_incomplete_admin_configuration_warns_but_does_not_crash(client, monkeypatch):
+    from app.accounts import bootstrap_admin
+    monkeypatch.setenv("WASTELENS_ADMIN_EMAIL", "admin@example.org")
+    monkeypatch.setenv("WASTELENS_ADMIN_PASSWORD", "short")
+    with pytest.warns(RuntimeWarning, match="Incomplete admin"):
+        bootstrap_admin()
+    assert client.get("/api/health").status_code == 200

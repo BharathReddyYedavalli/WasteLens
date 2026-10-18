@@ -17,6 +17,7 @@ import secrets
 import sqlite3
 import threading
 import time
+import warnings
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError, InvalidHashError
@@ -318,7 +319,13 @@ def bootstrap_admin():
     if not email_raw and not password:
         return
     if not email_raw or len(password) < 12:
-        raise RuntimeError("Set WASTELENS_ADMIN_EMAIL and a 12+ character WASTELENS_ADMIN_PASSWORD.")
+        warnings.warn(
+            "Incomplete admin configuration: set WASTELENS_ADMIN_EMAIL and "
+            "a 12+ character WASTELENS_ADMIN_PASSWORD. Admin creation is skipped "
+            "so the other WasteLens features can still run.",
+            RuntimeWarning, stacklevel=2,
+        )
+        return
     email = normalized_email(email_raw)
     with database() as db:
         existing = db.execute("SELECT id,role FROM users WHERE email=?", (email,)).fetchone()
