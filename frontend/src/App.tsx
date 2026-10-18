@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
-  AlertTriangle, Camera, Check, ChevronDown, ExternalLink, Leaf, Lightbulb,
+  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload
 } from "lucide-react";
-import type { StatusResponse, VisionResponse } from "./types";
+import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
+import MapPanel from "./MapPanel";
+import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 
 type PhotoPreview = { file: File; src: string };
 const initialModel = "gemini-3.8-flash";
-
-const MAPS_SEARCH = (term: string, location: string) =>
-  "https://www.google.com/maps/search/?api=1&query=" +
-  encodeURIComponent(term + " near " + location);
 
 function ErrorText({ message }: { message: string }) {
   return <div className="error-msg" role="alert"><AlertTriangle size={18}/>{message}</div>;
@@ -27,6 +25,17 @@ export default function App() {
   const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [view, setView] = useState<"identifier" | "account" | "history" | "admin">("identifier");
+  const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
+  const [facilityBusy, setFacilityBusy] = useState(false);
+  const [facilityError, setFacilityError] = useState("");
+  const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
+  const [feedbackSent, setFeedbackSent] = useState<"yes" | "no" | null>(null);
+  const [correctChoice, setCorrectChoice] = useState<"yes" | "no" | null>(null);
+  const [correction, setCorrection] = useState("");
+  const [feedbackError, setFeedbackError] = useState("");
+  const [feedbackBusy, setFeedbackBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,6 +55,15 @@ export default function App() {
         setModel(data.default_model);
       })
       .catch(() => { if (active) setStatusError("Start the WasteLens Python backend to use the AI identifier."); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then(response => readJson<{ user: SessionUser | null }>(response))
+      .then(data => { if (active) setUser(data.user); })
+      .catch(() => {});
     return () => { active = false; };
   }, []);
 
@@ -77,6 +95,11 @@ export default function App() {
     setResult(null);
     setError("");
     setCameraError("");
+    setFacilities(null);
+    setSelectedFacility(null);
+    setFeedbackSent(null);
+    setCorrectChoice(null);
+    setFeedbackError("");
   }
 
   async function startCamera() {
@@ -143,10 +166,15 @@ export default function App() {
       form.append("image", preview.file);
       form.append("model_id", model);
       form.append("object_hint", hint.trim());
+      if (/^\d{5}$/.test(location.trim())) form.append("zip_code", location.trim());
       const response = await fetch("/api/ai/analyze", { method: "POST", body: form });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Analysis failed");
       setResult(data as VisionResponse);
+      setFeedbackSent(null);
+      setCorrectChoice(null);
+      setFeedbackError("");
+      setFacilities(null);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Could not analyze this photograph.");
     } finally {
@@ -154,13 +182,59 @@ export default function App() {
     }
   }
 
+
+  async function searchFacilities(event: React.FormEvent) {
+    event.preventDefault();
+    if (!/^\d{5}$/.test(location.trim())) {
+      setFacilityError("Enter a valid five-digit US ZIP code.");
+      return;
+    }
+    setFacilityBusy(true);
+    setFacilityError("");
+    setFacilities(null);
+    setSelectedFacility(null);
+    try {
+      const response = await fetch("/api/facilities?zip_code=" + encodeURIComponent(location.trim()));
+      const data = await readJson<FacilitySearchResponse>(response);
+      setFacilities(data);
+      setSelectedFacility(data.facilities[0]?.id ?? null);
+    } catch (e) {
+      setFacilityError(e instanceof Error ? e.message : "Could not find collection locations.");
+    } finally { setFacilityBusy(false); }
+  }
+
+  async function submitFeedback(correct: boolean) {
+    if (!result?.scan_id || !user) {
+      setFeedbackError("Sign in before scanning to save classification feedback.");
+      return;
+    }
+    setFeedbackBusy(true);
+    setFeedbackError("");
+    try {
+      await readJson(await fetch("/api/scans/" + result.scan_id + "/feedback", {
+        method: "POST", headers: actionHeaders, credentials: "same-origin",
+        body: JSON.stringify({ correct, correction: correct ? "" : correction.trim() }),
+      }));
+      setFeedbackSent(correct ? "yes" : "no");
+      setCorrectChoice(correct ? "yes" : "no");
+    } catch (e) {
+      setFeedbackError(e instanceof Error ? e.message : "Could not save feedback.");
+    } finally { setFeedbackBusy(false); }
+  }
+
   const analysis = result?.analysis;
   return <div className="site">
     <header className="topbar">
-      <a className="brand" href="#home"><Leaf size={26} strokeWidth={2.5}/><strong>WasteLens</strong></a>
-      <span className="brand-desc">See it. Sort it. Sustain it.</span>
+      <button type="button" className="brand" onClick={() => setView("identifier")}><Leaf size={26} strokeWidth={2.5}/><strong>WasteLens</strong></button>
+      <nav className="top-nav" aria-label="WasteLens navigation">
+        <button className={view === "identifier" ? "active" : ""} onClick={() => setView("identifier")}><Camera size={15}/> Identifier</button>
+        <button className={view === "history" ? "active" : ""} onClick={() => setView("history")}><History size={15}/> My History</button>
+        {user?.role === "admin" && <button className={view === "admin" ? "active" : ""} onClick={() => setView("admin")}><ShieldCheck size={15}/> Admin</button>}
+        <button className={view === "account" ? "active" : ""} onClick={() => setView("account")}><UserRound size={15}/> {user ? user.name : "Sign In / Sign Up"}</button>
+      </nav>
     </header>
     <main id="home" className="shell">
+      {view === "identifier" ? <>
       <div className="intro">
         <div>
           <span className="eyebrow">SMARTER WASTE SORTING</span>
@@ -223,7 +297,7 @@ export default function App() {
             onChange={event => {setHint(event.target.value); setResult(null);}}
             placeholder="e.g. the blue water bottle, not my shirt"/>
         </div>}
-        <p className="privacy-line"><ShieldAlert size={15}/> Your photo is sent to Google's Gemini API only when you click Identify. On the free tier, Google may use submitted content to improve its products. Don't include faces or private details.</p>
+        <p className="privacy-line"><ShieldAlert size={15}/> Your photo is sent to Google's Gemini API only when you click Identify. On the free tier, Google may use submitted content to improve its products. Don't include faces or private details. {user ? "Your item analysis is saved to your account; the photo is not stored by WasteLens." : "Sign in before scanning to save your results."}</p>
         {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>No API key configured. Add <code>GEMINI_API_KEY</code> to the root <code>.env</code> file and restart the Python backend.</span></div>}
         {statusError && <ErrorText message={statusError}/>}
         {cameraError && <ErrorText message={cameraError}/>}
@@ -255,24 +329,64 @@ export default function App() {
             <h3><ShieldAlert size={20}/> Important to know</h3>
             <ul>{analysis.cautions.map((caution, i) => <li key={i}>{caution}</li>)}</ul>
           </article>}
-          {analysis.location_helpful && <article className="result-card green">
-            <h3><MapPin size={20}/> Find collection options</h3>
-            <p>Search potential nearby facilities. WasteLens has not checked whether they accept your exact item. Contact the facility before visiting.</p>
-            <div className="finder-row">
-              <input aria-label="Your city or ZIP code" placeholder="Enter city or ZIP" value={location} onChange={event => setLocation(event.target.value)}/>
-              <a className={`button primary ${location.trim() ? "" : "disabled"}`}
-                 target="_blank" rel="noreferrer" href={location.trim() ? MAPS_SEARCH(analysis.collection_search_term || "recycling collection",location.trim()) : undefined}>
-                <Search size={15}/> Search on Maps <ExternalLink size={14}/>
-              </a>
-            </div>
-            <p className="finder-note">Google Maps results are search suggestions, not verified acceptance data.</p>
-          </article>}
+          <article className="result-card green" id="nearby">
+            <h3><MapPin size={20}/> Find nearby collection options</h3>
+            <p>Enter a US ZIP code to explore mapped recycling locations here on WasteLens. The map and facility cards stay on this page. Acceptance of this specific item is not verified.</p>
+            <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
+              <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
+                placeholder="Enter 5-digit ZIP, e.g. 75063" value={location}
+                onChange={event => setLocation(event.target.value)}/>
+              <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Searching…" : "Find centers"}</button>
+            </form>
+            {facilityError && <ErrorText message={facilityError}/>}
+            {facilities && <div className="map-search-results">
+              <div className="facility-list" aria-label="Nearby mapped collection locations">
+                <h4>{facilities.facilities.length} potential locations near {facilities.location_label}</h4>
+                {facilities.facilities.length === 0 && <p>No mapped locations were returned for this ZIP. This does not mean none exist.</p>}
+                {facilities.facilities.map(place => <button type="button" key={place.id}
+                    className={"facility-item " + (selectedFacility === place.id ? "selected" : "")}
+                    onClick={() => setSelectedFacility(place.id)}>
+                    <strong>{place.name}</strong>
+                    <span>{place.address}</span>
+                    <span>{place.distance_miles.toFixed(1)} miles from ZIP center</span>
+                    {place.tagged_materials.length > 0 && <span>OSM tags: {place.tagged_materials.join(", ")}</span>}
+                    {selectedFacility === place.id && <small>Acceptance and hours not verified. Contact the facility before visiting.</small>}
+                  </button>)}
+              </div>
+              <MapPanel data={facilities} selected={selectedFacility} onSelect={setSelectedFacility}/>
+            </div>}
+            <p className="finder-note">Locations from OpenStreetMap community data. Distance is approximate, from the ZIP centroid. Actual acceptance and operating hours must be confirmed.</p>
+          </article>
           <article className="result-card muted">
-            <h3><Check size={20}/> Does this look right?</h3>
-            <p>AI can mistake the item or its material. If it's wrong, describe the object more precisely and analyze the photo again. Never use an AI answer alone for hazardous materials.</p>
+            <h3><Check size={20}/> Did we identify your item correctly?</h3>
+            <p>Help us understand how often the AI recognizes items correctly. Your answer is visible to the WasteLens administrator if you're signed in.</p>
+            <div className="feedback-actions">
+              <button className={"button " + (correctChoice === "yes" ? "primary" : "outline")}
+                disabled={feedbackBusy} onClick={() => { setCorrectChoice("yes"); void submitFeedback(true); }}>
+                <Check size={17}/> Yes
+              </button>
+              <button className={"button " + (correctChoice === "no" ? "primary" : "outline")}
+                disabled={feedbackBusy} onClick={() => { setCorrectChoice("no"); setFeedbackSent(null); }}>
+                <AlertTriangle size={17}/> No
+              </button>
+            </div>
+            {correctChoice === "no" && !feedbackSent && <div className="correction-form">
+              <label htmlFor="feedbackCorrection">What was the item? (optional)</label>
+              <input id="feedbackCorrection" maxLength={160} value={correction}
+                placeholder="e.g. reusable insulated water bottle"
+                onChange={event => setCorrection(event.target.value)}/>
+              <button className="button primary" disabled={feedbackBusy}
+                onClick={() => void submitFeedback(false)}>Submit feedback</button>
+            </div>}
+            {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
+            {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
+            {!user && <p className="finder-note">To record feedback and save future scans, use Sign In / Sign Up above before identifying an item.</p>}
           </article>
         </div>
       </section>}
+      </> : <AccountArea user={user} mode={view}
+        onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
+        onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <footer>
         <span>WasteLens · Experimental vision AI prototype</span>
         <span>Disposal advice is provisional; local rules and item condition matter.</span>

@@ -23,4 +23,28 @@ export type VisionResponse = {
   model_id: string;
   analysis: ItemAnalysis;
   local_facilities_verified: false;
+  scan_id: number | null;
+};
+
+export type SessionUser = { id: number; name: string; email: string; role: "user" | "admin" };
+export type SavedScan = {
+  id: number; item_name: string; model_id: string; analysis: ItemAnalysis;
+  zip_code: string | null; feedback: "yes" | "no" | null; correction: string; created_at: string;
+};
+export type AdminOverview = { users: number; scans: number; yes: number; no: number };
+export type AdminUser = SessionUser & { created_at: string; scan_count: number };
+export type AdminFeedback = {
+  id: number; item_name: string; feedback: "yes" | "no"; correction: string;
+  created_at: string; user_id: number; user_name: string; user_email: string;
+};
+export type Facility = {
+  id: string; name: string; address: string; latitude: number; longitude: number;
+  distance_miles: number; tagged_materials: string[];
+  verified_acceptance: false; note: string;
+};
+export type FacilitySearchResponse = {
+  zip_code: string; location_label: string;
+  center: { latitude: number; longitude: number };
+  facilities: Facility[];
+  provider: string; acceptance_verified: false; notice: string;
 };
