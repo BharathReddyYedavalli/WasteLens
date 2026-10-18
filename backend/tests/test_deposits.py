@@ -62,7 +62,7 @@ def test_payout_not_guaranteed_if_not_paid_in_selected_state():
     assert maybe["total_cents"]==1000 and maybe["status"]=="check"
     assert not maybe["amount_is_confirmed"]
     yes=value("CA",count=100,paid="yes")
-    assert yes["total_cents"]==500 and yes["amount_is_confirmed"]
+    assert yes["total_cents"]==500 and not yes["amount_is_confirmed"]
 
 def test_invalid_inputs_do_not_produce_unbounded_payout():
     import pydantic

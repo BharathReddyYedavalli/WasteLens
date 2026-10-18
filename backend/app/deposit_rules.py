@@ -96,15 +96,17 @@ def _classify(info: DepositRequest):
             return check(5, "Check whether this specific package has a Maine deposit.")
         if drink in {"wine", "liquor"}:
             return yes(15, "Maine uses a 15¢ deposit on wine and spirits.")
-        if drink == "juice":
-            return check(5, "Maine excludes some local cider and blueberry juice products. Check the label.")
+        if drink in {"juice","cider"}:
+            return check(5, "Maine excludes some local fresh cider and blueberry juice products. Check the label.")
         return yes(5, "Most other covered Maine beverage containers have a 5¢ deposit.")
     if st == "MA":
         if not rigid:
             return no("This is outside the usual Massachusetts carbonated bottle and can program.")
         if drink in {"soda", "sparkling_water", "beer"}:
             return yes(5, "Massachusetts covers carbonated soft drinks, beer and sparkling water.")
-        return no("Massachusetts generally excludes still water, juice, milk, wine and spirits.")
+        if drink in {"sports_energy", "cider", "coffee_tea", "juice"}:
+            return check(5, "Massachusetts coverage depends on carbonation and beverage type. Check the state's bottle refund label.")
+        return no("Massachusetts generally excludes still water, milk, wine and spirits.")
     if st == "MI":
         if oz > 128:
             return no("Michigan's container definition covers one gallon or less.")
@@ -147,7 +149,7 @@ def _classify(info: DepositRequest):
         if oz > 3*1000/29.5735296:
             return no("Vermont excludes containers above 3 liters.")
         if material in {"carton", "pouch"}:
-            return check(5, "2026 Vermont changes removed some pouches and cartons from new deposits, with a transition for old labeled containers through July 2027.")
+            return check(15 if drink == "liquor" else 5, "2026 Vermont changes removed some pouches and cartons from new deposits, with a transition for old labeled containers through July 2027.")
         if material == "plastic":
             if info.resin == "other":
                 return no("Vermont now limits plastic bottle eligibility to PET #1 or HDPE #2.")
@@ -177,7 +179,7 @@ def calculate(info: DepositRequest) -> dict:
         "status": status, "per_container_cents": cents,
         "total_cents": amount, "count": info.count,
         "reason": reason, "source_url": url,
-        "amount_is_confirmed": status == "yes",
+        "amount_is_confirmed": False,  # Eligibility is modeled, never proof of payout.
         "label": "Refund estimate" if status == "yes" else "Possible value, not confirmed" if status == "check" else "No deposit estimated",
         "note": "A return location must accept the eligible container. These are eligibility estimates, not payment guarantees.",
     }

@@ -7,7 +7,6 @@ state before using the deterministic rules calculator.
 import os
 from typing import Literal
 
-from google.genai.errors import APIError
 from pydantic import BaseModel, Field, ValidationError
 
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, prepare_photo
@@ -30,6 +29,7 @@ def inspect_deposit_photo(data: bytes) -> DepositPhotoSuggestion:
     try:
         from google import genai
         from google.genai import types
+        from google.genai.errors import APIError
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         response = client.models.generate_content(
             model=DEFAULT_MODEL,

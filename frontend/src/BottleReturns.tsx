@@ -96,39 +96,39 @@ export default function BottleReturns() {
     </p></div>
     <div className="deposit-layout">
       <div className="deposit-form-card">
-        <div className="deposit-form-head"><h2>Check your container</h2><span>01</span></div>
+        <div className="deposit-form-head"><h2>{t("Check your container")}</h2><span>01</span></div>
         <div className="deposit-fields">
-          <label className="wide">Where was it purchased?
+          <label className="wide">{t("Where was it purchased?")}
             <select value={state} onChange={e=>setState(e.target.value as DepositStateCode)}>
               {STATES.map(s=><option key={s.code} value={s.code}>{s.name}</option>)}
             </select>
           </label>
-          <label>What's inside?
+          <label>{t("What's inside?")}
             <select value={drink} onChange={e=>setDrink(e.target.value as Drink)}>
               {drinks.map(d=><option key={d.value} value={d.value}>{d.name}</option>)}
             </select>
           </label>
-          <label>Container type
+          <label>{t("Container type")}
             <select value={material} onChange={e=>setMaterial(e.target.value as Material)}>
               {materials.map(d=><option key={d.value} value={d.value}>{d.name}</option>)}
             </select>
           </label>
-          {material==="plastic"&&<label className="wide">Plastic type
+          {material==="plastic"&&<label className="wide">{t("Plastic type")}
             <select value={resin} onChange={e=>setResin(e.target.value as Resin)}>
               <option value="unknown">I don't know</option>
               <option value="pet1">PET #1</option><option value="hdpe2">HDPE #2</option>
               <option value="other">Something else</option>
             </select>
           </label>}
-          <label>Size in fluid ounces
+          <label>{t("Size in fluid ounces")}
             <input type="number" min=".1" max="512" step="any" value={ounces}
               onChange={e=>setOunces(e.target.value)} inputMode="decimal"/>
           </label>
-          <label>Number of containers
+          <label>{t("Number of containers")}
             <input type="number" min="1" max="5000" step="1" value={count}
               onChange={e=>setCount(e.target.value)} inputMode="numeric"/>
           </label>
-          <label className="wide">Was the deposit paid in that state?
+          <label className="wide">{t("Was the deposit paid in that state?")}
             <select value={paid} onChange={e=>setPaid(e.target.value as typeof paid)}>
               <option value="unsure">Not sure</option><option value="yes">Yes, a deposit was charged</option>
               <option value="no">No, it wasn't</option>
@@ -174,7 +174,7 @@ export default function BottleReturns() {
     </details>
     {error&&<p className="deposit-error" role="alert">{error}</p>}
     <div className="deposit-after">
-      <div><h2>Ready to return them?</h2><p>Find a bottle redemption center on your state's official site, or use WasteLens's nearby finder for possible locations. Call first to check what's accepted.</p></div>
+      <div><h2>{t("Ready to return them?")}</h2><p>Find a bottle redemption center on your state's official site, or use WasteLens's nearby finder for possible locations. Call first to check what's accepted.</p></div>
       <a href={result?.source_url??"https://www.bottlebill.org/compare-all-states/"} target="_blank" rel="noreferrer">Check state return rules <Link2 size={16}/></a>
     </div>
   </section>;
