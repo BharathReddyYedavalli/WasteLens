@@ -14,6 +14,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 from .accounts import bootstrap_admin, get_user, initialize, record_scan, router as account_router
 from .gamification import router as game_router, xp_for_scan, new_badges_for_scan
 from .places import router as places_router
+from .deposit_rules import router as deposit_router
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
 from .chat import ChatRequest, answer_chat
 
@@ -35,6 +36,7 @@ app = FastAPI(
 app.include_router(account_router)
 app.include_router(places_router)
 app.include_router(game_router)
+app.include_router(deposit_router)
 
 
 @app.get("/api/health")
