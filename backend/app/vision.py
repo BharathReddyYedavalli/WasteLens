@@ -130,7 +130,6 @@ def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> I
                 system_instruction=PROMPT,
                 response_mime_type="application/json",
                 response_schema=ItemAnalysis,
-                temperature=0.2,
                 max_output_tokens=4096,
             ),
         )
