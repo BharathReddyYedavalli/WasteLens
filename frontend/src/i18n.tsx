@@ -131,6 +131,8 @@ const strings: Record<string, { es: string; hi: string }> = {
   "No places found": { es: "No encontramos lugares", hi: "कोई स्थान नहीं मिला" },
   "Location details": { es: "Datos del lugar", hi: "स्थान का विवरण" },
   "Waste audit": { es: "Auditoría de residuos", hi: "कचरा सर्वेक्षण" },
+  "Bottle returns": { es: "Devolver envases", hi: "बोतल जमा करें" },
+  "Bottle journey": { es: "Viaje de la botella", hi: "बोतल की यात्रा" },
   "Count what you see during a cleanup or lunch period. No photos needed.": {
     es: "Cuenta los objetos durante la limpieza o el almuerzo. No necesitas fotos.",
     hi: "सफ़ाई या लंच के दौरान चीज़ें गिनें। फोटो की ज़रूरत नहीं।"

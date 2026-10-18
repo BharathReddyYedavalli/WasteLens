@@ -179,3 +179,5 @@
  .journey-scroll,.journey-svg,.journey-orbit,.journey-art-sparkle{animation:none!important}
  .journey-progress span{transition:none}
 }
+
+.shell.story-shell{width:100%!important;max-width:none!important;margin:0}
