@@ -5,12 +5,15 @@ Example:
 
 Organize images:
   benchmark_photos/plastic/first.jpg
+  benchmark_photos/out_of_scope/laptop.jpg  # check forced guesses on unsuitable items
   benchmark_photos/metal/second.jpg
 
 Optional per-image crop sidecar for an independently determined bounding box:
   benchmark_photos/plastic/first.jpg.crop.json
   {"box": [0.05, 0.1, 0.95, 0.9]}
 
+Photos under 'out_of_scope/' are intentionally NOT one of the eight trained classes.
+The script reports their rate of forced/confident predictions separately.
 One model prediction is made per photo/checkpoint. This reports test-set metrics;
 it does NOT retrain the model. Keep test images private and avoid using them for training.
 """
@@ -30,7 +33,7 @@ EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 def collect_photos(folder: Path):
-    for label in LABELS:
+    for label in [*LABELS, "out_of_scope"]:
         path = folder / label
         if not path.is_dir():
             continue
@@ -82,10 +85,20 @@ def evaluate(photos: Path, output: Path, runner=None):
     grouped = defaultdict(list)
     for row in rows:
         grouped[row["model_id"]].append(row)
-    summary = [{"model_id": k, "accuracy": round(sum(x["correct"] for x in v)/len(v),4),
-                "images":len(v),
-                "avg_latency_ms":round(sum(x["latency_ms"] for x in v)/len(v),2)}
-               for k,v in sorted(grouped.items())]
+    summary = []
+    for model_id, outcomes in sorted(grouped.items()):
+        in_scope = [row for row in outcomes if row["true_label"] != "out_of_scope"]
+        unknown = [row for row in outcomes if row["true_label"] == "out_of_scope"]
+        summary.append({
+            "model_id": model_id,
+            "in_scope_accuracy": round(sum(x["correct"] for x in in_scope) / len(in_scope), 4) if in_scope else None,
+            "in_scope_images": len(in_scope),
+            "out_of_scope_images": len(unknown),
+            "out_of_scope_forced_guess_rate": 1.0 if unknown else None,
+            "out_of_scope_high_score_rate_over_70_pct":
+                round(sum(x["raw_score"] >= .70 for x in unknown) / len(unknown), 4) if unknown else None,
+            "avg_latency_ms": round(sum(x["latency_ms"] for x in outcomes) / len(outcomes), 2),
+        })
     print(json.dumps({"test_images": len(examples), "summary": summary, "results_csv": str(output)}, indent=2))
     return summary
 
