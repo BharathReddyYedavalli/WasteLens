@@ -1,0 +1,242 @@
+/* WasteLens 2026. A warm, approachable sorting desk, not a green dashboard.
+   Large readable Poppins text, lively coral / lilac accents and clear progress. */
+:root {
+  font-family: "Poppins",ui-sans-serif,system-ui,sans-serif;
+  --wl-forest:#163837;--wl-green:#087f72;--wl-green-dark:#075f57;
+  --wl-mint:#eef8ef;--wl-cream:#fffdf5;--wl-ink:#193433;
+  --wl-body:#244743;--wl-outline:#c6ddce;
+  background:#fff9ee;color:#193433;font-size:15px;
+}
+html{scroll-behavior:smooth}
+body,button,input,select,textarea{font-family:"Poppins",sans-serif}
+body{background:#fff9ee}
+.site{background:#fff9ee;color:#193433}
+.site-layout{display:flex;flex-direction:column;min-height:calc(100vh - 81px);max-width:none}
+.topbar{min-height:81px;padding:13px clamp(20px,5.5vw,90px);background:#fffaf0;border-bottom:1px solid #e1e4d6;box-shadow:none;color:#193433}
+.brand{color:#1b3c38!important;gap:12px}
+.brand strong{font:800 27px/1.2 "Poppins",sans-serif;letter-spacing:-1.3px}
+.brand-mark{background:#ff7757!important;border-radius:15px!important;color:#fff!important;width:44px!important;height:44px!important;transform:rotate(-7deg)}
+.brand-mark svg{transform:rotate(7deg)}
+.language-picker{display:flex;align-items:center;gap:11px;border:1px solid #d4e3d5;background:#fff;border-radius:14px;padding:7px 10px 7px 15px;white-space:nowrap}
+.language-picker label{font-size:12px;font-weight:700;color:#385950}
+.language-picker select{appearance:auto;color:#183a37;font:700 13px "Poppins",sans-serif;background:#fff;border:0;max-width:110px;cursor:pointer}
+.side-nav{position:sticky;top:0;z-index:90;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;gap:7px!important;
+  width:100%;min-height:0!important;height:auto!important;padding:12px clamp(16px,5.5vw,90px)!important;margin:0!important;
+  border-bottom:1px solid #e1e7d8;border-right:0!important;background:#fffdf7!important;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.side-nav .nav-item{white-space:nowrap!important;width:auto!important;min-height:43px!important;padding:10px 15px!important;margin:0!important;border:0!important;
+  color:#30514e!important;background:transparent!important;box-shadow:none!important;border-radius:12px!important;font-size:13px!important;font-weight:700!important;flex:0 0 auto}
+.side-nav .nav-item svg{color:#33786e!important}
+.side-nav .nav-item:hover{background:#e5f5ec!important;transform:translateY(-1px)}
+.side-nav .nav-item.active{background:#116f68!important;color:#fff!important;box-shadow:0 4px 0 #073e39!important}
+.side-nav .nav-item.active svg{color:#fff!important}
+.side-nav-bottom{margin-left:auto!important;margin-top:0!important;padding:0!important;border:0!important;flex-shrink:0}
+.page-content{min-width:0;width:100%;background:radial-gradient(circle at 100% 0%,#fff0d4 0,transparent 35%),#fff9ee!important}
+.shell{width:min(1120px,calc(100% - 52px));margin:0 auto}
+.intro{min-height:230px!important;margin:28px 0 24px!important;display:flex;align-items:center;gap:35px;padding:34px clamp(25px,4.4vw,62px)!important;
+  border:none!important;border-radius:29px!important;background:#d8f4e9!important;box-shadow:inset 0 0 0 1px #c3e8d6;position:relative;isolation:isolate;animation:wl-reveal .45s ease both}
+.intro::before{content:"";position:absolute;width:210px;height:210px;border-radius:32%;right:30px;top:-72px;background:#c9bcfb;opacity:.76;transform:rotate(25deg);z-index:-1}
+.intro::after{content:"";position:absolute;width:125px;height:125px;border-radius:50%;right:180px;bottom:-76px;background:#ffe39f;z-index:-1}
+.intro-copy{max-width:680px}
+.intro h1{font:700 clamp(36px,5.4vw,64px)/1.07 "Fraunces",Georgia,serif!important;letter-spacing:-1.6px!important;color:#153d39!important;margin:0 0 17px!important}
+.intro p{font:600 clamp(14px,1.7vw,18px)/1.65 "Poppins",sans-serif!important;color:#31554b!important;max-width:550px!important;margin:0}
+.intro-art{width:148px!important;height:148px!important;border-radius:29px!important;background:#fd8565!important;color:#fff!important;transform:rotate(11deg);box-shadow:9px 10px 0 #1c7970a8}
+.intro-art svg{transform:rotate(-11deg)!important}
+.intro-art-circle{opacity:.15}
+.workspace{border:2px solid #dfebdf!important;border-radius:28px!important;padding:clamp(22px,3.5vw,37px)!important;box-shadow:0 10px 0 #e5eadb!important;background:#fffdf9!important;animation:wl-reveal .5s .07s both}
+.workspace-head{margin-bottom:23px!important}
+.workspace h2{font:700 27px/1.2 "Poppins",sans-serif!important;letter-spacing:-.8px;color:#1a4841}
+.round-icon{background:#ffe2ba!important;color:#bd5c34!important;border-radius:14px!important}
+.camera-stage{height:clamp(290px,39vw,450px)!important;max-width:100%;border:3px solid #167f73!important;border-radius:23px!important;
+  background:#112b2a!important;box-shadow:9px 9px 0 #b2e3d2!important;transition:box-shadow .25s ease}
+.camera-empty h3{font:700 clamp(22px,3vw,30px) "Poppins",sans-serif;color:#fff}
+.camera-empty p{font:500 14px/1.7 "Poppins",sans-serif;color:#ecfffa}
+.empty-camera{background:#ffffff16!important;color:#b9fae9!important;border-radius:26px!important}
+.button{font:700 13px "Poppins",sans-serif!important;border-radius:13px!important;transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
+.button.primary,.primary{background:#087c71!important;color:#fff!important;box-shadow:0 4px 0 #075449!important}
+.button.primary:hover:not(:disabled),.primary:hover:not(:disabled){background:#06665b!important;transform:translateY(-2px);box-shadow:0 7px 0 #075449!important}
+.button.outline,.outline{background:#fff!important;color:#165b54!important;border:1.5px solid #a9d4c7!important}
+.button.outline:hover:not(:disabled){background:#ebfaf1!important;transform:translateY(-1px)}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #c66637!important;outline-offset:3px}
+.camera-controls{gap:14px!important;flex-wrap:wrap;margin:29px 0 16px!important}
+.photo-privacy-summary{font:600 12px/1.55 "Poppins",sans-serif!important;color:#426159!important;max-width:900px!important}
+.model-options{margin-top:8px}
+.workspace .model-options summary,.workspace .privacy-details summary{font-size:12px}
+.results{margin:45px 0}
+.result-title{align-items:center}
+.result-title h2{font:700 clamp(27px,4vw,42px)/1.12 "Fraunces",Georgia,serif!important;color:#16483f!important}
+.type-badge{background:#fff0cc!important;color:#795015!important;font-weight:800}
+.result-meta-line{gap:8px}
+.material-line{background:#eff7e7!important;border-color:#e2ecd7!important;color:#215248!important}
+.earned-xp{background:#fce3a6!important;color:#6a4211!important}
+.stack{gap:19px!important}
+.result-card{border:1.5px solid #e0e9da!important;border-radius:22px!important;box-shadow:0 7px 0 #e8eddf!important;background:#fffdf8!important}
+.result-card h3{font:700 21px/1.3 "Poppins",sans-serif!important;color:#21534a!important}
+.result-card h3 svg{color:#1e8a78!important}
+.reuse-section{background:#f8f1ff!important;border-color:#e6d9f2!important}
+.reuse-project{border-color:#e0d6ee!important;background:#fff!important}
+.reuse-project:hover{border-color:#bda5df!important}
+.reuse-project-index{background:#e7d8ff!important;color:#58458f!important}
+.reuse-project-meta{background:#fff1bd!important;color:#775214!important}
+.reuse-count{background:#e9ddfb!important;color:#59488d!important}
+.result-card.green{background:#effbf2!important}
+.result-card.muted{background:#fffdf7!important}
+.result-card.blue h3 svg{color:#7658ac!important}
+.feedback-actions .button{min-width:105px}
+.sort-plan{background:#fff9e9;border:2px solid #f0d99d;border-radius:25px;overflow:hidden;box-shadow:0 8px 0 #eee4ca}
+.sort-plan-top{padding:27px 29px 21px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.eyebrow{font:800 11px "Poppins",sans-serif;color:#a35a25;letter-spacing:.08em}
+.sort-plan-top h3{font:700 clamp(23px,3vw,30px) "Poppins",sans-serif;color:#433b2a;margin:7px 0!important;letter-spacing:-.8px}
+.sort-plan-top p{font-size:13px;color:#635c4b;margin:0}
+.sort-plan-counter{display:flex;align-items:center;gap:7px;white-space:nowrap;border-radius:20px;background:#194943;color:#fff;font-weight:800;padding:9px 13px}
+.sort-plan-progress{height:7px;background:#f3e8cf}
+.sort-plan-progress span{display:block;height:100%;background:#29ae83;transition:width .3s ease}
+.sort-plan-steps{display:grid;gap:1px;background:#ebdfc6}
+.sort-step{display:flex;align-items:center;gap:13px;padding:19px 25px;background:#fffef9;cursor:pointer;color:#294942;font:600 14px/1.65 "Poppins",sans-serif}
+.sort-step:hover{background:#fff6df}
+.sort-step input{width:20px;height:20px;accent-color:#158879;flex-shrink:0;cursor:pointer}
+.sort-step-number{width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#e5f3e8;color:#14665b;font-weight:800;flex-shrink:0}
+.sort-step.complete{background:#ebf7ef;color:#466c5c}
+.sort-step.complete>span:last-child{text-decoration:line-through;text-decoration-color:#84ad9b}
+.sort-plan-tools{display:flex;gap:11px;flex-wrap:wrap;padding:16px 25px}
+.sort-plan-tools button{display:inline-flex;align-items:center;gap:8px;border:1px solid #d6c99a;background:#fff;border-radius:12px;padding:10px 15px;color:#4b5040;font-weight:700;font-size:12px;cursor:pointer}
+.sort-plan-tools button:hover{border-color:#b68a39;background:#fff6dd}
+.assistant-screen,.finder-screen,.league-page{animation:wl-reveal .38s both}
+.assistant-heading h1,.finder-screen h1,.league-title h1{font:700 clamp(29px,4.5vw,43px) "Fraunces",Georgia,serif!important;color:#163c3a!important}
+.assistant-card,.finder-card,.account-card,.league-ranking,.badge-panel{border:1.5px solid #e6e5d5!important;background:#fffefa!important;border-radius:24px!important;box-shadow:0 7px 0 #e8ebdc!important}
+.assistant-logo,.league-icon{background:#fce0ad!important;color:#965f25!important}
+.league-title p{display:none}
+.level-panel{background:linear-gradient(110deg,#106f68,#43528a)!important;box-shadow:7px 7px 0 #ddd3ee!important}
+.league-stats>div{background:#fff5df!important;border:1px solid #f4dfb4!important}
+.badge-panel{background:#f4f0ff!important}
+.reward-badge.unlocked{background:#fff6db!important;border-color:#edcf77!important}
+.reward-badge.locked{background:#fff!important}
+.rank-entry{background:#f2f9ef!important}
+.rank-entry.its-you{background:#f7e7b3!important}
+.habit-snapshot{padding:25px 28px;background:#eeefff;border:2px solid #d9dcf8;border-radius:24px;margin:14px 0 28px;box-shadow:0 6px 0 #e1e3f3}
+.habit-head{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.habit-head h3{font:700 28px "Fraunces",Georgia,serif;margin:3px 0 10px;color:#343c73}
+.habit-head .eyebrow{color:#675bb0}
+.habit-export{display:flex;align-items:center;gap:6px;border:1px solid #b6b8e1;padding:9px 14px;background:#fff;border-radius:10px;color:#4e4f83;font-weight:800;font-size:12px;cursor:pointer}
+.habit-numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 24px}
+.habit-numbers>div{border-radius:16px;background:#fff;border:1px solid #e4e2f8;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.habit-numbers svg{color:#6a66aa}
+.habit-numbers strong{font:700 32px/1.2 "Fraunces",Georgia,serif;color:#393d72}
+.habit-numbers span{font-size:12px;font-weight:700;color:#566083}
+.habit-plot-head h4{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:800;color:#363d75}
+.habit-week{height:137px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;border-top:1px solid #d5d7ee;padding-top:13px}
+.habit-day{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;font-size:11px;font-weight:800;color:#555b90}
+.habit-bar-rail{height:95px;width:min(38px,100%);display:flex;flex-direction:column;justify-content:flex-end}
+.habit-bar-rail span{display:block;width:100%;border-radius:10px 10px 3px 3px;background:linear-gradient(180deg,#8b84df,#565da7);transition:height .3s ease}
+.habit-caveat{font-size:12px;line-height:1.55;color:#565f88;margin:18px 0 0}
+@keyframes wl-reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){
+  .topbar{min-height:75px;padding:12px 21px;flex-direction:row}
+  .side-nav{padding:11px 19px!important}
+  .side-nav .nav-item{padding:10px 12px!important}
+  .shell{width:min(1120px,calc(100% - 34px))}
+  .intro{padding:28px!important;min-height:180px!important}
+  .intro-art{width:93px!important;height:93px!important;flex-shrink:0}
+  .intro h1{font-size:clamp(29px,6vw,46px)!important}
+}
+@media(max-width:540px){
+  .brand strong{font-size:23px}
+  .language-picker{padding:6px 9px}
+  .language-picker label{display:none}
+  .side-nav .nav-item{font-size:12px!important;gap:7px!important}
+  .side-nav .nav-item svg{width:16px}
+  .intro{min-height:180px!important;padding:23px!important;margin-top:17px!important}
+  .intro-art{display:none!important}
+  .intro::before{right:-105px}
+  .intro h1{font-size:34px!important}
+  .workspace{padding:17px!important}
+  .camera-stage{height:300px!important}
+  .sort-plan-top{padding:19px}
+  .sort-step{padding:14px 15px}
+  .sort-plan-tools{padding:14px}
+  .habit-snapshot{padding:19px}
+  .habit-numbers{gap:7px}
+  .habit-numbers>div{padding:12px 9px}
+  .habit-numbers strong{font-size:25px}
+  .habit-numbers span{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .intro,.workspace,.assistant-screen,.finder-screen,.league-page{animation:none!important}
+  .side-nav .nav-item:hover,.button:hover{transform:none!important}
+  .sort-plan-progress span,.habit-bar-rail span{transition:none!important}
+}
+@media print{
+  body *{visibility:hidden!important}
+  .sort-plan,.sort-plan *{visibility:visible!important}
+  .sort-plan{position:absolute;top:15px;left:0;width:100%;box-shadow:none!important;background:#fff!important}
+  .sort-plan-tools{display:none!important}
+  .sort-step{break-inside:avoid}
+}
+
+.skip-link{position:fixed;left:18px;top:-90px;z-index:1000;padding:13px 20px;color:#fff;background:#125c56;border-radius:10px;font-weight:800}
+.skip-link:focus{top:12px}
+
+/* Small rewards for interaction, without turning the page into a moving dashboard. */
+@keyframes wl-stamp-float {
+  0%,100% {transform:translateY(0) rotate(11deg)}
+  50% {transform:translateY(-7px) rotate(8deg)}
+}
+@media(prefers-reduced-motion:no-preference) {
+  .intro-art{animation:wl-stamp-float 5.2s ease-in-out infinite}
+  .reward-badge.unlocked{transition:transform .22s ease,box-shadow .22s ease}
+  .reward-badge.unlocked:hover{transform:translateY(-4px) rotate(-2deg);box-shadow:0 9px 13px #7c644a16}
+  .sort-step-number{transition:transform .18s ease,background-color .18s ease}
+  .sort-step.complete .sort-step-number{transform:scale(1.08);background:#a2edc9}
+  .rank-entry{transition:background-color .2s ease,transform .2s ease}
+  .rank-entry:hover{transform:translateX(3px)}
+}
+
+/* Standalone community audit. Friendly tally controls with no student data. */
+.audit-kit{padding:33px 0 70px;display:grid;gap:22px;animation:wl-reveal .4s ease}
+.audit-hero{display:flex;align-items:center;gap:22px;background:#f1eaff;border-radius:26px;padding:27px 32px}
+.audit-icon{width:70px;height:70px;border-radius:19px;display:grid;place-items:center;background:#9b87df;color:#fff;transform:rotate(-6deg);flex-shrink:0}
+.audit-hero h1{font:700 clamp(31px,4vw,46px)/1.1 "Fraunces",Georgia,serif;color:#3b326a;margin:0 0 9px}
+.audit-hero p{font-size:14px;color:#545077;font-weight:600;margin:0}
+.audit-session{display:grid;gap:8px;max-width:550px}
+.audit-session label{font-weight:800;font-size:14px;color:#315b54}
+.audit-session label span{font-size:12px;font-weight:500}
+.audit-session input{background:#fff;border:1px solid #bdddd0;border-radius:13px;padding:14px 17px}
+.audit-count-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.audit-count-row>div{display:grid;gap:0}
+.audit-count-row strong{font:700 66px/1 "Fraunces",Georgia,serif;color:#185b52}
+.audit-count-row>div span{font-size:12px;font-weight:800;color:#386c60}
+.audit-count-row p{font-size:13px;color:#415b51;margin:0 0 7px}
+.audit-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.audit-option{min-height:158px;display:grid;justify-items:center;align-content:center;gap:7px;padding:14px 7px;
+  background:#fffef9;border:2px solid var(--audit-accent);border-radius:18px;box-shadow:0 5px 0 var(--audit-accent);cursor:pointer;color:#233e37;
+  transition:transform .16s ease,box-shadow .16s ease}
+.audit-option:hover{transform:translateY(-4px);box-shadow:0 9px 0 var(--audit-accent)}
+.audit-option:active{transform:translateY(2px);box-shadow:0 2px 0 var(--audit-accent)}
+.audit-option-emoji{font-size:28px}
+.audit-option strong{font-size:13px;font-weight:800;text-align:center}
+.audit-option-count{font:700 22px "Fraunces",serif;color:#2c5f58}
+.audit-actions{display:flex;gap:11px;flex-wrap:wrap}
+.audit-actions button{display:flex;align-items:center;gap:8px;border:1px solid #cddfd4;background:#fff;border-radius:12px;padding:11px 15px;color:#285b51;font-size:12px;font-weight:800;cursor:pointer}
+.audit-actions button:hover:not(:disabled){background:#e9f7ee}
+.audit-actions button:disabled{opacity:.4}
+.audit-actions .audit-reset{color:#ac503f;border-color:#edd0c6}
+.audit-results{padding:27px 30px;background:#fffef9;border:1.5px solid #dfe6d6;border-radius:24px;box-shadow:0 5px 0 #e8eadf}
+.audit-results h2{font:700 29px "Fraunces",Georgia,serif;color:#184f48;margin:0 0 20px}
+.audit-empty{font-size:14px;color:#526b60}
+.audit-bars{display:grid;gap:17px}
+.audit-bar-row{display:grid;grid-template-columns:110px minmax(0,1fr) 48px;align-items:center;gap:14px;font-weight:700;font-size:12px}
+.audit-bar-track{height:17px;border-radius:12px;background:#f0f1e8;overflow:hidden}
+.audit-bar-track span{display:block;height:100%;border-radius:12px;transition:width .25s ease}
+.audit-bar-row strong{text-align:right;font-size:14px;color:#28524a}
+.audit-note{margin-top:24px;border-top:1px solid #e0e9df;padding-top:13px}
+.audit-note summary{color:#406358;font-weight:800;font-size:12px;cursor:pointer}
+.audit-note p{font-size:12px;line-height:1.7;color:#526a5f;max-width:730px}
+@media(max-width:750px){.audit-options{grid-template-columns:repeat(3,minmax(0,1fr))}.audit-option{min-height:137px}}
+@media(max-width:480px){.audit-hero{padding:21px;gap:13px}.audit-icon{width:52px;height:52px}.audit-options{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-count-row{align-items:flex-start;flex-direction:column}.audit-results{padding:20px}.audit-bar-row{grid-template-columns:78px minmax(0,1fr) 40px;gap:8px}}
+@media(prefers-reduced-motion:reduce){.audit-kit{animation:none}.audit-option,.audit-bar-track span{transition:none!important}.audit-option:hover{transform:none}}
+@media print{
+  .audit-kit,.audit-kit *{visibility:visible!important}
+  .audit-kit{position:absolute;top:0;left:0;width:100%;padding:0;background:#fff}
+  .audit-options,.audit-actions,.audit-session input,.audit-session label,.audit-note{display:none!important}
+  .audit-results{box-shadow:none;border:0;padding:0}
+}

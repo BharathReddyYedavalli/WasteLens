@@ -59,7 +59,10 @@ async def ai_analyze(
     model_id: str = Form(DEFAULT_MODEL),
     object_hint: str = Form(""),
     zip_code: str = Form(""),
+    language: str = Form("en"),
 ):
+    if language not in {"en", "es", "hi"}:
+        raise HTTPException(422, "Unsupported language. Choose en, es or hi.")
     if image.content_type not in {"image/jpeg", "image/png", "image/webp"}:
         raise HTTPException(415, "Upload a JPG, PNG or WebP image.")
     if model_id not in MODELS:
@@ -72,7 +75,10 @@ async def ai_analyze(
     if len(payload) > MAX_BYTES:
         raise HTTPException(413, "Photo must be 8 MB or smaller.")
     try:
-        result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint)
+        if language == "en":
+            result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint)
+        else:
+            result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint, language)
         analysis = result.model_dump()
         user = get_user(request)
         scan_id = record_scan(

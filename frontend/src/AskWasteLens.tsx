@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { AlertTriangle, ArrowUp, Bot, MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import type { ItemAnalysis } from "./types";
+import { useLanguage } from "./i18n";
 
 type Turn = { role: "user" | "assistant"; text: string };
 type Props = {
@@ -23,6 +24,7 @@ const generalPrompts = [
 ];
 
 export default function AskWasteLens({ scan, model, configured, onScan }: Props) {
+  const { language, t } = useLanguage();
   const [messages, setMessages] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -48,7 +50,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question, model_id:model, history, scan}),
+        body: JSON.stringify({question, model_id:model, history, scan, language}),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Could not get an AI reply.");
@@ -75,7 +77,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
     <div className="assistant-heading">
       <div className="assistant-logo"><Bot size={25}/></div>
       <div>
-        <h1>Ask WasteLens</h1>
+        <h1>{t("Ask WasteLens")}</h1>
         
       </div>
     </div>
@@ -84,21 +86,21 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         <div className="context-main">
           <Sparkles size={18}/>
           <div>
-            <strong>{scan ? `Let's talk about your ${scan.item_name.toLowerCase()}` : "What would you like to know?"}</strong>
+            <strong>{scan ? scan.item_name : t("What would you like to know?")}</strong>
             
           </div>
         </div>
-        <button type="button" className="context-action" onClick={onScan}>{scan ? "View scan" : "Scan an object"}</button>
+        <button type="button" className="context-action" onClick={onScan}>{scan ? t("View scan") : t("Scan an object")}</button>
       </div>
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
           <MessageCircle size={34}/>
-          <h2>{scan ? "Anything else you want to know?" : "What's on your mind?"}</h2>
+          <h2>{scan ? t("Anything else you want to know?") : t("What's on your mind?")}</h2>
           
           <div className="chat-suggestions">
             {(scan ? startingPrompts : generalPrompts).map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
-              disabled={busy}>{prompt}</button>)}
+              disabled={busy}>{t(prompt)}</button>)}
           </div>
         </div> : messages.map((message,index) => <div
           key={index} className={message.role === "user" ? "chat-turn from-user" : "chat-turn from-ai"}>
@@ -114,13 +116,13 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         <textarea id="ask-input" rows={2} maxLength={1200}
           value={input} onChange={event => setInput(event.target.value)}
           onKeyDown={onKeyDown} disabled={busy}
-          placeholder="Ask a question…" />
+          placeholder={t("Ask a question…")} />
         <button aria-label="Send message" title="Send message" type="submit"
           disabled={busy || !configured || !input.trim()}><ArrowUp size={19}/></button>
       </form>
       <div className="chat-footer">
         <details className="chat-privacy"><summary>About your chat</summary><p>Chats stay in this browser session. Your questions and scan details are sent to Gemini, but your photo is not sent again. Google may use free tier content to improve its products. Check local recycling rules before acting.</p></details>
-        {messages.length > 0 && <button type="button" disabled={busy} onClick={() => {setMessages([]);setError("");}}><Trash2 size={14}/> Clear chat</button>}
+        {messages.length > 0 && <button type="button" disabled={busy} onClick={() => {setMessages([]);setError("");}}><Trash2 size={14}/> {t("Clear chat")}</button>}
       </div>
     </div>
   </section>;

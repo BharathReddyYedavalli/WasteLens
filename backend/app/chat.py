@@ -24,6 +24,7 @@ class ChatRequest(BaseModel):
     model_id: str
     history: list[ChatTurn] = Field(default_factory=list, max_length=MAX_HISTORY)
     scan: ItemAnalysis | None = None
+    language: Literal["en", "es", "hi"] = "en"
 
 CHAT_SYSTEM = """You are Ask WasteLens, a friendly, practical assistant for U.S. waste
 reduction, object reuse and safe disposal. Answer the user's actual question in
@@ -87,7 +88,11 @@ def answer_chat(payload: ChatRequest) -> str:
             model=payload.model_id,
             contents=contents,
             config=types.GenerateContentConfig(
-                system_instruction=CHAT_SYSTEM,
+                system_instruction=CHAT_SYSTEM + (
+                    "\nReply in " +
+                    {"en": "English", "es": "Spanish", "hi": "Hindi"}[payload.language] +
+                    ". Avoid generic intros. Keep any safety details accurate."
+                ),
                 max_output_tokens=1700,
             ),
         )
