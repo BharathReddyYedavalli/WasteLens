@@ -4,11 +4,12 @@ import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy
 } from "lucide-react";
-import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
+import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
 import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
+import BadgeCelebration from "./BadgeCelebration";
 
 type PhotoPreview = { file: File; src: string };
 const initialModel = "gemini-3.8-flash";
@@ -41,6 +42,7 @@ export default function App() {
   const [recordedAction, setRecordedAction] = useState("");
   const [actionBusy, setActionBusy] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [celebration, setCelebration] = useState<{ scan: number; badge: WasteLensBadge } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -107,6 +109,7 @@ export default function App() {
     setFeedbackError("");
     setRecordedAction("");
     setActionError("");
+    setCelebration(null);
   }
 
   async function startCamera() {
@@ -167,7 +170,7 @@ export default function App() {
 
   async function analyze() {
     if (!preview || busy) return;
-    setBusy(true); setResult(null); setError("");
+    setBusy(true); setResult(null); setError(""); setCelebration(null);
     try {
       const form = new FormData();
       form.append("image", preview.file);
@@ -177,7 +180,12 @@ export default function App() {
       const response = await fetch("/api/ai/analyze", { method: "POST", body: form });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Analysis failed");
-      setResult(data as VisionResponse);
+      const scanResult = data as VisionResponse;
+      setResult(scanResult);
+      const earned = scanResult.unlocked_badges?.[0];
+      if (earned && scanResult.scan_id) {
+        setCelebration({ scan: scanResult.scan_id, badge: earned });
+      }
       setRecordedAction("");
       setActionError("");
       setFeedbackSent(null);
@@ -250,13 +258,14 @@ export default function App() {
 
   const analysis = result?.analysis;
   return <div className="site">
+    {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
       <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
-      <span className="brand-desc">Less waste starts here.</span>
+      
     </header>
     <div className="site-layout">
       <aside className="side-nav" aria-label="WasteLens navigation">
-        <div className="side-nav-title">Explore</div>
+        
         <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"} aria-current={view === "identifier" ? "page" : undefined}
           onClick={() => { stopCamera(); setView("identifier"); }}><ScanLine size={19}/> Scan an item</button>
         <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"} aria-current={view === "chat" ? "page" : undefined}
@@ -280,7 +289,7 @@ export default function App() {
       <div className="intro">
         <div className="intro-copy">
           <h1>Not sure where it goes?</h1>
-          <p>Snap a photo. Find out what to do with it.</p>
+          <p>Take a photo. We'll help you sort it.</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>
@@ -302,7 +311,7 @@ export default function App() {
             <div className="camera-empty">
               <div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
               <h3>What are we looking at?</h3>
-              <p>Use your camera or upload a photo.</p>
+              <p>Hold up an item or upload a photo.</p>
             </div>}
         </div>
 
@@ -346,10 +355,10 @@ export default function App() {
         </details>
         <div className="photo-privacy-summary"><ShieldAlert size={16}/> Photos go to Google Gemini when you scan. Free tier data may be used to improve Google's services.</div>
         <details className="privacy-details">
-          <summary>More about photo privacy <ChevronDown size={15}/></summary>
+          <summary>Photo privacy <ChevronDown size={15}/></summary>
           <p>Avoid faces and personal details in your photos. WasteLens does not save the photo. {user ? "Your item results are saved to your account." : "Sign in if you want to save your item results."}</p>
         </details>
-        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>No API key configured. Add <code>GEMINI_API_KEY</code> to the root <code>.env</code> file and restart the Python backend.</span></div>}
+        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>Add your Gemini API key in the <code>.env</code> file and restart the backend.</span></div>}
         {statusError && <ErrorText message={statusError}/>}
         {cameraError && <ErrorText message={cameraError}/>}
         {error && <ErrorText message={error}/>}
@@ -359,7 +368,7 @@ export default function App() {
         <div className="result-title">
           <div>
             <h2>{analysis.item_name}</h2>
-            <p>{analysis.visual_description}</p>
+            {analysis.identification !== "likely" && <p>{analysis.visual_description}</p>}
           </div>
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
@@ -381,13 +390,13 @@ export default function App() {
             <div className="reuse-heading">
               <div>
                 <h3><Lightbulb size={21}/> Give it another life</h3>
-                <p>Try something new with this item.</p>
+                
               </div>
               {Boolean(analysis.reuse_projects?.length) && <span className="reuse-count">{analysis.reuse_projects!.length} ideas</span>}
             </div>
             {analysis.reuse_projects?.length ? <div className="reuse-projects">
               {analysis.reuse_projects.map((project, i) =>
-                <details key={i} className="reuse-project" open={i === 0}>
+                <details key={i} className="reuse-project">
                   <summary>
                     <span className="reuse-project-index">{String(i + 1).padStart(2, "0")}</span>
                     <span className="reuse-project-summary">
@@ -412,10 +421,10 @@ export default function App() {
                 </details>)}
             </div> : <div className="reuse-legacy">
               {analysis.identification === "likely" && analysis.reuse_ideas.length > 0
-                ? <><p>This analysis contains brief reuse suggestions:</p><ul>{analysis.reuse_ideas.map((x,i)=><li key={i}>{x}</li>)}</ul></>
-                : <p>No safe, practical reuse project could be recommended for this item from the available information. Ask WasteLens for clarification if needed.</p>}
+                ? <><ul>{analysis.reuse_ideas.map((x,i)=><li key={i}>{x}</li>)}</ul></>
+                : <p>No safe reuse idea for this item yet.</p>}
             </div>}
-            <details className="reuse-fine-print"><summary>Before you try an idea</summary><p>These suggestions are generated by AI. Check the item's material and condition, and use caution with tools and anything sharp or electrical.</p></details>
+            <details className="reuse-fine-print"><summary>Before trying a project</summary><p>Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.</p></details>
           </article>
           {analysis.cautions.length > 0 && <article className="result-card muted">
             <h3><ShieldAlert size={21}/> A few things to check</h3>
@@ -423,10 +432,10 @@ export default function App() {
           </article>}
           <article className="result-card green" id="nearby">
             <h3><MapPin size={21}/> Find somewhere nearby</h3>
-            <p>Enter your ZIP code.</p>
+            
             <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
               <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-                placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
+                placeholder="ZIP code, like 75033" value={location}
                 onChange={event => setLocation(event.target.value)}/>
               <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? "Looking…" : "Search"}</button>
             </form>
@@ -436,7 +445,7 @@ export default function App() {
           </article>
           <article className="result-card muted">
             <h3><Check size={21}/> Did we get it right?</h3>
-            <p>Does this match your photo?</p>
+            
             <div className="feedback-actions">
               <button className={"button " + (correctChoice === "yes" ? "primary" : "outline")}
                 disabled={feedbackBusy} onClick={() => { setCorrectChoice("yes"); void submitFeedback(true); }}>
@@ -450,7 +459,7 @@ export default function App() {
             {correctChoice === "no" && !feedbackSent && <div className="correction-form">
               <label htmlFor="feedbackCorrection">What was the item? (optional)</label>
               <input id="feedbackCorrection" maxLength={160} value={correction}
-                placeholder="e.g. reusable insulated water bottle"
+                placeholder="Example: insulated water bottle"
                 onChange={event => setCorrection(event.target.value)}/>
               <button className="button primary" disabled={feedbackBusy}
                 onClick={() => void submitFeedback(false)}>Submit feedback</button>
@@ -471,18 +480,18 @@ export default function App() {
             </div>
             {recordedAction && <p className="action-confirmed">Saved as {recordedAction}.</p>}
             {actionError && <p className="inline-error" role="alert">{actionError}</p>}
-            <details className="action-info"><summary>About tracking</summary><p>Actions are self reported. Scanning alone does not mean the item was recycled.</p></details>
+            <details className="action-info"><summary>About tracking</summary><p>Only you can confirm what happened to an item. A scan does not count as recycling.</p></details>
           </article>}
         </div>
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
         <h1><MapPin size={30}/> Find a drop off</h1>
-        <p>Type your ZIP code to find nearby recycling spots. Choose a place to see it on the map.</p>
+        
         <div className="finder-card">
           <form className="finder-form" onSubmit={event => void searchFacilities(event)}>
             <label htmlFor="sidebar-zip">Your ZIP code</label>
             <input id="sidebar-zip" aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-              placeholder="Enter 5-digit ZIP, e.g. 75033" value={location}
+              placeholder="ZIP code, like 75033" value={location}
               onChange={event => setLocation(event.target.value)}/>
             <button type="submit" disabled={facilityBusy} className="button primary"><Search size={16}/>{facilityBusy ? "Looking…" : "Search"}</button>
           </form>
@@ -497,10 +506,7 @@ export default function App() {
         <AskWasteLens scan={analysis ?? null} model={model} configured={Boolean(status?.configured)}
           onScan={() => setView("identifier")}/>
       </div>
-      <footer>
-        <span>WasteLens</span>
-        <span>Every item deserves a better ending.</span>
-      </footer>
+      
     </main>
       </div>
     </div>

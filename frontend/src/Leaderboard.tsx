@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Award, CheckCircle2, Cloud, Leaf, LockKeyhole, ScanLine, Sparkles, Trophy, Users } from "lucide-react";
+import { Award, CheckCircle2, Leaf, LockKeyhole, ScanLine, Sparkles, Trophy, Users } from "lucide-react";
 import type { LeaderboardResponse, SessionUser, WasteLensBadge } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
 
@@ -37,7 +37,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
   }
   return <section className="league-page">
     <div className="league-title"><span className="league-icon"><Trophy size={29}/></span>
-      <div><h1>Leaderboard</h1><p>Small steps add up.</p></div></div>
+      <div><h1>Leaderboard</h1></div></div>
     {data?.me ? <>
       <div className="level-panel">
         <div className="level-top"><div><span className="level-label">YOUR PROGRESS</span>
@@ -53,7 +53,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <div className="league-stats">
         <div><ScanLine size={21}/><strong>{data.me.scans}</strong><span>Scans</span></div>
         <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>Actions logged</span></div>
-        <div><Cloud size={21}/><strong className="impact-pending">Not measured</strong><span>CO₂ saved</span></div>
+        <div><Award size={21}/><strong>{data.me.badges.filter(b => b.unlocked).length}</strong><span>Badges</span></div>
       </div>
       <section className="badge-panel"><h2>Your badges</h2><div className="badge-grid">
         {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
@@ -62,7 +62,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <p>Sign in to earn XP and collect badges as you scan.</p>
       <button className="button primary" type="button" onClick={onSignIn}>Sign in</button></div>}
     <section className="league-ranking">
-      <div className="league-ranking-heading"><div><h2>Top scanners</h2><p>People who chose to appear here</p></div><Users size={25}/></div>
+      <div className="league-ranking-heading"><div><h2>Top scanners</h2></div><Users size={25}/></div>
       {data?.leaders.length ? <div className="rank-list">{data.leaders.map(person=>
         <div key={person.rank} className={"rank-entry "+(person.is_you?"its-you":"")}>
           <span className="rank-number">{person.rank===1?"🏆":"#"+person.rank}</span>
@@ -76,9 +76,12 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
           disabled={busy} onClick={()=>void toggle()}>{busy?"Saving…":data.me.visible?"Leave leaderboard":"Join leaderboard"}</button>
       </div>}
     </section>
-    <p className="league-fine-print">Earn {data?.rules.xp_per_scan??20} XP per new, confidently identified photo.
-      Up to {data?.rules.daily_limit??10} rewarded scans daily. Reuploads don't earn more XP.
-      Logged actions are self reported. Carbon savings aren't estimated from photos.</p>
+    <details className="league-rules">
+      <summary>How XP works</summary>
+      <p>You earn {data?.rules.xp_per_scan ?? 20} XP for a new photo when the item is identified confidently.
+      Up to {data?.rules.daily_limit ?? 10} rewarded scans a day. Scanning the same photo again earns nothing.
+      Recycling actions are self reported. CO₂ savings cannot be measured from photos.</p>
+    </details>
     {error && <p className="inline-error" role="alert">{error}</p>}
   </section>;
 }
