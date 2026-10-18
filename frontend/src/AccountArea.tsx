@@ -129,10 +129,10 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
         <div><h2>Admin dashboard</h2><p>Registered accounts and classification feedback</p></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       <div className="admin-stats">
-        <div><strong>{overview?.users ?? "–"}</strong><span>Accounts</span></div>
-        <div><strong>{overview?.scans ?? "–"}</strong><span>Saved scans</span></div>
-        <div><strong>{overview?.yes ?? "–"}</strong><span>Yes responses</span></div>
-        <div><strong>{overview?.no ?? "–"}</strong><span>No responses</span></div>
+        <div><strong>{overview?.users ?? "…"}</strong><span>Accounts</span></div>
+        <div><strong>{overview?.scans ?? "…"}</strong><span>Saved scans</span></div>
+        <div><strong>{overview?.yes ?? "…"}</strong><span>Yes responses</span></div>
+        <div><strong>{overview?.no ?? "…"}</strong><span>No responses</span></div>
       </div>
       <h3>Users</h3>
       <div className="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Scans</th></tr></thead>
@@ -143,7 +143,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
         <tbody>{feedback.map(entry => <tr key={entry.id}>
           <td>{entry.user_name}</td><td>{entry.item_name}</td>
           <td>{entry.feedback === "yes" ? <span className="yes-answer"><Check size={14}/> Yes</span> : "No"}</td>
-          <td>{entry.correction || "—"}</td><td>{new Date(entry.created_at).toLocaleDateString()}</td>
+          <td>{entry.correction || "None"}</td><td>{new Date(entry.created_at).toLocaleDateString()}</td>
         </tr>)}</tbody>
       </table></div>
       {!feedback.length && <p>No classification feedback has been submitted yet.</p>}

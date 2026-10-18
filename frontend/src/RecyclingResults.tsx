@@ -35,7 +35,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
         </div>
       </div>
       <div className="map-summary-stats">
-        <strong>{isUnavailable ? "—" : results.facilities.length}</strong>
+        <strong>{isUnavailable ? "…" : results.facilities.length}</strong>
         <span>places found</span>
       </div>
     </div>
@@ -48,7 +48,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
       <button type="button" className={filter === "centers" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("centers")}><Building2 size={14}/> Centers <span>{centers}</span></button>
       <button type="button" className={filter === "drop_off" ? "map-filter chosen" : "map-filter"}
-        onClick={() => setFilter("drop_off")}><Recycle size={14}/> Drop-off points <span>{dropoffs}</span></button>
+        onClick={() => setFilter("drop_off")}><Recycle size={14}/> Drop off spots <span>{dropoffs}</span></button>
     </div>
 
     <div className="map-explorer">
@@ -66,7 +66,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
             <span className="location-info">
               <strong>{place.name}</strong>
               <small>{place.address}</small>
-              <span className="location-meta"><LocateFixed size={13}/> {place.distance_miles.toFixed(1)} miles · {place.kind === "center" ? "Recycling center" : "Drop-off point"}</span>
+              <span className="location-meta"><LocateFixed size={13}/> {place.distance_miles.toFixed(1)} miles · {place.kind === "center" ? "Recycling center" : "Drop off spot"}</span>
               {place.tagged_materials.length > 0 && <span className="location-tags">
                 <BatteryCharging size={12}/> OSM tags: {place.tagged_materials.slice(0,4).join(" · ")}
               </span>}
