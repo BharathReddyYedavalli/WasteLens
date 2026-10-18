@@ -75,6 +75,12 @@ CREATE TABLE IF NOT EXISTS scan_actions (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS scan_actions_user_index ON scan_actions(user_id);
+CREATE TABLE IF NOT EXISTS quiz_awards (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    quiz_id TEXT NOT NULL CHECK(quiz_id='bottle_journey_v1'),
+    xp INTEGER NOT NULL CHECK(xp=30),
+    awarded_at TEXT NOT NULL
+);
 """
 
 
