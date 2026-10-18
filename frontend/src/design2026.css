@@ -175,3 +175,18 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 
 .skip-link{position:fixed;left:18px;top:-90px;z-index:1000;padding:13px 20px;color:#fff;background:#125c56;border-radius:10px;font-weight:800}
 .skip-link:focus{top:12px}
+
+/* Small rewards for interaction, without turning the page into a moving dashboard. */
+@keyframes wl-stamp-float {
+  0%,100% {transform:translateY(0) rotate(11deg)}
+  50% {transform:translateY(-7px) rotate(8deg)}
+}
+@media(prefers-reduced-motion:no-preference) {
+  .intro-art{animation:wl-stamp-float 5.2s ease-in-out infinite}
+  .reward-badge.unlocked{transition:transform .22s ease,box-shadow .22s ease}
+  .reward-badge.unlocked:hover{transform:translateY(-4px) rotate(-2deg);box-shadow:0 9px 13px #7c644a16}
+  .sort-step-number{transition:transform .18s ease,background-color .18s ease}
+  .sort-step.complete .sort-step-number{transform:scale(1.08);background:#a2edc9}
+  .rank-entry{transition:background-color .2s ease,transform .2s ease}
+  .rank-entry:hover{transform:translateX(3px)}
+}
