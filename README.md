@@ -89,3 +89,28 @@ Project-specific source: MIT (see LICENSE). Google Gemini service and third-part
 ## Privacy and deployment limitations
 
 This implementation is a **local prototype**, not a hardened internet-scale identity service. Administrators can see registered account email addresses and feedback, so disclose that to participants and apply appropriate access/retention policies. Run over HTTPS if deployed (`WASTELENS_COOKIE_SECURE=1`), add persistent per-account/IP rate limits, account recovery, verification, database backups, and delete/export controls before real public launch. Never commit `.env` or the SQLite database. Map tiles and OSM records require attribution and are governed by the providers' usage policies. A recycling-map marker is not proof that a facility accepts the photographed item.
+
+## Unified sidebar, chat, maps and history (October 2026)
+
+On branch `feat/wastelens-unified`, WasteLens includes the working Gemini photo identifier, scan-aware **Ask WasteLens** conversational assistant, a separate **Nearby Centers** tab with the existing in-page OpenStreetMap pins/list, plus the existing **My History**, **Sign In / Sign Up**, and admin feedback screens. The scan page continues to show the embedded map as well.
+
+- Chat requests use the same server-side Gemini API key through `POST /api/ai/chat`. The assistant receives the current scan **summary** (not the camera photo) and a bounded recent chat history. It does not establish verified municipal recycling acceptance.
+- Chat messages stay in browser memory for the current tab session (no conversation database), and clear when you scan a new item.
+- Nearby locations are community mapping data and are NOT certified item-acceptance listings; call before traveling.
+- No additional environment variables are required for chatbot use beyond the existing Gemini key. Existing admin email/password settings are unchanged.
+- This is a preview integration branch and should be manually tested before merge or public deployment. Do not deploy an unauthenticated AI proxy publicly without abuse protection and rate limiting.
+
+### Windows: Recover from an interrupted feature merge
+
+If your working folder says `You have unmerged paths`, stop the local servers, then run these commands from the repository root. `git merge --abort` stops the failed merge without discarding previous committed work. Check `git status` first and avoid `git reset --hard`.
+
+```powershell
+cd C:\Users\bhara\WasteLens
+git status
+git merge --abort
+git status
+git fetch origin
+git switch --track origin/feat/wastelens-unified
+```
+
+If the branch already exists locally, use `git switch feat/wastelens-unified` followed by `git pull --ff-only`. Verify you have no other local changes that would be overwritten before switching.
