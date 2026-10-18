@@ -4,11 +4,12 @@ import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy
 } from "lucide-react";
-import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse } from "./types";
+import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
 import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
+import BadgeCelebration from "./BadgeCelebration";
 
 type PhotoPreview = { file: File; src: string };
 const initialModel = "gemini-3.8-flash";
@@ -41,6 +42,7 @@ export default function App() {
   const [recordedAction, setRecordedAction] = useState("");
   const [actionBusy, setActionBusy] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [celebration, setCelebration] = useState<{ scan: number; badge: WasteLensBadge } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -107,6 +109,7 @@ export default function App() {
     setFeedbackError("");
     setRecordedAction("");
     setActionError("");
+    setCelebration(null);
   }
 
   async function startCamera() {
@@ -167,7 +170,7 @@ export default function App() {
 
   async function analyze() {
     if (!preview || busy) return;
-    setBusy(true); setResult(null); setError("");
+    setBusy(true); setResult(null); setError(""); setCelebration(null);
     try {
       const form = new FormData();
       form.append("image", preview.file);
@@ -177,7 +180,12 @@ export default function App() {
       const response = await fetch("/api/ai/analyze", { method: "POST", body: form });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Analysis failed");
-      setResult(data as VisionResponse);
+      const scanResult = data as VisionResponse;
+      setResult(scanResult);
+      const earned = scanResult.unlocked_badges?.[0];
+      if (earned && scanResult.scan_id) {
+        setCelebration({ scan: scanResult.scan_id, badge: earned });
+      }
       setRecordedAction("");
       setActionError("");
       setFeedbackSent(null);
@@ -250,6 +258,7 @@ export default function App() {
 
   const analysis = result?.analysis;
   return <div className="site">
+    {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
       <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
       <span className="brand-desc">Less waste starts here.</span>
