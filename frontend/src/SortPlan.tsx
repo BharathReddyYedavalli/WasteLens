@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Check, ClipboardCopy, Printer, ShieldCheck } from "lucide-react";
+import { Check, ClipboardCopy, Printer } from "lucide-react";
 import type { ItemAnalysis } from "./types";
 import { useLanguage } from "./i18n";
 
 export default function SortPlan({ analysis }: { analysis: ItemAnalysis }) {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const [done, setDone] = useState<number[]>([]);
   const [copied, setCopied] = useState(false);
   const safetyCheck = ["check_recycling", "check_compost", "special_dropoff"].includes(analysis.route);
