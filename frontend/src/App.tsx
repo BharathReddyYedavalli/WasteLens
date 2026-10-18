@@ -264,7 +264,12 @@ export default function App() {
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
       <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
-      
+      <div className="language-picker">
+        <label htmlFor="wastelens-lang">{t("Choose language")}</label>
+        <select id="wastelens-lang" value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
+          {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
+        </select>
+      </div>
     </header>
     <div className="site-layout">
       <aside className="side-nav" aria-label="WasteLens navigation">

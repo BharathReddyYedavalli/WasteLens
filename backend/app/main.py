@@ -75,7 +75,10 @@ async def ai_analyze(
     if len(payload) > MAX_BYTES:
         raise HTTPException(413, "Photo must be 8 MB or smaller.")
     try:
-        result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint, language)
+        if language == "en":
+            result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint)
+        else:
+            result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint, language)
         analysis = result.model_dump()
         user = get_user(request)
         scan_id = record_scan(
