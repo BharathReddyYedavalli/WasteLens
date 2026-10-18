@@ -6,6 +6,8 @@ untrusted user-uploaded pickle weights. Uploads here are images, not models.
 """
 from dataclasses import asdict, dataclass
 from io import BytesIO
+import json
+import math
 from pathlib import Path
 from threading import Lock
 import os
@@ -36,6 +38,50 @@ class ModelUnavailable(Exception):
 
 class InvalidImage(Exception):
     pass
+
+def decode_image(image_bytes: bytes) -> Image.Image:
+    """Apply EXIF orientation before detection/cropping/classification."""
+    if not image_bytes or len(image_bytes) > 8 * 1024 * 1024:
+        raise InvalidImage("Upload an image no larger than 8 MB")
+    try:
+        image = Image.open(BytesIO(image_bytes))
+        image.load()
+        if image.width < 24 or image.height < 24 or image.width * image.height > 25_000_000:
+            raise InvalidImage("Image size is unsupported. Use a clear photo under 25 megapixels.")
+        return ImageOps.exif_transpose(image).convert("RGB")
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
+        raise InvalidImage("Upload a valid JPG, PNG, or WebP photo") from exc
+
+
+def parse_crop_box(raw: str | None) -> tuple[float, float, float, float] | None:
+    """Validate client-supplied normalized xyxy coordinates; never trust the browser."""
+    if raw is None or raw == "":
+        return None
+    try:
+        values = json.loads(raw)
+    except (ValueError, TypeError) as exc:
+        raise InvalidImage("Invalid crop coordinates") from exc
+    if not isinstance(values, list) or len(values) != 4:
+        raise InvalidImage("Crop must contain four normalized coordinates")
+    if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
+           for value in values):
+        raise InvalidImage("Crop must contain four finite numbers")
+    x1, y1, x2, y2 = (float(value) for value in values)
+    if not (0 <= x1 < x2 <= 1 and 0 <= y1 < y2 <= 1) or x2 - x1 < .03 or y2 - y1 < .03:
+        raise InvalidImage("Crop must be within the image and cover a usable area")
+    return x1, y1, x2, y2
+
+
+def apply_crop(image: Image.Image, box: tuple[float, float, float, float] | None) -> Image.Image:
+    if box is None:
+        return image
+    x1, y1, x2, y2 = box
+    width, height = image.size
+    region = (int(x1 * width), int(y1 * height), min(width, math.ceil(x2 * width)), min(height, math.ceil(y2 * height)))
+    if region[2] - region[0] < 24 or region[3] - region[1] < 24:
+        raise InvalidImage("Selected object is too small. Move the camera closer.")
+    return image.crop(region)
+
 
 class ModelRunner:
     def __init__(self, model_dir: Path = MODEL_DIR):
@@ -75,17 +121,9 @@ class ModelRunner:
                 raise ModelUnavailable(f"Could not load checkpoint {model_id}: {exc}") from exc
         return self._loaded[model_id]
 
-    def predict(self, image_bytes: bytes, model_id: str) -> list[dict[str, object]]:
-        if not image_bytes or len(image_bytes) > 8 * 1024 * 1024:
-            raise InvalidImage("Upload an image no larger than 8 MB")
-        try:
-            img = Image.open(BytesIO(image_bytes))
-            img.load()
-            if img.width < 24 or img.height < 24 or img.width * img.height > 25_000_000:
-                raise InvalidImage("Image size is unsupported. Use a clear photo under 25 megapixels.")
-            img = ImageOps.exif_transpose(img).convert("RGB").resize((224, 224), Image.Resampling.BILINEAR)
-        except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
-            raise InvalidImage("Upload a valid JPG, PNG, or WebP photo") from exc
+    def predict(self, image_bytes: bytes, model_id: str,
+                crop_box: tuple[float, float, float, float] | None = None) -> list[dict[str, object]]:
+        img = apply_crop(decode_image(image_bytes), crop_box).resize((224, 224), Image.Resampling.BILINEAR)
         model = self._load(model_id)
         import numpy as np
         import torch
