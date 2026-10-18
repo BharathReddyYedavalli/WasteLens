@@ -177,7 +177,7 @@ def facilities(zip_code: str = Query(min_length=5, max_length=5)):
         # A failed response is not the same as an area without recycling sites.
         matches = []
         listing_status = "unavailable"
-        error = "OpenStreetMap location listings are currently unavailable. The map still works; please retry later."
+        error = "OpenStreetMap location listings are temporarily unavailable. The map still works; please retry later."
     return {
         "zip_code": zip_code,
         "location_label": label,
