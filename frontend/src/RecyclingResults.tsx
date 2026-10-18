@@ -47,17 +47,17 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
       <span>{isPartial ? "Some listings are offline. Showing city locations." : "Places aren't loading. Try again shortly."}</span></div>}
     {results.facilities.length > 0 && <div className="map-filters" aria-label="Filter collection locations">
       <button type="button" className={filter === "all" ? "map-filter chosen" : "map-filter"}
-        onClick={() => setFilter("all")}>All <span>{results.facilities.length}</span></button>
+        onClick={() => setFilter("all")}>{t("All")} <span>{results.facilities.length}</span></button>
       <button type="button" className={filter === "centers" ? "map-filter chosen" : "map-filter"}
-        onClick={() => setFilter("centers")}><Building2 size={14}/> Centers <span>{centers}</span></button>
+        onClick={() => setFilter("centers")}><Building2 size={14}/> {t("Centers")} <span>{centers}</span></button>
       <button type="button" className={filter === "drop_off" ? "map-filter chosen" : "map-filter"}
-        onClick={() => setFilter("drop_off")}><Recycle size={14}/> Drop off spots <span>{dropoffs}</span></button>
+        onClick={() => setFilter("drop_off")}><Recycle size={14}/> {t("Drop off spots")} <span>{dropoffs}</span></button>
     </div>}
 
     <div className="map-explorer">
       <div className="facility-side-panel" aria-label="Scrollable list of mapped recycling locations">
         <div className="facility-side-heading">
-          <strong>{filtered.length ? "Places near you" : isUnavailable ? "Can't load places" : "No places found"}</strong>
+          <strong>{filtered.length ? t("Places near you") : isUnavailable ? "Can't load places" : t("No places found")}</strong>
           
         </div>
         {filtered.length ? filtered.map((place, i) =>

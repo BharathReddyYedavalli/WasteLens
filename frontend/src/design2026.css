@@ -172,3 +172,6 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
   .sort-plan-tools{display:none!important}
   .sort-step{break-inside:avoid}
 }
+
+.skip-link{position:fixed;left:18px;top:-90px;z-index:1000;padding:13px 20px;color:#fff;background:#125c56;border-radius:10px;font-weight:800}
+.skip-link:focus{top:12px}

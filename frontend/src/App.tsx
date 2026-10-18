@@ -262,6 +262,7 @@ export default function App() {
 
   const analysis = result?.analysis;
   return <div className="site">
+    <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
       <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
@@ -293,7 +294,7 @@ export default function App() {
         </div>
       </aside>
       <div className="page-content">
-    <main id="home" className="shell">
+    <main id="main-content" className="shell" tabIndex={-1}>
       {view === "identifier" ? <>
       <div className="intro">
         <div className="intro-copy">
@@ -389,7 +390,7 @@ export default function App() {
           <MessageCircle size={18}/> {t("Ask about this item")}
         </button>
         {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
-        {analysis.follow_up_question && <div className="question"><strong>One thing to check:</strong> {analysis.follow_up_question}</div>}
+        {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
           <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
           <article className="result-card blue reuse-section">
@@ -416,7 +417,7 @@ export default function App() {
                     <div>
                       <h4>{t("You'll need")}</h4>
                       {project.materials_needed.length ? <ul>{project.materials_needed.map((x,j) => <li key={j}>{x}</li>)}</ul>
-                        : <p>No extra tools required.</p>}
+                        : <p>{t("No extra tools required.")}</p>}
                     </div>
                     <div>
                       <h4>{t("How to make it")}</h4>
@@ -428,9 +429,9 @@ export default function App() {
             </div> : <div className="reuse-legacy">
               {analysis.identification === "likely" && analysis.reuse_ideas.length > 0
                 ? <><ul>{analysis.reuse_ideas.map((x,i)=><li key={i}>{x}</li>)}</ul></>
-                : <p>No safe reuse idea for this item yet.</p>}
+                : <p>{t("No safe reuse idea for this item yet.")}</p>}
             </div>}
-            <details className="reuse-fine-print"><summary>Before trying a project</summary><p>Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.</p></details>
+            <details className="reuse-fine-print"><summary>{t("Before trying a project")}</summary><p>Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.</p></details>
           </article>
           {analysis.cautions.length > 0 && <article className="result-card muted">
             <h3><ShieldAlert size={21}/> {t("A few things to check")}</h3>
@@ -463,12 +464,12 @@ export default function App() {
               </button>
             </div>
             {correctChoice === "no" && !feedbackSent && <div className="correction-form">
-              <label htmlFor="feedbackCorrection">What was the item? (optional)</label>
+              <label htmlFor="feedbackCorrection">{t("What was the item? (optional)")}</label>
               <input id="feedbackCorrection" maxLength={160} value={correction}
                 placeholder="Example: insulated water bottle"
                 onChange={event => setCorrection(event.target.value)}/>
               <button className="button primary" disabled={feedbackBusy}
-                onClick={() => void submitFeedback(false)}>Submit feedback</button>
+                onClick={() => void submitFeedback(false)}>{t("Submit feedback")}</button>
             </div>}
             {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}

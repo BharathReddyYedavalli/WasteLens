@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import type { CSSProperties } from "react";
 import { Award, X } from "lucide-react";
 import type { WasteLensBadge } from "./types";
+import { useLanguage } from "./i18n";
 
 const colors = ["#42ba69", "#ffb93f", "#ed817e", "#8ac6e9", "#d3a6f4", "#ffda78"];
 const pieces = Array.from({ length: 52 }, (_, index) => {
@@ -22,6 +23,7 @@ const pieces = Array.from({ length: 52 }, (_, index) => {
 });
 
 export default function BadgeCelebration({ badge, onClose }: { badge: WasteLensBadge; onClose: () => void }) {
+  const { t } = useLanguage();
   useEffect(() => {
     // Only a fresh, rewarded scan mounts this component. Never fire on page load.
     const timeout = window.setTimeout(onClose, 7200);
@@ -36,8 +38,8 @@ export default function BadgeCelebration({ badge, onClose }: { badge: WasteLensB
     <div className="badge-toast">
       <span className="badge-toast-medal"><Award size={35} strokeWidth={2}/></span>
       <div className="badge-toast-message">
-        <span>New badge!</span>
-        <strong>{badge.name}</strong>
+        <span>{t("New badge!")}</span>
+        <strong>{t(badge.name)}</strong>
         <p>{badge.description}</p>
       </div>
       <button type="button" className="badge-toast-close" onClick={onClose} aria-label="Dismiss badge celebration">

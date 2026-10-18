@@ -99,7 +99,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
       <button className="link-button" onClick={() => { setSignup(!signup); setError(""); }}>
         {signup ? t("Already have an account? Sign in") : t("New here? Create an account")}
       </button>
-      <details className="account-privacy"><summary><LockKeyhole size={16}/> Your account and privacy</summary><p>Your password is securely hashed. Saved scans contain item results, not photos.</p></details>
+      <details className="account-privacy"><summary><LockKeyhole size={16}/> {t("Your account and privacy")}</summary><p>Your password is securely hashed. Saved scans contain item results, not photos.</p></details>
       {error && <p className="inline-error" role="alert">{error}</p>}
     </section>;
   }
@@ -110,7 +110,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
         <div><h2>{t("My scans")}</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       <HabitSnapshot/>
-      {scans.length === 0 && <p>Nothing here yet. Scan your first item to save it.</p>}
+      {scans.length === 0 && <p>{t("Nothing here yet. Scan your first item to save it.")}</p>}
       <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
         <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
         <p><strong>Material:</strong> {scan.analysis.material_guess}</p>
@@ -118,7 +118,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
         
         {scan.feedback && <p><strong>Your feedback:</strong> {scan.feedback === "yes" ? "Correct" : "Needs correction"}</p>}
         {scan.correction && <p><strong>Correction:</strong> {scan.correction}</p>}
-        <details><summary>See the tips for this item</summary>
+        <details><summary>{t("See the tips for this item")}</summary>
           <h4>Disposal</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
           <h4>Reuse</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
         </details>
@@ -130,7 +130,7 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     if (user.role !== "admin") return <section className="account-card"><h2>Administrator access required</h2></section>;
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><ShieldCheck/></div>
-        <div><h2>Admin dashboard</h2></div></div>
+        <div><h2>{t("Admin dashboard")}</h2></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       <div className="admin-stats">
         <div><strong>{overview?.users ?? "…"}</strong><span>Accounts</span></div>

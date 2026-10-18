@@ -40,8 +40,7 @@ export default function HabitSnapshot() {
   if (!data) return <div className="habit-loading" role="status">…</div>;
   const max = Math.max(1, ...data.days.map(day => day.scans));
   return <section className="habit-snapshot" aria-label={t("Your habits")}>
-    <div className="habit-head"><div><span className="eyebrow">YOUR ROUTINE</span>
-      <h3>{t("Your habits")}</h3></div>
+    <div className="habit-head"><div><h3>{t("Your habits")}</h3></div>
       <button type="button" className="habit-export" onClick={exportCSV}>
         <Download size={17}/> CSV
       </button>

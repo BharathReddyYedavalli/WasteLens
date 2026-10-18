@@ -5,10 +5,11 @@ import { actionHeaders, readJson } from "./AccountArea";
 import { useLanguage } from "./i18n";
 
 function Badge({ badge }: { badge: WasteLensBadge }) {
+  const { t } = useLanguage();
   return <div className={"reward-badge " + (badge.unlocked ? "unlocked" : "locked")}>
     <span className="reward-badge-icon">{badge.unlocked ? <Award size={24}/> : <LockKeyhole size={22}/>}</span>
-    <strong>{badge.name}</strong>
-    <small>{badge.unlocked ? "Unlocked" : badge.threshold + " scans"}</small>
+    <strong>{t(badge.name)}</strong>
+    <small>{badge.unlocked ? t("Unlocked") : badge.threshold + " " + t("Scans")}</small>
   </div>;
 }
 
@@ -60,9 +61,9 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <section className="badge-panel"><h2>{t("Your badges")}</h2><div className="badge-grid">
         {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
       </div></section>
-    </> : <div className="league-guest"><Leaf size={32}/><h2>Join the challenge</h2>
-      <p>Sign in to earn XP and collect badges as you scan.</p>
-      <button className="button primary" type="button" onClick={onSignIn}>Sign in</button></div>}
+    </> : <div className="league-guest"><Leaf size={32}/><h2>{t("Join the challenge")}</h2>
+      <p>{t("Sign in to earn XP and collect badges as you scan.")}</p>
+      <button className="button primary" type="button" onClick={onSignIn}>{t("Sign in")}</button></div>}
     <section className="league-ranking">
       <div className="league-ranking-heading"><div><h2>{t("Top scanners")}</h2></div><Users size={25}/></div>
       {data?.leaders.length ? <div className="rank-list">{data.leaders.map(person=>
@@ -71,9 +72,9 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
           <div className="rank-user"><strong>{person.name}{person.is_you?" (you)":""}</strong>
           <span>Level {person.level} · {person.scans} scans · {person.actions} actions</span></div>
           <strong className="rank-xp">{person.xp.toLocaleString()} XP</strong>
-        </div>)}</div> : <div className="rank-empty">The board is empty. You can be the first!</div>}
-      {data?.me && <div className="privacy-toggle"><div><strong>Show me on the leaderboard</strong>
-        <p>{data.me.visible ? "Your display name and scores are visible to visitors." : "Your progress is private until you join."}</p></div>
+        </div>)}</div> : <div className="rank-empty">{t("The board is empty. You can be the first!")}</div>}
+      {data?.me && <div className="privacy-toggle"><div><strong>{t("Show me on the leaderboard")}</strong>
+        <p>{data.me.visible ? t("Your display name and scores are visible to visitors.") : t("Your progress is private until you join.")}</p></div>
         <button className={"button "+(data.me.visible?"outline":"primary")} type="button"
           disabled={busy} onClick={()=>void toggle()}>{busy?"Saving…":data.me.visible?t("Leave leaderboard"):t("Join leaderboard")}</button>
       </div>}

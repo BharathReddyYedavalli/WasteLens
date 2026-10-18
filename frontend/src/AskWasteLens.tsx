@@ -86,7 +86,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         <div className="context-main">
           <Sparkles size={18}/>
           <div>
-            <strong>{scan ? `Let's talk about your ${scan.item_name.toLowerCase()}` : "What would you like to know?"}</strong>
+            <strong>{scan ? scan.item_name : t("What would you like to know?")}</strong>
             
           </div>
         </div>
@@ -95,12 +95,12 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
           <MessageCircle size={34}/>
-          <h2>{scan ? "Anything else you want to know?" : t("What's on your mind?")}</h2>
+          <h2>{scan ? t("Anything else you want to know?") : t("What's on your mind?")}</h2>
           
           <div className="chat-suggestions">
             {(scan ? startingPrompts : generalPrompts).map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
-              disabled={busy}>{prompt}</button>)}
+              disabled={busy}>{t(prompt)}</button>)}
           </div>
         </div> : messages.map((message,index) => <div
           key={index} className={message.role === "user" ? "chat-turn from-user" : "chat-turn from-ai"}>
