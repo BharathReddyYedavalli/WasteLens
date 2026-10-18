@@ -1,16 +1,50 @@
-export type ModelInfo = { id: string; name: string; available: boolean; note: string };
-export type ModelCatalog = { default_model_id: string; models: ModelInfo[]; notice: string };
-export type Guidance = { route: "special" | "local" | "compost" | "reuse" | "trash"; headline: string; instructions: string[]; reuse: string[]; finder: string | null; caution: string; source_url: string };
-export type Prediction = { label: string; score: number };
-export type BoundingBox = [number, number, number, number]; // normalized xyxy
-export type CropRegion = { box: BoundingBox; source: "yolo" | "manual"; label: string; id?: string };
-export type Detection = { id: string; label: string; confidence: number; box: BoundingBox };
-export type DetectionResponse = { width: number; height: number; detections: Detection[]; notice: string };
-export type MaterialGuidanceResponse = {
-  material: string; category: string; guidance: Guidance; notice: string;
+export type VisionModel = { id: string; name: string };
+export type StatusResponse = {
+  configured: boolean;
+  default_model: string;
+  models: VisionModel[];
+  privacy_notice: string;
 };
-export type Classification = {
-  image_region: "whole_photo" | "selected_object";
-  model_id: string; material: string; category: string; review_required: boolean;
-  top_predictions: Prediction[]; guidance: Guidance; notice: string;
+export type ItemAnalysis = {
+  item_name: string;
+  visual_description: string;
+  material_guess: string;
+  identification: "likely" | "uncertain" | "multiple_items";
+  route: "reuse_first" | "check_recycling" | "check_compost" | "special_dropoff" | "general_trash_check" | "needs_identification";
+  route_title: string;
+  disposal_steps: string[];
+  reuse_ideas: string[];
+  cautions: string[];
+  follow_up_question: string;
+  location_helpful: boolean;
+  collection_search_term: string;
+};
+export type VisionResponse = {
+  model_id: string;
+  analysis: ItemAnalysis;
+  local_facilities_verified: false;
+  scan_id: number | null;
+};
+
+export type SessionUser = { id: number; name: string; email: string; role: "user" | "admin" };
+export type SavedScan = {
+  id: number; item_name: string; model_id: string; analysis: ItemAnalysis;
+  zip_code: string | null; feedback: "yes" | "no" | null; correction: string; created_at: string;
+};
+export type AdminOverview = { users: number; scans: number; yes: number; no: number };
+export type AdminUser = SessionUser & { created_at: string; scan_count: number };
+export type AdminFeedback = {
+  id: number; item_name: string; feedback: "yes" | "no"; correction: string;
+  created_at: string; user_id: number; user_name: string; user_email: string;
+};
+export type Facility = {
+  id: string; name: string; address: string; latitude: number; longitude: number;
+  distance_miles: number; tagged_materials: string[];
+  verified_acceptance: false; note: string;
+};
+export type FacilitySearchResponse = {
+  zip_code: string; location_label: string;
+  center: { latitude: number; longitude: number };
+  facilities: Facility[];
+  provider: string; acceptance_verified: false; notice: string;
 };
