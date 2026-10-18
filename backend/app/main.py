@@ -1,5 +1,6 @@
 """WasteLens API: Gemini photo identification, account history and in-page maps."""
 from contextlib import asynccontextmanager
+import hashlib
 from pathlib import Path
 import os
 import re
@@ -11,6 +12,7 @@ from starlette.concurrency import run_in_threadpool
 load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 
 from .accounts import bootstrap_admin, get_user, initialize, record_scan, router as account_router
+from .gamification import router as game_router
 from .places import router as places_router
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
 from .chat import ChatRequest, answer_chat
@@ -32,6 +34,7 @@ app = FastAPI(
 )
 app.include_router(account_router)
 app.include_router(places_router)
+app.include_router(game_router)
 
 
 @app.get("/api/health")
@@ -72,7 +75,10 @@ async def ai_analyze(
         result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint)
         analysis = result.model_dump()
         user = get_user(request)
-        scan_id = record_scan(user["id"], model_id, analysis, zip_code or None) if user else None
+        scan_id = record_scan(
+            user["id"], model_id, analysis, zip_code or None,
+            hashlib.sha256(str(user["id"]).encode() + b":" + payload).hexdigest(),
+        ) if user else None
         return {
             "model_id": model_id, "analysis": analysis,
             "local_facilities_verified": False,

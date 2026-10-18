@@ -59,6 +59,22 @@ CREATE TABLE IF NOT EXISTS scans (
 );
 CREATE INDEX IF NOT EXISTS sessions_user_index ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS scans_user_index ON scans(user_id,id DESC);
+CREATE TABLE IF NOT EXISTS scan_rewards (
+    scan_id INTEGER PRIMARY KEY REFERENCES scans(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    photo_hash TEXT NOT NULL,
+    xp INTEGER NOT NULL CHECK(xp > 0),
+    created_at TEXT NOT NULL,
+    UNIQUE (user_id, photo_hash)
+);
+CREATE INDEX IF NOT EXISTS scan_rewards_user_index ON scan_rewards(user_id,created_at);
+CREATE TABLE IF NOT EXISTS scan_actions (
+    scan_id INTEGER PRIMARY KEY REFERENCES scans(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    action TEXT NOT NULL CHECK (action IN ('recycled','reused','composted','donated')),
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS scan_actions_user_index ON scan_actions(user_id);
 """
 
 
@@ -78,6 +94,12 @@ def initialize():
         try:
             connection.execute("PRAGMA foreign_keys=ON")
             connection.executescript(SCHEMA)
+            # Add new opt-in setting to existing user databases without deleting accounts.
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(users)")}
+            if "leaderboard_visible" not in columns:
+                connection.execute(
+                    "ALTER TABLE users ADD COLUMN leaderboard_visible INTEGER NOT NULL DEFAULT 0"
+                )
             connection.commit()
         finally:
             connection.close()
@@ -229,16 +251,42 @@ def me(request: Request):
     return {"user": get_user(request)}
 
 
-def record_scan(user_id: int, model_id: str, analysis: dict, zip_code: str | None = None):
-    """Save recognition results, never raw photos, for signed-in accounts only."""
+def record_scan(
+    user_id: int, model_id: str, analysis: dict, zip_code: str | None = None,
+    photo_digest: str | None = None,
+):
+    """Save text only. Award at most 10 distinct, confidently identified scans daily.
+
+    Photo SHA256 is scoped to the user ID, not shared between accounts.
+    Identical image re-uploads and uncertain identifications earn no further XP.
+    The photo itself is never saved.
+    """
     with database() as db:
+        created_at = now_iso()
         cursor = db.execute(
             """INSERT INTO scans(user_id,item_name,model_id,analysis_json,zip_code,created_at)
                VALUES(?,?,?,?,?,?)""",
             (user_id, analysis["item_name"], model_id,
-             json.dumps(analysis), zip_code, now_iso()),
+             json.dumps(analysis), zip_code, created_at),
         )
-        return cursor.lastrowid
+        scan_id = cursor.lastrowid
+        if photo_digest and analysis.get("identification") == "likely":
+            awarded_today = db.execute(
+                """SELECT COUNT(*) FROM scan_rewards
+                   WHERE user_id=? AND created_at>=?""",
+                (user_id, created_at[:10] + "T00:00:00"),
+            ).fetchone()[0]
+            if awarded_today < 10:
+                try:
+                    db.execute(
+                        """INSERT INTO scan_rewards(scan_id,user_id,photo_hash,xp,created_at)
+                           VALUES (?,?,?,?,?)""",
+                        (scan_id, user_id, photo_digest, 20, created_at),
+                    )
+                except sqlite3.IntegrityError:
+                    # Reusing the same image does not award additional points.
+                    pass
+        return scan_id
 
 
 @router.get("/scans")
