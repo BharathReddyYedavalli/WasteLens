@@ -3,8 +3,8 @@ import pytest
 from app.vision import ItemAnalysis, MODELS
 
 def test_model_allowlist():
-    assert "gemini-2.5-flash" in MODELS
-    assert "gemini-2.5-flash-lite" in MODELS
+    assert "gemini-3.8-flash" in MODELS
+    assert "gemini-3.5-flash-lite" in MODELS
     assert len(MODELS) == 2
 
 def test_schema_requires_specific_fields():

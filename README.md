@@ -43,7 +43,7 @@ Prerequisites: Python 3.11, Node.js 22+, and a **Gemini API key** obtained from 
 - `GET /api/ai/status` — public supported model list and key-present flag (never the actual key)
 - `POST /api/ai/analyze` — photo JPG/PNG/WebP <= 8 MB, `model_id` and optional `object_hint`, returns structured item assessment.
 
-Current free-tier model options: `gemini-2.5-flash` (default) and `gemini-2.5-flash-lite` (comparison). Google's account-specific free tier limits change; check https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/gemini-api/docs/rate-limits before relying on free usage.
+Current free-tier model options: `gemini-3.8-flash` (default) and `gemini-3.5-flash-lite` (comparison). Google's account-specific free tier limits change; check https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/gemini-api/docs/rate-limits before relying on free usage.
 
 ## User privacy / limits
 

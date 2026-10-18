@@ -7,7 +7,7 @@ import {
 import type { StatusResponse, VisionResponse } from "./types";
 
 type PhotoPreview = { file: File; src: string };
-const initialModel = "gemini-2.5-flash";
+const initialModel = "gemini-3.8-flash";
 
 const MAPS_SEARCH = (term: string, location: string) =>
   "https://www.google.com/maps/search/?api=1&query=" +
@@ -173,7 +173,7 @@ export default function App() {
             <select id="model" value={model} disabled={!status || busy} onChange={event => {
               setModel(event.target.value); setResult(null);
             }}>
-              {(status?.models ?? [{id: initialModel, name: "Gemini 2.5 Flash"}]).map(option =>
+              {(status?.models ?? [{id: initialModel, name: "Gemini 3.8 Flash"}]).map(option =>
                 <option key={option.id} value={option.id}>{option.name}</option>)}
             </select>
             <ChevronDown size={15}/>

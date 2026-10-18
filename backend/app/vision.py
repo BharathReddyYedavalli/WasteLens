@@ -15,10 +15,10 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field, ValidationError
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.8-flash"
 MODELS = {
-    DEFAULT_MODEL: "Gemini 2.5 Flash · recommended",
-    "gemini-2.5-flash-lite": "Gemini 2.5 Flash-Lite · faster alternative",
+    DEFAULT_MODEL: "Gemini 3.8 Flash · recommended",
+    "gemini-3.5-flash-lite": "Gemini 3.5 Flash-Lite · faster alternative",
 }
 MAX_BYTES = 8 * 1024 * 1024
 MAX_PIXELS = 25_000_000
@@ -131,7 +131,7 @@ def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> I
                 response_mime_type="application/json",
                 response_schema=ItemAnalysis,
                 temperature=0.2,
-                max_output_tokens=1800,
+                max_output_tokens=4096,
             ),
         )
         if not response.text:
@@ -141,6 +141,8 @@ def analyze_photo(image_bytes: bytes, model_id: str, object_hint: str = "") -> I
         code = getattr(exc, "code", None)
         if code == 429:
             raise AIUnavailable("Free-tier limit reached. Wait before trying another photo.", 429) from exc
+        if code == 404:
+            raise AIUnavailable("This AI model isn't available for your Google API project. Refresh the page and select a current Gemini model, or try the alternative model.", 502) from exc
         if code in (400, 401, 403):
             raise AIUnavailable("The Gemini API key, selected model, or project permissions need attention.", 502) from exc
         raise AIUnavailable("The image analysis service is currently unavailable. Try again later.", 502) from exc

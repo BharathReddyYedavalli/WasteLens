@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_health_and_catalog():
     assert client.get("/api/health").json()["ok"] is True
     catalog = client.get("/api/ai/status").json()
-    assert catalog["default_model"] == "gemini-2.5-flash"
+    assert catalog["default_model"] == "gemini-3.8-flash"
     assert len(catalog["models"]) == 2
     assert "GEMINI_API_KEY" not in catalog
 
@@ -40,7 +40,7 @@ def test_real_response_contract_with_provider_mock(monkeypatch):
     import app.main as api
     def fake_analyze(data, model, hint):
         assert data.startswith(b"TEST")
-        assert model == "gemini-2.5-flash"
+        assert model == "gemini-3.8-flash"
         assert hint == "the bottle"
         return ItemAnalysis(
             item_name="Reusable water bottle",
