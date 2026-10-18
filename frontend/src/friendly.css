@@ -535,6 +535,7 @@ footer span:first-child {font-family:"Fredoka","Nunito",sans-serif;font-size:17p
 .league-stats>div{display:flex;flex-direction:column;gap:6px;padding:19px 22px;border:1px solid #d7eadd;background:#fffefa;border-radius:17px}
 .league-stats svg{color:#319950}.league-stats strong{font:600 32px "Fredoka","Nunito",sans-serif}
 .league-stats span{font-size:13px;color:#587561;font-weight:800}
+.league-stats strong.impact-pending{font:900 17px/1.35 "Nunito",sans-serif;color:#375d45;padding:7px 0 6px}
 .badge-panel,.league-ranking{border-radius:21px;background:#fffefa;border:1px solid #d7eadd;padding:23px 26px}
 .badge-panel h2,.league-ranking h2{font:500 26px "Fredoka","Nunito",sans-serif;margin:0}
 .badge-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:18px}

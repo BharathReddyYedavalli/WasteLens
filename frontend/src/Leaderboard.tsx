@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Award, CheckCircle2, Leaf, LockKeyhole, ScanLine, Sparkles, Trophy, Users } from "lucide-react";
+import { Award, CheckCircle2, Cloud, Leaf, LockKeyhole, ScanLine, Sparkles, Trophy, Users } from "lucide-react";
 import type { LeaderboardResponse, SessionUser, WasteLensBadge } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
 
@@ -53,7 +53,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <div className="league-stats">
         <div><ScanLine size={21}/><strong>{data.me.scans}</strong><span>Scans</span></div>
         <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>Actions logged</span></div>
-        <div><Award size={21}/><strong>{data.me.badges.filter(b=>b.unlocked).length}</strong><span>Badges</span></div>
+        <div><Cloud size={21}/><strong className="impact-pending">Not measured</strong><span>CO₂ saved</span></div>
       </div>
       <section className="badge-panel"><h2>Your badges</h2><div className="badge-grid">
         {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
