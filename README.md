@@ -151,6 +151,8 @@ benchmark_photos/
     aluminum_can_01.jpg
   plastic/
     empty_bottle_01.jpg
+  out_of_scope/
+    laptop_01.jpg  # not a supported waste label
 ```
 
 Run `python scripts/benchmark_camera_photos.py` from the project root after installing all four model checkpoints. The script writes a private CSV with image-level predictions, raw model scores and per-model accuracy on the **same** test photos. It does not improve the model by itself, and small samples do not prove accuracy. Keep personal photos private: these folders are git-ignored.
