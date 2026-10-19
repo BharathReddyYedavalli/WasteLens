@@ -94,7 +94,6 @@ function Timeline({entries}:{entries:Entry[]}){
         <time dateTime={day}>{dayStamp(day+"T12:00:00")}</time>
       </div>)}
     </div>
-    <p className="community-chart-note">{t("This chart shows when items were recorded, not how much waste was diverted.")}</p>
   </div>;
 }
 
@@ -190,7 +189,6 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
       <span className="audit-icon"><ClipboardList size={30}/></span>
       <div>
         <h1>{t("Community waste audit")}</h1>
-        <p>{t("Count waste at school, in a park, or during a cleanup.")}</p>
       </div>
     </header>
     <div className="audit-session">
@@ -200,7 +198,6 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     </div>
     <div className="audit-count-row">
       <div><span>{t("Items counted")}</span><strong>{total}</strong></div>
-      <p>{t("Tap a category for each item you observe.")}</p>
     </div>
     <div className="audit-options">{kinds.map(kind=><button type="button" key={kind.id} onClick={()=>log(kind.id)}
       className={"audit-option audit-"+kind.id} style={{["--audit-accent" as string]:kind.color}}>
@@ -213,9 +210,14 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
         {busy?<LoaderCircle size={17}/>:<Save size={17}/>} {busy?t("Saving…"):t("Save audit")}</button>
       <button type="button" disabled={!total} onClick={()=>{setAudit(a=>({...a,entries:a.entries.slice(0,-1)}));setAdvice(null);}}>
         <Undo2 size={17}/>{t("Undo last")}</button>
-      <button type="button" disabled={!total} onClick={()=>saveCSV(audit)}><Download size={17}/>{t("Export CSV")}</button>
-      <button type="button" disabled={!total} onClick={()=>window.print()}><Printer size={17}/>{t("Print results")}</button>
       <button type="button" className="audit-reset" onClick={fresh} disabled={!total&&!audit.title}><FilePlus2 size={17}/>{t("New audit")}</button>
+      <details className="audit-more-actions">
+        <summary>{t("Export & print")}<ChevronDown size={16}/></summary>
+        <div>
+          <button type="button" disabled={!total} onClick={()=>saveCSV(audit)}><Download size={17}/>{t("Export CSV")}</button>
+          <button type="button" disabled={!total} onClick={()=>window.print()}><Printer size={17}/>{t("Print results")}</button>
+        </div>
+      </details>
     </div>
     {!user&&<p className="community-private-note"><LockKeyhole size={17}/>
       {t("Your draft stays in this browser. Sign in to save audits on this WasteLens server. Separate local installations do not automatically sync.")}
@@ -225,9 +227,8 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
 
     <div className="community-dashboard">
       <div className="community-dashboard-heading"><BarChart3 size={22}/><div><h2>{t("Waste breakdown")}</h2></div></div>
-      {total===0?<p className="audit-empty">{t("Tap a category above to start.")}</p>:<>
+      {total===0?null:<>
         <div className="community-stats">
-          <div><span>{t("Items observed")}</span><strong>{total}</strong></div>
           <div><span>{t("Largest category")}</span><strong>{top.map(k=>t(k.label)).join(" / ")}</strong></div>
           <div><span>{t("Trash + uncertain")}</span><strong>{share}%</strong></div>
         </div>
@@ -242,7 +243,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     <div className="community-advice">
       <div className="community-advice-heading"><Lightbulb size={25}/><div>
         <h2>{t("Turn findings into community action")}</h2>
-        <p>{t("Only your counts and audit name are sent when you request suggestions.")}</p>
+        <p>{t("Only the audit name and counts go to Gemini when you ask.")}</p>
       </div></div>
       <div className="community-advice-buttons">
         <details className="community-ai-model"><summary>{t("AI model")}</summary><label className="visually-hidden" htmlFor="audit-ai-model">{t("AI model")}</label>
@@ -281,9 +282,8 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
                 <Trash2 size={17}/>{t("Delete")}</button></div>
           </div>)}
         </div>}
-      {user&&saved.length>1&&<div className="community-comparison">
-        <h3><BarChart3 size={18}/>{t("Compare saved audits")}</h3>
-        <p>{t("Share of items recorded as trash or uncertain. Compare only audits from similar activities, locations and durations.")}</p>
+      {user&&saved.length>1&&<details className="community-comparison"><summary><BarChart3 size={18}/>{t("Compare saved audits")}</summary>
+        <p>{t("Compare similar activities and time periods.")}</p>
         {saved.slice(0,6).reverse().map(item=>{
           const problem=(item.counts.trash||0)+(item.counts.unsure||0);
           const percent=item.item_count?Math.round(100*problem/item.item_count):0;
@@ -295,7 +295,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
             </div><strong>{percent}%</strong>
           </div>;
         })}
-      </div>}
+      </details>}
     </div>
     <details className="audit-note"><summary>{t("About these numbers")}</summary>
       <p>{t("These are human-entered observations, not proof of recycling, diversion or carbon savings. Saved audits belong to your account on this server. Drafts stay in this browser, and separate local servers do not synchronize.")}</p>
