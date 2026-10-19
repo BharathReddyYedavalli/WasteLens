@@ -4,6 +4,7 @@ import type { SessionUser, WasteLensBadge } from "./types";
 import { useLanguage } from "./i18n";
 import { actionHeaders } from "./AccountArea";
 import { JourneyCheckpoint, JourneyVignette } from "./JourneyExperiences";
+import { ReadAloudButton } from "./Speech";
 
 const chapters=[
   {id:"begin",year:"START",eyebrow:"THE BIG QUESTION",title:"Where does your bottle go?",description:"A little container has a surprisingly long story. Scroll down and follow the trail.",fact:"You might have already paid a refundable deposit when you bought your drink.",color:"mint",symbol:"bottle",source:"https://www.bottlebill.org/compare-all-states/"},
@@ -187,6 +188,10 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
           <h2>{language==="en"?chapter.title:translatedChapters[language][index].title}</h2>
           <p>{language==="en"?chapter.description:translatedChapters[language][index].description}</p>
           <div className="journey-fact"><Sparkles size={20}/><strong>{language==="en"?chapter.fact:translatedChapters[language][index].fact}</strong></div>
+          <ReadAloudButton id={"journey-chapter-"+chapter.id} category="journey" className="wl-journey-read"
+            text={[language==="en"?chapter.title:translatedChapters[language][index].title,
+              language==="en"?chapter.description:translatedChapters[language][index].description,
+              language==="en"?chapter.fact:translatedChapters[language][index].fact].join(". ")}/>
           <a href={chapter.source} target="_blank" rel="noopener noreferrer" className="journey-source">
             {t("From the official source")} <ExternalLink size={15}/>
           </a>
