@@ -10,5 +10,6 @@ import "./bottles.css";
 import "./themes.css";
 import "./accessibility.css";
 import "./documentary.css";
+import "./community.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
