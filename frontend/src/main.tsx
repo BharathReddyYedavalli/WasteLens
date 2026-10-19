@@ -8,7 +8,6 @@ import "./friendly.css";
 import "./design2026.css";
 import "./bottles.css";
 import "./themes.css";
-import "./journey-extra.css";
 import "./accessibility.css";
 import "./documentary.css";
 
