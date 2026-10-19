@@ -49,3 +49,29 @@ def test_reuse_project_schema_and_backwards_compatibility():
     )
     assert legacy.reuse_projects == []
     assert legacy.model_dump()["reuse_projects"] == []
+
+
+@pytest.mark.parametrize("provider_code,expected_status,expected_hint", [
+    (429, 429, "request limit"),
+    (404, 502, "other model"),
+    (401, 502, "API key"),
+    (403, 502, "API key"),
+    (400, 502, "request"),
+    (500, 502, "temporarily unavailable"),
+    (502, 502, "temporarily unavailable"),
+    (503, 502, "temporarily unavailable"),
+    (504, 502, "temporarily unavailable"),
+    (418, 502, "HTTP 418"),
+    (None, 502, "without an HTTP status"),
+])
+def test_gemini_provider_errors_are_actionable_and_sanitized(
+    provider_code, expected_status, expected_hint
+):
+    from app.vision import explain_provider_error
+    message, status = explain_provider_error(provider_code)
+    assert status == expected_status
+    assert expected_hint in message
+    assert "paste-your-api-key-here" not in message
+    if provider_code is not None:
+        assert str(provider_code) in message
+
