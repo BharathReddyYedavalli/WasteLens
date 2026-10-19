@@ -37,7 +37,7 @@ body{background:#fff9ee}
 .intro::before{content:"";position:absolute;width:210px;height:210px;border-radius:32%;right:30px;top:-72px;background:#c9bcfb;opacity:.76;transform:rotate(25deg);z-index:-1}
 .intro::after{content:"";position:absolute;width:125px;height:125px;border-radius:50%;right:180px;bottom:-76px;background:#ffe39f;z-index:-1}
 .intro-copy{max-width:680px}
-.intro h1{font:700 clamp(36px,5.4vw,64px)/1.07 "Fraunces",Georgia,serif!important;letter-spacing:-1.6px!important;color:#153d39!important;margin:0 0 17px!important}
+.intro h1{font:700 clamp(36px,5.4vw,64px)/1.07 "Nunito","Poppins",sans-serif!important;letter-spacing:-1.6px!important;color:#153d39!important;margin:0 0 17px!important}
 .intro p{font:600 clamp(14px,1.7vw,18px)/1.65 "Poppins",sans-serif!important;color:#31554b!important;max-width:550px!important;margin:0}
 .intro-art{width:148px!important;height:148px!important;border-radius:29px!important;background:#fd8565!important;color:#fff!important;transform:rotate(11deg);box-shadow:9px 10px 0 #1c7970a8}
 .intro-art svg{transform:rotate(-11deg)!important}
@@ -63,7 +63,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .workspace .model-options summary,.workspace .privacy-details summary{font-size:12px}
 .results{margin:45px 0}
 .result-title{align-items:center}
-.result-title h2{font:700 clamp(27px,4vw,42px)/1.12 "Fraunces",Georgia,serif!important;color:#16483f!important}
+.result-title h2{font:700 clamp(27px,4vw,42px)/1.12 "Nunito","Poppins",sans-serif!important;color:#16483f!important}
 .type-badge{background:#fff0cc!important;color:#795015!important;font-weight:800}
 .result-meta-line{gap:8px}
 .material-line{background:#eff7e7!important;border-color:#e2ecd7!important;color:#215248!important}
@@ -101,7 +101,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .sort-plan-tools button{display:inline-flex;align-items:center;gap:8px;border:1px solid #d6c99a;background:#fff;border-radius:12px;padding:10px 15px;color:#4b5040;font-weight:700;font-size:12px;cursor:pointer}
 .sort-plan-tools button:hover{border-color:#b68a39;background:#fff6dd}
 .assistant-screen,.finder-screen,.league-page{animation:wl-reveal .38s both}
-.assistant-heading h1,.finder-screen h1,.league-title h1{font:700 clamp(29px,4.5vw,43px) "Fraunces",Georgia,serif!important;color:#163c3a!important}
+.assistant-heading h1,.finder-screen h1,.league-title h1{font:700 clamp(29px,4.5vw,43px) "Nunito","Poppins",sans-serif!important;color:#163c3a!important}
 .assistant-card,.finder-card,.account-card,.league-ranking,.badge-panel{border:1.5px solid #e6e5d5!important;background:#fffefa!important;border-radius:24px!important;box-shadow:0 7px 0 #e8ebdc!important}
 .assistant-logo,.league-icon{background:#fce0ad!important;color:#965f25!important}
 .league-title p{display:none}
@@ -114,13 +114,13 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .rank-entry.its-you{background:#f7e7b3!important}
 .habit-snapshot{padding:25px 28px;background:#eeefff;border:2px solid #d9dcf8;border-radius:24px;margin:14px 0 28px;box-shadow:0 6px 0 #e1e3f3}
 .habit-head{display:flex;justify-content:space-between;align-items:center;gap:14px}
-.habit-head h3{font:700 28px "Fraunces",Georgia,serif;margin:3px 0 10px;color:#343c73}
+.habit-head h3{font:700 28px "Nunito","Poppins",sans-serif;margin:3px 0 10px;color:#343c73}
 .habit-head .eyebrow{color:#675bb0}
 .habit-export{display:flex;align-items:center;gap:6px;border:1px solid #b6b8e1;padding:9px 14px;background:#fff;border-radius:10px;color:#4e4f83;font-weight:800;font-size:12px;cursor:pointer}
 .habit-numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 24px}
 .habit-numbers>div{border-radius:16px;background:#fff;border:1px solid #e4e2f8;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
 .habit-numbers svg{color:#6a66aa}
-.habit-numbers strong{font:700 32px/1.2 "Fraunces",Georgia,serif;color:#393d72}
+.habit-numbers strong{font:700 32px/1.2 "Nunito","Poppins",sans-serif;color:#393d72}
 .habit-numbers span{font-size:12px;font-weight:700;color:#566083}
 .habit-plot-head h4{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:800;color:#363d75}
 .habit-week{height:137px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;border-top:1px solid #d5d7ee;padding-top:13px}
@@ -195,7 +195,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .audit-kit{padding:33px 0 70px;display:grid;gap:22px;animation:wl-reveal .4s ease}
 .audit-hero{display:flex;align-items:center;gap:22px;background:#f1eaff;border-radius:26px;padding:27px 32px}
 .audit-icon{width:70px;height:70px;border-radius:19px;display:grid;place-items:center;background:#9b87df;color:#fff;transform:rotate(-6deg);flex-shrink:0}
-.audit-hero h1{font:700 clamp(31px,4vw,46px)/1.1 "Fraunces",Georgia,serif;color:#3b326a;margin:0 0 9px}
+.audit-hero h1{font:700 clamp(31px,4vw,46px)/1.1 "Nunito","Poppins",sans-serif;color:#3b326a;margin:0 0 9px}
 .audit-hero p{font-size:14px;color:#545077;font-weight:600;margin:0}
 .audit-session{display:grid;gap:8px;max-width:550px}
 .audit-session label{font-weight:800;font-size:14px;color:#315b54}
@@ -203,7 +203,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .audit-session input{background:#fff;border:1px solid #bdddd0;border-radius:13px;padding:14px 17px}
 .audit-count-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
 .audit-count-row>div{display:grid;gap:0}
-.audit-count-row strong{font:700 66px/1 "Fraunces",Georgia,serif;color:#185b52}
+.audit-count-row strong{font:700 66px/1 "Nunito","Poppins",sans-serif;color:#185b52}
 .audit-count-row>div span{font-size:12px;font-weight:800;color:#386c60}
 .audit-count-row p{font-size:13px;color:#415b51;margin:0 0 7px}
 .audit-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
@@ -214,14 +214,14 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .audit-option:active{transform:translateY(2px);box-shadow:0 2px 0 var(--audit-accent)}
 .audit-option-emoji{font-size:28px}
 .audit-option strong{font-size:13px;font-weight:800;text-align:center}
-.audit-option-count{font:700 22px "Fraunces",serif;color:#2c5f58}
+.audit-option-count{font:700 22px "Nunito","Poppins",sans-serif;color:#2c5f58}
 .audit-actions{display:flex;gap:11px;flex-wrap:wrap}
 .audit-actions button{display:flex;align-items:center;gap:8px;border:1px solid #cddfd4;background:#fff;border-radius:12px;padding:11px 15px;color:#285b51;font-size:12px;font-weight:800;cursor:pointer}
 .audit-actions button:hover:not(:disabled){background:#e9f7ee}
 .audit-actions button:disabled{opacity:.4}
 .audit-actions .audit-reset{color:#ac503f;border-color:#edd0c6}
 .audit-results{padding:27px 30px;background:#fffef9;border:1.5px solid #dfe6d6;border-radius:24px;box-shadow:0 5px 0 #e8eadf}
-.audit-results h2{font:700 29px "Fraunces",Georgia,serif;color:#184f48;margin:0 0 20px}
+.audit-results h2{font:700 29px "Nunito","Poppins",sans-serif;color:#184f48;margin:0 0 20px}
 .audit-empty{font-size:14px;color:#526b60}
 .audit-bars{display:grid;gap:17px}
 .audit-bar-row{display:grid;grid-template-columns:110px minmax(0,1fr) 48px;align-items:center;gap:14px;font-weight:700;font-size:12px}
