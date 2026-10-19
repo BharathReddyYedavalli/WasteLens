@@ -189,9 +189,8 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     <header className="audit-hero">
       <span className="audit-icon"><ClipboardList size={30}/></span>
       <div>
-        <span className="community-kicker">{t("COMMUNITY ACTION / MEASURE")}</span>
         <h1>{t("Community waste audit")}</h1>
-        <p>{t("Count what your school, park or neighborhood throws away. Save your results, spot patterns and plan a meaningful cleanup.")}</p>
+        <p>{t("Count waste at school, in a park, or during a cleanup.")}</p>
       </div>
     </header>
     <div className="audit-session">
@@ -225,8 +224,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     {error&&<p className="community-error" role="alert">{error}</p>}
 
     <div className="community-dashboard">
-      <div className="community-dashboard-heading"><BarChart3 size={22}/><div><h2>{t("What your community is throwing away")}</h2>
-        <p>{t("Your observations help identify useful next steps, not prove environmental savings.")}</p></div></div>
+      <div className="community-dashboard-heading"><BarChart3 size={22}/><div><h2>{t("Waste breakdown")}</h2></div></div>
       {total===0?<p className="audit-empty">{t("Tap a category above to start.")}</p>:<>
         <div className="community-stats">
           <div><span>{t("Items observed")}</span><strong>{total}</strong></div>
@@ -244,17 +242,15 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     <div className="community-advice">
       <div className="community-advice-heading"><Lightbulb size={25}/><div>
         <h2>{t("Turn findings into community action")}</h2>
-        <p>{t("Get suggestions based on your counts. Nothing is sent to AI unless you request suggestions.")}</p>
+        <p>{t("Only your counts and audit name are sent when you request suggestions.")}</p>
       </div></div>
-      {total>0&&<p className="community-insight">{t("Focus area")}: <strong>{top.map(k=>t(k.label)).join(" / ")}</strong>.
-        {" "}{t("Start by checking how these items could be reduced, reused or correctly collected.")}</p>}
       <div className="community-advice-buttons">
-        <label>{t("AI model")}
-          <select value={aiModel} onChange={e=>setAiModel(e.target.value)}>
+        <details className="community-ai-model"><summary>{t("AI model")}</summary><label className="visually-hidden" htmlFor="audit-ai-model">{t("AI model")}</label>
+          <select id="audit-ai-model" aria-label={t("AI model")} value={aiModel} onChange={e=>setAiModel(e.target.value)}>
             <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
             <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite</option>
           </select>
-        </label>
+        </details>
         <button type="button" disabled={!total||adviceBusy} onClick={()=>void suggest()}>
           {adviceBusy?<LoaderCircle size={17}/>:<Sparkles size={17}/>}
           {adviceBusy?t("Thinking…"):t("Generate AI suggestions")}
@@ -272,10 +268,10 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     </div>
     <div className="community-saved">
       <div className="community-saved-heading"><Save size={23}/><div>
-        <h2>{t("Saved community audits")}</h2><p>{t("Keep separate snapshots of cleanups, lunch periods and school events.")}</p>
+        <h2>{t("Saved audits")}</h2>
       </div></div>
       {loadingSaved?<p>{t("Loading saved audits…")}</p>:!user?
-        <p>{t("Sign in to see audits saved on this WasteLens server. Different local computers do not share data automatically.")}</p>:saved.length===0?
+        <p>{t("Sign in to view saved audits on this server.")}</p>:saved.length===0?
         <p>{t("No saved audits yet. Count some items above and choose Save audit.")}</p>:<div className="community-saved-list">
           {saved.map(item=><div key={item.id} className="community-saved-item">
             <div><strong>{item.title}</strong><span>{dayStamp(item.created_at)} · {item.item_count} {t("items")}</span></div>
