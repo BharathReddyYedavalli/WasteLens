@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, CalendarDays, Check, ChevronDown, ClipboardList, Download, FilePlus2, Lightbulb, LoaderCircle, LockKeyhole, PieChart, Printer, RotateCcw, Save, Sparkles, Trash2, Undo2 } from "lucide-react";
+import { BarChart3, CalendarDays, Check, ChevronDown, ClipboardList, Download, FilePlus2, Lightbulb, LoaderCircle, LockKeyhole, PieChart, Printer, Save, Sparkles, Trash2, Undo2 } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { SessionUser } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
@@ -203,7 +203,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
       <div><span>{t("Items counted")}</span><strong>{total}</strong></div>
       <p>{t("Tap a category for each item you observe.")}</p>
     </div>
-    <div className="audit-options">{kinds.map((kind,index)=><button type="button" key={kind.id} onClick={()=>log(kind.id)}
+    <div className="audit-options">{kinds.map(kind=><button type="button" key={kind.id} onClick={()=>log(kind.id)}
       className={"audit-option audit-"+kind.id} style={{["--audit-accent" as string]:kind.color}}>
       <span className="audit-option-emoji" aria-hidden="true">{kind.emoji}</span>
       <strong>{t(kind.label)}</strong><span className="audit-option-count">{counts[kind.id]}</span>
