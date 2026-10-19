@@ -69,7 +69,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
         <div key={person.rank} className={"rank-entry "+(person.is_you?"its-you":"")}>
           <span className="rank-number">{person.rank===1?"🏆":"#"+person.rank}</span>
           <div className="rank-user"><strong>{person.name}{person.is_you?" (you)":""}</strong>
-          <span>Level {person.level} · {person.scans} scans · {person.actions} actions</span></div>
+          <span>{person.scans} scans · {person.actions} actions</span></div>
           <strong className="rank-xp">{person.xp.toLocaleString()} XP</strong>
         </div>)}</div> : <div className="rank-empty">{t("The board is empty. You can be the first!")}</div>}
       {data?.me && <div className="privacy-toggle"><div><strong>{t("Show me on the leaderboard")}</strong>
