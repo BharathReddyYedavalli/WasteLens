@@ -11,7 +11,7 @@
 .documentary-opening-shade{z-index:-1;background:linear-gradient(90deg,#071820f7 0%,#071820c7 44%,#07182030 90%),linear-gradient(0deg,#071820df,transparent 45%)}
 .documentary-opening-content{max-width:890px;margin-bottom:35px;position:relative;z-index:1}
 .documentary-eyebrow,.documentary-chapter-number,.documentary-decision-label{font-size:11px;letter-spacing:.20em;font-weight:900;text-transform:uppercase;color:#a8efe0;display:flex;align-items:center;gap:9px}
-.documentary-opening h1{font:750 clamp(46px,6.8vw,111px)/1.06 "Fraunces",Georgia,serif;letter-spacing:-.045em;color:#fff!important;margin:30px 0}
+.documentary-opening h1{font:750 clamp(46px,6.8vw,111px)/1.06 "Nunito","Poppins",sans-serif;letter-spacing:-.045em;color:#fff!important;margin:30px 0}
 .documentary-opening-sub{max-width:660px;font-size:clamp(16px,2vw,22px);font-weight:550;line-height:1.8;color:#e9f2ee!important}
 .documentary-explore{display:inline-flex;align-items:center;gap:12px;border:1px solid #85e8d1;background:#b4f8e1;color:#063632!important;border-radius:50px;margin-top:26px;padding:14px 25px;text-decoration:none;font-size:13px;font-weight:900;transition:transform .15s,background .15s}
 .documentary-explore:hover{transform:translateY(-2px);background:#fff}
@@ -34,10 +34,10 @@
 .documentary-photo figcaption{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:13px;padding:25px 22px 13px;background:linear-gradient(0deg,#071a21eb,#071a2100);font-size:10px;font-weight:700;color:#effff2;line-height:1.5}
 .documentary-photo figcaption a{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:#d9fbe6!important;text-underline-offset:3px}
 .documentary-chapter-body{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(60px,6.5vw,130px) clamp(26px,5.4vw,97px);position:relative}
-.documentary-chapter h2{font:700 clamp(40px,4vw,72px)/1.13 "Fraunces",Georgia,serif;letter-spacing:-.045em;color:#f7faf6!important;margin:22px 0 23px;max-width:660px}
+.documentary-chapter h2{font:700 clamp(40px,4vw,72px)/1.13 "Nunito","Poppins",sans-serif;letter-spacing:-.045em;color:#f7faf6!important;margin:22px 0 23px;max-width:660px}
 .documentary-chapter-copy{font-size:clamp(14px,1.2vw,17px);line-height:1.87;color:#dbe8e8!important;max-width:575px;margin:0 0 28px;font-weight:530}
 .documentary-stat{display:flex;align-items:center;gap:19px;border-left:3px solid #7cdac3;padding:17px 0 17px 22px;margin-top:8px;width:100%;max-width:580px;background:linear-gradient(90deg,#52be9c18,transparent)}
-.documentary-stat-value{flex-shrink:0;color:#b8f5d7;font:700 clamp(38px,5vw,81px)/1.05 "Fraunces",Georgia,serif;letter-spacing:-.055em}
+.documentary-stat-value{flex-shrink:0;color:#b8f5d7;font:700 clamp(38px,5vw,81px)/1.05 "Nunito","Poppins",sans-serif;letter-spacing:-.055em}
 .documentary-stat-text strong{display:block;font-size:13px;letter-spacing:.02em;color:#fff;font-weight:900;margin-bottom:7px}
 .documentary-stat-text p{color:#d1e4e4!important;font-size:11px;line-height:1.65;font-weight:600;margin:0}
 .documentary-chapter-footer{display:flex;gap:11px;align-items:center;justify-content:flex-start;flex-wrap:wrap;margin:17px 0 30px}
@@ -46,7 +46,7 @@
 .documentary-chapter-footer .wl-listen-button,.documentary-chapter-footer .wl-listen-pause,
 :root[data-wl-theme]:not([data-wl-theme="light"]) .documentary-chapter-footer .wl-listen-button,
 :root[data-wl-theme]:not([data-wl-theme="light"]) .documentary-chapter-footer .wl-listen-pause{color:#dbfff4!important;background:#153d3dbf!important;border:1px solid #6eb5a8!important;min-height:34px}
-.documentary-bridge{color:#eac98c!important;display:flex;align-items:center;gap:12px;font:700 clamp(15px,1.5vw,20px)/1.55 "Fraunces",Georgia,serif;margin:0;max-width:500px}
+.documentary-bridge{color:#eac98c!important;display:flex;align-items:center;gap:12px;font:700 clamp(15px,1.5vw,20px)/1.55 "Nunito","Poppins",sans-serif;margin:0;max-width:500px}
 .documentary-bridge svg{flex-shrink:0}
 .documentary-fate{width:100%;max-width:460px;margin:0 0 24px}
 .documentary-fate-track{height:24px;border-radius:20px;overflow:hidden;display:flex;background:#98aaa7}
@@ -59,12 +59,12 @@
 .documentary-interlude{grid-column:1/-1;order:5;min-height:480px;display:grid;grid-template-columns:1fr 1fr;background:#cee7df;color:#153d3a!important;gap:0}
 .documentary-interlude>div:first-child{padding:clamp(40px,7vw,110px);display:flex;justify-content:center;align-items:flex-start;flex-direction:column}
 .documentary-interlude span{color:#216d58;font-size:11px;letter-spacing:.17em;font-weight:900}
-.documentary-interlude h3{font:700 clamp(36px,4.5vw,72px)/1.12 "Fraunces",Georgia,serif;color:#18453c!important;letter-spacing:-.04em;margin:21px 0}
+.documentary-interlude h3{font:700 clamp(36px,4.5vw,72px)/1.12 "Nunito","Poppins",sans-serif;color:#18453c!important;letter-spacing:-.04em;margin:21px 0}
 .documentary-interlude p{font-size:15px;line-height:1.75;color:#376258!important}
 .documentary-interlude figure{height:100%;min-height:420px}
 .documentary-decision{min-height:620px;padding:clamp(65px,9vw,140px) clamp(22px,7vw,120px);background:#f4efdf;color:#1b3934;text-align:center;display:flex;flex-direction:column;align-items:center;scroll-margin-top:60px}
 .documentary-decision-label{color:#13746b}
-.documentary-decision h2{font:700 clamp(39px,5vw,78px)/1.15 "Fraunces",Georgia,serif;color:#204a42!important;letter-spacing:-.04em;max-width:870px;margin:23px auto 19px}
+.documentary-decision h2{font:700 clamp(39px,5vw,78px)/1.15 "Nunito","Poppins",sans-serif;color:#204a42!important;letter-spacing:-.04em;max-width:870px;margin:23px auto 19px}
 .documentary-decision>p{font-size:15px;line-height:1.7;color:#425c54!important;max-width:710px}
 .documentary-decision-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,870px);gap:14px;margin:29px auto 21px}
 .documentary-decision-options button{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;text-align:left;padding:20px 18px;border:2px solid #c3d4c5;background:#fffdf7;border-radius:17px;color:#205d54;cursor:pointer;font-size:12px;font-weight:900}
@@ -76,7 +76,7 @@
 .documentary-final{min-height:760px;position:relative;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);color:#fff;background:#10362f;scroll-margin-top:50px}
 .documentary-final-photo{position:relative;min-height:640px;overflow:hidden}
 .documentary-final-content{padding:clamp(45px,6vw,105px) clamp(25px,6vw,115px);display:flex;flex-direction:column;justify-content:center}
-.documentary-final h2{font:700 clamp(42px,5vw,83px)/1.13 "Fraunces",Georgia,serif;color:#fff!important;letter-spacing:-.05em;margin:24px 0 22px}
+.documentary-final h2{font:700 clamp(42px,5vw,83px)/1.13 "Nunito","Poppins",sans-serif;color:#fff!important;letter-spacing:-.05em;margin:24px 0 22px}
 .documentary-final-content>p:not(.documentary-eyebrow):not(.documentary-pledge-count){line-height:1.8;color:#daece5!important;font-size:15px;max-width:580px}
 .documentary-actions{display:grid;gap:10px;margin:20px 0}
 .documentary-action{display:flex;align-items:flex-start;gap:12px;cursor:pointer;line-height:1.6;font-size:13px;font-weight:700;color:#f3fbf7}
@@ -88,7 +88,7 @@
 .documentary-final-buttons button:hover{transform:translateY(-2px)}
 .documentary-quiz-link{display:inline-flex;gap:9px;align-items:center;font-size:12px;color:#e8d39d!important;margin:25px 0 0;text-underline-offset:6px}
 .documentary-sources{background:#eff6f0;padding:clamp(38px,6vw,85px) clamp(24px,7vw,110px);color:#264b42}
-.documentary-sources h2{font:700 32px "Fraunces",Georgia,serif;color:#20473c!important;margin:0 0 16px}
+.documentary-sources h2{font:700 32px "Nunito","Poppins",sans-serif;color:#20473c!important;margin:0 0 16px}
 .documentary-sources p{font-size:12px;line-height:1.8;color:#3d6655!important;max-width:940px}
 .documentary-sources details{font-size:12px;line-height:1.9;margin-top:16px;max-width:1020px}
 .documentary-sources summary{font-weight:900;cursor:pointer}
