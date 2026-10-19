@@ -176,3 +176,16 @@
  .community-page-framing{align-items:flex-start;flex-direction:column;padding:18px;margin:17px 0 13px;gap:11px}
  .community-page-framing button{white-space:normal}
 }
+
+
+.community-comparison{margin-top:24px;border-top:1px solid #d8e9db;padding-top:21px}
+.community-comparison h3{display:flex;align-items:center;gap:10px;color:#285d4d;font-size:16px;font-weight:800;margin:0 0 9px}
+.community-comparison>p{max-width:710px;color:#607366;font-size:11px;line-height:1.7;margin-bottom:17px}
+.community-comparison-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(90px,2fr) 45px;gap:10px;align-items:center;margin:12px 0}
+.community-comparison-row>span{font-size:11px;color:#4d6b5e;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.community-comparison-track{height:16px;border-radius:11px;background:#e1eee3;overflow:hidden}
+.community-comparison-track span{height:100%;display:block;background:linear-gradient(90deg,#e6b279,#c97d55);border-radius:10px}
+.community-comparison-row strong{font-size:11px;color:#7a4e37;text-align:right}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .community-comparison{border-color:var(--wl-stroke)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .community-comparison :is(h3,p,.community-comparison-row>span,.community-comparison-row strong){color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .community-comparison-track{background:var(--wl-canvas)}
