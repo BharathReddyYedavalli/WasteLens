@@ -217,7 +217,7 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
       <div className="documentary-opening-shade"/>
       <div className="documentary-opening-content">
         <h1>{line("We used it for minutes. It may stay for generations.","La usamos unos minutos. Puede quedarse por generaciones.","हमने कुछ मिनट इस्तेमाल किया। यह पीढ़ियों तक रह सकती है।")[language]}</h1>
-        <p className="documentary-opening-sub">{line("The real journey of our waste. What goes wrong, what works, and what happens if we change the ending.","La historia real de nuestros residuos: los daños, las soluciones y cómo cambiar el final.","कचरे की असली कहानी: क्या गलत होता है, क्या काम करता है, और हम अंत कैसे बदल सकते हैं।")[language]}</p>
+        <p className="documentary-opening-sub">{line("Follow what happens when plastic leaves our hands, and where collection and reuse can make a difference.","Sigue el camino del plástico después de usarlo y descubre dónde pueden ayudar la recogida y la reutilización.","जानें कि इस्तेमाल के बाद प्लास्टिक कहाँ जाता है और संग्रह तथा दोबारा उपयोग कैसे मदद कर सकते हैं।")[language]}</p>
         <a className="documentary-explore" href="#doc-scale">{line("Follow the evidence","Sigue las pruebas","तथ्यों की यात्रा देखें")[language]} <ArrowDown size={18}/></a>
       </div>
       <div className="documentary-opening-credit">{photos.bottle.credit} · <a href={photos.bottle.page} target="_blank" rel="noopener noreferrer">{line("Original photo","Foto original","मूल चित्र")[language]}</a></div>
