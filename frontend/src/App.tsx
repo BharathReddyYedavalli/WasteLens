@@ -355,8 +355,8 @@ export default function App() {
               aria-current={view === "audit"?"page":undefined} onClick={() => openPage("audit")}>
               <ClipboardList size={18}/>{t("Waste audit")}</button>
           </div>
-          <div className="community-nav-group" aria-label={t("Our impact")}>
-            <span className="community-nav-heading">{t("OUR IMPACT")}</span>
+          <div className="community-nav-group" aria-label={t("Progress")}>
+            <span className="community-nav-heading">{t("PROGRESS")}</span>
             <button type="button" className={view === "history" ? "nav-item active" : "nav-item"}
               aria-current={view === "history"?"page":undefined} onClick={() => openPage("history")}>
               <History size={18}/>{t("My activity")}</button>
