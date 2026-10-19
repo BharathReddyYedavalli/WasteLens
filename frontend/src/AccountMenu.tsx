@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Palette, UserRound, History, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
+import { Check, ChevronDown, Palette, UserRound, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
 import type { SessionUser } from "./types";
 import { useLanguage } from "./i18n";
 
@@ -34,7 +34,7 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (value: AppearanceTheme) => void;
-  onNavigate: (view: "account" | "history") => void;
+  onNavigate: (view: "account") => void;
 };
 
 export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: Props) {
@@ -69,7 +69,7 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
     };
   }, [open]);
 
-  function navigate(view: "account" | "history") {
+  function navigate(view: "account") {
     setOpen(false);
     setShowThemes(false);
     onNavigate(view);
@@ -88,9 +88,6 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
       <div className="wl-profile-heading">{user ? user.name : t("Welcome to WasteLens")}</div>
       <button ref={firstAction} type="button" className="wl-profile-action" onClick={() => navigate("account")}>
         <UserRound size={19}/>{user ? t("My account") : t("Sign in")}
-      </button>
-      <button type="button" className="wl-profile-action" onClick={() => navigate("history")}>
-        <History size={19}/>{t("My activity")}
       </button>
       <button type="button" className={"wl-profile-action " + (showThemes ? "selected" : "")}
         aria-expanded={showThemes} aria-controls="wl-theme-choices"
