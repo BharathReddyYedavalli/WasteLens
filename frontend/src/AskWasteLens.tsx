@@ -3,6 +3,7 @@ import type { FormEvent, KeyboardEvent } from "react";
 import { AlertTriangle, ArrowUp, Bot, MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import type { ItemAnalysis } from "./types";
 import { useLanguage } from "./i18n";
+import { ReadAloudButton } from "./Speech";
 
 type Turn = { role: "user" | "assistant"; text: string };
 type Props = {
@@ -105,7 +106,10 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         </div> : messages.map((message,index) => <div
           key={index} className={message.role === "user" ? "chat-turn from-user" : "chat-turn from-ai"}>
           {message.role === "assistant" && <span className="mini-avatar"><Bot size={15}/></span>}
-          <div className="chat-bubble">{message.text}</div>
+          <div className="chat-turn-content">
+            <div className="chat-bubble">{message.text}</div>
+            {message.role === "assistant" && <ReadAloudButton id={"chat-answer-"+index} category="chat" text={message.text}/>}
+          </div>
         </div>)}
         {busy && <div className="chat-wait" role="status"><Bot size={17}/> Thinking…</div>}
       </div>
