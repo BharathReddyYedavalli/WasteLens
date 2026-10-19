@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
-  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
+  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
