@@ -32,9 +32,9 @@ export default function AboutWasteLens({onScan,onAudit,onJourney}:{
     </div>
     <div className="community-about-footer">
       <p><ShieldCheck size={20}/>{tr(
-        "Real impact requires real action. Scans and estimated counts are learning tools, not proof that an item was recycled or emissions were saved.",
-        "El impacto real exige acciones reales. Escaneos y conteos no prueban reciclaje ni emisiones evitadas.",
-        "वास्तविक असर के लिए वास्तविक काम चाहिए। स्कैन और गिनती, रीसायक्लिंग या कार्बन बचत का प्रमाण नहीं हैं।"
+        "A scan or audit does not prove something was recycled. Always check local rules.",
+        "Un escaneo o una auditoría no demuestra que algo se recicló. Comprueba las normas locales.",
+        "स्कैन या सर्वेक्षण से रीसायक्लिंग साबित नहीं होती। स्थानीय नियम ज़रूर जाँचें।"
       )}</p>
       <div className="community-about-links">
         <button type="button" onClick={onScan}><Recycle size={17}/>{tr("Start with a scan","Empezar a escanear","स्कैन करें")}</button>
