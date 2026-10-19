@@ -31,6 +31,8 @@ According to the [NOAA Marine Debris Program's multimedia policy](https://marine
 - **Debris staged after a shoreline cleanup** — NOAA PIFSC Coral Reef Ecosystem Program. [Source / credit](https://marinedebris.noaa.gov/multimedia/solutions/images/debris-shoreline-cleanup-northwestern-hawaiian-islands). Image: `https://marinedebris.noaa.gov/live/s3fs-public/debris_pile_0418_2016.jpg`
 - **Coral damage linked to a derelict fishing net** — NOAA CREP. [Source / credit](https://marinedebris.noaa.gov/multimedia/images/coral-removed-derelict-net). Image: `https://marinedebris.noaa.gov/live/s3fs-public/20160501_NOAA_PIFSCCoralReefEcosystemProgram_106.jpg`
 
+- **NOAA team retrieving derelict nets at Midway Atoll** — NOAA CREP. [Source / credit](https://marinedebris.noaa.gov/multimedia/images/removing-derelict-fishing-nets-midway-atoll). Image: `https://marinedebris.noaa.gov/live/s3fs-public/NOAA_MARINE_DEBRIS_2016_DAVID_SLATER_09.jpg`
+
 ### Wikimedia Commons — reusable licensed photographs
 
 These are **real photographs**, not NOAA assets. The application credits the creator, links the specific original photo page and the license in the on-page caption. Images may be cropped in the displayed layout; this is explicitly disclosed.
