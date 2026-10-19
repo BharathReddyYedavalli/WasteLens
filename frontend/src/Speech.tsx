@@ -56,6 +56,7 @@ type ReadingContext = {
   activeId:string|null;
   paused:boolean;
   error:string;
+  errorId:string|null;
   speak:(id:string,text:string)=>void;
   stop:()=>void;
   togglePause:()=>void;
@@ -74,6 +75,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   const [activeId,setActiveId]=useState<string|null>(null);
   const [paused,setPaused]=useState(false);
   const [error,setError]=useState("");
+  const [errorId,setErrorId]=useState<string|null>(null);
   const version=useRef(0);
   const current=useRef<SpeechSynthesisUtterance|null>(null);
   const available=typeof window!=="undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
@@ -101,6 +103,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
 
   const speak=useCallback((id:string,source:string)=>{
     if(!options.enabled||!available){
+      setErrorId(id);
       setError(!options.enabled?"Enable read aloud in Accessibility settings.":"This browser does not support text-to-speech.");
       return;
     }
@@ -112,9 +115,9 @@ export function SpeechProvider({children}:{children:ReactNode}){
     const preferred=matching.find(voice=>voice.voiceURI===options.voiceURI);
     const voice=preferred??matching.find(voice=>voice.lang.toLowerCase()===locales[language].toLowerCase())??matching[0];
     if(!voice && language!=="en"){
-      stop();setError(speechError("language-unavailable",language));return;
+      stop();setErrorId(id);setError(speechError("language-unavailable",language));return;
     }
-    stop();setError("");
+    stop();setError("");setErrorId(null);
     const myVersion=version.current;
     const chunks=splitSpeech(text);
     let index=0;
@@ -131,11 +134,11 @@ export function SpeechProvider({children}:{children:ReactNode}){
       utterance.onend=()=>{if(version.current===myVersion)next();};
       utterance.onerror=event=>{
         if(myVersion!==version.current||event.error==="canceled"||event.error==="interrupted")return;
-        setError(speechError(event.error,language));
+        setErrorId(id);setError(speechError(event.error,language));
         stop();
       };
       try{window.speechSynthesis.speak(utterance);}
-      catch{setError("Speech could not start in this browser.");stop();}
+      catch{setErrorId(id);setError("Speech could not start in this browser.");stop();}
     };
     setActiveId(id);
     next();
@@ -149,7 +152,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   },[activeId,available]);
 
   return <SpeechContext.Provider value={{
-    options,update,available,voices,activeId,paused,error,speak,stop,togglePause,dismissError:()=>setError("")
+    options,update,available,voices,activeId,paused,error,errorId,speak,stop,togglePause,dismissError:()=>{setError("");setErrorId(null);}
   }}>{children}</SpeechContext.Provider>;
 }
 
@@ -157,10 +160,12 @@ export function ReadAloudButton({id,text,category,className=""}:{
   id:string;text:string;category:SpeechCategory;className?:string;
 }){
   const {t}=useLanguage();
-  const {options,available,activeId,paused,speak,stop,togglePause,error}=useSpeech();
-  useEffect(()=>()=>{if(activeId===id)stop();},[id,activeId,stop]);
-  if(!options.enabled||!options[category])return null;
+  const {options,available,activeId,paused,speak,stop,togglePause,error,errorId}=useSpeech();
   const active=activeId===id;
+  const activeRef=useRef(active);
+  activeRef.current=active;
+  useEffect(()=>()=>{if(activeRef.current)stop();},[stop]);
+  if(!options.enabled||!options[category])return null;
   return <div className={"wl-listen-wrap "+className}>
     <button type="button" className={"wl-listen-button "+(active?"is-speaking":"")}
       disabled={!available||!text.trim()} aria-pressed={active}
@@ -174,7 +179,7 @@ export function ReadAloudButton({id,text,category,className=""}:{
       title={t(paused?"Resume reading":"Pause reading")}>
       {paused?<Play size={15}/>:<Pause size={15}/>}
     </button>}
-    {error && <span className="wl-listen-error" role="alert">{error}</span>}
+    {error && errorId===id && <span className="wl-listen-error" role="alert">{error}</span>}
   </div>;
 }
 
