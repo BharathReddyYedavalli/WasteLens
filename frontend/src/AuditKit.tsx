@@ -285,6 +285,21 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
                 <Trash2 size={17}/>{t("Delete")}</button></div>
           </div>)}
         </div>}
+      {user&&saved.length>1&&<div className="community-comparison">
+        <h3><BarChart3 size={18}/>{t("Compare saved audits")}</h3>
+        <p>{t("Share of items recorded as trash or uncertain. Compare only audits from similar activities, locations and durations.")}</p>
+        {saved.slice(0,6).reverse().map(item=>{
+          const problem=(item.counts.trash||0)+(item.counts.unsure||0);
+          const percent=item.item_count?Math.round(100*problem/item.item_count):0;
+          return <div className="community-comparison-row" key={item.id}>
+            <span title={item.title}>{item.title}</span>
+            <div className="community-comparison-track" role="progressbar"
+              aria-label={item.title+" "+percent+"%"} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}>
+              <span style={{width:percent+"%"}}/>
+            </div><strong>{percent}%</strong>
+          </div>;
+        })}
+      </div>}
     </div>
     <details className="audit-note"><summary>{t("About these numbers")}</summary>
       <p>{t("These are human-entered observations, not proof of recycling, diversion or carbon savings. Saved audits belong to your account on this server. Drafts stay in this browser, and separate local servers do not synchronize.")}</p>
