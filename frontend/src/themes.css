@@ -31,7 +31,7 @@
 /* Each palette comes with an illustrated landscape, not merely a color swap. */
 :root[data-wl-theme="dark"]{color-scheme:dark;--wl-wallpaper:url("/themes/dark.svg");--wl-wash:#101f36f2;--wl-paper:#203650;--wl-canvas:#13263d;--wl-copy:#eaf4fb;--wl-subcopy:#c8dce7;--wl-stroke:#47607b;--wl-accent:#6cd5cb;--wl-intro-wash:#1e3258e9}
 :root[data-wl-theme="ocean"]{--wl-wallpaper:url("/themes/ocean.svg");--wl-wash:#e8f7f9e8;--wl-paper:#f3fcff;--wl-canvas:#def4fa;--wl-copy:#17485c;--wl-subcopy:#3a6674;--wl-stroke:#a9d3dd;--wl-accent:#147da0;--wl-intro-wash:#d6f5f9df}
-:root[data-wl-theme="beach"]{--wl-wallpaper:url("/themes/beach.svg");--wl-wash:#fff5e6e8;--wl-paper:#fffaf0;--wl-canvas:#fff0d7;--wl-copy:#604632;--wl-subcopy:#715b43;--wl-stroke:#e4cfae;--wl-accent:#bf6a3d;--wl-intro-wash:#fff3d6dc}
+:root[data-wl-theme="beach"]{--wl-wallpaper:url("/themes/beach.svg");--wl-wash:#fff5e6e8;--wl-paper:#fffaf0;--wl-canvas:#fff0d7;--wl-copy:#604632;--wl-subcopy:#715b43;--wl-stroke:#e4cfae;--wl-accent:#ad592f;--wl-intro-wash:#fff3d6dc}
 :root[data-wl-theme="forest"]{--wl-wallpaper:url("/themes/forest.svg");--wl-wash:#eaf4e9e8;--wl-paper:#f8fcf2;--wl-canvas:#e0f0e0;--wl-copy:#214d3f;--wl-subcopy:#456452;--wl-stroke:#bed5c2;--wl-accent:#27795c;--wl-intro-wash:#e6f2dfd9}
 :root[data-wl-theme="sunset"]{--wl-wallpaper:url("/themes/sunset.svg");--wl-wash:#fff0eae8;--wl-paper:#fff9f4;--wl-canvas:#fde4e5;--wl-copy:#593b57;--wl-subcopy:#76516b;--wl-stroke:#e7cada;--wl-accent:#a14f82;--wl-intro-wash:#fff0e5dd}
 :root[data-wl-theme]:not([data-wl-theme="light"]) body,
