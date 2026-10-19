@@ -17,7 +17,6 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Sign in": { es: "Entrar", hi: "लॉग इन" },
   "Admin": { es: "Administración", hi: "व्यवस्थापक" },
   "Choose language": { es: "Elegir idioma", hi: "भाषा चुनें" },
-  "My account": { es: "Mi cuenta", hi: "मेरा खाता" },
   "Personalization": { es: "Personalización", hi: "पसंदीदा रूप" },
   "Choose a theme": { es: "Elegir tema", hi: "थीम चुनें" },
   "Account and appearance": { es: "Cuenta y apariencia", hi: "खाता और रूप" },
