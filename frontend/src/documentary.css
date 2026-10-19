@@ -149,3 +149,7 @@
   .documentary-chapter-body{transform:none!important;opacity:1!important}
   .documentary-decision-options button:hover,.documentary-final-buttons button:hover,.documentary-explore:hover{transform:none!important}
 }
+
+/* The story shell must not clip the sticky documentary chapter navigation. */
+.journey-page{overflow:visible!important}
+.documentary-photo-credits{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
