@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
-import { AlertTriangle, ArrowUp, Bot, MessageCircle, Sparkles, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowUp, Bot, Sparkles, Trash2 } from "lucide-react";
 import type { ItemAnalysis } from "./types";
 import { useLanguage } from "./i18n";
 import { ReadAloudButton } from "./Speech";
@@ -83,7 +83,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       </div>
     </div>
     <div className="assistant-card">
-      <div className="assistant-context">
+      {scan&&<div className="assistant-context">
         <div className="context-main">
           <Sparkles size={18}/>
           <div>
@@ -91,13 +91,10 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
             
           </div>
         </div>
-        <button type="button" className="context-action" onClick={onScan}>{scan ? t("View scan") : t("Scan an object")}</button>
-      </div>
+        <button type="button" className="context-action" onClick={onScan}>{t("View scan")}</button>
+      </div>}
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
-          <MessageCircle size={34}/>
-          <h2>{scan ? t("Anything else you want to know?") : t("What's on your mind?")}</h2>
-          
           <div className="chat-suggestions">
             {(scan ? startingPrompts : generalPrompts).map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
