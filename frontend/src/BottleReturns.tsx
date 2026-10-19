@@ -87,7 +87,7 @@ export default function BottleReturns() {
   return <section className="deposit-page">
     <div className="deposit-top">
       <div className="deposit-top-copy"><h1>{t("Check bottle returns")}</h1>
-        <p>{t("Find out whether a drink container has a refundable deposit.")}</p></div>
+</div>
       <div className="deposit-top-art" aria-hidden="true"><span>5¢</span><span>10¢</span><span>25¢</span><GlassWater size={100}/></div>
     </div>
     <div className="deposit-callout" role="note"><CircleHelp size={22}/><p>
@@ -134,22 +134,22 @@ export default function BottleReturns() {
             </select>
           </label>
         </div>
-        <div className="deposit-examples"><span>{t("Try one:")}</span>
+        <details className="deposit-examples"><summary>{t("Try an example")}</summary><div>
           <button type="button" onClick={()=>{setDrink("soda");setMaterial("aluminum");setOunces("12");setCount("12");setPaid("unsure");}}>12 soda cans</button>
           <button type="button" onClick={()=>{setDrink("water");setMaterial("plastic");setResin("pet1");setOunces("16.9");setCount("24");setPaid("unsure");}}>24 water bottles</button>
-        </div>
+        </div></details>
       </div>
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
           <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
           <p>{result.reason}</p>
-          <div className="deposit-mini-math"><span>{result.count.toLocaleString()} containers</span><b>×</b><span>{result.per_container_cents}¢ each</span></div>
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
             <Link2 size={16}/> {t("Read the official state rules")} · {result.state}
           </a>
           <details className="deposit-state-tip">
-            <summary>{t("One useful state tip")}</summary>
+            <summary>{t("Calculation & state details")}</summary>
+            <div className="deposit-mini-math"><span>{result.count.toLocaleString()} containers</span><b>×</b><span>{result.per_container_cents}¢ each</span></div>
             <p>{result.state_tip}</p>
           </details>
         </>:<><strong className="deposit-amount">?</strong><p>Choose a valid size and amount to check.</p></>}
@@ -159,7 +159,6 @@ export default function BottleReturns() {
     <details className="deposit-photo-helper">
       <summary><Camera size={21}/> {t("Read a bottle label")}</summary>
       <div className="deposit-photo-inside">
-        <p>Photograph the drink name and size. Review the suggested details before calculating.</p>
         <div className="deposit-photo-controls">
           <input aria-label="Bottle label photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={selectPhoto}/>
           <button type="button" disabled={!photo||reading} onClick={()=>void readLabel()}>
@@ -175,9 +174,5 @@ export default function BottleReturns() {
       </div>
     </details>
     {error&&<p className="deposit-error" role="alert">{error}</p>}
-    <div className="deposit-after">
-      <div><h2>{t("Where to return them")}</h2><p>Check your state’s return rules and call the collection location before visiting.</p></div>
-      <a href={result?.source_url??"https://www.bottlebill.org/compare-all-states/"} target="_blank" rel="noreferrer">Check state return rules <Link2 size={16}/></a>
-    </div>
   </section>;
 }
