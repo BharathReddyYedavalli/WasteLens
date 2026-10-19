@@ -180,7 +180,7 @@ function RealPhoto({photo,hero=false}:{photo:Photo;hero?:boolean}){
       loading={hero?"eager":"lazy"} onError={()=>setFailed(true)}/>:<div className="documentary-photo-fallback" role="img" aria-label={photo.alt[language]}>
       {language==="en"?"Photo unavailable — open original":language==="es"?"Foto no disponible — ver original":"फोटो उपलब्ध नहीं — मूल चित्र खोलें"}
     </div>}
-    <figcaption><span>{photo.caption[language]}</span><span className="documentary-photo-credits"><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} <ExternalLink size={12}/></a>{photo.licenseUrl&&<a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer" title={photo.license+"; photograph cropped for layout"}>License</a>}</span></figcaption>
+    <figcaption><span className="documentary-photo-credits"><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} <ExternalLink size={12}/></a>{photo.licenseUrl&&<a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer" title={photo.license+"; photograph cropped for layout"}>License</a>}</span></figcaption>
   </figure>;
 }
 
