@@ -91,7 +91,7 @@ export default function BottleReturns() {
       <div className="deposit-top-art" aria-hidden="true"><span>5¢</span><span>10¢</span><span>25¢</span><GlassWater size={100}/></div>
     </div>
     <div className="deposit-callout" role="note"><CircleHelp size={22}/><p>
-      <strong>{t("Not every state has bottle deposits.")}</strong> {t("Only 10 do. And even in those states, the drink, container and purchase location matter.")}
+      {t("Bottle deposits exist in 10 states. Eligibility depends on the drink, container and place of purchase.")}
     </p></div>
     <div className="deposit-layout">
       <div className="deposit-form-card">
