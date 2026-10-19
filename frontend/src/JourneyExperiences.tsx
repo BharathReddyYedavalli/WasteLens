@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowDown, Check, Compass, ExternalLink, Sparkles } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { Language } from "./i18n";
+import { ReadAloudButton } from "./Speech";
 
 type Words = Record<Language, string>;
 const say = (en: string, es: string, hi: string): Words => ({ en, es, hi });
@@ -157,6 +158,8 @@ export function JourneyVignette({ index }: { index: number }) {
       <h2>{vignette.title[language]}</h2>
       <p>{vignette.description[language]}</p>
       <span className="journey-vignette-callout">{vignette.callout[language]}</span>
+      <ReadAloudButton id={"journey-scene-"+index} category="journey" className="wl-vignette-read"
+        text={[vignette.title[language],vignette.description[language]].join(". ")}/>
       <ArrowDown size={28} className="journey-vignette-down" aria-hidden="true"/>
     </div>
   </section>;
@@ -214,6 +217,8 @@ export function JourneyCheckpoint({index, solved, onSolved, nextId}:{
         <span className="journey-checkpoint-kicker"><Sparkles size={18}/> {language==="en"?"DISCOVERY":language==="es"?"DESCUBRIMIENTO":"खोज"} {index+1} / {checkpoints.length}</span>
         <h2>{current.title[language]}</h2>
         <p className="journey-checkpoint-prompt">{current.prompt[language]}</p>
+        <ReadAloudButton id={"journey-discovery-"+index} category="journey"
+          text={[current.title[language],current.prompt[language],...current.choices.map((choice,i)=>String.fromCharCode(65+i)+". "+choice[language]),...(attempt===null?[]:[correct?current.why[language]:current.hint[language]])].join(". ")}/>
         <div className="journey-checkpoint-choices">
           {current.choices.map((choice,i)=><button type="button" key={i}
             className={"journey-checkpoint-choice "+(attempt===i?(i===current.correct?"is-right":"is-wrong"):"")}
