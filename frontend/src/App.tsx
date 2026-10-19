@@ -531,7 +531,9 @@ export default function App() {
       </section> : view === "deposits" ? <BottleReturns/> : view === "journey" ?
         <BottleJourney user={user}
           onUnlock={badge => setCelebration({scan: -Date.now(), badge})}
-          onSignIn={() => setView("account")}/> : view === "audit" ? <AuditKit/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
+          onSignIn={() => setView("account")}
+          onScan={() => setView("identifier")}
+          onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
