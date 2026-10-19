@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from io import BytesIO
 import os
+import time
 from pathlib import Path
 from typing import Literal
 
@@ -107,6 +108,30 @@ def configured() -> bool:
     return bool(os.environ.get("GEMINI_API_KEY", "").strip())
 
 
+def explain_provider_error(code: int | None) -> tuple[str, int]:
+    """Return actionable, credential-safe messages; never forward raw provider responses."""
+    if code == 429:
+        return ("Google Gemini's request limit was reached (HTTP 429). Wait and retry, "
+                "or check your Google AI Studio quota.", 429)
+    if code == 404:
+        return ("Google couldn't find or grant access to this Gemini model (HTTP 404). "
+                "Try the other model in Change AI model.", 502)
+    if code in (401, 403):
+        return ("Google rejected this API key or project permission (HTTP " + str(code) + "). "
+                "Check the key and API access in Google AI Studio.", 502)
+    if code == 400:
+        return ("Google rejected the analysis request (HTTP 400). "
+                "The request format or selected model may be incompatible. Try the other model.", 502)
+    if code in (500, 502, 503, 504):
+        return ("Google Gemini is temporarily unavailable or overloaded (HTTP " + str(code) + "). "
+                "Wait a minute, then retry or choose the other AI model.", 502)
+    if code is not None:
+        return ("Google Gemini returned an error (HTTP " + str(code) + "). "
+                "Check your AI Studio project and try again.", 502)
+    return ("Google Gemini returned an error without an HTTP status. "
+            "Check connectivity and your AI Studio project, then retry.", 502)
+
+
 def prepare_photo(image_bytes: bytes) -> bytes:
     if not image_bytes or len(image_bytes) > MAX_BYTES:
         raise InvalidPhoto("Use a JPG, PNG or WebP photograph no larger than 8 MB.")
@@ -162,31 +187,32 @@ def analyze_photo(
     )
     try:
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-        response = client.models.generate_content(
-            model=model_id,
-            contents=[
-                types.Part.from_bytes(data=safe_jpeg, mime_type="image/jpeg"),
-                user_prompt,
-            ],
-            config=types.GenerateContentConfig(
-                system_instruction=PROMPT,
-                response_mime_type="application/json",
-                response_schema=ItemAnalysis,
-                max_output_tokens=4096,
-            ),
+        contents = [types.Part.from_bytes(data=safe_jpeg, mime_type="image/jpeg"), user_prompt]
+        config = types.GenerateContentConfig(
+            system_instruction=PROMPT,
+            response_mime_type="application/json",
+            response_schema=ItemAnalysis,
+            max_output_tokens=4096,
         )
+        # One bounded retry for Google-side transient errors. Do not retry 429,
+        # rejected credentials, invalid requests, or unknown statuses.
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=model_id, contents=contents, config=config,
+                )
+                break
+            except APIError as exc:
+                if attempt == 0 and getattr(exc, "code", None) in (500, 502, 503, 504):
+                    time.sleep(1.0)
+                    continue
+                raise
         if not response.text:
             raise AIUnavailable("The AI did not return an item analysis. Try another clear photo.", 502)
         analysis = ItemAnalysis.model_validate_json(response.text)
     except APIError as exc:
-        code = getattr(exc, "code", None)
-        if code == 429:
-            raise AIUnavailable("Free-tier limit reached. Wait before trying another photo.", 429) from exc
-        if code == 404:
-            raise AIUnavailable("This AI model isn't available for your Google API project. Refresh the page and select a current Gemini model, or try the alternative model.", 502) from exc
-        if code in (400, 401, 403):
-            raise AIUnavailable("The Gemini API key, selected model, or project permissions need attention.", 502) from exc
-        raise AIUnavailable("The image analysis service is currently unavailable. Try again later.", 502) from exc
+        reason, status = explain_provider_error(getattr(exc, "code", None))
+        raise AIUnavailable(reason, status) from exc
     except (ValueError, ValidationError) as exc:
         raise AIUnavailable("The AI returned an invalid result. Try analyzing the item again.", 502) from exc
     except AIUnavailable:
