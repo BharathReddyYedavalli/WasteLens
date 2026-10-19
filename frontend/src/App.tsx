@@ -407,8 +407,7 @@ export default function App() {
             preview ? <img src={preview.src} alt="Your selected item photograph"/> :
             <div className="camera-empty">
               <div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
-              <h3>{t("What's in front of you?")}</h3>
-              <p>{t("Use your camera or upload a photo.")}</p>
+              <p>{t("Use your camera or choose a photo.")}</p>
             </div>}
         </div>
 
@@ -489,7 +488,6 @@ export default function App() {
                 <h3><Lightbulb size={21}/> {t("Give it another life")}</h3>
                 
               </div>
-              {Boolean(analysis.reuse_projects?.length) && <span className="reuse-count">{analysis.reuse_projects!.length} ideas</span>}
             </div>
             {analysis.reuse_projects?.length ? <div className="reuse-projects">
               {analysis.reuse_projects.map((project, i) =>
@@ -498,9 +496,7 @@ export default function App() {
                     <span className="reuse-project-index">{String(i + 1).padStart(2, "0")}</span>
                     <span className="reuse-project-summary">
                       <strong>{project.title}</strong>
-                      <span>{project.outcome}</span>
                     </span>
-                    <span className="reuse-project-meta">{project.difficulty} · ~{project.minutes_estimate} min</span>
                     <ChevronDown size={17} className="reuse-chevron"/>
                   </summary>
                   <div className="reuse-project-body">
@@ -563,7 +559,6 @@ export default function App() {
             </div>}
             {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
-            {!user && <p className="finder-note">Sign in to save scans and earn XP.</p>}
           </article>
           {user && result?.scan_id && <article className="result-card action-card">
             <h3><Check size={21}/> {t("What did you do with it?")}</h3>
