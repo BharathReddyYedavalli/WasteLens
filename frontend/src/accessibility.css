@@ -61,3 +61,16 @@
 @media(prefers-reduced-motion:reduce){
   .wl-listen-wrap button{transition:none!important}
 }
+
+
+/* Story scenes use vivid dark backdrops independently of the site's palette. */
+.journey-vignette .wl-vignette-read{justify-content:center}
+.journey-vignette .wl-listen-button,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .journey-vignette .wl-listen-button{
+  background:#fffdf3!important;color:#1b514a!important;border:2px solid #ffffff!important;
+}
+.journey-vignette .wl-listen-button:hover,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .journey-vignette .wl-listen-button:hover{
+  background:#e0f5ea!important;color:#155c50!important;
+}
+.journey-vignette .wl-listen-pause{background:#fffdf3!important;color:#1b514a!important}
