@@ -6,5 +6,7 @@ import "./styles.css";
 import "./friendly.css";
 import "./design2026.css";
 import "./bottles.css";
+import "./themes.css";
+import "./journey-extra.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><App /></LanguageProvider></React.StrictMode>);
