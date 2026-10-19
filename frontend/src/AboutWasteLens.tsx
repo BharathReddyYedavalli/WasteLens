@@ -1,4 +1,4 @@
-import { BookOpen, CircleHelp, HeartHandshake, Leaf, MapPin, Recycle, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { BookOpen, HeartHandshake, MapPin, Recycle, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { useLanguage } from "./i18n";
 
 export default function AboutWasteLens({onScan,onAudit,onJourney}:{
@@ -9,12 +9,11 @@ export default function AboutWasteLens({onScan,onAudit,onJourney}:{
   return <section className="community-about" aria-label={tr("About WasteLens","Acerca de WasteLens","WasteLens के बारे में")}>
     <div className="community-about-hero">
       <div className="community-about-mark"><HeartHandshake size={36}/></div>
-      <p className="community-about-eyebrow">{tr("A COMMUNITY SERVICE PROJECT","UN PROYECTO DE SERVICIO COMUNITARIO","सामुदायिक सेवा परियोजना")}</p>
-      <h1>{tr("A cleaner community starts with what we do next.","Una comunidad más limpia empieza con nuestra siguiente acción.","स्वच्छ समुदाय की शुरुआत हमारे अगले कदम से होती है।")}</h1>
+      <h1>{tr("WasteLens is built for community action.","WasteLens está hecho para actuar en comunidad.","WasteLens सामुदायिक कार्य के लिए बनाया गया है।")}</h1>
       <p>{tr(
-        "WasteLens helps neighbors, students and volunteers turn everyday waste decisions into practical community action. Identify an item, learn what to do, find help nearby and measure what your group observes.",
-        "WasteLens ayuda a estudiantes, vecinos y voluntarios a convertir las decisiones sobre residuos en acciones útiles. Identifica objetos, aprende, busca ayuda local y mide lo que observa tu comunidad.",
-        "WasteLens छात्रों, पड़ोसियों और स्वयंसेवकों को कचरे के बारे में अच्छे फैसले लेकर समुदाय के लिए काम करने में मदद करता है। चीज़ पहचानें, सही तरीका जानें, आसपास मदद खोजें और समूह के अवलोकन दर्ज करें।"
+        "WasteLens helps students and neighbors sort waste, find local services, and organize cleanups. Use it to learn, take action, and track what you observe.",
+        "WasteLens ayuda a estudiantes y vecinos a separar residuos, encontrar servicios locales y organizar limpiezas. Aprende, actúa y registra lo que observas.",
+        "WasteLens छात्रों और पड़ोसियों को कचरा छाँटने, स्थानीय सेवाएँ खोजने और सफ़ाई आयोजित करने में मदद करता है। जानें, काम करें और अपने अवलोकन दर्ज करें।"
       )}</p>
     </div>
     <div className="community-about-grid">
@@ -43,10 +42,5 @@ export default function AboutWasteLens({onScan,onAudit,onJourney}:{
         <button type="button" onClick={onJourney}><BookOpen size={17}/>{tr("Explore the story","Explorar la historia","कहानी पढ़ें")}</button>
       </div>
     </div>
-    <p className="community-about-disclaimer"><CircleHelp size={14}/>
-      {tr("Built to support community education and service. Local recycling rules vary; always confirm with your local program.",
-      "Creado para apoyar la educación y el servicio comunitario. Confirma las normas locales.",
-      "सामुदायिक शिक्षा और सेवा के लिए बनाया गया। स्थानीय रीसायक्लिंग नियम अलग हैं; हमेशा जाँच करें।")}
-    </p>
   </section>;
 }
