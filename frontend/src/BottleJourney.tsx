@@ -86,11 +86,9 @@ export default function BottleJourney({user,onUnlock,onSignIn,onScan,onReturns}:
     <div className="journey-progress" aria-hidden="true"><span style={{width:progress+"%"}}/></div>
     <DocumentaryStory onScan={onScan} onReturns={onReturns}/>
     <section className="journey-quiz" id="bottle-quiz">
-      <span className="journey-quiz-halo" aria-hidden="true">✷</span>
-      <span className="journey-tag"><Award size={19}/> {t("YOU MADE IT!")}</span>
-      <h2>{language==="en"?<>You've seen the evidence.<br/><i>Can you spot a smarter return?</i></>:language==="es"?<>Ya viste la evidencia.<br/><i>¿Sabes cómo devolver mejor?</i></>:<>आपने तथ्य देख लिए।<br/><i>अब वापसी के नियम पहचानें।</i></>}</h2>
+      <h2>{language==="en"?"Test what you've learned":language==="es"?"Pon a prueba lo aprendido":"जो सीखा उसे आज़माएँ"}</h2>
       {!user && <p className="journey-signin-reminder">{language==="en"?"Sign in before the quiz to save your badge and XP.":language==="es"?"Entra antes de jugar para guardar la insignia y los XP.":"बैज और XP पाने के लिए क्विज़ से पहले लॉग इन करें।"} <button type="button" onClick={onSignIn}>{t("Sign in")}</button></p>}
-      <p className="journey-quiz-intro">{language==="en"?"Bonus challenge: test your bottle-deposit knowledge with five questions. Get at least four right to earn the Bottle Explorer badge and 30 XP once.":language==="es"?"Reto extra: cinco preguntas sobre depósitos de botellas. Con cuatro respuestas correctas ganas una sola vez la insignia Explorador de botellas y 30 XP.":"बोनस चुनौती: बोतल जमा नियमों पर पाँच सवाल। कम से कम चार सही होने पर एक बार Bottle Explorer बैज और 30 XP मिलेंगे।"}</p>
+      <p className="journey-quiz-intro">{language==="en"?"5 questions. Get 4 right to earn the Bottle Explorer badge and 30 XP once.":language==="es"?"5 preguntas. Acertar 4 te da la insignia Bottle Explorer y 30 XP una vez.":"5 सवाल। 4 सही उत्तर पर Bottle Explorer बैज और 30 XP एक बार मिलेंगे।"}</p>
       <div className="journey-quiz-card">
         {quiz.map((q,index)=><fieldset key={q.id} className="journey-question" disabled={loading||Boolean(result?.passed)}>
           <legend><span>{String(index+1).padStart(2,"0")}</span>{language==="en"?q.question:translatedQuiz[language][index].question}</legend>
@@ -115,7 +113,6 @@ export default function BottleJourney({user,onUnlock,onSignIn,onScan,onReturns}:
           {result&&!result.passed&&<button type="button" className="journey-retry" onClick={retry}><RefreshCw size={18}/> {t("Try again")}</button>}
         </div>
       </div>
-      <div className="journey-end"><Leaf size={26}/><span>{language==="en"?"That's the journey. The next bottle is yours.":language==="es"?"Hasta aquí el viaje. La próxima botella depende de ti.":"यात्रा पूरी हुई। अगली बोतल आपके हाथ में है।"}</span></div>
     </section>
   </div>;
 }
