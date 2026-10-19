@@ -323,6 +323,8 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Run an audit": { es: "Realiza una auditoría", hi: "सर्वेक्षण करें" },
   "Keep service motivating.": { es: "Mantén la motivación para ayudar.", hi: "सेवा के लिए प्रेरणा बनाए रखें।" },
   "Celebrate participation without treating badges or scans as proof of environmental savings.": { es: "Celebra la participación sin considerar los escaneos o insignias como prueba de ahorro ambiental.", hi: "भागीदारी का सम्मान करें, लेकिन बैज या स्कैन को पर्यावरण बचत का प्रमाण न मानें।" },
+  "Compare saved audits": { es: "Comparar auditorías guardadas", hi: "सहेजे गए सर्वेक्षणों की तुलना" },
+  "Share of items recorded as trash or uncertain. Compare only audits from similar activities, locations and durations.": { es: "Porcentaje registrado como basura o sin clasificar. Compara solo auditorías de actividades, lugares y duraciones similares.", hi: "कचरा या अनिश्चित के रूप में दर्ज वस्तुओं का हिस्सा। तुलना केवल समान स्थान, गतिविधि और अवधि के सर्वेक्षणों की करें।" },
   "Accessibility": { es: "Accesibilidad", hi: "सुलभता" },
   "Read aloud": { es: "Lectura en voz alta", hi: "बोलकर पढ़ें" },
   "Show listening buttons": { es: "Mostrar botones de lectura", hi: "सुनने के बटन दिखाएँ" },
