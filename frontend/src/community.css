@@ -152,3 +152,27 @@
  .community-audit{margin:0;padding:0}
 }
 @media(prefers-reduced-motion:reduce){.community-mission-path button{transition:none!important}.community-mission-path button:hover{transform:none!important}}
+
+
+/* A consistent community-service purpose on every tool's page. */
+.community-page-framing{display:flex;align-items:center;justify-content:space-between;gap:24px;
+ margin:24px 0 16px;padding:19px 24px;background:linear-gradient(120deg,#e8f7eb,#f3f7e9);
+ border:1px solid #d5e6d8;border-radius:18px}
+.community-page-framing>div{max-width:780px}
+.community-page-framing span{font-size:10px;color:#117663;letter-spacing:.12em;font-weight:900}
+.community-page-framing h2{font:720 clamp(20px,2.5vw,29px)/1.2 "Fraunces",Georgia,serif;color:#204d43;margin:7px 0}
+.community-page-framing p{font-size:12px;color:#526d5d;line-height:1.65;margin:0}
+.community-page-framing button{display:flex;gap:9px;align-items:center;flex-shrink:0;
+ border:1px solid #4e9f86;background:#fffefa;color:#216d58;padding:11px 13px;
+ border-radius:11px;font-size:11px;font-weight:800;cursor:pointer}
+.community-page-framing button:hover{background:#e5f7e8}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .community-page-framing{
+ background:var(--wl-paper);border-color:var(--wl-stroke)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .community-page-framing :is(h2,p,span){
+ color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .community-page-framing button{
+ background:var(--wl-surface);border-color:var(--wl-stroke);color:var(--wl-copy)}
+@media(max-width:700px){
+ .community-page-framing{align-items:flex-start;flex-direction:column;padding:18px;margin:17px 0 13px;gap:11px}
+ .community-page-framing button{white-space:normal}
+}
