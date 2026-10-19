@@ -14,6 +14,7 @@ import SortPlan from "./SortPlan";
 import AuditKit from "./AuditKit";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
+import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
 import { LANGUAGES, useLanguage } from "./i18n";
 
 type PhotoPreview = { file: File; src: string };
@@ -25,6 +26,7 @@ function ErrorText({ message }: { message: string }) {
 
 export default function App() {
   const { language, setLanguage, t } = useLanguage();
+  const [theme, setTheme] = useAppearanceTheme();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
   const [model, setModel] = useState(initialModel);
@@ -268,16 +270,20 @@ export default function App() {
   }
 
   const analysis = result?.analysis;
-  return <div className="site">
+  return <div className="site" data-theme={theme}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
       <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
-      <div className="language-picker">
-        <label htmlFor="wastelens-lang">{t("Choose language")}</label>
-        <select id="wastelens-lang" value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
-          {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
-        </select>
+      <div className="topbar-actions">
+        <div className="language-picker">
+          <label htmlFor="wastelens-lang">{t("Choose language")}</label>
+          <select id="wastelens-lang" value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
+            {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
+          </select>
+        </div>
+        <AccountMenu user={user} theme={theme} onThemeChange={setTheme}
+          onNavigate={next => { stopCamera(); setView(next); }}/>
       </div>
     </header>
     <div className="site-layout">
@@ -301,10 +307,7 @@ export default function App() {
           onClick={() => { stopCamera(); setView("audit"); }}><ClipboardList size={19}/> {t("Waste audit")}</button>
         {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
           onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={19}/> {t("Admin")}</button>}
-        <div className="side-nav-bottom">
-          <button type="button" className={view === "account" ? "nav-item active" : "nav-item"}
-          onClick={() => { stopCamera(); setView("account"); }}><UserRound size={19}/> {user ? user.name : t("Sign in")}</button>
-        </div>
+
       </aside>
       <div className="page-content">
     <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
