@@ -226,7 +226,7 @@ export function JourneyCheckpoint({index, solved, onSolved, nextId}:{
         {attempt!==null && <p className={"journey-checkpoint-feedback "+(correct?"good":"")} role="status">
           {correct ? current.why[language] : current.hint[language]}
         </p>}
-        {correct && <a href={"#journey-"+nextId} className="journey-continue">
+        {correct && <a href={nextId==="bottle-quiz"?"#bottle-quiz":"#journey-"+nextId} className="journey-continue">
           {language==="en"?"Next stop":language==="es"?"Siguiente parada":"अगला पड़ाव"} <ArrowDown size={19}/>
         </a>}
         <a className="journey-checkpoint-source" href={current.source} target="_blank" rel="noopener noreferrer">
