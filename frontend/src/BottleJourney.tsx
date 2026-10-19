@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowDown, Award, ExternalLink, Leaf, RefreshCw, Sparkles, Waves } from "lucide-react";
 import type { SessionUser, WasteLensBadge } from "./types";
 import { useLanguage } from "./i18n";
 import { actionHeaders } from "./AccountArea";
+import { JourneyCheckpoint, JourneyVignette } from "./JourneyExperiences";
 
 const chapters=[
   {id:"begin",year:"START",eyebrow:"THE BIG QUESTION",title:"Where does your bottle go?",description:"A little container has a surprisingly long story. Scroll down and follow the trail.",fact:"You might have already paid a refundable deposit when you bought your drink.",color:"mint",symbol:"bottle",source:"https://www.bottlebill.org/compare-all-states/"},
@@ -117,6 +118,7 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
   const [awarded,setAwarded]=useState(false);
+  const [discoveries,setDiscoveries]=useState<Record<number,boolean>>({});
   useEffect(()=>{
     let frame=0;
     const measure=()=>{
@@ -137,6 +139,19 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
       .then(r=>r.json()).then(d=>{if(active)setAwarded(Boolean(d.awarded))}).catch(()=>{});
     return ()=>{active=false;};
   },[user]);
+  useEffect(()=>{
+    const root=wrapper.current;
+    if(!root || !("IntersectionObserver" in window)) {
+      root?.querySelectorAll("[data-journey-reveal]").forEach(node=>node.classList.add("in-view"));
+      return;
+    }
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("in-view");observer.unobserve(entry.target);}});
+    },{threshold:0.12,rootMargin:"0px 0px -5% 0px"});
+    root.querySelectorAll("[data-journey-reveal]").forEach(node=>observer.observe(node));
+    return ()=>observer.disconnect();
+  },[]);
+
   async function submit(){
     if(quiz.some(q=>!selected[q.id])||loading)return;
     setError("");setLoading(true);
@@ -155,14 +170,16 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
   function retry(){setSelected({});setResult(null);setError("");}
   return <div className="journey-page" ref={wrapper}>
     <div className="journey-progress" aria-hidden="true"><span style={{width:progress+"%"}}/></div>
+    <div className="journey-passport"><span><Sparkles size={14}/> {Object.values(discoveries).filter(Boolean).length} / 5 {language==="en"?"discoveries":language==="es"?"descubrimientos":"खोज"}</span></div>
     <div className="journey-intro">
       <div className="journey-intro-stars" aria-hidden="true">✦　✧　✦</div>
       <span className="journey-tag"><Waves size={18}/> A WASTELENS SCROLL STORY</span>
       <h1>{language==="en"?<>The secret life<br/>of a <i>bottle.</i></>:language==="es"?<>La vida secreta<br/>de una <i>botella.</i></>:<>एक बोतल की<br/><i>अनकही कहानी।</i></>}</h1>
       <p>{language==="en"?"One bottle. Ten states. A surprisingly big adventure.":language==="es"?"Una botella. Diez estados. Una gran aventura.":"एक बोतल। दस राज्य। एक लंबी यात्रा।"}</p>
       <span className="journey-scroll"><ArrowDown size={22}/> {t("Scroll to begin")}</span>
+      <a href="#bottle-quiz" className="journey-skip">{language==="en"?"Already explored? Go to quiz":language==="es"?"¿Ya exploraste? Ir al cuestionario":"पहले पढ़ चुके हैं? क्विज़ खोलें"}</a>
     </div>
-    {chapters.map((chapter,index)=><section key={chapter.id} className={"journey-chapter chapter-"+chapter.color}>
+    {chapters.map((chapter,index)=><Fragment key={chapter.id}><section id={"journey-"+chapter.id} data-journey-reveal className={"journey-chapter chapter-"+chapter.color}>
       <div className="journey-chapter-inner">
         <div className="journey-copy">
           <span className="journey-step">CHAPTER {String(index+1).padStart(2,"0")} / {chapter.eyebrow}</span>
@@ -176,7 +193,13 @@ export default function BottleJourney({user,onUnlock,onSignIn}:{user:SessionUser
         </div>
         <Illustrated kind={chapter.symbol}/>
       </div>
-    </section>)}
+    </section>
+    {index % 2 === 0 && <JourneyVignette index={Math.floor(index/2)}/>}
+    {index % 2 === 1 && <JourneyCheckpoint index={Math.floor(index/2)}
+      solved={Boolean(discoveries[Math.floor(index/2)])}
+      onSolved={()=>setDiscoveries(previous=>({...previous,[Math.floor(index/2)]:true}))}
+      nextId={index===chapters.length-1?"bottle-quiz":chapters[index+1].id}/>}
+    </Fragment>)}
     <section className="journey-quiz" id="bottle-quiz">
       <span className="journey-quiz-halo" aria-hidden="true">✷</span>
       <span className="journey-tag"><Award size={19}/> {t("YOU MADE IT!")}</span>
