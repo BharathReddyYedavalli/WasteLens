@@ -69,13 +69,7 @@ const photos:Record<string,Photo>={
     credit:"NOAA CREP",
     page:"https://marinedebris.noaa.gov/multimedia/images/removing-derelict-fishing-nets-midway-atoll"
   },
-  pile:{
-    url:"https://marinedebris.noaa.gov/live/s3fs-public/debris_pile_0418_2016.jpg",
-    alt:line("Separate piles of marine debris collected from a coral island shoreline with clear blue sea behind.","Montones de residuos marinos recogidos de una costa junto a un mar azul.","नीले समुद्र के किनारे एकत्र किए गए समुद्री कचरे के अलग-अलग ढेर।"),
-    caption:line("Debris gathered from two 300-metre shoreline sections in the Northwestern Hawaiian Islands.","Residuos recogidos en dos tramos de costa de 300 metros cada uno.","उत्तर-पश्चिमी हवाई द्वीपों में तट के दो 300 मीटर हिस्सों से जमा कचरा।"),
-    credit:"NOAA PIFSC Coral Reef Ecosystem Program",
-    page:"https://marinedebris.noaa.gov/multimedia/solutions/images/debris-shoreline-cleanup-northwestern-hawaiian-islands"
-  }
+
 };
 
 const chapters:Chapter[]=[
@@ -236,7 +230,7 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
       <a href="#doc-action" aria-label={line("Take action","Actúa","कार्रवाई करें")[language]}><CheckCircle2 size={16}/></a>
     </nav>
     <div className="documentary-chapters">
-      {chapters.map((chapter,index)=><section data-documentary-section id={"doc-"+chapter.id} className={"documentary-chapter documentary-"+chapter.kind} key={chapter.id}>
+      {chapters.map(chapter=><section data-documentary-section id={"doc-"+chapter.id} className={"documentary-chapter documentary-"+chapter.kind} key={chapter.id}>
         <div className="documentary-chapter-photo"><RealPhoto photo={chapter.photo}/></div>
         <div className="documentary-chapter-body">
           <h2>{chapter.heading[language]}</h2>
@@ -258,13 +252,6 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
               text={[chapter.heading[language],chapter.copy[language],chapter.data+" "+chapter.unit[language],chapter.statShort[language]].join(". ")}/>
           </div>
         </div>
-        {index===3&&<div className="documentary-interlude">
-          <div>
-            <h3>{line("Cleanup is only part of the solution.","Limpiar es solo parte de la solución.","सफ़ाई समाधान का सिर्फ एक हिस्सा है।")[language]}</h3>
-            <p>{line("Volunteers remove waste from beaches. Keeping more waste out of the water is the next challenge.","Los voluntarios retiran residuos de las playas. Evitar que lleguen más al agua es el siguiente reto.","स्वयंसेवक तट से कचरा हटाते हैं। अगली चुनौती है कचरे को पानी तक पहुँचने से रोकना।")[language]}</p>
-          </div>
-          <RealPhoto photo={photos.pile}/>
-        </div>}
       </section>)}
     </div>
     <section className="documentary-decision" data-documentary-section id="doc-decision">
