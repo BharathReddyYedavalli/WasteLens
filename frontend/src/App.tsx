@@ -15,6 +15,7 @@ import AuditKit from "./AuditKit";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
 import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
+import { ReadAloudButton, useSpeech } from "./Speech";
 import { LANGUAGES, useLanguage } from "./i18n";
 
 type PhotoPreview = { file: File; src: string };
@@ -27,6 +28,7 @@ function ErrorText({ message }: { message: string }) {
 export default function App() {
   const { language, setLanguage, t } = useLanguage();
   const [theme, setTheme] = useAppearanceTheme();
+  const { stop: stopReading } = useSpeech();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
   const [model, setModel] = useState(initialModel);
@@ -83,8 +85,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    stopReading();
     window.scrollTo(0,0);
-  },[view]);
+  },[view,stopReading]);
 
   useEffect(() => {
     if (camera && videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
@@ -402,6 +405,9 @@ export default function App() {
           <span className="material-line"><strong>{t("Material")}:</strong> {analysis.material_guess}</span>
           {Boolean(result?.earned_xp) && <span className="earned-xp"><Sparkles size={17}/> +{result?.earned_xp} XP earned</span>}
         </div>
+        <ReadAloudButton id="scan-summary" category="scan" className="wl-scan-read"
+          text={[analysis.item_name,analysis.route_title,analysis.material_guess,
+            analysis.visual_description,analysis.follow_up_question,...analysis.cautions].filter(Boolean).join(". ")}/>
         <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
           <MessageCircle size={18}/> {t("Ask about this item")}
         </button>
