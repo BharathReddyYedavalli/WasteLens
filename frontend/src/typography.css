@@ -1,0 +1,190 @@
+/* WasteLens type system
+   Rounded Nunito display headings + readable Poppins UI/body copy.
+   Prioritize a welcoming hierarchy over oversized editorial lettering. */
+:root {
+  --wl-display-font: "Nunito", "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* A single heading voice across Scan, Ask, Find, Returns, Audits, Progress,
+   About, and the long-form Bottle Journey. Keep the existing body font. */
+.site :is(h1, h2, h3, h4) {
+  font-family: var(--wl-display-font) !important;
+  font-synthesis: none;
+  overflow-wrap: break-word;
+}
+.site h1 {
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.15 !important;
+  text-wrap: balance;
+}
+.site h2 {
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.23 !important;
+  text-wrap: pretty;
+}
+.site :is(h3, h4) {
+  font-weight: 750 !important;
+  letter-spacing: -0.012em !important;
+  line-height: 1.3 !important;
+}
+
+/* The formerly 111px Fraunces photo headline now fits with breathing room. */
+.site .documentary-opening {
+  padding-inline: clamp(28px, 5.4vw, 86px);
+}
+.site .documentary-opening-content {
+  max-width: 770px;
+}
+.site .documentary-opening h1 {
+  font-size: clamp(43px, 4.5vw, 66px) !important;
+  line-height: 1.14 !important;
+  letter-spacing: -0.035em !important;
+  font-weight: 800 !important;
+  max-width: 760px;
+  margin: 0 0 22px !important;
+  text-wrap: balance;
+}
+.site .documentary-opening-sub {
+  font-size: clamp(15px, 1.45vw, 19px) !important;
+  line-height: 1.7 !important;
+  font-weight: 500;
+  max-width: 615px;
+  margin: 0 !important;
+}
+.site .documentary-explore {
+  margin-top: 28px;
+  font-size: 14px;
+}
+
+/* Story remains immersive, but chapter headings never overwhelm the photos. */
+.site .documentary-chapter h2 {
+  font-size: clamp(32px, 3.25vw, 48px) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.025em !important;
+  font-weight: 800 !important;
+  margin: 15px 0 20px !important;
+}
+.site .documentary-interlude h3 {
+  font-size: clamp(32px, 3.65vw, 51px) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.025em !important;
+}
+.site .documentary-decision h2 {
+  font-size: clamp(34px, 3.8vw, 53px) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.025em !important;
+}
+.site .documentary-final h2 {
+  font-size: clamp(36px, 3.8vw, 54px) !important;
+  line-height: 1.17 !important;
+  letter-spacing: -0.025em !important;
+}
+.site .documentary-sources h2 {
+  font-size: clamp(25px, 2.6vw, 32px) !important;
+}
+.site .documentary-bridge {
+  font-family: var(--wl-display-font) !important;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.site .documentary-stat-value {
+  font-family: var(--wl-display-font) !important;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+/* Page titles and in-page section titles share the same hierarchy. */
+.site :is(.intro h1, .deposit-top h1, .community-about-hero h1) {
+  font-size: clamp(34px, 3.5vw, 49px) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.028em !important;
+}
+.site :is(.assistant-heading h1, .finder-screen h1, .league-title h1, .audit-hero h1) {
+  font-size: clamp(29px, 3vw, 41px) !important;
+  line-height: 1.2 !important;
+}
+.site .result-title h2 {
+  font-size: clamp(25px, 2.8vw, 35px) !important;
+}
+.site :is(.community-dashboard h2, .community-advice h2, .community-saved h2) {
+  font-size: clamp(21px, 2.1vw, 26px) !important;
+}
+.site .workspace h2 {
+  font-size: clamp(23px, 2.15vw, 28px) !important;
+}
+.site :is(.deposit-form-head h2, .deposit-after h2) {
+  font-size: clamp(23px, 2.2vw, 29px) !important;
+}
+
+/* Quiz belongs to the same site, not a separate editorial design. */
+.site .journey-quiz h2 {
+  font-size: clamp(29px, 3.7vw, 47px) !important;
+  line-height: 1.23 !important;
+  letter-spacing: -0.025em !important;
+  max-width: 780px;
+}
+.site .journey-quiz-outcome strong {
+  font-family: var(--wl-display-font) !important;
+  font-size: 25px;
+}
+.site .level-top h2 {
+  font-size: clamp(27px, 3vw, 33px) !important;
+}
+.site .badge-panel h2, .site .league-ranking h2 {
+  font-size: 26px !important;
+}
+
+/* Keep all weight-sensitive captions and numeric UI elements readable. */
+.site :is(.audit-count-row strong, .audit-option-count, .community-stats strong,
+  .community-chart-center, .habit-numbers strong, .league-stats strong) {
+  font-family: var(--wl-display-font) !important;
+  font-variant-numeric: tabular-nums;
+}
+.site .community-about-hero>p:last-child {
+  max-width: 690px;
+  line-height: 1.75;
+}
+@media (max-width: 900px) {
+  .site .documentary-opening {
+    min-height: 650px;
+    padding: 82px 36px 75px;
+  }
+  .site .documentary-opening h1 {
+    font-size: clamp(38px, 5.3vw, 53px) !important;
+    max-width: 650px;
+  }
+  .site .documentary-chapter h2 {
+    font-size: clamp(32px, 4.4vw, 43px) !important;
+  }
+}
+@media (max-width: 600px) {
+  .site .documentary-opening {
+    min-height: 670px;
+    padding: 85px 23px 74px;
+  }
+  .site .documentary-opening h1 {
+    font-size: clamp(35px, 8.2vw, 46px) !important;
+    line-height: 1.17 !important;
+    margin-bottom: 20px !important;
+  }
+  .site .documentary-opening-sub {
+    font-size: 15px !important;
+    line-height: 1.65 !important;
+  }
+  .site .documentary-chapter h2 {
+    font-size: clamp(30px, 7.6vw, 41px) !important;
+  }
+  .site .documentary-interlude h3,
+  .site .documentary-decision h2,
+  .site .documentary-final h2 {
+    font-size: clamp(30px, 7.6vw, 42px) !important;
+  }
+  .site .journey-quiz h2 {
+    font-size: clamp(28px, 7vw, 37px) !important;
+  }
+  .site :is(.intro h1, .deposit-top h1, .community-about-hero h1) {
+    font-size: clamp(31px, 7.2vw, 38px) !important;
+  }
+}
