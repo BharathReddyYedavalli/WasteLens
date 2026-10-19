@@ -105,3 +105,241 @@
   .wl-theme-choice:hover{transform:none}
   .wl-account-trigger svg,.wl-profile-action svg{transition:none}
 }
+
+
+/* Accessible themed surfaces.
+   The original 2026 sheet deliberately applies light colors with !important.
+   These rules load after it and target the real component class names. They
+   preserve the Light theme untouched, while making all five alternatives legible. */
+:root[data-wl-theme="dark"]{
+  --wl-paper:#20354c;--wl-canvas:#112237;--wl-wash:#101f36ed;
+  --wl-copy:#f2f7fc;--wl-subcopy:#cfdfec;--wl-stroke:#52708b;
+  --wl-accent:#71dbce;--wl-surface:#29425e;--wl-surface-raised:#304b68;
+  --wl-subtle-card:#283e57;--wl-highlight:#d6ad63;
+  --wl-selected:#344e61;--wl-icon-surface:#35556b;--wl-icon-copy:#b7ece0;
+  --wl-inverted:#103f43;--wl-panel-shadow:#0d1a2b;
+}
+:root[data-wl-theme="ocean"]{
+  --wl-surface:#e5f5fa;--wl-surface-raised:#fff;
+  --wl-subtle-card:#edf8fb;--wl-highlight:#c28b4e;
+  --wl-selected:#d6f1f5;--wl-icon-surface:#d2edf2;
+  --wl-icon-copy:#146e83;--wl-inverted:#fff;--wl-panel-shadow:#b1dbe1;
+}
+:root[data-wl-theme="beach"]{
+  --wl-surface:#fff3dd;--wl-surface-raised:#fffaf0;
+  --wl-subtle-card:#fff8e9;--wl-highlight:#bc8051;
+  --wl-selected:#fce5c6;--wl-icon-surface:#f9e3bf;
+  --wl-icon-copy:#85532e;--wl-inverted:#fff;--wl-panel-shadow:#ead5b8;
+}
+:root[data-wl-theme="forest"]{
+  --wl-surface:#edf7e9;--wl-surface-raised:#f9fcf3;
+  --wl-subtle-card:#f4f9ef;--wl-highlight:#a27838;
+  --wl-selected:#dcefdc;--wl-icon-surface:#dcebd8;
+  --wl-icon-copy:#316b4c;--wl-inverted:#fff;--wl-panel-shadow:#bdd6c2;
+}
+:root[data-wl-theme="sunset"]{
+  --wl-surface:#ffebf0;--wl-surface-raised:#fff8f6;
+  --wl-subtle-card:#fff4f6;--wl-highlight:#ab6680;
+  --wl-selected:#f9dce9;--wl-icon-surface:#f6dbe9;
+  --wl-icon-copy:#904c72;--wl-inverted:#fff;--wl-panel-shadow:#e8c3d5;
+}
+
+/* Header and navigation. A light turquoise active pill needs dark ink. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .side-nav .nav-item svg{
+  color:var(--wl-accent)!important;
+}
+:root[data-wl-theme="dark"] .side-nav .nav-item.active,
+:root[data-wl-theme="dark"] .side-nav .nav-item.active svg{
+  color:var(--wl-inverted)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-trigger:hover,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-trigger[aria-expanded="true"]{
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-avatar{
+  color:var(--wl-icon-copy);background:var(--wl-icon-surface);
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-action svg{
+  color:var(--wl-icon-copy);
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice.active,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice:hover{
+  background:var(--wl-selected)!important;
+}
+
+/* Leaderboard: override each original light-only !important background.
+   Do not override the gradient progress tile's white-on-dark lettering. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-title h1,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .badge-panel h2,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-ranking h2{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-icon{
+  background:var(--wl-icon-surface)!important;color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .level-panel{
+  color:#fff!important;box-shadow:7px 7px 0 var(--wl-panel-shadow)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .level-panel :is(h2,strong,.level-label,.level-next){
+  color:#fff!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .level-track{
+  background:#ffffff5c;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats>div{
+  background:var(--wl-surface)!important;border:1.5px solid var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats strong{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats span{
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats svg{
+  color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .badge-panel,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-ranking,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-guest{
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;box-shadow:0 7px 0 var(--wl-panel-shadow)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge{
+  opacity:1!important;filter:none!important;color:var(--wl-copy)!important;
+  border:1.5px solid var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge.locked{
+  background:var(--wl-subtle-card)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge.unlocked{
+  background:var(--wl-selected)!important;border-color:var(--wl-highlight)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge strong{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge small{
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge-icon{
+  background:var(--wl-icon-surface)!important;color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge.unlocked .reward-badge-icon{
+  background:var(--wl-highlight)!important;color:#202f3f!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-entry{
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-entry.its-you{
+  background:var(--wl-selected)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-user strong,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-number,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-xp{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-user span,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .privacy-toggle p,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-empty,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-guest p{
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-ranking-heading{
+  color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .privacy-toggle{
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-rules{
+  color:var(--wl-copy)!important;background:var(--wl-surface)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-rules summary{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-rules p{
+  color:var(--wl-subcopy)!important;
+}
+
+/* Secondary surfaces throughout the app: the theme should remain readable
+   beyond the leaderboard, including the deposit calculator and waste audit. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .assistant-card,.assistant-screen,.account-card,.finder-card,
+  .deposit-form-card,.deposit-photo-helper,.deposit-photo-inside,
+  .audit-hero,.audit-results,.audit-kit .audit-option,.habit-snapshot,
+  .history-card,.sort-plan,.sort-step,.map-card,.map-visit-info
+){
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .assistant-screen h1,.assistant-card h2,.finder-screen h1,
+  .deposit-page,.deposit-form-head h2,.deposit-after h2,
+  .audit-hero h1,.audit-results h2,.audit-kit .audit-count-row strong
+){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .deposit-fields label,.deposit-examples span,.deposit-photo-helper summary,
+  .deposit-photo-helper summary span,.deposit-photo-inside p,
+  .deposit-photo-inside small,.audit-hero p,.audit-session label,
+  .audit-count-row p,.audit-option strong,.audit-option-count,
+  .audit-note summary,.audit-note p,.audit-bar-row strong
+){
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .deposit-photo-helper,.deposit-ai-read,.deposit-after,.deposit-callout,
+  .audit-session,.audit-actions button,.deposit-examples button
+){
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .deposit-photo-helper summary,.deposit-after p,.deposit-after a,
+  .deposit-callout p,.deposit-ai-read p,.deposit-ai-read strong,
+  .deposit-examples button,.audit-actions button
+){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result{
+  /* Original gradient carries white text; avoid the generic paper override. */
+  background:linear-gradient(150deg,#294f80,#394c94)!important;
+  color:#fff!important;border-color:#5779ae!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result.check{
+  background:linear-gradient(145deg,#7e4d80,#573e86)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result.no{
+  background:linear-gradient(145deg,#476667,#344e62)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result :is(p,h2,.deposit-mini-math,.deposit-result-note,.deposit-result-overline){
+  color:#fff!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result .deposit-amount{
+  color:#ffdf83!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-fields :is(input,select),
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-photo-inside input{
+  background:var(--wl-surface-raised)!important;
+  color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-top{
+  background-image:linear-gradient(90deg,var(--wl-intro-wash) 0%,var(--wl-intro-wash) 58%,transparent 100%),var(--wl-wallpaper)!important;
+  background-size:cover!important;background-position:center!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-top :is(h1,p,.deposit-kicker){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .audit-kit .audit-bar-track{
+  background:var(--wl-canvas)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .audit-kit .audit-bar-row,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .audit-kit .audit-empty{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.audit-kit,.deposit-page) a:focus-visible{
+  outline:3px solid var(--wl-accent);outline-offset:3px;
+}
