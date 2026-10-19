@@ -225,9 +225,9 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     {notice&&<p className="community-success" role="status"><Check size={17}/>{notice}</p>}
     {error&&<p className="community-error" role="alert">{error}</p>}
 
-    <div className="community-dashboard">
+    {total>0&&<div className="community-dashboard">
       <div className="community-dashboard-heading"><BarChart3 size={22}/><div><h2>{t("Waste breakdown")}</h2></div></div>
-      {total===0?null:<>
+      <>
         <div className="community-stats">
           <div><span>{t("Largest category")}</span><strong>{top.map(k=>t(k.label)).join(" / ")}</strong></div>
           <div><span>{t("Trash + uncertain")}</span><strong>{share}%</strong></div>
@@ -237,10 +237,10 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
             <DistributionChart counts={counts} total={total}/></div>
           <div className="community-chart-card"><Timeline entries={audit.entries}/></div>
         </div>
-      </>}
-    </div>
+      </>
+    </div>}
 
-    <div className="community-advice">
+    {total>0&&<div className="community-advice">
       <div className="community-advice-heading"><Lightbulb size={25}/><div>
         <h2>{t("Turn findings into community action")}</h2>
         <p>{t("Only the audit name and counts go to Gemini when you ask.")}</p>
@@ -266,7 +266,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
           :t("Gemini was unavailable. These suggestions use category-based guidance instead.")}</p>
         <ReadAloudButton id="community-audit-advice" category="steps" text={advice.suggestions.join(". ")}/>
       </div>}
-    </div>
+    </div>}
     <div className="community-saved">
       <div className="community-saved-heading"><Save size={23}/><div>
         <h2>{t("Saved audits")}</h2>
