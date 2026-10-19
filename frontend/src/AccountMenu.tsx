@@ -90,7 +90,6 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
     </button>
     {open && <div id="wl-profile-dropdown" className="wl-profile-dropdown" role="dialog"
       aria-label={t("Account and appearance")}>
-      <div className="wl-profile-heading">{user ? user.name : t("Welcome to WasteLens")}</div>
       <button ref={firstAction} type="button" className="wl-profile-action" onClick={() => navigate("account")}>
         <UserRound size={19}/>{user ? t("My account") : t("Sign in")}
       </button>
