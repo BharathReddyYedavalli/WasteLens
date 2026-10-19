@@ -25,9 +25,7 @@ export default function SortPlan({ analysis }: { analysis: ItemAnalysis }) {
   }
   return <article className="sort-plan" aria-label={t("Sort plan")}>
     <div className="sort-plan-top">
-      <div><span className="eyebrow">01  /  {t("Sort plan")}</span>
-        <h3>{t("What to do with it")}</h3>
-        <p>{t("Check each step as you go")}</p>
+      <div><h3>{t("What to do with it")}</h3>
       </div>
       <span className="sort-plan-counter"><Check size={16}/>{done.length}/{count}</span>
     </div>
