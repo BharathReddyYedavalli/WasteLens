@@ -219,7 +219,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
       <button type="button" className="audit-reset" onClick={fresh} disabled={!total&&!audit.title}><FilePlus2 size={17}/>{t("New audit")}</button>
     </div>
     {!user&&<p className="community-private-note"><LockKeyhole size={17}/>
-      {t("Your draft stays in this browser. Sign in to save audits to your account and access them on another device.")}
+      {t("Your draft stays in this browser. Sign in to save audits on this WasteLens server. Separate local installations do not automatically sync.")}
       <button type="button" onClick={onSignIn}>{t("Sign in")}</button></p>}
     {notice&&<p className="community-success" role="status"><Check size={17}/>{notice}</p>}
     {error&&<p className="community-error" role="alert">{error}</p>}
@@ -275,7 +275,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
         <h2>{t("Saved community audits")}</h2><p>{t("Keep separate snapshots of cleanups, lunch periods and school events.")}</p>
       </div></div>
       {loadingSaved?<p>{t("Loading saved audits…")}</p>:!user?
-        <p>{t("Sign in to see saved audits from any device.")}</p>:saved.length===0?
+        <p>{t("Sign in to see audits saved on this WasteLens server. Different local computers do not share data automatically.")}</p>:saved.length===0?
         <p>{t("No saved audits yet. Count some items above and choose Save audit.")}</p>:<div className="community-saved-list">
           {saved.map(item=><div key={item.id} className="community-saved-item">
             <div><strong>{item.title}</strong><span>{dayStamp(item.created_at)} · {item.item_count} {t("items")}</span></div>
@@ -287,7 +287,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
         </div>}
     </div>
     <details className="audit-note"><summary>{t("About these numbers")}</summary>
-      <p>{t("These are human-entered observations. They do not prove recycling, diversion, or carbon savings. Saved audits belong to your signed-in account. Your working draft remains in this browser.")}</p>
+      <p>{t("These are human-entered observations, not proof of recycling, diversion or carbon savings. Saved audits belong to your account on this server. Drafts stay in this browser, and separate local servers do not synchronize.")}</p>
     </details>
   </section>;
 }
