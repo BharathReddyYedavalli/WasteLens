@@ -13,6 +13,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 
 from .accounts import bootstrap_admin, get_user, initialize, record_scan, router as account_router
 from .gamification import router as game_router, xp_for_scan, new_badges_for_scan
+from .community_audits import router as audit_router
 from .places import router as places_router
 from .deposit_rules import router as deposit_router
 from .deposit_scan import inspect_deposit_photo
@@ -37,6 +38,7 @@ app = FastAPI(
 app.include_router(account_router)
 app.include_router(places_router)
 app.include_router(game_router)
+app.include_router(audit_router)
 app.include_router(deposit_router)
 
 
