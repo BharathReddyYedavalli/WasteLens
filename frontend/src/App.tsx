@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, HeartHandshake, Info
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, HeartHandshake, Info, ArrowRight
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
@@ -274,6 +274,27 @@ export default function App() {
   }
 
   const analysis = result?.analysis;
+  const framing: Partial<Record<typeof view,{phase:string;heading:string;description:string;next:string;nextView:"identifier"|"finder"|"audit"|"journey"|"history"}>> = {
+    chat: {phase:t("UNDERSTAND"),heading:t("Better answers lead to better choices."),
+      description:t("Ask about a confusing item before you send it to the wrong bin."),
+      next:t("Scan an item"),nextView:"identifier"},
+    finder: {phase:t("TAKE ACTION"),heading:t("Find local ways to help."),
+      description:t("Make the next step practical by locating appropriate services and checking local requirements."),
+      next:t("Measure your efforts"),nextView:"audit"},
+    deposits: {phase:t("TAKE ACTION"),heading:t("Make each return count."),
+      description:t("Check whether eligible drink containers can be returned. Small incentives can strengthen community collection."),
+      next:t("See the bigger story"),nextView:"journey"},
+    audit: {phase:t("TAKE ACTION"),heading:t("Turn observations into a service project."),
+      description:t("Count what you find, save an audit, share a report and plan one change you can measure next time."),
+      next:t("Find local help"),nextView:"finder"},
+    history: {phase:t("OUR IMPACT"),heading:t("See the actions you've recorded."),
+      description:t("Build useful habits while keeping scans separate from actions you confirm yourself."),
+      next:t("Run an audit"),nextView:"audit"},
+    leaderboard: {phase:t("OUR IMPACT"),heading:t("Keep service motivating."),
+      description:t("Celebrate participation without treating badges or scans as proof of environmental savings."),
+      next:t("Run an audit"),nextView:"audit"},
+  };
+  const pageFrame=framing[view];
   return <div className="site" data-theme={theme}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
@@ -336,6 +357,13 @@ export default function App() {
       </aside>
       <div className="page-content">
     <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
+      {pageFrame&&<div className="community-page-framing">
+        <div><span>{pageFrame.phase}</span><h2>{pageFrame.heading}</h2><p>{pageFrame.description}</p></div>
+        <button type="button" onClick={()=>{stopCamera();setView(pageFrame.nextView);}}>
+          {pageFrame.next} <ArrowRight size={17}/>
+        </button>
+      </div>}
+
       {view === "identifier" ? <>
       <div className="intro">
         <div className="intro-copy">
