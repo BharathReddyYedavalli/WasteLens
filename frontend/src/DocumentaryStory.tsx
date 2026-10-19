@@ -6,7 +6,7 @@ import { ReadAloudButton } from "./Speech";
 
 type Line = Record<Language,string>;
 const line=(en:string,es:string,hi:string):Line=>({en,es,hi});
-type Photo={url:string;alt:Line;caption:Line;credit:string;page:string;position?:string};
+type Photo={url:string;alt:Line;caption:Line;credit:string;page:string;position?:string;license?:string;licenseUrl?:string};
 type Chapter={id:string;eyebrow:Line;heading:Line;copy:Line;bridge:Line;photo:Photo;data:string;unit:Line;statExplain:Line;statSource:string;factYear:string;kind:"problem"|"impact"|"solution";};
 const photos:Record<string,Photo>={
   bottle:{
@@ -37,6 +37,31 @@ const photos:Record<string,Photo>={
     credit:"NOAA PIFSC Coral Reef Ecosystem Program",
     page:"https://marinedebris.noaa.gov/multimedia/images/cutting-thin-plastic-film-debris"
   },
+  facility:{
+    url:"https://upload.wikimedia.org/wikipedia/commons/8/80/Materials_recovery_facility.jpg",
+    alt:line("Large piles of mixed plastic awaiting sorting outside a materials recovery facility in Olomouc, Czech Republic.","Grandes montones de plástico esperando su clasificación en un centro de recuperación en Chequia.","चेक गणराज्य के ओलोमौत्स में छँटाई की प्रतीक्षा करता प्लास्टिक कचरे का बड़ा ढेर।"),
+    caption:line("Plastics awaiting sorting at a recovery facility in Olomouc, Czech Republic (2012).","Plásticos que esperan clasificación en Olomouc, Chequia (2012).","चेक गणराज्य में छँटाई की प्रतीक्षा करता प्लास्टिक (2012)।"),
+    credit:"Michal Maňas · CC BY 3.0",
+    license:"CC BY 3.0",
+    licenseUrl:"https://creativecommons.org/licenses/by/3.0/",
+    page:"https://commons.wikimedia.org/wiki/File:Materials_recovery_facility.jpg"
+  },
+  machine:{
+    url:"https://upload.wikimedia.org/wikipedia/commons/2/20/Reverse_Vending_Machine_for_Victoria%27s_Container_Deposit_Scheme_in_Sunshine.jpg",
+    alt:line("Real reverse vending station for beverage container returns in Victoria, Australia.","Máquina real para devolver envases en Victoria, Australia.","ऑस्ट्रेलिया के विक्टोरिया में वास्तविक बोतल-वापसी मशीन।"),
+    caption:line("Reverse-vending station in Victoria, Australia (2023). Example only, not an Oregon station.","Máquina de devolución en Victoria, Australia (2023). Es un ejemplo, no una estación de Oregón.","विक्टोरिया, ऑस्ट्रेलिया की वापसी मशीन (2023)। यह ओरेगन की तस्वीर नहीं है।"),
+    credit:"Sgroey · CC BY 4.0",
+    license:"CC BY 4.0",
+    licenseUrl:"https://creativecommons.org/licenses/by/4.0/",
+    page:"https://commons.wikimedia.org/wiki/File:Reverse_Vending_Machine_for_Victoria%27s_Container_Deposit_Scheme_in_Sunshine.jpg"
+  },
+  coral:{
+    url:"https://marinedebris.noaa.gov/live/s3fs-public/20160501_NOAA_PIFSCCoralReefEcosystemProgram_106.jpg",
+    alt:line("NOAA crew examining coral damaged by a large discarded fishing net.","Un equipo de NOAA examina corales dañados por una red abandonada.","NOAA टीम फेंके हुए मछली पकड़ने के जाल से क्षतिग्रस्त मूंगे की जाँच कर रही है।"),
+    caption:line("NOAA team examines coral damaged by a derelict fishing net. A marine-debris example, not bottle-specific.","Equipo de NOAA examina coral dañado por una red abandonada; no es un caso de botella.","NOAA की टीम पुराने जाल से हुए मूंगे के नुकसान की जाँच करती है; यह बोतल का उदाहरण नहीं है।"),
+    credit:"NOAA CREP",
+    page:"https://marinedebris.noaa.gov/multimedia/images/coral-removed-derelict-net"
+  },
   pile:{
     url:"https://marinedebris.noaa.gov/live/s3fs-public/debris_pile_0418_2016.jpg",
     alt:line("Separate piles of marine debris collected from a coral island shoreline with clear blue sea behind.","Montones de residuos marinos recogidos de una costa junto a un mar azul.","नीले समुद्र के किनारे एकत्र किए गए समुद्री कचरे के अलग-अलग ढेर।"),
@@ -60,7 +85,7 @@ const chapters:Chapter[]=[
     statSource:"https://www.oecd.org/en/publications/global-plastics-outlook_de747aef-en.html",factYear:"OECD · 2019"
   },
   {
-    id:"recycled",kind:"problem",photo:photos.bottle,
+    id:"recycled",kind:"problem",photo:photos.facility,
     eyebrow:line("02 / THE MYTH","02 / EL MITO","02 / गलत धारणा"),
     heading:line("The recycling symbol isn't a promise.","El símbolo de reciclaje no es una promesa.","रीसायक्लिंग का चिन्ह कोई गारंटी नहीं है।"),
     copy:line("A container can be recyclable in theory and still never become a new product. Collection is only the beginning. Material type, local facilities, contamination and demand all affect what gets recovered.",
@@ -84,7 +109,7 @@ const chapters:Chapter[]=[
     statSource:"https://www.unep.org/interactives/pollution-to-solution/",factYear:"UNEP · 2021 assessment"
   },
   {
-    id:"consequence",kind:"impact",photo:photos.shore,
+    id:"consequence",kind:"impact",photo:photos.coral,
     eyebrow:line("04 / THE COST","04 / EL COSTO","04 / असर"),
     heading:line("A dirty beach is only what we can see.","Una playa sucia es solo lo que vemos.","गंदा समुद्र तट केवल दिखाई देने वाला हिस्सा है।"),
     copy:line("Marine debris can entangle animals, be mistaken for food and damage habitats. It also affects communities that depend on clean coastlines. Cleanup helps, but removing existing debris does not stop new waste from arriving.",
@@ -108,7 +133,7 @@ const chapters:Chapter[]=[
     statSource:"https://marinedebris.noaa.gov/multimedia/images/plastic-beverage-bottles-nwhi",factYear:"NOAA · 2016 cleanup"
   },
   {
-    id:"proof",kind:"solution",photo:photos.pile,
+    id:"proof",kind:"solution",photo:photos.machine,
     eyebrow:line("06 / A SYSTEM THAT WORKS","06 / UN SISTEMA QUE FUNCIONA","06 / काम करने वाला तरीका"),
     heading:line("Give a bottle a reason to come home.","Dale a la botella un motivo para volver.","बोतल को वापस आने की वजह दें।"),
     copy:line("Some states charge a deposit when an eligible drink is sold and refund it when the empty container comes back. Oregon shows how powerful that incentive can be. Deposit-return systems are only one tool, and recycling still requires processing.",
@@ -141,7 +166,7 @@ function RealPhoto({photo,hero=false}:{photo:Photo;hero?:boolean}){
       loading={hero?"eager":"lazy"} onError={()=>setFailed(true)}/>:<div className="documentary-photo-fallback" role="img" aria-label={photo.alt[language]}>
       {language==="en"?"Photo unavailable — open original":language==="es"?"Foto no disponible — ver original":"फोटो उपलब्ध नहीं — मूल चित्र खोलें"}
     </div>}
-    <figcaption><span>{photo.caption[language]}</span><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} <ExternalLink size={12}/></a></figcaption>
+    <figcaption><span>{photo.caption[language]}</span><span className="documentary-photo-credits"><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} <ExternalLink size={12}/></a>{photo.licenseUrl&&<a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer" title={photo.license+"; photograph cropped for layout"}>License</a>}</span></figcaption>
   </figure>;
 }
 
@@ -267,9 +292,9 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
     </section>
     <aside className="documentary-sources">
       <h2>{line("Behind the story","Fuentes de la historia","कहानी के स्रोत")[language]}</h2>
-      <p>{line("Every photograph is documentary footage credited to the NOAA Marine Debris Program. Statistics describe different geographies, materials and years, and are labeled individually. Photographs illustrate real conditions but do not prove each statistic.","Las fotografías provienen de NOAA; las estadísticas tienen distintas fechas y ámbitos. Las imágenes no prueban por sí solas cada cifra.","तस्वीरें NOAA की वास्तविक तस्वीरें हैं। आँकड़ों के वर्ष और क्षेत्र अलग हैं। कोई तस्वीर अकेले आँकड़े को सिद्ध नहीं करती।")[language]}</p>
+      <p>{line("The photographs come from NOAA and licensed Wikimedia Commons contributors, each identified below. Statistics cover different materials, locations and years, so the images do not depict the exact data points. Some photos are cropped to fit the layout.","Las fotografías son de NOAA y autores de Wikimedia Commons con licencia. Cada dato tiene su año y región; las fotos son ilustrativas. Algunas están recortadas para el diseño.","ये वास्तविक तस्वीरें NOAA और लाइसेंस प्राप्त Wikimedia Commons योगदानकर्ताओं की हैं। आँकड़ों के वर्ष और क्षेत्र अलग हैं। कुछ तस्वीरें लेआउट के अनुसार क्रॉप की गई हैं।")[language]}</p>
       <details><summary>{line("See original photos and research","Ver fotos originales e investigaciones","मूल तस्वीरें और शोध देखें")[language]}</summary>
-        <ul>{Object.values(photos).map(photo=><li key={photo.page}><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} — {photo.caption[language]}</a></li>)}
+        <ul>{Object.values(photos).map(photo=><li key={photo.page}><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} — {photo.caption[language]}</a>{photo.licenseUrl&&<> · <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">{photo.license}</a></>}</li>)}
         {chapters.map(chapter=><li key={chapter.id}><a href={chapter.statSource} target="_blank" rel="noopener noreferrer">{chapter.factYear}: {chapter.statExplain[language]}</a></li>)}</ul>
       </details>
     </aside>
