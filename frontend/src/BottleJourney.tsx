@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Award, Leaf, RefreshCw } from "lucide-react";
+import { Award, RefreshCw } from "lucide-react";
 import type { SessionUser, WasteLensBadge } from "./types";
 import { useLanguage } from "./i18n";
 import { actionHeaders } from "./AccountArea";
