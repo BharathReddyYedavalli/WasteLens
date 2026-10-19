@@ -64,6 +64,5 @@ export default function HabitSnapshot() {
           {weekday:"short"})}</span>
       </div>)}
     </div>
-    <p className="habit-caveat">{t("Your activity is based on scans and actions you reported.")}</p>
   </section>;
 }
