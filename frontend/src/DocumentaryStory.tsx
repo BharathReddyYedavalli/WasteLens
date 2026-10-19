@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, BookOpen, CheckCircle2, ChevronDown, ExternalLink, Leaf, Recycle, Waves } from "lucide-react";
+import { ArrowDown, ArrowRight, BookOpen, CheckCircle2, ChevronDown, ExternalLink, Leaf, Recycle } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { Language } from "./i18n";
 import { ReadAloudButton } from "./Speech";
@@ -216,11 +216,9 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
       <div className="documentary-opening-media"><RealPhoto photo={photos.bottle} hero/></div>
       <div className="documentary-opening-shade"/>
       <div className="documentary-opening-content">
-        <p className="documentary-eyebrow"><Waves size={17}/> WASTELENS ORIGINAL STORY</p>
         <h1>{line("We used it for minutes. It may stay for generations.","La usamos unos minutos. Puede quedarse por generaciones.","हमने कुछ मिनट इस्तेमाल किया। यह पीढ़ियों तक रह सकती है।")[language]}</h1>
         <p className="documentary-opening-sub">{line("The real journey of our waste. What goes wrong, what works, and what happens if we change the ending.","La historia real de nuestros residuos: los daños, las soluciones y cómo cambiar el final.","कचरे की असली कहानी: क्या गलत होता है, क्या काम करता है, और हम अंत कैसे बदल सकते हैं।")[language]}</p>
         <a className="documentary-explore" href="#doc-scale">{line("Follow the evidence","Sigue las pruebas","तथ्यों की यात्रा देखें")[language]} <ArrowDown size={18}/></a>
-        <p className="documentary-reading-note">{line("Real photographs · independently sourced data · about 5 minutes","Fotografías reales · datos con fuentes · unos 5 minutos","वास्तविक तस्वीरें · स्रोत-समर्थित आँकड़े · लगभग 5 मिनट")[language]}</p>
       </div>
       <div className="documentary-opening-credit">{photos.bottle.credit} · <a href={photos.bottle.page} target="_blank" rel="noopener noreferrer">{line("Original photo","Foto original","मूल चित्र")[language]}</a></div>
     </header>
@@ -255,8 +253,8 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
         </div>
         {index===3&&<div className="documentary-interlude">
           <div><span>{line("THE QUESTION","LA PREGUNTA","सवाल")[language]}</span>
-            <h3>{line("What if the story doesn't have to end here?","¿Y si la historia no tuviera que terminar así?","अगर कहानी का अंत यहाँ न हो तो?")[language]}</h3>
-            <p>{line("The photographs are real. So are the people doing something about them.","Las fotos son reales. También quienes están actuando.","ये तस्वीरें असली हैं। इन्हें बदलने के लिए काम कर रहे लोग भी असली हैं।")[language]}</p>
+            <h3>{line("Cleanup is only part of the solution.","Limpiar es solo parte de la solución.","सफ़ाई समाधान का सिर्फ एक हिस्सा है।")[language]}</h3>
+            <p>{line("Volunteers remove waste from beaches. Keeping more waste out of the water is the next challenge.","Los voluntarios retiran residuos de las playas. Evitar que lleguen más al agua es el siguiente reto.","स्वयंसेवक तट से कचरा हटाते हैं। अगली चुनौती है कचरे को पानी तक पहुँचने से रोकना।")[language]}</p>
           </div>
           <RealPhoto photo={photos.pile}/>
         </div>}
@@ -264,8 +262,8 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
     </div>
     <section className="documentary-decision" data-documentary-section id="doc-decision">
       <div className="documentary-decision-label">{line("YOU DECIDE","TÚ DECIDES","आप तय करें")[language]}</div>
-      <h2>{line("Three possible endings. Pick one.","Tres finales posibles. Elige uno.","तीन संभावित अंत। एक चुनें।")[language]}</h2>
-      <p>{line("There's no magic bin. The best next step depends on the container and where you live.","No hay un bote mágico. El mejor paso depende del envase y de dónde vives.","कोई जादुई कूड़ेदान नहीं है। सही कदम वस्तु और आपके स्थानीय नियमों पर निर्भर है।")[language]}</p>
+      <h2>{line("What will you do with the next bottle?","¿Qué harás con la próxima botella?","अगली बोतल का क्या करेंगे?")[language]}</h2>
+      <p>{line("The right choice depends on the container and your local rules.","La mejor opción depende del envase y las normas locales.","सही विकल्प बोतल और स्थानीय नियमों पर निर्भर है।")[language]}</p>
       <div className="documentary-decision-options">
         {(["refill","return","recycle"] as const).map((c,i)=><button type="button" key={c} className={choice===c?"active":""}
           aria-pressed={choice===c} onClick={()=>setChoice(c)}>
@@ -280,8 +278,8 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
       <div className="documentary-final-photo"><RealPhoto photo={photos.collectors}/></div>
       <div className="documentary-final-content">
         <p className="documentary-eyebrow">{line("THE STORY ISN'T OVER","LA HISTORIA SIGUE","कहानी अभी बाकी है")[language]}</p>
-        <h2>{line("The next chapter is yours.","El siguiente capítulo es tuyo.","अगला अध्याय आपका है।")[language]}</h2>
-        <p>{line("You don't have to fix the whole planet today. Start with the next bottle. Then make the better choice a habit.","No tienes que arreglar el planeta hoy. Empieza con la próxima botella. Luego conviértelo en costumbre.","आपको आज पूरी दुनिया नहीं बदलनी। अगली बोतल से शुरू करें, फिर इसे आदत बनाएँ।")[language]}</p>
+        <h2>{line("What can you do next?","¿Qué puedes hacer ahora?","अब आप क्या कर सकते हैं?")[language]}</h2>
+        <p>{line("Choose one change you can repeat at school or at home.","Elige un cambio que puedas repetir en la escuela o en casa.","एक ऐसा बदलाव चुनें जिसे स्कूल या घर पर बार-बार अपना सकें।")[language]}</p>
         <div className="documentary-actions">
           {actions.map(item=><label className="documentary-action" key={item.key}>
             <input type="checkbox" checked={pledged.includes(item.key)}
