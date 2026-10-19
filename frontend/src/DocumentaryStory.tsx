@@ -62,6 +62,13 @@ const photos:Record<string,Photo>={
     credit:"NOAA CREP",
     page:"https://marinedebris.noaa.gov/multimedia/images/coral-removed-derelict-net"
   },
+  collectors:{
+    url:"https://marinedebris.noaa.gov/live/s3fs-public/NOAA_MARINE_DEBRIS_2016_DAVID_SLATER_09.jpg",
+    alt:line("NOAA marine-debris crew collecting tangled fishing nets from a distant sandy beach.","Equipo de NOAA recogiendo redes abandonadas de una playa lejana.","NOAA की टीम समुद्र तट से पुराने मछली पकड़ने के जाल इकट्ठा कर रही है।"),
+    caption:line("NOAA team retrieving derelict fishing nets at Midway Atoll in 2016.","Equipo de NOAA retira redes abandonadas en Midway Atoll en 2016.","2016 में मिडवे एटॉल पर NOAA टीम पुराने जाल हटाती हुई।"),
+    credit:"NOAA CREP",
+    page:"https://marinedebris.noaa.gov/multimedia/images/removing-derelict-fishing-nets-midway-atoll"
+  },
   pile:{
     url:"https://marinedebris.noaa.gov/live/s3fs-public/debris_pile_0418_2016.jpg",
     alt:line("Separate piles of marine debris collected from a coral island shoreline with clear blue sea behind.","Montones de residuos marinos recogidos de una costa junto a un mar azul.","नीले समुद्र के किनारे एकत्र किए गए समुद्री कचरे के अलग-अलग ढेर।"),
@@ -251,7 +258,7 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
             <h3>{line("What if the story doesn't have to end here?","¿Y si la historia no tuviera que terminar así?","अगर कहानी का अंत यहाँ न हो तो?")[language]}</h3>
             <p>{line("The photographs are real. So are the people doing something about them.","Las fotos son reales. También quienes están actuando.","ये तस्वीरें असली हैं। इन्हें बदलने के लिए काम कर रहे लोग भी असली हैं।")[language]}</p>
           </div>
-          <RealPhoto photo={photos.removal}/>
+          <RealPhoto photo={photos.pile}/>
         </div>}
       </section>)}
     </div>
@@ -270,7 +277,7 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
       {choice&&<div className="documentary-decision-answer" role="status"><CheckCircle2 size={22}/>{consequence[choice][language]}</div>}
     </section>
     <section className="documentary-final" data-documentary-section id="doc-action">
-      <div className="documentary-final-photo"><RealPhoto photo={photos.removal}/></div>
+      <div className="documentary-final-photo"><RealPhoto photo={photos.collectors}/></div>
       <div className="documentary-final-content">
         <p className="documentary-eyebrow">{line("THE STORY ISN'T OVER","LA HISTORIA SIGUE","कहानी अभी बाकी है")[language]}</p>
         <h2>{line("The next chapter is yours.","El siguiente capítulo es tuyo.","अगला अध्याय आपका है।")[language]}</h2>
