@@ -10,5 +10,6 @@ import "./bottles.css";
 import "./themes.css";
 import "./journey-extra.css";
 import "./accessibility.css";
+import "./documentary.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
