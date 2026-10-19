@@ -98,7 +98,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   },[available]);
 
   // Never continue reading old content in a different language or after audio is disabled.
-  useEffect(()=>{stop();setError("");},[language,options.enabled,stop]);
+  useEffect(()=>{stop();setError("");},[language,options.enabled,options.scan,options.steps,options.chat,options.journey,options.rate,options.voiceURI,stop]);
   useEffect(()=>()=>{version.current+=1;if(available)window.speechSynthesis.cancel();},[available]);
 
   const speak=useCallback((id:string,source:string)=>{
@@ -188,6 +188,9 @@ export function SpeechSettingsPanel(){
   const {options,update,available,voices,activeId,paused,error,speak,stop,togglePause,dismissError}=useSpeech();
   const matching=voices.filter(voice=>voice.lang.toLowerCase().startsWith(language+"-")||voice.lang.toLowerCase()===language);
   const testId="voice-settings-preview";
+  const previewActive=useRef(false);
+  previewActive.current=activeId===testId;
+  useEffect(()=>()=>{if(previewActive.current)stop();},[stop]);
   return <div className="wl-accessibility-settings">
     <div className="wl-speech-head"><Ear size={18}/><strong>{t("Read aloud")}</strong></div>
     <label className="wl-speech-toggle">
