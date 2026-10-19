@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, HeartHandshake, Info
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
@@ -12,6 +12,7 @@ import Leaderboard from "./Leaderboard";
 import BadgeCelebration from "./BadgeCelebration";
 import SortPlan from "./SortPlan";
 import AuditKit from "./AuditKit";
+import AboutWasteLens from "./AboutWasteLens";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
 import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
@@ -39,7 +40,7 @@ export default function App() {
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey">("identifier");
+  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
@@ -290,41 +291,71 @@ export default function App() {
       </div>
     </header>
     <div className="site-layout">
-      <aside className="side-nav" aria-label="WasteLens navigation">
-        
-        <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"} aria-current={view === "identifier" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("identifier"); }}><ScanLine size={19}/> {t("Scan")}</button>
-        <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"} aria-current={view === "chat" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("chat"); }}><MessageCircle size={18}/> {t("Ask")}</button>
-        <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"} aria-current={view === "finder" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("finder"); }}><MapPin size={19}/> {t("Find a place")}</button>
-        <button type="button" className={view === "history" ? "nav-item active" : "nav-item"} aria-current={view === "history" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("history"); }}><History size={19}/> {t("My activity")}</button>
-        <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"} aria-current={view === "leaderboard" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("leaderboard"); }}><Trophy size={19}/> {t("Leaderboard")}</button>
-        <button type="button" className={view === "deposits" ? "nav-item active" : "nav-item"} aria-current={view === "deposits" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("deposits"); }}><Coins size={19}/> {t("Bottle returns")}</button>
-        <button type="button" className={view === "journey" ? "nav-item active" : "nav-item"} aria-current={view === "journey" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("journey"); }}><BookOpen size={19}/> {t("Bottle journey")}</button>
-        <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"} aria-current={view === "audit" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("audit"); }}><ClipboardList size={19}/> {t("Waste audit")}</button>
-        {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
-          onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={19}/> {t("Admin")}</button>}
-
+      <aside className="side-nav community-navigation" aria-label="WasteLens navigation">
+        <div className="community-nav-scroll">
+          <div className="community-nav-group" aria-label={t("Understand")}>
+            <span className="community-nav-heading">{t("UNDERSTAND")}</span>
+            <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"}
+              aria-current={view === "identifier"?"page":undefined} onClick={() => {stopCamera();setView("identifier");}}>
+              <ScanLine size={18}/>{t("Scan")}</button>
+            <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"}
+              aria-current={view === "chat"?"page":undefined} onClick={() => {stopCamera();setView("chat");}}>
+              <MessageCircle size={18}/>{t("Ask")}</button>
+            <button type="button" className={view === "journey" ? "nav-item active" : "nav-item"}
+              aria-current={view === "journey"?"page":undefined} onClick={() => {stopCamera();setView("journey");}}>
+              <BookOpen size={18}/>{t("Bottle journey")}</button>
+          </div>
+          <div className="community-nav-group" aria-label={t("Take action")}>
+            <span className="community-nav-heading">{t("TAKE ACTION")}</span>
+            <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"}
+              aria-current={view === "finder"?"page":undefined} onClick={() => {stopCamera();setView("finder");}}>
+              <MapPin size={18}/>{t("Find a place")}</button>
+            <button type="button" className={view === "deposits" ? "nav-item active" : "nav-item"}
+              aria-current={view === "deposits"?"page":undefined} onClick={() => {stopCamera();setView("deposits");}}>
+              <Coins size={18}/>{t("Bottle returns")}</button>
+            <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"}
+              aria-current={view === "audit"?"page":undefined} onClick={() => {stopCamera();setView("audit");}}>
+              <ClipboardList size={18}/>{t("Waste audit")}</button>
+          </div>
+          <div className="community-nav-group" aria-label={t("Our impact")}>
+            <span className="community-nav-heading">{t("OUR IMPACT")}</span>
+            <button type="button" className={view === "history" ? "nav-item active" : "nav-item"}
+              aria-current={view === "history"?"page":undefined} onClick={() => {stopCamera();setView("history");}}>
+              <History size={18}/>{t("My activity")}</button>
+            <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"}
+              aria-current={view === "leaderboard"?"page":undefined} onClick={() => {stopCamera();setView("leaderboard");}}>
+              <Trophy size={18}/>{t("Leaderboard")}</button>
+            {user?.role === "admin"&&<button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
+              aria-current={view === "admin"?"page":undefined} onClick={() => {stopCamera();setView("admin");}}>
+              <ShieldCheck size={18}/>{t("Admin")}</button>}
+          </div>
+        </div>
+        <button type="button" className={"nav-item community-about-nav "+(view === "about"?"active":"")}
+          aria-current={view === "about"?"page":undefined}
+          onClick={()=>{stopCamera();setView("about");}}><Info size={18}/>{t("About")}</button>
       </aside>
       <div className="page-content">
     <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
       {view === "identifier" ? <>
       <div className="intro">
         <div className="intro-copy">
-          <h1>{t("Before you toss it, scan it.")}</h1>
-          <p>{t("See how to reuse it, sort it, or find a place nearby.")}</p>
+          <span className="community-hero-label"><HeartHandshake size={17}/>{t("SMALL ACTIONS. STRONGER COMMUNITIES.")}</span>
+          <h1>{t("Make less waste. Make more difference.")}</h1>
+          <p>{t("Scan everyday items, find ways to help, and measure what your community can change.")}</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>
           <span className="intro-art-circle two"></span>
           <Recycle size={58} strokeWidth={1.8}/>
         </div>
+      </div>
+      <div className="community-mission-path">
+        <button type="button" onClick={()=>setView("journey")}><BookOpen size={20}/>
+          <span><strong>{t("Learn the issue")}</strong><small>{t("Understand why small choices matter")}</small></span></button>
+        <button type="button" onClick={()=>setView("finder")}><MapPin size={20}/>
+          <span><strong>{t("Find a way to help")}</strong><small>{t("Connect with local solutions")}</small></span></button>
+        <button type="button" onClick={()=>setView("audit")}><ClipboardList size={20}/>
+          <span><strong>{t("Measure change")}</strong><small>{t("Run a community waste audit")}</small></span></button>
       </div>
 
       <div className="workspace">
@@ -533,7 +564,8 @@ export default function App() {
           onUnlock={badge => setCelebration({scan: -Date.now(), badge})}
           onSignIn={() => setView("account")}
           onScan={() => setView("identifier")}
-          onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
+          onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit user={user} onSignIn={() => setView("account")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
+        <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
