@@ -1,4 +1,4 @@
-import { BookOpen, HeartHandshake, MapPin, Recycle, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { BookOpen, HeartHandshake, Leaf, MapPin, Recycle, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { useLanguage } from "./i18n";
 
 export default function AboutWasteLens({onScan,onAudit,onJourney}:{
