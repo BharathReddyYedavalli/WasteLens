@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, HeartHandshake, Info, ArrowRight
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, Info, Menu, X
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
@@ -29,6 +29,8 @@ function ErrorText({ message }: { message: string }) {
 export default function App() {
   const { language, setLanguage, t } = useLanguage();
   const [theme, setTheme] = useAppearanceTheme();
+  const [navOpen, setNavOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { stop: stopReading } = useSpeech();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
@@ -274,102 +276,109 @@ export default function App() {
   }
 
   const analysis = result?.analysis;
-  const framing: Partial<Record<typeof view,{phase:string;heading:string;description:string;next:string;nextView:"identifier"|"finder"|"audit"|"journey"|"history"}>> = {
-    chat: {phase:t("UNDERSTAND"),heading:t("Better answers lead to better choices."),
-      description:t("Ask about a confusing item before you send it to the wrong bin."),
-      next:t("Scan an item"),nextView:"identifier"},
-    finder: {phase:t("TAKE ACTION"),heading:t("Find local ways to help."),
-      description:t("Make the next step practical by locating appropriate services and checking local requirements."),
-      next:t("Measure your efforts"),nextView:"audit"},
-    deposits: {phase:t("TAKE ACTION"),heading:t("Make each return count."),
-      description:t("Check whether eligible drink containers can be returned. Small incentives can strengthen community collection."),
-      next:t("See the bigger story"),nextView:"journey"},
-    audit: {phase:t("TAKE ACTION"),heading:t("Turn observations into a service project."),
-      description:t("Count what you find, save an audit, share a report and plan one change you can measure next time."),
-      next:t("Find local help"),nextView:"finder"},
-    history: {phase:t("OUR IMPACT"),heading:t("See the actions you've recorded."),
-      description:t("Build useful habits while keeping scans separate from actions you confirm yourself."),
-      next:t("Run an audit"),nextView:"audit"},
-    leaderboard: {phase:t("OUR IMPACT"),heading:t("Keep service motivating."),
-      description:t("Celebrate participation without treating badges or scans as proof of environmental savings."),
-      next:t("Run an audit"),nextView:"audit"},
-  };
-  const pageFrame=framing[view];
+  function openPage(next: typeof view) {
+    stopCamera();
+    setNavOpen(false);
+    setView(next);
+  }
+
+  useEffect(() => {
+    if (!navOpen) return;
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setNavOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    const screenChanged = () => {
+      if (window.innerWidth > 900) setNavOpen(false);
+    };
+    window.addEventListener("keydown", dismiss);
+    window.addEventListener("resize", screenChanged);
+    document.querySelector<HTMLButtonElement>(".community-navigation .nav-item")?.focus();
+    return () => {
+      window.removeEventListener("keydown", dismiss);
+      window.removeEventListener("resize", screenChanged);
+    };
+  }, [navOpen]);
+
   return <div className="site" data-theme={theme}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
-      <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
+      <button ref={menuButtonRef} type="button" className="community-menu-toggle"
+        aria-label={navOpen ? t("Close menu") : t("Open menu")}
+        aria-expanded={navOpen} aria-controls="wastelens-primary-navigation"
+        onClick={() => setNavOpen(current => !current)}>
+        {navOpen ? <X size={23}/> : <Menu size={23}/>}
+      </button>
+      <button type="button" className="brand" onClick={() => openPage("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
       <div className="topbar-actions">
         <div className="language-picker">
-          <label htmlFor="wastelens-lang">{t("Choose language")}</label>
-          <select id="wastelens-lang" value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
+          <label htmlFor="wastelens-lang" className="visually-hidden">{t("Choose language")}</label>
+          <select id="wastelens-lang" aria-label={t("Choose language")} value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
             {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
           </select>
         </div>
         <AccountMenu user={user} theme={theme} onThemeChange={setTheme}
-          onNavigate={next => { stopCamera(); setView(next); }}/>
+          onNavigate={next => openPage(next)}/>
       </div>
     </header>
+    {navOpen && <button type="button" className="community-nav-backdrop"
+      aria-label={t("Close menu")} onClick={() => setNavOpen(false)}/>}
     <div className="site-layout">
-      <aside className="side-nav community-navigation" aria-label="WasteLens navigation">
+      <aside id="wastelens-primary-navigation"
+        className={"side-nav community-navigation" + (navOpen ? " is-open" : "")}
+        aria-label="WasteLens navigation">
         <div className="community-nav-scroll">
           <div className="community-nav-group" aria-label={t("Understand")}>
             <span className="community-nav-heading">{t("UNDERSTAND")}</span>
             <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"}
-              aria-current={view === "identifier"?"page":undefined} onClick={() => {stopCamera();setView("identifier");}}>
+              aria-current={view === "identifier"?"page":undefined} onClick={() => openPage("identifier")}>
               <ScanLine size={18}/>{t("Scan")}</button>
             <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"}
-              aria-current={view === "chat"?"page":undefined} onClick={() => {stopCamera();setView("chat");}}>
+              aria-current={view === "chat"?"page":undefined} onClick={() => openPage("chat")}>
               <MessageCircle size={18}/>{t("Ask")}</button>
             <button type="button" className={view === "journey" ? "nav-item active" : "nav-item"}
-              aria-current={view === "journey"?"page":undefined} onClick={() => {stopCamera();setView("journey");}}>
+              aria-current={view === "journey"?"page":undefined} onClick={() => openPage("journey")}>
               <BookOpen size={18}/>{t("Bottle journey")}</button>
           </div>
           <div className="community-nav-group" aria-label={t("Take action")}>
             <span className="community-nav-heading">{t("TAKE ACTION")}</span>
             <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"}
-              aria-current={view === "finder"?"page":undefined} onClick={() => {stopCamera();setView("finder");}}>
+              aria-current={view === "finder"?"page":undefined} onClick={() => openPage("finder")}>
               <MapPin size={18}/>{t("Find a place")}</button>
             <button type="button" className={view === "deposits" ? "nav-item active" : "nav-item"}
-              aria-current={view === "deposits"?"page":undefined} onClick={() => {stopCamera();setView("deposits");}}>
+              aria-current={view === "deposits"?"page":undefined} onClick={() => openPage("deposits")}>
               <Coins size={18}/>{t("Bottle returns")}</button>
             <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"}
-              aria-current={view === "audit"?"page":undefined} onClick={() => {stopCamera();setView("audit");}}>
+              aria-current={view === "audit"?"page":undefined} onClick={() => openPage("audit")}>
               <ClipboardList size={18}/>{t("Waste audit")}</button>
           </div>
           <div className="community-nav-group" aria-label={t("Our impact")}>
             <span className="community-nav-heading">{t("OUR IMPACT")}</span>
             <button type="button" className={view === "history" ? "nav-item active" : "nav-item"}
-              aria-current={view === "history"?"page":undefined} onClick={() => {stopCamera();setView("history");}}>
+              aria-current={view === "history"?"page":undefined} onClick={() => openPage("history")}>
               <History size={18}/>{t("My activity")}</button>
             <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"}
-              aria-current={view === "leaderboard"?"page":undefined} onClick={() => {stopCamera();setView("leaderboard");}}>
+              aria-current={view === "leaderboard"?"page":undefined} onClick={() => openPage("leaderboard")}>
               <Trophy size={18}/>{t("Leaderboard")}</button>
             {user?.role === "admin"&&<button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
-              aria-current={view === "admin"?"page":undefined} onClick={() => {stopCamera();setView("admin");}}>
+              aria-current={view === "admin"?"page":undefined} onClick={() => openPage("admin")}>
               <ShieldCheck size={18}/>{t("Admin")}</button>}
           </div>
         </div>
         <button type="button" className={"nav-item community-about-nav "+(view === "about"?"active":"")}
           aria-current={view === "about"?"page":undefined}
-          onClick={()=>{stopCamera();setView("about");}}><Info size={18}/>{t("About")}</button>
+          onClick={() => openPage("about")}><Info size={18}/>{t("About")}</button>
       </aside>
       <div className="page-content">
     <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
-      {pageFrame&&<div className="community-page-framing">
-        <div><span>{pageFrame.phase}</span><h2>{pageFrame.heading}</h2><p>{pageFrame.description}</p></div>
-        <button type="button" onClick={()=>{stopCamera();setView(pageFrame.nextView);}}>
-          {pageFrame.next} <ArrowRight size={17}/>
-        </button>
-      </div>}
-
       {view === "identifier" ? <>
       <div className="intro">
         <div className="intro-copy">
-          <span className="community-hero-label"><HeartHandshake size={17}/>{t("SMALL ACTIONS. STRONGER COMMUNITIES.")}</span>
-          <h1>{t("Make less waste. Make more difference.")}</h1>
-          <p>{t("Scan everyday items, find ways to help, and measure what your community can change.")}</p>
+          <h1>{t("Less waste starts here.")}</h1>
+          <p>{t("Scan an item, find local options, or plan a cleanup.")}</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>
@@ -377,13 +386,13 @@ export default function App() {
           <Recycle size={58} strokeWidth={1.8}/>
         </div>
       </div>
-      <div className="community-mission-path">
-        <button type="button" onClick={()=>setView("journey")}><BookOpen size={20}/>
-          <span><strong>{t("Learn the issue")}</strong><small>{t("Understand why small choices matter")}</small></span></button>
-        <button type="button" onClick={()=>setView("finder")}><MapPin size={20}/>
-          <span><strong>{t("Find a way to help")}</strong><small>{t("Connect with local solutions")}</small></span></button>
-        <button type="button" onClick={()=>setView("audit")}><ClipboardList size={20}/>
-          <span><strong>{t("Measure change")}</strong><small>{t("Run a community waste audit")}</small></span></button>
+      <div className="community-mission-path" aria-label={t("Quick links")}>
+        <button type="button" onClick={() => openPage("journey")}><BookOpen size={19}/>
+          <strong>{t("Learn the story")}</strong></button>
+        <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
+          <strong>{t("Find a place")}</strong></button>
+        <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
+          <strong>{t("Run an audit")}</strong></button>
       </div>
 
       <div className="workspace">
