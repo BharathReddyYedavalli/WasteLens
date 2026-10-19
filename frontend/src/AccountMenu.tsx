@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Palette, UserRound, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
+import { Check, ChevronDown, Palette, UserRound, Ear, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
 import type { SessionUser } from "./types";
 import { useLanguage } from "./i18n";
+import { SpeechSettingsPanel } from "./Speech";
 
 export type AppearanceTheme = "light" | "dark" | "ocean" | "beach" | "forest" | "sunset";
 
@@ -41,6 +42,7 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [showThemes, setShowThemes] = useState(false);
+  const [showAccessibility, setShowAccessibility] = useState(false);
   const host = useRef<HTMLDivElement>(null);
   const firstAction = useRef<HTMLButtonElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -51,12 +53,14 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
       if (host.current && !host.current.contains(event.target as Node)) {
         setOpen(false);
         setShowThemes(false);
+        setShowAccessibility(false);
       }
     }
     function escape(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setOpen(false);
         setShowThemes(false);
+        setShowAccessibility(false);
         trigger.current?.focus();
       }
     }
@@ -72,13 +76,14 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
   function navigate(view: "account") {
     setOpen(false);
     setShowThemes(false);
+    setShowAccessibility(false);
     onNavigate(view);
   }
 
   return <div className="wl-account-menu" ref={host}>
     <button ref={trigger} className="wl-account-trigger" type="button"
       aria-expanded={open} aria-controls="wl-profile-dropdown" aria-haspopup="dialog"
-      onClick={() => { setOpen(previous => !previous); setShowThemes(false); }}>
+      onClick={() => { setOpen(previous => !previous); setShowThemes(false); setShowAccessibility(false); }}>
       <span className="wl-account-avatar" aria-hidden="true"><UserRound size={18}/></span>
       <span className="wl-account-name">{user?.name || t("Sign in")}</span>
       <ChevronDown size={16} className={open ? "rotated" : ""} aria-hidden="true"/>
@@ -91,7 +96,7 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
       </button>
       <button type="button" className={"wl-profile-action " + (showThemes ? "selected" : "")}
         aria-expanded={showThemes} aria-controls="wl-theme-choices"
-        onClick={() => setShowThemes(previous => !previous)}>
+        onClick={() => { setShowThemes(previous => !previous); setShowAccessibility(false); }}>
         <Palette size={19}/>{t("Personalization")}<ChevronDown size={16} className="wl-action-chevron"/>
       </button>
       {showThemes && <div id="wl-theme-choices" className="wl-theme-options" aria-label={t("Choose a theme")}>
@@ -108,6 +113,12 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
           </button>;
         })}
       </div>}
+      <button type="button" className={"wl-profile-action "+(showAccessibility?"selected":"")}
+        aria-expanded={showAccessibility} aria-controls="wl-accessibility-options"
+        onClick={()=>{setShowAccessibility(previous=>!previous);setShowThemes(false);}}>
+        <Ear size={19}/>{t("Accessibility")}<ChevronDown size={16} className="wl-action-chevron"/>
+      </button>
+      {showAccessibility&&<div id="wl-accessibility-options"><SpeechSettingsPanel/></div>}
     </div>}
   </div>;
 }
