@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
-import { Camera, CircleHelp, Coins, GlassWater, Link2, ShieldCheck, Sparkles } from "lucide-react";
+import { Camera, CircleHelp, GlassWater, Link2, ShieldCheck, Sparkles } from "lucide-react";
 import { useLanguage } from "./i18n";
 
 export type DepositStateCode = "CA"|"CT"|"HI"|"IA"|"ME"|"MA"|"MI"|"NY"|"OR"|"VT";
@@ -86,9 +86,8 @@ export default function BottleReturns() {
   }
   return <section className="deposit-page">
     <div className="deposit-top">
-      <div className="deposit-top-copy"><span className="deposit-kicker"><Coins size={17}/> 10 STATE BOTTLE GUIDE</span>
-        <h1>{t("Is that bottle worth something?")}</h1>
-        <p>{t("Check what you might get back when you return a drink container.")}</p></div>
+      <div className="deposit-top-copy"><h1>{t("Check bottle returns")}</h1>
+        <p>{t("Find out whether a drink container has a refundable deposit.")}</p></div>
       <div className="deposit-top-art" aria-hidden="true"><span>5¢</span><span>10¢</span><span>25¢</span><GlassWater size={100}/></div>
     </div>
     <div className="deposit-callout" role="note"><CircleHelp size={22}/><p>
@@ -96,7 +95,7 @@ export default function BottleReturns() {
     </p></div>
     <div className="deposit-layout">
       <div className="deposit-form-card">
-        <div className="deposit-form-head"><h2>{t("Check your container")}</h2><span>01</span></div>
+        <div className="deposit-form-head"><h2>{t("Container details")}</h2></div>
         <div className="deposit-fields">
           <label className="wide">{t("Where was it purchased?")}
             <select value={state} onChange={e=>setState(e.target.value as DepositStateCode)}>
@@ -141,7 +140,6 @@ export default function BottleReturns() {
         </div>
       </div>
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
-        <div className="deposit-result-overline">{t("YOUR REFUND CHECK")}</div>
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
           <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
@@ -159,9 +157,9 @@ export default function BottleReturns() {
       </div>
     </div>
     <details className="deposit-photo-helper">
-      <summary><Camera size={21}/> {t("Have the bottle with you?")} <span>{t("Read its label with your camera")}</span></summary>
+      <summary><Camera size={21}/> {t("Read a bottle label")}</summary>
       <div className="deposit-photo-inside">
-        <p>Take a close picture of the drink name and size. Gemini can suggest the details, but you'll confirm them above.</p>
+        <p>Photograph the drink name and size. Review the suggested details before calculating.</p>
         <div className="deposit-photo-controls">
           <input aria-label="Bottle label photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={selectPhoto}/>
           <button type="button" disabled={!photo||reading} onClick={()=>void readLabel()}>
@@ -178,7 +176,7 @@ export default function BottleReturns() {
     </details>
     {error&&<p className="deposit-error" role="alert">{error}</p>}
     <div className="deposit-after">
-      <div><h2>{t("Ready to return them?")}</h2><p>Find a bottle redemption center on your state's official site, or use WasteLens's nearby finder for possible locations. Call first to check what's accepted.</p></div>
+      <div><h2>{t("Where to return them")}</h2><p>Check your state’s return rules and call the collection location before visiting.</p></div>
       <a href={result?.source_url??"https://www.bottlebill.org/compare-all-states/"} target="_blank" rel="noreferrer">Check state return rules <Link2 size={16}/></a>
     </div>
   </section>;
