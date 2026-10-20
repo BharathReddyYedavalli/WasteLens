@@ -182,7 +182,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     const entry:Entry={kind,at:new Date().toISOString()};
     if(detailMode&&itemType){
       entry.item_type=itemType;
-      if(kind!=="unsure"&&rulesAcknowledged&&sortingCheck){
+      if((kind==="recycle"||kind==="compost"||kind==="trash")&&rulesAcknowledged&&sortingCheck){
         entry.sorting_check=sortingCheck;
         entry.rules_checked=true;
       }
@@ -283,7 +283,7 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
             <option value="mismatch">{t("Possible wrong-bin placement")}</option>
           </select>
         </label>}
-        <p>{t("Tap a destination below to record one item. School rules may differ from city residential rules; uncertain items are never graded.")}</p>
+        <p>{t("Tap a destination below to record one item. School rules may differ from residential rules; Reuse and Not sure are never graded.")}</p>
       </div>
     </details>
     <div className="audit-count-row">
