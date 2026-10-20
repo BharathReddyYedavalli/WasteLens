@@ -100,6 +100,36 @@ def test_ambiguous_material_blocks_bin_choice(material, route, language):
     assert not any("Put it into any" in s for s in result.disposal_steps)
 
 
+@pytest.mark.parametrize("label,language", [
+    ("Batería de litio", "es"),
+    ("Jeringa usada", "es"),
+    ("बैटरी", "hi"),
+    ("कीटनाशक", "hi"),
+])
+def test_localized_hazard_names_also_get_safe_guidance(label, language):
+    result = review_sorting_safety(sample(item_name=label), language)
+    assert result.route == "special_dropoff"
+    assert result.reuse_ideas == []
+    assert result.reuse_projects == []
+    assert result.disposal_steps
+
+
+@pytest.mark.parametrize("label", ["Cargador de batería", "बैटरी चार्जर"])
+def test_localized_chargers_not_classified_as_loose_batteries(label):
+    assert not explicit_high_risk_name(label)
+
+
+def test_an_ai_clarification_route_always_blocks_generated_disposal_steps():
+    result = review_sorting_safety(sample(
+        identification="likely", route="needs_identification",
+        material_guess="PET plastic",
+    ))
+    assert result.route == "needs_identification"
+    assert result.reuse_projects == []
+    assert result.reuse_ideas == []
+    assert not any("Put it into any" in step for step in result.disposal_steps)
+
+
 def test_normal_confirmed_material_keeps_useful_specific_instructions():
     original = sample()
     result = review_sorting_safety(original)
