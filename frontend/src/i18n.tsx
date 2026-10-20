@@ -434,7 +434,7 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Placement matches the rules": { es: "Coincide con las normas", hi: "नियमों के अनुसार सही जगह" },
   "Possible wrong-bin placement": { es: "Posible contenedor incorrecto", hi: "संभवतः गलत डिब्बे में" },
   "Possible wrong-bin placements": { es: "Posibles objetos en contenedores incorrectos", hi: "संभवतः गलत डिब्बों में रखी वस्तुएँ" },
-  "Tap a destination below to record one item. School rules may differ from city residential rules; uncertain items are never graded.": { es: "Pulsa una opción de destino abajo para registrar un objeto. Las normas escolares pueden diferir de las domésticas; los objetos dudosos no se evalúan.", hi: "एक वस्तु दर्ज करने के लिए नीचे सही स्थान चुनें। स्कूल के नियम घरों से अलग हो सकते हैं; अनिश्चित वस्तुओं की जाँच नहीं होती।" },
+  "Tap a destination below to record one item. School rules may differ from residential rules; Reuse and Not sure are never graded.": { es: "Pulsa una opción de destino abajo para registrar un objeto. Las normas escolares pueden diferir de las domésticas; los objetos dudosos no se evalúan.", hi: "एक वस्तु दर्ज करने के लिए नीचे सही स्थान चुनें। स्कूल के नियम घरों से अलग हो सकते हैं; अनिश्चित वस्तुओं की जाँच नहीं होती।" },
   "Sorting observations": { es: "Observaciones de clasificación", hi: "कचरा छँटाई के अवलोकन" },
   "Items identified": { es: "Objetos identificados", hi: "पहचानी गई वस्तुएँ" },
   "Placements checked": { es: "Clasificaciones revisadas", hi: "जाँची गई छँटाई" },
