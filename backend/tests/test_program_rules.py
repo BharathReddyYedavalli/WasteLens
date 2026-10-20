@@ -45,9 +45,10 @@ def test_all_programs_have_source_backed_recyclable_items(city, postal_zip, prog
     assert r.status_code == 200, r.text
     data = r.json()
     assert data["status"] == "recycle"
-    assert city.lower() in data["program"].lower() or program == "san_francisco_ca"
+    assert data["program"] == PROGRAMS[program]["name"]
     assert data["source_url"].startswith("https://")
-    assert data["local_acceptance_verified"] is True
+    assert data["documented_program_rule"] is True
+    assert data["local_acceptance_verified"] is False
     assert "Residential" in data["scope"]
 
 
@@ -84,7 +85,7 @@ def test_missing_specific_material_rule_fails_closed_not_copying_frisco():
         "category": "plastic_clamshell", "service_confirmed": "true",
     }).json()
     assert mckinney["status"] == "unverified"
-    assert mckinney["local_acceptance_verified"] is False
+    assert mckinney["documented_program_rule"] is False
     assert mckinney["source_url"] == PROGRAMS["mckinney_tx"]["source_url"]
 
 
@@ -107,7 +108,7 @@ def test_unsupported_school_and_business_never_inherit_household_rules():
         assert r.status_code == 200
         data = r.json()
         assert data["status"] == "unverified"
-        assert not data["local_acceptance_verified"]
+        assert not data["documented_program_rule"]
         assert "contractor" in data["direction"]
 
 
@@ -118,7 +119,7 @@ def test_service_confirmation_required_even_when_zip_matches():
     })
     assert r.status_code == 200
     assert r.json()["status"] == "unverified"
-    assert not r.json()["local_acceptance_verified"]
+    assert not r.json()["documented_program_rule"]
 
 
 def test_mismatched_program_and_postal_city_not_certified():
