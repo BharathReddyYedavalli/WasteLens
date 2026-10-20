@@ -212,5 +212,6 @@ def check_program(
         "scope": "Residential service only. School and business policies are separate.",
         "program_match": matched,
         "service_confirmed": service_confirmed,
-        "local_acceptance_verified": supported and status != "unverified",
+        "documented_program_rule": supported and status != "unverified",
+        "local_acceptance_verified": False,  # User-confirmed service, not independently verified address.
     }
