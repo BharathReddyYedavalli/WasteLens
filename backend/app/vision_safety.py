@@ -29,6 +29,29 @@ BATTERY_ACCESSORY = re.compile(
     r"\bbattery[- ](?:charger|case|holder|compartment|cover|powered)\b|"
     r"\bcargador\s+de\s+bater[ií]a\b|बैटरी\s+(?:का\s+)?चार्जर", re.I
 )
+# Unqualified AI-generated instructions can imply that *every* curbside program
+# accepts an item. These narrow patterns catch direct bin-placement imperatives
+# but leave conditional advice and item preparation steps intact.
+DIRECT_BIN_CLAIM = re.compile(
+    r"\b(?:put|place|toss|throw|drop)\b.{0,90}\b"
+    r"(?:recycling|compost|curbside|blue|green)\s+(?:cart|bin)\b|"
+    r"\b(?:pon(?:lo)?|coloca|deposita|mete)\b.{0,90}"
+    r"\bcontenedor\s+(?:de\s+|para\s+)?(?:reciclaje|compost|azul)\b|"
+    r"(?:रीसायक्लिंग|कम्पोस्ट|कंपोस्ट).{0,32}"
+    r"(?:बिन|डिब्बे).{0,20}(?:डाल|रख)",
+    re.I,
+)
+CONDITIONAL_ADVICE = re.compile(
+    r"\b(?:if|when|unless|after confirming|only if|confirm|check|verify|"
+    r"si|cuando|comprueba|confirma)\b|यदि|अगर|जाँच|पुष्टि",
+    re.I,
+)
+
+
+def unverified_bin_claim(step: str) -> bool:
+    return bool(DIRECT_BIN_CLAIM.search(step) and not CONDITIONAL_ADVICE.search(step))
+
+
 UNKNOWN_MATERIAL = re.compile(
     r"\b(?:unknown|unidentified|undetermined|unclear|unsure|"
     r"cannot\s+(?:tell|determine|identify)|"
@@ -59,6 +82,7 @@ WORDS = {
         "hazard_title": "Check special collection options",
         "uncertain_caution": "The photo alone is not enough to confirm safe disposal.",
         "hazard_caution": "Safe handling and collection depend on the exact item and condition.",
+        "local_rule": "Check whether your local program accepts this item before choosing a bin.",
     },
     "es": {
         "uncertain": [
@@ -81,6 +105,7 @@ WORDS = {
         "hazard_title": "Consulta la recogida especial",
         "uncertain_caution": "La foto no basta para confirmar un método seguro.",
         "hazard_caution": "La recogida segura depende del objeto y de su estado.",
+        "local_rule": "Consulta si el programa local acepta este objeto antes de elegir un contenedor.",
     },
     "hi": {
         "uncertain": [
@@ -103,6 +128,7 @@ WORDS = {
         "hazard_title": "विशेष संग्रह विकल्प जाँचें",
         "uncertain_caution": "सुरक्षित निपटान तय करने के लिए केवल तस्वीर पर्याप्त नहीं है।",
         "hazard_caution": "सुरक्षित संग्रह वस्तु और उसकी स्थिति पर निर्भर करता है।",
+        "local_rule": "कचरे का डिब्बा चुनने से पहले जाँचें कि स्थानीय कार्यक्रम यह वस्तु स्वीकार करता है या नहीं।",
     },
 }
 
@@ -144,6 +170,11 @@ def review_sorting_safety(analysis: ItemAnalysis, language: str = "en") -> ItemA
         result.follow_up_question = wording["question"]
         result.cautions = [wording["uncertain_caution"]]
     else:
+        if result.route in ("check_recycling", "check_compost"):
+            result.disposal_steps = [
+                wording["local_rule"] if unverified_bin_claim(step) else step
+                for step in result.disposal_steps
+            ]
         if not result.location_helpful:
             result.collection_search_term = ""
         return result
