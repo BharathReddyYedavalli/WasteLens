@@ -15,6 +15,8 @@ from typing import Literal
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field, ValidationError
 
+from .vision_safety import review_sorting_safety
+
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MODEL = "gemini-3.8-flash"
 MODELS = {
@@ -57,6 +59,7 @@ Do not fabricate any recycling-center name, exact address, map result,
 certification, live policy, or environmental savings.
 Never claim local acceptance is known without verified location-specific data.
 Clearly state uncertainty when a photograph is insufficient.
+When material is unknown, do not select a recycling or compost bin on a guess.
 Avoid generic filler. Use warm, simple writing with short, direct sentences.
 Do not use dashes as punctuation, advertising phrases, vague enthusiasm,
 or repeated cautions. Give concrete help for this exact object.
@@ -220,14 +223,5 @@ def analyze_photo(
     except Exception as exc:
         raise AIUnavailable("Could not reach the AI provider. Check your connection and try again.", 502) from exc
 
-    # Do not manufacture a location or assume every item should be sent to a recycler.
-    if not analysis.location_helpful:
-        analysis.collection_search_term = ""
-    if analysis.identification != "likely":
-        # Don't present unsafe projects for objects not identified well enough.
-        analysis.reuse_projects = []
-        analysis.route = "needs_identification"
-        analysis.route_title = "Confirm the item before disposing"
-        analysis.location_helpful = False
-        analysis.collection_search_term = ""
-    return analysis
+    # Apply deterministic safeguards before returning or saving AI advice.
+    return review_sorting_safety(analysis, language)
