@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, ChevronDown, ExternalLink, MapPin, ShieldAlert } from "lucide-react";
 import { useLanguage } from "./i18n";
 
@@ -46,12 +46,16 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
   const [result, setResult] = useState<RuleResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
+  const pendingCheck = useRef<AbortController | null>(null);
   const [error, setError] = useState("");
   const validZip = /^\d{5}$/.test(zipCode.trim());
 
   useEffect(() => {
     // Reset the source and confirmation when the ZIP changes. A previous
     // city's result must never follow the user into another postal area.
+    pendingCheck.current?.abort();
+    pendingCheck.current = null;
+    setChecking(false);
     setCatalog(null);
     setResult(null);
     setSelectedProgram("");
@@ -79,6 +83,9 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
   async function check() {
     if (!validZip || !catalog || !selectedProgram || !selectedItem || !confirmed
       || collectionType !== "residential" || checking) return;
+    pendingCheck.current?.abort();
+    const controller = new AbortController();
+    pendingCheck.current = controller;
     setChecking(true);
     setError("");
     setResult(null);
@@ -90,13 +97,14 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
         context: collectionType,
         service_confirmed: "true",
       });
-      setResult(await readJson<RuleResult>(
-        await fetch("/api/local-rules/check?" + query.toString())
-      ));
+      const data = await readJson<RuleResult>(
+        await fetch("/api/local-rules/check?" + query.toString(), {signal: controller.signal})
+      );
+      if (!controller.signal.aborted) setResult(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not check local policy.");
+      if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "Could not check local policy.");
     } finally {
-      setChecking(false);
+      if (!controller.signal.aborted) setChecking(false);
     }
   }
 
@@ -113,12 +121,16 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
         <label htmlFor="local-rule-zip">{t("Your ZIP code")}
           <input id="local-rule-zip" inputMode="numeric" autoComplete="postal-code"
             maxLength={5} pattern="[0-9]{5}" placeholder="e.g. 75070 or 94103"
-            value={zipCode} onChange={event=>onZipChange(event.target.value.replace(/\D/g,"").slice(0,5))}/>
+            value={zipCode} onChange={event=>{
+              pendingCheck.current?.abort();setResult(null);setConfirmed(false);
+              onZipChange(event.target.value.replace(/\D/g,"").slice(0,5));
+            }}/>
         </label>
         <label htmlFor="local-rule-context">{t("Where is the waste collected?")}
           <select id="local-rule-context" value={collectionType}
             onChange={event => {
               setCollectionType(event.target.value as "residential"|"school"|"commercial");
+              pendingCheck.current?.abort();setChecking(false);
               setConfirmed(false);setSelectedProgram("");setResult(null);
             }}>
             <option value="residential">{t("At home (residential)")}</option>
@@ -147,6 +159,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
         <div className="local-rules-controls">
           <label htmlFor="local-rule-program">{t("Confirm your collection program")}
             <select id="local-rule-program" value={selectedProgram} onChange={event=>{
+              pendingCheck.current?.abort();setChecking(false);
               setSelectedProgram(event.target.value);setConfirmed(false);setResult(null);setError("");
             }}>
               <option value="">{t("Select your actual service")}</option>
@@ -155,6 +168,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
           </label>
           <label htmlFor="local-rule-category">{t("Confirm the item type")}
             <select id="local-rule-category" value={selectedItem} onChange={event=>{
+              pendingCheck.current?.abort();setChecking(false);
               setSelectedItem(event.target.value);setResult(null);setError("");
             }}>
               <option value="">{t("Choose an item")}</option>
@@ -164,7 +178,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
         </div>
         <label className="local-rules-confirm">
           <input type="checkbox" checked={confirmed} disabled={!selectedProgram}
-            onChange={event=>{setConfirmed(event.target.checked);setResult(null);}}/>
+            onChange={event=>{pendingCheck.current?.abort();setChecking(false);setConfirmed(event.target.checked);setResult(null);}}/>
           <span>{t("I confirm this city residential collection program serves my address.")}</span>
         </label>
         <button type="button" className="local-rule-check-button" onClick={()=>void check()}
