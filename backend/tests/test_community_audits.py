@@ -141,6 +141,7 @@ def test_spot_checks_reject_unchecked_or_unknown_destination(tmp_path, monkeypat
         {**valid, "rules_checked": False},
         {**valid, "rules_checked": True, "item_type": None},
         {**valid, "kind": "unsure"},
+        {**valid, "kind": "reuse"},
         {**valid, "sorting_check": "certified"},
         {**valid, "item_type": "fictional_object"},
         {**valid, "sorting_check": None, "rules_checked": True},
