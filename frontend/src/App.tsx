@@ -41,6 +41,7 @@ export default function App() {
   const [preview, setPreview] = useState<PhotoPreview | null>(null);
   const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
+  const [auditFromScan, setAuditFromScan] = useState<string | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
   const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about">("identifier");
@@ -281,7 +282,19 @@ export default function App() {
   function openPage(next: typeof view) {
     stopCamera();
     setNavOpen(false);
+    setAuditFromScan(null);
     setView(next);
+  }
+  function recordObservedItem() {
+    if (!analysis) return;
+    stopCamera();
+    setNavOpen(false);
+    // This is a temporary navigation hint, not an audit entry or verification.
+    setAuditFromScan(analysis.item_name);
+    setView("audit");
+  }
+  function showNearbyOptions() {
+    document.getElementById("nearby")?.scrollIntoView({ block: "start" });
   }
 
   useEffect(() => {
@@ -485,6 +498,14 @@ export default function App() {
         <div className="stack">
           <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
           <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "city-rules"}/>
+          <nav className="scan-next-actions" aria-label={t("Next steps")}>
+            <button type="button" onClick={showNearbyOptions}>
+              <MapPin size={18}/>{t("Find nearby options")}
+            </button>
+            <button type="button" onClick={recordObservedItem}>
+              <ClipboardList size={18}/>{t("Record an observation")}
+            </button>
+          </nav>
           <article className="result-card blue reuse-section">
             <div className="reuse-heading">
               <div>
@@ -599,7 +620,8 @@ export default function App() {
           onUnlock={badge => setCelebration({scan: -Date.now(), badge})}
           onSignIn={() => setView("account")}
           onScan={() => setView("identifier")}
-          onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit user={user} onSignIn={() => setView("account")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
+          onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit user={user} onSignIn={() => openPage("account")}
+          scannedItem={auditFromScan} onBackToScan={() => openPage("identifier")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
         <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
