@@ -16,12 +16,18 @@ if TYPE_CHECKING:
 # waste battery, or a charger/compartment for a loose battery.
 HAZARD_TERMS = (
     r"\b(?:batter(?:y|ies)(?![- ]powered)|lithium[- ]?ion\s+cell|button[- ]cell|power\s+bank)\b",
-    r"\b(?:syringe|hypodermic\s+needle|used\s+needle|medical\s+sharps?|razor\s+blades?)\b",
+    r"\b(?:syringes?|hypodermic\s+needle|used\s+needle|medical\s+sharps?|razor\s+blades?)\b",
     r"\b(?:pesticide|insecticide|paint\s+thinner|drain\s+cleaner|bleach|solvent|"
     r"propane\s+(?:tank|cylinder)|gas\s+cylinder|aerosol\s+can|mercury\s+thermometer)\b",
+    # Spanish and Hindi labels produced by the app's other two languages.
+    r"\b(?:bater[ií]a|pilas?|jeringas?|agujas?|pesticidas?|insecticidas?|"
+    r"disolventes?|lej[ií]a|aerosoles?|propano)\b",
+    r"बैटरी|लिथियम|सिरिंज|इंजेक्शन की सुई|कीटनाशक|पेंट थिनर|"
+    r"रसायन|एरोसोल|प्रोपेन",
 )
 BATTERY_ACCESSORY = re.compile(
-    r"\bbattery[- ](?:charger|case|holder|compartment|cover|powered)\b", re.I
+    r"\bbattery[- ](?:charger|case|holder|compartment|cover|powered)\b|"
+    r"\bcargador\s+de\s+bater[ií]a\b|बैटरी\s+(?:का\s+)?चार्जर", re.I
 )
 UNKNOWN_MATERIAL = re.compile(
     r"\b(?:unknown|unidentified|undetermined|unclear|unsure|"
@@ -116,7 +122,7 @@ def review_sorting_safety(analysis: ItemAnalysis, language: str = "en") -> ItemA
     hazard = explicit_high_risk_name(result.item_name)
     material_unknown = bool(UNKNOWN_MATERIAL.search(result.material_guess))
 
-    if result.identification != "likely":
+    if result.identification != "likely" or result.route == "needs_identification":
         result.route = "needs_identification"
         result.route_title = wording["uncertain_title"]
         result.disposal_steps = list(wording["uncertain"])
