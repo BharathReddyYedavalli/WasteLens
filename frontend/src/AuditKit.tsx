@@ -6,7 +6,10 @@ import { actionHeaders, readJson } from "./AccountArea";
 import { ReadAloudButton } from "./Speech";
 
 type Kind = "recycle" | "compost" | "trash" | "reuse" | "unsure";
-type Entry = {kind: Kind; at: string};
+type ItemType = "plastic_cutlery" | "paper_plate" | "food_container" | "drink_bottle" |
+  "drink_can" | "paper_cardboard" | "food_scraps" | "cup" | "other";
+type SortingCheck = "matches" | "mismatch";
+type Entry = {kind: Kind; at: string; item_type?: ItemType; sorting_check?: SortingCheck; rules_checked?: true};
 type Draft = {title: string; entries: Entry[]};
 type Counts = Record<Kind,number>;
 type SavedAudit = {id:number;title:string;counts:Counts;item_count:number;created_at:string};
@@ -20,15 +23,35 @@ const kinds:{id:Kind;label:string;emoji:string;color:string}[]=[
   {id:"reuse",label:"Reuse",emoji:"💛",color:"#9778cf"},
   {id:"unsure",label:"Not sure",emoji:"❓",color:"#bd9029"},
 ];
+const itemTypes:{id:ItemType;label:string}[]=[
+  {id:"plastic_cutlery",label:"Plastic cutlery"},
+  {id:"paper_plate",label:"Paper plate"},
+  {id:"food_container",label:"Takeout container"},
+  {id:"drink_bottle",label:"Drink bottle"},
+  {id:"drink_can",label:"Drink can"},
+  {id:"paper_cardboard",label:"Paper or cardboard"},
+  {id:"food_scraps",label:"Food scraps"},
+  {id:"cup",label:"Drink cup"},
+  {id:"other",label:"Other item"},
+];
 const initial:Draft={title:"",entries:[]};
+function validEntry(entry:Entry):boolean{
+  if(!entry||typeof entry!=="object" || !kinds.some(k=>k.id===entry.kind) ||
+      typeof entry.at!=="string" || Number.isNaN(Date.parse(entry.at)))return false;
+  if(entry.item_type!==undefined&&!itemTypes.some(k=>k.id===entry.item_type))return false;
+  if(entry.sorting_check!==undefined){
+    if(!["matches","mismatch"].includes(entry.sorting_check) ||
+       entry.rules_checked!==true || !entry.item_type || entry.kind==="unsure")return false;
+  }else if(entry.rules_checked!==undefined)return false;
+  return true;
+}
 function readDraft():Draft{
   try{
     const s=localStorage.getItem(STORAGE_KEY);if(!s)return initial;
     const data=JSON.parse(s) as Partial<Draft>;
     if(typeof data.title!=="string"||!Array.isArray(data.entries))return initial;
     return {title:data.title.slice(0,60),entries:data.entries.filter(
-      (entry):entry is Entry=>Boolean(entry&&typeof entry==="object" &&
-        kinds.some(k=>k.id===entry.kind)&&typeof entry.at==="string"&&!Number.isNaN(Date.parse(entry.at)))
+      (entry):entry is Entry=>validEntry(entry as Entry)
     ).slice(-15000)};
   }catch{return initial;}
 }
@@ -39,7 +62,12 @@ function calculate(entries:Entry[]):Counts{
 }
 function escapeCSV(value:string){const safe=/^[=+@\-\t\r]/.test(value)?"'"+value:value;return '"'+safe.replaceAll('"','""')+'"';}
 function saveCSV(draft:Draft){
-  const rows=[["audit","timestamp_utc","observed_category"],...draft.entries.map(e=>[draft.title,e.at,e.kind])];
+  const rows=[["audit","timestamp_utc","recorded_destination","item_type","site_rules_checked","placement_review"],
+    ...draft.entries.map(e=>[
+      draft.title,e.at,e.kind,e.item_type??"",
+      e.rules_checked?"yes":"",
+      e.sorting_check??"",
+    ])];
   const blob=new Blob([rows.map(r=>r.map(escapeCSV).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"});
   const url=URL.createObjectURL(blob),anchor=document.createElement("a");
   anchor.href=url;anchor.download="wastelens-community-audit.csv";document.body.append(anchor);anchor.click();anchor.remove();
@@ -110,6 +138,10 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
   const [adviceBusy,setAdviceBusy]=useState(false);
   const [adviceError,setAdviceError]=useState("");
   const [aiModel,setAiModel]=useState("gemini-3.8-flash");
+  const [detailMode,setDetailMode]=useState(false);
+  const [itemType,setItemType]=useState<ItemType| "">("");
+  const [rulesAcknowledged,setRulesAcknowledged]=useState(false);
+  const [sortingCheck,setSortingCheck]=useState<SortingCheck| "">("");
 
   useEffect(()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(audit));}catch{/* Local storage might be blocked */}},[audit]);
   useEffect(()=>{
@@ -128,10 +160,40 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
   const headline=total?Math.max(...Object.values(counts)):0;
   const top=kinds.filter(k=>counts[k.id]===headline&&headline>0);
   const share=total?Math.round((counts.trash+counts.unsure)/total*100):0;
-  function log(kind:Kind){if(total>=15000)return;setAudit(a=>({...a,entries:[...a.entries,{kind,at:new Date().toISOString()}]}));setAdvice(null);setNotice("");}
+  const labeled=useMemo(()=>audit.entries.filter(e=>Boolean(e.item_type)),[audit.entries]);
+  const reviewed=useMemo(()=>audit.entries.filter(
+    e=>e.rules_checked===true&&(e.sorting_check==="matches"||e.sorting_check==="mismatch")
+  ),[audit.entries]);
+  const flagged=useMemo(()=>reviewed.filter(e=>e.sorting_check==="mismatch"),[reviewed]);
+  const frequentItems=useMemo(()=>{
+    const grouped=new Map<ItemType,number>();
+    for(const entry of labeled)if(entry.item_type)
+      grouped.set(entry.item_type,(grouped.get(entry.item_type)||0)+1);
+    return [...grouped.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3);
+  },[labeled]);
+  const flaggedItems=useMemo(()=>{
+    const grouped=new Map<ItemType,number>();
+    for(const entry of flagged)if(entry.item_type)
+      grouped.set(entry.item_type,(grouped.get(entry.item_type)||0)+1);
+    return [...grouped.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3);
+  },[flagged]);
+  function log(kind:Kind){
+    if(total>=15000)return;
+    const entry:Entry={kind,at:new Date().toISOString()};
+    if(detailMode&&itemType){
+      entry.item_type=itemType;
+      if(kind!=="unsure"&&rulesAcknowledged&&sortingCheck){
+        entry.sorting_check=sortingCheck;
+        entry.rules_checked=true;
+      }
+    }
+    setAudit(a=>({...a,entries:[...a.entries,entry]}));
+    setAdvice(null);setNotice("");
+  }
   function fresh(){
     if(total>0&&!window.confirm(t("Start a new audit? Your unsaved counts will be cleared.")))return;
-    setAudit({title:"",entries:[]});setAdvice(null);setError("");setNotice("");
+    setAudit({title:"",entries:[]});setItemType("");setRulesAcknowledged(false);
+    setSortingCheck("");setAdvice(null);setError("");setNotice("");
   }
   async function reload(){
     const r=await fetch("/api/audits",{credentials:"same-origin"});
@@ -158,7 +220,8 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
     setOpeningId(id);setError("");setNotice("");
     try{
       const {audit:record}=await readJson<{audit:AuditDetail}>(await fetch("/api/audits/"+id,{credentials:"same-origin"}));
-      setAudit({title:record.title,entries:record.entries});setAdvice(null);
+      setAudit({title:record.title,entries:record.entries});
+      setItemType("");setRulesAcknowledged(false);setSortingCheck("");setAdvice(null);
       setNotice(t("Saved audit loaded. Changes are a new draft until saved again."));
     }catch(e){setError(e instanceof Error?e.message:t("Could not open this audit."));}
     finally{setOpeningId(null);}
