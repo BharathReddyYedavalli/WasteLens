@@ -205,3 +205,24 @@ def test_conditional_acceptance_advice_still_allowed():
 def test_unsupported_language_not_accepted():
     with pytest.raises(ValueError):
         review_sorting_safety(sample(), "xx")
+
+
+def test_special_dropoff_route_never_offers_model_generated_diy_projects():
+    result = review_sorting_safety(sample(
+        item_name="Old laptop", material_guess="Electronics",
+        route="special_dropoff",
+    ))
+    assert result.route == "special_dropoff"
+    assert result.reuse_projects == []
+    assert result.reuse_ideas == []
+    assert "Cut the bottle" not in " ".join(result.disposal_steps)
+
+
+def test_unknown_material_blocks_regular_trash_recommendation():
+    result = review_sorting_safety(sample(
+        item_name="Unlabeled mystery container",
+        material_guess="unknown", route="general_trash_check",
+    ))
+    assert result.route == "needs_identification"
+    assert result.reuse_projects == []
+    assert "material" in result.route_title.lower()
