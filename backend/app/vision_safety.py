@@ -157,13 +157,13 @@ def review_sorting_safety(analysis: ItemAnalysis, language: str = "en") -> ItemA
         if hazard:
             result.disposal_steps = list(wording["hazard"])
             result.cautions = [wording["hazard_caution"]]
-    elif hazard:
+    elif hazard or result.route == "special_dropoff":
         result.route = "special_dropoff"
         result.route_title = wording["hazard_title"]
         result.disposal_steps = list(wording["hazard"])
         result.follow_up_question = ""
         result.cautions = [wording["hazard_caution"]]
-    elif material_unknown and result.route in ("check_recycling", "check_compost"):
+    elif material_unknown and result.route in ("check_recycling", "check_compost", "general_trash_check"):
         result.route = "needs_identification"
         result.route_title = wording["material_title"]
         result.disposal_steps = list(wording["material"])
