@@ -101,3 +101,68 @@ def test_ai_suggestions_require_login_and_do_not_invent_impact(tmp_path, monkeyp
         assert client.post("/api/audits/suggestions", headers=HEADERS,json=invalid).status_code == 422
         invalid = {**payload, "counts": {"trash": 0}}
         assert client.post("/api/audits/suggestions", headers=HEADERS,json=invalid).status_code == 422
+
+
+def test_mixed_old_and_spot_checked_observations_round_trip(tmp_path, monkeypatch):
+    monkeypatch.setenv("WASTELENS_DB", str(tmp_path / "mixed_audit.sqlite3"))
+    monkeypatch.delenv("WASTELENS_ADMIN_EMAIL", raising=False)
+    monkeypatch.delenv("WASTELENS_ADMIN_PASSWORD", raising=False)
+    stamp = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
+    records = [
+        {"kind": "trash", "at": stamp},  # legacy entries are still valid
+        {"kind": "recycle", "at": stamp, "item_type": "drink_bottle"},
+        {"kind": "trash", "at": stamp, "item_type": "paper_plate",
+         "sorting_check": "matches", "rules_checked": True},
+        {"kind": "recycle", "at": stamp, "item_type": "plastic_cutlery",
+         "sorting_check": "mismatch", "rules_checked": True},
+    ]
+    with TestClient(app) as client:
+        assert signup(client, "Volunteer", "spotcheck@example.net").status_code == 200
+        saved = client.post("/api/audits", headers=HEADERS,
+                            json={"title": "Lunch pilot", "entries": records})
+        assert saved.status_code == 201, saved.text
+        data = saved.json()
+        assert data["item_count"] == 4
+        assert data["counts"]["recycle"] == 2
+        assert data["counts"]["trash"] == 2
+        item = client.get(f"/api/audits/{data['id']}").json()["audit"]
+        assert item["entries"] == records
+        assert len(client.get("/api/audits").json()["audits"]) == 1
+
+
+def test_spot_checks_reject_unchecked_or_unknown_destination(tmp_path, monkeypatch):
+    monkeypatch.setenv("WASTELENS_DB", str(tmp_path / "invalid_spotcheck.sqlite3"))
+    monkeypatch.delenv("WASTELENS_ADMIN_EMAIL", raising=False)
+    monkeypatch.delenv("WASTELENS_ADMIN_PASSWORD", raising=False)
+    stamp = (datetime.now(timezone.utc) - timedelta(minutes=3)).isoformat()
+    valid = {"kind": "recycle", "at": stamp, "item_type": "drink_bottle",
+             "sorting_check": "matches", "rules_checked": True}
+    invalid = [
+        {**valid, "rules_checked": False},
+        {**valid, "rules_checked": True, "item_type": None},
+        {**valid, "kind": "unsure"},
+        {**valid, "sorting_check": "certified"},
+        {**valid, "item_type": "fictional_object"},
+        {**valid, "sorting_check": None, "rules_checked": True},
+    ]
+    with TestClient(app) as client:
+        assert signup(client, "Volunteer", "spotcheckbad@example.net").status_code == 200
+        for entry in invalid:
+            response = client.post("/api/audits", headers=HEADERS,
+                                   json={"title": "Invalid", "entries": [entry]})
+            assert response.status_code == 422, (entry, response.text)
+
+
+def test_audit_spot_checks_do_not_turn_into_ai_impact_claims(tmp_path, monkeypatch):
+    monkeypatch.setenv("WASTELENS_DB", str(tmp_path / "audit_privacy.sqlite3"))
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("WASTELENS_ADMIN_EMAIL", raising=False)
+    monkeypatch.delenv("WASTELENS_ADMIN_PASSWORD", raising=False)
+    with TestClient(app) as client:
+        assert signup(client, "Volunteer", "spotcheckadvice@example.net").status_code == 200
+        payload = {"title": "Cafeteria", "counts": {"trash": 2, "recycle": 1},
+                   "language": "en"}
+        result = client.post("/api/audits/suggestions", headers=HEADERS, json=payload)
+        assert result.status_code == 200
+        assert result.json()["source"] == "practical"
+        assert "verified" not in " ".join(result.json()["suggestions"]).lower()
