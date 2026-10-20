@@ -51,7 +51,7 @@
   font-size: 14px;
   font-weight: 700;
 }
-.site .local-rules-controls select {
+.site .local-rules-controls :is(select,input) {
   display: block;
   min-width: 0;
   width: 100%;
@@ -64,7 +64,7 @@
   font: inherit;
   font-size: 14px;
 }
-.site .local-rules-controls button {
+.site .local-rule-check-button {
   cursor: pointer;
   min-height: 44px;
   padding: 10px 18px;
@@ -75,7 +75,7 @@
   background: #117d6c;
   color: #fff;
 }
-.site .local-rules-controls button:disabled { opacity: .48; cursor: not-allowed; }
+.site .local-rule-check-button:disabled { opacity: .48; cursor: not-allowed; }
 .site .local-rule-result {
   display: grid;
   gap: 12px;
@@ -125,7 +125,7 @@
   border-color: var(--wl-stroke);
 }
 :root[data-wl-theme]:not([data-wl-theme="light"]) .site .local-rules-scope { color: var(--wl-subcopy); }
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .local-rules-controls select {
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .local-rules-controls :is(select,input) {
   color: var(--wl-copy);
   background: var(--wl-canvas);
   border-color: var(--wl-stroke);
@@ -140,5 +140,15 @@
 @media(max-width:560px) {
   .site .local-rules-checker>summary { font-size: 15px; padding: 15px; }
   .site .local-rules-body { padding: 0 15px 17px; }
-  .site .local-rules-controls button { width: 100%; }
+  .site .local-rule-check-button { width: 100%; }
 }
+
+.site .local-rules-postal {display:flex;align-items:center;flex-wrap:wrap;gap:7px;background:#eaf5f2;border:1px solid #cfe7db;border-radius:11px;padding:12px 14px;color:#285746;font-size:13px;margin:0;line-height:1.5}
+.site .local-rules-postal span {flex:1 1 100%;color:#4e7064;font-size:12px}
+.site .local-rules-confirm {display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;font-weight:650;color:#315b4c;cursor:pointer}
+.site .local-rules-confirm input {margin:2px 0 0;width:17px;height:17px;flex-shrink:0;accent-color:#147e68}
+.site .local-rules-confirm:has(input:disabled) {opacity:.55}
+.site .local-rule-check-button {align-self:start;min-width:185px}
+.site .local-rules-body .local-rule-result p strong {font-weight:780}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.local-rules-postal,.local-rules-confirm) {background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .local-rules-postal span {color:var(--wl-subcopy)!important}
