@@ -36,7 +36,7 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [selectedProgram, setSelectedProgram] = useState("");
@@ -172,7 +172,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
               setSelectedItem(event.target.value);setResult(null);setError("");
             }}>
               <option value="">{t("Choose an item")}</option>
-              {catalog.categories.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}
+              {catalog.categories.map(item=><option key={item.id} value={item.id}>{t(item.label)}</option>)}
             </select>
           </label>
         </div>
@@ -191,9 +191,10 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
       {result&&<div className={"local-rule-result local-rule-"+result.status} role="status">
         <div className="local-rule-result-head">
           {result.status==="recycle"?<CheckCircle2 size={20}/>:<ShieldAlert size={20}/>}
-          <strong>{result.status_label}</strong>
+          <strong>{t(result.status_label)}</strong>
         </div>
         <p><strong>{result.program}</strong></p>
+        {language!=="en"&&<p className="local-rules-language-note">{t("Source-based disposal instructions are currently provided in English; follow the official link for precise requirements.")}</p>}
         <p>{result.direction}</p>
         <a href={result.source_url} target="_blank" rel="noopener noreferrer">
           {t("View the official collection guidance")} <ExternalLink size={15}/>
