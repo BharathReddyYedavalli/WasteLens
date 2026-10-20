@@ -125,7 +125,12 @@ function Timeline({entries}:{entries:Entry[]}){
   </div>;
 }
 
-export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn:()=>void}){
+export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
+  user:SessionUser|null;
+  onSignIn:()=>void;
+  scannedItem?:string|null;
+  onBackToScan?:()=>void;
+}){
   const {t,language}=useLanguage();
   const [audit,setAudit]=useState<Draft>(readDraft);
   const [saved,setSaved]=useState<SavedAudit[]>([]);
@@ -254,12 +259,19 @@ export default function AuditKit({user,onSignIn}:{user:SessionUser|null;onSignIn
         <h1>{t("Community waste audit")}</h1>
       </div>
     </header>
+    {scannedItem&&<div className="scan-audit-handoff" role="note">
+      <div>
+        <strong>{t("From your scan")}: {scannedItem}</strong>
+        <p>{t("Not counted. Confirm the actual item and observed bin below.")}</p>
+      </div>
+      {onBackToScan&&<button type="button" onClick={onBackToScan}>{t("Back to scan")}</button>}
+    </div>}
     <div className="audit-session">
       <label htmlFor="audit-title">{t("Audit name")} <span>{t("Optional")}</span></label>
       <input id="audit-title" maxLength={60} autoComplete="off" value={audit.title}
         placeholder={t("Example: Cafeteria lunch")} onChange={e=>setAudit(a=>({...a,title:e.target.value}))}/>
     </div>
-    <details className="audit-observation-entry" onToggle={event=>setDetailMode(event.currentTarget.open)}>
+    <details className="audit-observation-entry" defaultOpen={Boolean(scannedItem)} onToggle={event=>setDetailMode(event.currentTarget.open)}>
       <summary>{t("Add item details")} <span>{t("Optional")}</span><ChevronDown size={17}/></summary>
       <div className="audit-observation-fields">
         <label>{t("What item did you see?")}
