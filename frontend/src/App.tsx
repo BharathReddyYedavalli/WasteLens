@@ -11,6 +11,7 @@ import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
 import BadgeCelebration from "./BadgeCelebration";
 import SortPlan from "./SortPlan";
+import LocalRulesGuide from "./LocalRulesGuide";
 import AuditKit from "./AuditKit";
 import AboutWasteLens from "./AboutWasteLens";
 import BottleReturns from "./BottleReturns";
@@ -482,6 +483,7 @@ export default function App() {
         {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
           <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
+          <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "city-rules"}/>
           <article className="result-card blue reuse-section">
             <div className="reuse-heading">
               <div>
