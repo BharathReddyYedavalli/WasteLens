@@ -1,7 +1,7 @@
 """Per-account community waste audits and cautious, evidence-bounded suggestions.
 
 Audits are observations (not proof of diversion, CO2 savings, or recycling).
-Saved snapshots contain category counts only; no photographs or locations.
+Saved snapshots contain observer-entered categories and optional spot checks; no photographs or precise locations.
 """
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .accounts import database, now_iso, require_user, require_same_origin_action
 from .vision import AIUnavailable, DEFAULT_MODEL, MODELS, configured
@@ -19,11 +19,32 @@ from .vision import AIUnavailable, DEFAULT_MODEL, MODELS, configured
 router = APIRouter(prefix="/api")
 Kind = Literal["recycle", "compost", "trash", "reuse", "unsure"]
 KINDS = ("recycle", "compost", "trash", "reuse", "unsure")
+# Stable identifiers shared with the frontend. No AI inference is used for these labels.
+ItemType = Literal[
+    "plastic_cutlery", "paper_plate", "food_container", "drink_bottle",
+    "drink_can", "paper_cardboard", "food_scraps", "cup", "other",
+]
+SortingCheck = Literal["matches", "mismatch"]
 
 
 class AuditEntry(BaseModel):
     kind: Kind
     at: datetime
+    item_type: ItemType | None = None
+    sorting_check: SortingCheck | None = None
+    rules_checked: bool = False
+
+    @model_validator(mode="after")
+    def validated_observation(self):
+        # A sorting assessment requires an item type and the user's explicit
+        # acknowledgement that they consulted the correct on-site collection rules.
+        # Residential rules must not be assumed to apply to school bins.
+        if self.sorting_check is not None:
+            if not self.rules_checked or self.item_type is None or self.kind == "unsure":
+                raise ValueError("Checked sorting decisions need an item type, a destination, and on-site rules.")
+        elif self.rules_checked:
+            raise ValueError("Choose a checked sorting outcome or leave rules unchecked.")
+        return self
 
 
 class SaveAudit(BaseModel):
@@ -88,7 +109,13 @@ def save_audit(payload: SaveAudit, request: Request):
     for entry in payload.entries:
         if entry.at.tzinfo is None or entry.at > now:
             raise HTTPException(422, "Audit timestamps must be valid past UTC dates.")
-        entries.append({"kind": entry.kind, "at": entry.at.isoformat()})
+        observation = {"kind": entry.kind, "at": entry.at.isoformat()}
+        if entry.item_type is not None:
+            observation["item_type"] = entry.item_type
+        if entry.sorting_check is not None:
+            observation["sorting_check"] = entry.sorting_check
+            observation["rules_checked"] = True
+        entries.append(observation)
     counts = _counts(entries)
     with database() as db:
         count = db.execute(
