@@ -166,9 +166,11 @@ def analyze_photo(
         raise InvalidPhoto("Unsupported language.")
     if len(object_hint) > 160:
         raise InvalidPhoto("The object hint must be 160 characters or fewer.")
+    # Validate the user's upload before checking external credentials, so a bad
+    # photo gets the correct error even on an unconfigured installation.
+    safe_jpeg = prepare_photo(image_bytes)
     if not configured():
         raise AIUnavailable("A Gemini API key is required. Add GEMINI_API_KEY to your local .env file.")
-    safe_jpeg = prepare_photo(image_bytes)
     # Deliberately import lazily: app/tests work without the optional provider dependency.
     try:
         from google import genai
