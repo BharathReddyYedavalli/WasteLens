@@ -277,6 +277,7 @@ export default function App() {
   }
 
   const analysis = result?.analysis;
+  const needsConfirmation = Boolean(analysis && (analysis.identification !== "likely" || analysis.route === "needs_identification"));
   function openPage(next: typeof view) {
     stopCamera();
     setNavOpen(false);
@@ -465,7 +466,7 @@ export default function App() {
         <div className="result-title">
           <div>
             <h2>{analysis.item_name}</h2>
-            {analysis.identification !== "likely" && <p>{analysis.visual_description}</p>}
+            {needsConfirmation && <p>{analysis.visual_description}</p>}
           </div>
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
@@ -479,7 +480,7 @@ export default function App() {
         <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
           <MessageCircle size={18}/> {t("Ask about this item")}
         </button>
-        {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
+        {needsConfirmation && <div className="uncertain"><AlertTriangle size={18}/>{t("The item or material needs confirmation. Check before sorting.")}</div>}
         {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
           <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
