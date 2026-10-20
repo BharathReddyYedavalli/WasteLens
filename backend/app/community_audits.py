@@ -40,8 +40,8 @@ class AuditEntry(BaseModel):
         # acknowledgement that they consulted the correct on-site collection rules.
         # Residential rules must not be assumed to apply to school bins.
         if self.sorting_check is not None:
-            if not self.rules_checked or self.item_type is None or self.kind == "unsure":
-                raise ValueError("Checked sorting decisions need an item type, a destination, and on-site rules.")
+            if not self.rules_checked or self.item_type is None or self.kind not in ("recycle", "compost", "trash"):
+                raise ValueError("Checked sorting decisions need an item type, a recycling/compost/trash bin, and on-site rules.")
         elif self.rules_checked:
             raise ValueError("Choose a checked sorting outcome or leave rules unchecked.")
         return self
