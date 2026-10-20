@@ -490,6 +490,12 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Disposable paper plate": { es: "Plato de papel desechable", hi: "डिस्पोज़ेबल कागज़ की प्लेट" },
   "Plastic fork, spoon or knife": { es: "Tenedor, cuchara o cuchillo de plástico", hi: "प्लास्टिक का काँटा, चम्मच या चाकू" },
   "Another or uncertain item": { es: "Otro objeto o no identificado", hi: "अन्य या अनिश्चित वस्तु" },
+  "Accepted in this recycling program": { es: "Aceptado en este programa de reciclaje", hi: "इस रीसायक्लिंग कार्यक्रम में स्वीकार्य" },
+  "Not accepted in the recycling cart": { es: "No aceptado en el contenedor de reciclaje", hi: "रीसायक्लिंग डिब्बे में स्वीकार्य नहीं" },
+  "Separate drop-off program": { es: "Punto de entrega separado", hi: "अलग संग्रह केंद्र" },
+  "Special collection required": { es: "Requiere recogida especial", hi: "विशेष संग्रह आवश्यक" },
+  "Not confirmed for this item": { es: "No confirmado para este objeto", hi: "इस वस्तु के लिए पुष्टि नहीं हुई" },
+  "Source-based disposal instructions are currently provided in English; follow the official link for precise requirements.": { es: "Las instrucciones basadas en fuentes oficiales están en inglés. Abre el enlace oficial para los requisitos exactos.", hi: "स्रोत आधारित निपटान निर्देश अभी अंग्रेज़ी में हैं। सटीक शर्तों के लिए आधिकारिक लिंक देखें।" },
   "Share this guide": { es: "Compartir esta guía", hi: "यह गाइड साझा करें" },
 };
 type Context = {
