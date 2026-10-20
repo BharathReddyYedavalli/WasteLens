@@ -143,7 +143,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
   const [adviceBusy,setAdviceBusy]=useState(false);
   const [adviceError,setAdviceError]=useState("");
   const [aiModel,setAiModel]=useState("gemini-3.8-flash");
-  const [detailMode,setDetailMode]=useState(false);
+  const [detailMode,setDetailMode]=useState(Boolean(scannedItem));
   const [itemType,setItemType]=useState<ItemType| "">("");
   const [rulesAcknowledged,setRulesAcknowledged]=useState(false);
   const [sortingCheck,setSortingCheck]=useState<SortingCheck| "">("");
@@ -271,7 +271,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
       <input id="audit-title" maxLength={60} autoComplete="off" value={audit.title}
         placeholder={t("Example: Cafeteria lunch")} onChange={e=>setAudit(a=>({...a,title:e.target.value}))}/>
     </div>
-    <details className="audit-observation-entry" defaultOpen={Boolean(scannedItem)} onToggle={event=>setDetailMode(event.currentTarget.open)}>
+    <details className="audit-observation-entry" open={detailMode} onToggle={event=>setDetailMode(event.currentTarget.open)}>
       <summary>{t("Add item details")} <span>{t("Optional")}</span><ChevronDown size={17}/></summary>
       <div className="audit-observation-fields">
         <label>{t("What item did you see?")}
