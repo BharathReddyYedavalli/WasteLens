@@ -14,5 +14,6 @@ import "./community.css";
 import "./layout-cleanup.css";
 import "./typography.css";
 import "./content-clarity.css";
+import "./local-rules.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
