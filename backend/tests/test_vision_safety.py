@@ -17,7 +17,7 @@ def sample(**changes):
         identification="likely",
         route="check_recycling",
         route_title="Recycle it",
-        disposal_steps=["Put it into any curbside recycling bin."],
+        disposal_steps=["Empty the bottle and rinse it."],
         reuse_ideas=["Use as a planter."],
         reuse_projects=[ReuseProject(
             title="Seed planter", outcome="A planter for seedlings",
@@ -46,7 +46,7 @@ def test_uncertain_photo_discards_directions_and_all_reuse_ideas(language):
     assert result.location_helpful is False
     assert result.collection_search_term == ""
     assert result.disposal_steps
-    assert not any("Put it into any" in step for step in result.disposal_steps)
+    assert "Empty the bottle and rinse it." not in result.disposal_steps
     assert result.follow_up_question
     assert result.cautions
     # Guardrails do not mutate the original model object.
@@ -65,7 +65,7 @@ def test_explicit_hazards_override_unsafe_model_advice(label):
     assert result.collection_search_term == ""
     assert len(result.disposal_steps) == 3
     assert "puncture" in " ".join(result.disposal_steps)
-    assert "Put it into any" not in " ".join(result.disposal_steps)
+    assert "Cut the bottle" not in " ".join(result.disposal_steps)
 
 
 @pytest.mark.parametrize("label", [
@@ -97,7 +97,7 @@ def test_ambiguous_material_blocks_bin_choice(material, route, language):
     assert result.follow_up_question
     assert result.reuse_projects == []
     assert result.location_helpful is False
-    assert not any("Put it into any" in s for s in result.disposal_steps)
+    assert "Empty the bottle and rinse it." not in result.disposal_steps
 
 
 @pytest.mark.parametrize("label,language", [
@@ -127,7 +127,7 @@ def test_an_ai_clarification_route_always_blocks_generated_disposal_steps():
     assert result.route == "needs_identification"
     assert result.reuse_projects == []
     assert result.reuse_ideas == []
-    assert not any("Put it into any" in step for step in result.disposal_steps)
+    assert "Empty the bottle and rinse it." not in result.disposal_steps
 
 
 def test_normal_confirmed_material_keeps_useful_specific_instructions():
@@ -178,6 +178,28 @@ def test_mocked_gemini_response_runs_through_safety_before_return(monkeypatch):
     assert analyzed.reuse_projects == []
     assert all("Cut the battery apart" not in x for x in analyzed.disposal_steps)
     assert analyzed.collection_search_term == ""
+
+
+@pytest.mark.parametrize("language,unqualified", [
+    ("en", "Put it into any curbside recycling bin."),
+    ("es", "Ponlo en un contenedor de reciclaje."),
+    ("hi", "इसे रीसायक्लिंग बिन में डालें।"),
+])
+def test_unverified_curbside_claims_are_replaced(language, unqualified):
+    result = review_sorting_safety(sample(
+        disposal_steps=["Remove any food residue.", unqualified],
+    ), language)
+    assert result.disposal_steps[0] == "Remove any food residue."
+    assert unqualified not in result.disposal_steps
+    assert len(result.disposal_steps) == 2
+
+
+def test_conditional_acceptance_advice_still_allowed():
+    conditional = "Put it in your recycling bin only if your city accepts it."
+    result = review_sorting_safety(sample(
+        disposal_steps=[conditional],
+    ))
+    assert result.disposal_steps == [conditional]
 
 
 def test_unsupported_language_not_accepted():
