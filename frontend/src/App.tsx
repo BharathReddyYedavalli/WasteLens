@@ -377,7 +377,7 @@ export default function App() {
       {view === "identifier" ? <>
       <div className="intro">
         <div className="intro-copy">
-          <h1>{t("Less waste starts here.")}</h1>
+          <h1>{t("Before you toss it, scan it.")}</h1>
           <p>{t("Scan an item, find local options, or plan a cleanup.")}</p>
         </div>
         <div className="intro-art" aria-hidden="true">
