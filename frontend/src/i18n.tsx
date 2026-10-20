@@ -442,6 +442,12 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Flagged for follow-up": { es: "Requieren revisión", hi: "दोबारा जाँच करने योग्य" },
   "These are observer-reported checks against site rules, not independently verified recycling outcomes.": { es: "Son observaciones declaradas sobre las normas del lugar, no resultados de reciclaje verificados independientemente.", hi: "ये स्थान के नियमों के आधार पर दर्ज किए गए अवलोकन हैं, स्वतंत्र रूप से सत्यापित रीसायक्लिंग परिणाम नहीं।" },
   "The item or material needs confirmation. Check before sorting.": { es: "Confirma el objeto o el material antes de clasificarlo.", hi: "छँटाई से पहले वस्तु या सामग्री की पुष्टि करें।" },
+  "Next steps": { es: "Próximos pasos", hi: "अगले कदम" },
+  "Find nearby options": { es: "Buscar opciones cercanas", hi: "पास के विकल्प खोजें" },
+  "Record an observation": { es: "Registrar una observación", hi: "अवलोकन दर्ज करें" },
+  "From your scan": { es: "De tu escaneo", hi: "आपके स्कैन से" },
+  "Not counted. Confirm the actual item and observed bin below.": { es: "Aún no se ha contado. Confirma el objeto real y el contenedor observado abajo.", hi: "अभी गिनती नहीं हुई है। नीचे वास्तविक वस्तु और देखे गए डिब्बे की पुष्टि करें।" },
+  "Back to scan": { es: "Volver al escaneo", hi: "स्कैन पर वापस जाएँ" },
   "Share this guide": { es: "Compartir esta guía", hi: "यह गाइड साझा करें" },
 };
 type Context = {
