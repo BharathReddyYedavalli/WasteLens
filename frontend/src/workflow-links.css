@@ -1,0 +1,93 @@
+/* Stage 4: contextual links connecting existing scan, finder and audit tools.
+   No new screen, stored record, or automatic disposal classification. */
+.site .scan-next-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 1px 0 5px;
+}
+.site .scan-next-actions button {
+  appearance: none;
+  border: 1.5px solid #badbd0;
+  background: #f5fcf7;
+  color: #225549;
+  padding: 12px 16px;
+  min-height: 47px;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font: 780 14px "Nunito","Poppins",sans-serif;
+  cursor: pointer;
+  flex: 1 1 185px;
+}
+.site .scan-next-actions button:hover {
+  background: #e8f7ef;
+  border-color: #75bba3;
+}
+.site .scan-next-actions button:focus-visible,
+.site .scan-audit-handoff button:focus-visible {
+  outline: 3px solid #da944a;
+  outline-offset: 3px;
+}
+.site .scan-next-actions button svg { flex-shrink: 0; color: #187b67; }
+.site #nearby { scroll-margin-top: 92px; }
+.site .scan-audit-handoff {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  background: #f1f9f4;
+  border: 1.5px solid #c9e2d1;
+  border-radius: 15px;
+  padding: 14px 17px;
+  margin: 8px 0 18px;
+}
+.site .scan-audit-handoff>div { flex: 1 1 220px; min-width: 0; }
+.site .scan-audit-handoff strong {
+  display: block;
+  color: #275848;
+  font: 800 14px/1.45 "Nunito","Poppins",sans-serif;
+  overflow-wrap: anywhere;
+}
+.site .scan-audit-handoff p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #506c5b;
+}
+.site .scan-audit-handoff button {
+  border: 1px solid #a7cec0;
+  border-radius: 10px;
+  background: #fff;
+  color: #24604f;
+  font-size: 13px;
+  font-weight: 780;
+  padding: 10px 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .scan-audit-handoff button:hover { background: #e4f3e9; }
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-next-actions button,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-audit-handoff,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-audit-handoff button {
+  background: var(--wl-paper)!important;
+  border-color: var(--wl-stroke)!important;
+  color: var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-next-actions button svg {
+  color: var(--wl-accent)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-audit-handoff :is(strong,p) {
+  color: var(--wl-copy)!important;
+}
+@media(max-width:530px){
+  .site .scan-next-actions button { flex-basis: 100%; }
+  .site .scan-audit-handoff button { width: 100%; }
+}
+@media print {
+  .site .scan-next-actions,
+  .site .scan-audit-handoff button { display: none!important; }
+}
