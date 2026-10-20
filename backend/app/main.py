@@ -16,6 +16,7 @@ from .gamification import router as game_router, xp_for_scan, new_badges_for_sca
 from .community_audits import router as audit_router
 from .places import router as places_router
 from .deposit_rules import router as deposit_router
+from .local_rules import router as local_rules_router
 from .deposit_scan import inspect_deposit_photo
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
 from .chat import ChatRequest, answer_chat
@@ -40,6 +41,7 @@ app.include_router(places_router)
 app.include_router(game_router)
 app.include_router(audit_router)
 app.include_router(deposit_router)
+app.include_router(local_rules_router)
 
 
 @app.get("/api/health")
