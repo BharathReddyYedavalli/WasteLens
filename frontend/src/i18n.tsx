@@ -441,6 +441,7 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Most observed": { es: "Más frecuentes", hi: "सबसे अधिक देखी गई" },
   "Flagged for follow-up": { es: "Requieren revisión", hi: "दोबारा जाँच करने योग्य" },
   "These are observer-reported checks against site rules, not independently verified recycling outcomes.": { es: "Son observaciones declaradas sobre las normas del lugar, no resultados de reciclaje verificados independientemente.", hi: "ये स्थान के नियमों के आधार पर दर्ज किए गए अवलोकन हैं, स्वतंत्र रूप से सत्यापित रीसायक्लिंग परिणाम नहीं।" },
+  "The item or material needs confirmation. Check before sorting.": { es: "Confirma el objeto o el material antes de clasificarlo.", hi: "छँटाई से पहले वस्तु या सामग्री की पुष्टि करें।" },
   "Share this guide": { es: "Compartir esta guía", hi: "यह गाइड साझा करें" },
 };
 type Context = {
