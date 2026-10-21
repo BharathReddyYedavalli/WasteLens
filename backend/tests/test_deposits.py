@@ -89,7 +89,7 @@ def quiz(c,answers):
     return c.post("/api/deposit/quiz/submit",headers=HEAD,json={"answers":answers})
 
 def test_quiz_must_be_scored_on_backend_with_single_reward(client):
-    correct=["ca10","mi_no","or_can","hi_fee","same_state"]
+    correct=["refill","check_rules","rivers","return_deposit","prevent_litter"]
     assert client.get("/api/deposit/quiz/progress").json()["awarded"] is False
     assert client.post("/api/deposit/quiz/submit",json={"answers":correct}).status_code==403
     anonymous=quiz(client,correct)
@@ -115,23 +115,19 @@ def test_quiz_must_be_scored_on_backend_with_single_reward(client):
 
 def test_quiz_correct_but_not_perfect_passing(client):
     signup(client,"fourcorrect@example.org")
-    out=quiz(client,["ca10","mi_no","or_can","hi_fee","wrong"])
+    out=quiz(client,["refill","check_rules","rivers","return_deposit","wrong"])
     assert out.status_code==200 and out.json()["score"]==4
     assert out.json()["earned_xp"]==30
 
-def test_inspect_photo_uses_existing_ai_and_never_awards_xp(client,monkeypatch):
-    from app.deposit_scan import DepositPhotoSuggestion
-    import app.main as main
-    called=[]
-    def fake(photo):
-        called.append(photo)
-        return DepositPhotoSuggestion(drink="soda",material="aluminum",
-            ounces=12,visible_mark="CA CRV",confidence="clear",
-            guidance="Check where the deposit was paid.")
-    monkeypatch.setattr(main,"inspect_deposit_photo",fake)
-    r=client.post("/api/deposit/inspect",files={"image":("can.jpg",b"photo", "image/jpeg")})
-    assert r.status_code==200,r.text
-    assert r.json()["suggestion"]["visible_mark"]=="CA CRV"
-    assert r.json()["deposit_verified"] is False
-    assert called==[b"photo"]
-    assert client.post("/api/deposit/inspect",files={"image":("can.txt",b"x","text/plain")}).status_code==415
+def test_removed_label_inspection_does_not_affect_deposit_calculator(client):
+    photo_endpoint = client.post("/api/deposit/inspect",
+        files={"image": ("label.jpg", b"photo", "image/jpeg")})
+    assert photo_endpoint.status_code == 404
+
+    calculated = client.post("/api/deposit/calculate", json={
+        "state": "CA", "drink": "soda", "material": "aluminum",
+        "ounces": 12, "count": 1, "paid_in_state": "unsure",
+        "resin": "unknown",
+    })
+    assert calculated.status_code == 200
+    assert calculated.json()["count"] == 1
