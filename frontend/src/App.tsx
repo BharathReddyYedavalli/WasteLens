@@ -21,7 +21,6 @@ import { ReadAloudButton, useSpeech } from "./Speech";
 import { LANGUAGES, useLanguage } from "./i18n";
 
 type PhotoPreview = { file: File; src: string };
-const initialModel = "gemini-3.8-flash";
 
 function ErrorText({ message }: { message: string }) {
   return <div className="error-msg" role="alert"><AlertTriangle size={18}/>{message}</div>;
@@ -35,7 +34,6 @@ export default function App() {
   const { stop: stopReading } = useSpeech();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
-  const [model, setModel] = useState(initialModel);
   const [camera, setCamera] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const [preview, setPreview] = useState<PhotoPreview | null>(null);
@@ -74,7 +72,6 @@ export default function App() {
       .then(data => {
         if (!active) return;
         setStatus(data);
-        setModel(data.default_model);
       })
       .catch(() => { if (active) setStatusError("Start the WasteLens Python backend to use the AI identifier."); });
     return () => { active = false; };
@@ -194,7 +191,6 @@ export default function App() {
     try {
       const scanForm = new FormData();
       scanForm.append("image", preview.file);
-      scanForm.append("model_id", model);
       scanForm.append("object_hint", hint.trim());
       scanForm.append("language", language);
       if (/^\d{5}$/.test(location.trim())) {
@@ -460,21 +456,6 @@ export default function App() {
             onChange={event => {setHint(event.target.value); setResult(null);}}
             placeholder="Example: The blue bottle I'm holding"/>
         </div>}
-        <details className="model-options">
-          <summary><span>{t("Change AI model")}</span><ChevronDown size={17}/></summary>
-          <div className="model-picker">
-            <label htmlFor="model">{t("Choose a model")}</label>
-            <div className="picker">
-              <select id="model" value={model} disabled={!status || busy} onChange={event => {
-                setModel(event.target.value); setResult(null);
-              }}>
-                {(status?.models ?? [{id: initialModel, name: "Gemini 3.8 Flash"}]).map(option =>
-                  <option key={option.id} value={option.id}>{option.name}</option>)}
-              </select>
-              <ChevronDown size={16}/>
-            </div>
-          </div>
-        </details>
         <div className="photo-privacy-summary"><ShieldAlert size={16}/> {t("Photos go to Google Gemini when you scan. Free tier data may be used to improve Google's services.")}</div>
         <details className="privacy-details">
           <summary>{t("Photo privacy")} <ChevronDown size={15}/></summary>
@@ -638,7 +619,7 @@ export default function App() {
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
-        <AskWasteLens scan={analysis ?? null} model={model} configured={Boolean(status?.configured)}
+        <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
           onScan={() => setView("identifier")}/>
       </div>
       
