@@ -589,7 +589,7 @@ export default function App() {
             </div>
             {recordedAction && <p className="action-confirmed">Saved as {recordedAction}.</p>}
             {actionError && <p className="inline-error" role="alert">{actionError}</p>}
-            <details className="action-info"><summary>About tracking</summary><p>Only you can confirm what happened to an item. A scan does not count as recycling.</p></details>
+            
           </article>}
         </div>
       </section>}
