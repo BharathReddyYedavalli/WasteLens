@@ -151,7 +151,7 @@ export default function App() {
     }
   }
 
-  function usePhoto(file?: File) {
+  function selectPhoto(file?: File) {
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
       setError("Choose a JPG, PNG or WebP image no larger than 8 MB.");
@@ -166,7 +166,7 @@ export default function App() {
   }
 
   function onUpload(event: ChangeEvent<HTMLInputElement>) {
-    usePhoto(event.target.files?.[0]);
+    selectPhoto(event.target.files?.[0]);
     event.target.value = "";
   }
 
@@ -183,7 +183,7 @@ export default function App() {
     if (!context) { setCameraError("Cannot capture the photo in this browser."); return; }
     context.drawImage(video, 0, 0);
     canvas.toBlob(blob => {
-      if (blob) usePhoto(new File([blob], "capture.jpg", {type: "image/jpeg"}));
+      if (blob) selectPhoto(new File([blob], "capture.jpg", {type: "image/jpeg"}));
       else setCameraError("Couldn't capture the image. Try uploading a photo.");
     }, "image/jpeg", 0.86);
   }
@@ -192,20 +192,31 @@ export default function App() {
     if (!preview || busy) return;
     setBusy(true); setResult(null); setError(""); setCelebration(null);
     try {
-      const form = new FormData();
-      form.append("image", preview.file);
-      form.append("model_id", model);
-      form.append("object_hint", hint.trim());
-       form.append("language", language);
-      if (/^\d{5}$/.test(location.trim())) form.append("zip_code", location.trim());
-      const response = await fetch("/api/ai/analyze", { method: "POST", body: form });
-      const data = await response.json();
-      if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Analysis failed");
-      const scanResult = data as VisionResponse;
+      const scanForm = new FormData();
+      scanForm.append("image", preview.file);
+      scanForm.append("model_id", model);
+      scanForm.append("object_hint", hint.trim());
+      scanForm.append("language", language);
+      if (/^\d{5}$/.test(location.trim())) {
+        scanForm.append("zip_code", location.trim());
+      }
+
+      const response = await fetch("/api/ai/analyze", {
+        method: "POST",
+        body: scanForm,
+      });
+      const responseBody = await response.json();
+      if (!response.ok) {
+        throw new Error(typeof responseBody.detail === "string"
+          ? responseBody.detail : "Analysis failed");
+      }
+
+      const scanResult = responseBody as VisionResponse;
       setResult(scanResult);
-      const earned = scanResult.unlocked_badges?.[0];
-      if (earned && scanResult.scan_id) {
-        setCelebration({ scan: scanResult.scan_id, badge: earned });
+
+      const newBadge = scanResult.unlocked_badges?.[0];
+      if (newBadge && scanResult.scan_id) {
+        setCelebration({ scan: scanResult.scan_id, badge: newBadge });
       }
       setRecordedAction("");
       setActionError("");
@@ -235,9 +246,9 @@ export default function App() {
     setSelectedFacility(null);
     try {
       const response = await fetch("/api/facilities?zip_code=" + encodeURIComponent(location.trim()));
-      const data = await readJson<FacilitySearchResponse>(response);
-      setFacilities(data);
-      setSelectedFacility(data.facilities[0]?.id ?? null);
+      const searchResults = await readJson<FacilitySearchResponse>(response);
+      setFacilities(searchResults);
+      setSelectedFacility(searchResults.facilities[0]?.id ?? null);
     } catch (e) {
       setFacilityError(e instanceof Error ? e.message : "Could not find collection locations.");
     } finally { setFacilityBusy(false); }
