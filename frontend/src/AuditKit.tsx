@@ -178,7 +178,6 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
   const [advice,setAdvice]=useState<Advice|null>(null);
   const [adviceBusy,setAdviceBusy]=useState(false);
   const [adviceError,setAdviceError]=useState("");
-  const [aiModel,setAiModel]=useState("gemini-3.8-flash");
   const [detailMode,setDetailMode]=useState(Boolean(scannedItem));
   const [itemType,setItemType]=useState<ItemType| "">("");
   const [rulesAcknowledged,setRulesAcknowledged]=useState(false);
@@ -272,7 +271,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
     try{
       const result=await readJson<Advice>(await fetch("/api/audits/suggestions",{
         method:"POST",credentials:"same-origin",headers:actionHeaders,
-        body:JSON.stringify({title:audit.title,counts,model_id:aiModel,language}),
+        body:JSON.stringify({title:audit.title,counts,language}),
       }));
       setAdvice(result);
     }catch(e){setAdviceError(e instanceof Error?e.message:t("Could not generate suggestions."));}
@@ -387,12 +386,6 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         <p>{t("Only the audit name and counts go to Gemini when you ask.")}</p>
       </div></div>
       <div className="community-advice-buttons">
-        <details className="community-ai-model"><summary>{t("AI model")}</summary><label className="visually-hidden" htmlFor="audit-ai-model">{t("AI model")}</label>
-          <select id="audit-ai-model" aria-label={t("AI model")} value={aiModel} onChange={e=>setAiModel(e.target.value)}>
-            <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
-            <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite</option>
-          </select>
-        </details>
         <button type="button" disabled={!total||adviceBusy} onClick={()=>void suggest()}>
           {adviceBusy?<LoaderCircle size={17}/>:<Sparkles size={17}/>}
           {adviceBusy?t("Thinking…"):t("Generate AI suggestions")}
