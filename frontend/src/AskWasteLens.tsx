@@ -8,7 +8,6 @@ import { ReadAloudButton } from "./Speech";
 type Turn = { role: "user" | "assistant"; text: string };
 type Props = {
   scan: ItemAnalysis | null;
-  model: string;
   configured: boolean;
   onScan: () => void;
 };
@@ -24,7 +23,7 @@ const generalPrompts = [
   "How can I reduce plastic waste?"
 ];
 
-export default function AskWasteLens({ scan, model, configured, onScan }: Props) {
+export default function AskWasteLens({ scan, configured, onScan }: Props) {
   const { language, t } = useLanguage();
   const [messages, setMessages] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
@@ -51,7 +50,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question, model_id:model, history, scan, language}),
+        body: JSON.stringify({question, history, scan, language}),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Could not get an AI reply.");
