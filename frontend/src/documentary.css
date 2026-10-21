@@ -78,9 +78,10 @@
 .documentary-final-content{padding:clamp(45px,6vw,105px) clamp(25px,6vw,115px);display:flex;flex-direction:column;justify-content:center}
 .documentary-final h2{font:700 clamp(42px,5vw,83px)/1.13 "Nunito","Poppins",sans-serif;color:#fff!important;letter-spacing:-.05em;margin:24px 0 22px}
 .documentary-final-content>p:not(.documentary-eyebrow):not(.documentary-pledge-count){line-height:1.8;color:#daece5!important;font-size:15px;max-width:580px}
-.documentary-actions{display:grid;gap:10px;margin:20px 0}
-.documentary-action{display:flex;align-items:flex-start;gap:12px;cursor:pointer;line-height:1.6;font-size:13px;font-weight:700;color:#f3fbf7}
-.documentary-action input{accent-color:#8be0c8;width:18px;height:18px;margin-top:3px;flex-shrink:0}
+.documentary-actions{display:grid;gap:17px;margin:25px 0}
+.documentary-action{display:flex;align-items:flex-start;gap:16px;cursor:pointer;line-height:1.55;font-size:clamp(17px,1.35vw,21px);font-weight:700;color:#f3fbf7}
+.documentary-action input{accent-color:#8be0c8;width:24px;height:24px;margin:3px 0 0;flex-shrink:0;cursor:pointer}
+.documentary-action:focus-within{outline:2px solid #aaf5d8;outline-offset:5px;border-radius:4px}
 .documentary-pledge-count{font-size:11px;color:#bfe7d7!important;letter-spacing:.08em;font-weight:800;margin:0 0 20px}
 .documentary-final-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
 .documentary-final-buttons button{border:1.5px solid #b6f9df;background:#b6f9df;color:#13483b;border-radius:14px;padding:14px 16px;font-weight:900;font-size:12px;display:flex;align-items:center;gap:11px;cursor:pointer}
