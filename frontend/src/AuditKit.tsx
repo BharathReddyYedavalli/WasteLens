@@ -282,6 +282,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
       <span className="audit-icon"><ClipboardList size={30}/></span>
       <div>
         <h1>{t("Community waste audit")}</h1>
+        <p className="audit-purpose">{t("Count where items end up at school or work. Find patterns to improve sorting.")}</p>
       </div>
     </header>
     {scannedItem&&<div className="scan-audit-handoff" role="note">

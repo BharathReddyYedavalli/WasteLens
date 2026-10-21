@@ -31,6 +31,7 @@ type Discovery = {
 type Props = {
   zipCode: string;
   onZipChange: (value: string) => void;
+  openRequest?: number;
 };
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -43,9 +44,16 @@ async function readJson<T>(response: Response): Promise<T> {
   return data as T;
 }
 
-export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
+export default function LocalRulesGuide({ zipCode, onZipChange, openRequest = 0 }: Props) {
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
+  const checkerRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (openRequest <= 0) return;
+    setOpen(true);
+    checkerRef.current?.scrollIntoView({block: "start"});
+    checkerRef.current?.querySelector("summary")?.focus();
+  }, [openRequest]);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [selectedProgram, setSelectedProgram] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
@@ -202,7 +210,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
   const currentProgram = matchingPrograms.find(program => program.id === selectedProgram);
   const canDiscover = validZip && catalog &&
     (collectionType !== "residential" || matchingPrograms.length === 0 || showOtherProvider);
-  return <details className="local-rules-checker" open={open}
+  return <details id="scan-local-rules" ref={checkerRef} className="local-rules-checker" open={open}
     onToggle={event => setOpen(event.currentTarget.open)}>
     <summary><MapPin size={19}/>{t("Check local recycling rules")}
       <ChevronDown size={17} className="local-rules-chevron"/></summary>

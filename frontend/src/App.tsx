@@ -40,6 +40,7 @@ export default function App() {
   const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [auditFromScan, setAuditFromScan] = useState<string | null>(null);
+  const [rulesOpenRequest, setRulesOpenRequest] = useState(0);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
   const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about">("identifier");
@@ -127,9 +128,11 @@ export default function App() {
     setRecordedAction("");
     setActionError("");
     setCelebration(null);
+    setRulesOpenRequest(0);
   }
 
   async function startCamera() {
+    setRulesOpenRequest(0);
     setCameraError(""); setError(""); setResult(null); clearPreview();
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraError("Camera access requires localhost or HTTPS. Try uploading a photo instead.");
@@ -155,6 +158,7 @@ export default function App() {
       return;
     }
     stopCamera();
+    setRulesOpenRequest(0);
     setResult(null); setError(""); setCameraError("");
     setPreview(previous => {
       if (previous) URL.revokeObjectURL(previous.src);
@@ -187,6 +191,7 @@ export default function App() {
 
   async function analyze() {
     if (!preview || busy) return;
+    setRulesOpenRequest(0);
     setBusy(true); setResult(null); setError(""); setCelebration(null);
     try {
       const scanForm = new FormData();
@@ -303,6 +308,9 @@ export default function App() {
   function showNearbyOptions() {
     document.getElementById("nearby")?.scrollIntoView({ block: "start" });
   }
+  function showLocalRules() {
+    setRulesOpenRequest(current => current + 1);
+  }
 
   useEffect(() => {
     if (!navOpen) return;
@@ -400,7 +408,7 @@ export default function App() {
       <div className="intro">
         <div className="intro-copy">
           <h1>{t("Before you toss it, scan it.")}</h1>
-          <p>{t("Scan an item, find local options, or plan a cleanup.")}</p>
+          <p>{t("Scan an item, then check how your local program handles it.")}</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>
@@ -409,8 +417,6 @@ export default function App() {
         </div>
       </div>
       <div className="community-mission-path" aria-label={t("Quick links")}>
-        <button type="button" onClick={() => openPage("journey")}><BookOpen size={19}/>
-          <strong>{t("Learn the story")}</strong></button>
         <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
           <strong>{t("Find a place")}</strong></button>
         <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
@@ -473,7 +479,6 @@ export default function App() {
             <h2>{analysis.item_name}</h2>
             {needsConfirmation && <p>{analysis.visual_description}</p>}
           </div>
-          <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
         <div className="result-meta-line">
           <span className="material-line"><strong>{t("Material")}:</strong> {analysis.material_guess}</span>
@@ -482,18 +487,28 @@ export default function App() {
         <ReadAloudButton id="scan-summary" category="scan" className="wl-scan-read"
           text={[analysis.item_name,analysis.route_title,analysis.material_guess,
             analysis.visual_description,analysis.follow_up_question,...analysis.cautions].filter(Boolean).join(". ")}/>
-        <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
-          <MessageCircle size={18}/> {t("Ask about this item")}
-        </button>
+        <div className="scan-decision" aria-label={t("Suggested next action")}>
+          <div className="scan-decision-copy">
+            <span className="scan-decision-label">{t("Suggested next action")}</span>
+            <strong>{needsConfirmation ? t("Confirm the item before sorting") : analysis.route_title}</strong>
+            <p>{t("AI suggestion, not a confirmed local bin rule.")}</p>
+          </div>
+          <button type="button" onClick={showLocalRules}>
+            <MapPin size={17}/>{t("Check local rules")}
+          </button>
+        </div>
         {needsConfirmation && <div className="uncertain"><AlertTriangle size={18}/>{t("The item or material needs confirmation. Check before sorting.")}</div>}
         {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
           <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
           <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "local-rules"}
-            zipCode={location} onZipChange={setLocation}/>
+            zipCode={location} onZipChange={setLocation} openRequest={rulesOpenRequest}/>
           <nav className="scan-next-actions" aria-label={t("Next steps")}>
             <button type="button" onClick={showNearbyOptions}>
               <MapPin size={18}/>{t("Find nearby options")}
+            </button>
+            <button type="button" onClick={() => setView("chat")}>
+              <MessageCircle size={18}/>{t("Ask about this item")}
             </button>
             <button type="button" onClick={recordObservedItem}>
               <ClipboardList size={18}/>{t("Record an observation")}

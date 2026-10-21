@@ -1,0 +1,54 @@
+/* Stage 4: make the disposal decision clear without a new page or feature. */
+.site .scan-decision {
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:19px 22px;margin:13px 0 17px;
+  background:#eef7f1;border:1.5px solid #badccc;border-radius:17px;
+  color:#1b4b3d;
+}
+.site .scan-decision-copy {display:grid;gap:5px;min-width:0}
+.site .scan-decision-label {
+  font:800 13px/1.35 "Poppins",sans-serif;color:#2a705e;
+}
+.site .scan-decision-copy strong {
+  display:block;font:800 clamp(19px,2.2vw,25px)/1.3 "Nunito","Poppins",sans-serif;
+  color:#173d34;overflow-wrap:anywhere;
+}
+.site .scan-decision-copy p {
+  margin:0;color:#3f6759;font-size:13px;line-height:1.55;
+}
+.site .scan-decision button {
+  flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
+  gap:9px;min-height:46px;padding:11px 16px;cursor:pointer;
+  border-radius:11px;border:1.5px solid #116c5c;background:#116c5c;color:#fff;
+  font:800 13px/1.4 "Poppins",sans-serif;
+}
+.site .scan-decision button:hover {background:#0c5549}
+.site .scan-decision button:focus-visible {
+  outline:3px solid #d68b40;outline-offset:3px;
+}
+.site #scan-local-rules {scroll-margin-top:calc(var(--wl-topbar-height,76px) + 20px)}
+.site .audit-hero .audit-purpose {
+  max-width:660px;font-size:14px;line-height:1.65;
+  margin:0;color:#4c4772;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision {
+  background:var(--wl-paper)!important;
+  border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision :is(.scan-decision-label,.scan-decision-copy strong,.scan-decision-copy p) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision button {
+  background:var(--wl-surface)!important;
+  color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .audit-hero .audit-purpose {
+  color:var(--wl-subcopy)!important;
+}
+@media(max-width:700px){
+  .site .scan-decision {flex-direction:column;align-items:stretch;padding:17px}
+  .site .scan-decision button {width:100%}
+}
+@media print {
+  .site .scan-decision button {display:none!important}
+}
