@@ -224,7 +224,7 @@ def personal_habits(request: Request):
 
 
 QUIZ_ID = "bottle_journey_v1"
-QUIZ_ANSWERS = ("ca10", "mi_no", "or_can", "hi_fee", "same_state")
+QUIZ_ANSWERS = ("refill", "check_rules", "rivers", "return_deposit", "prevent_litter")
 
 
 class QuizSubmission(BaseModel):
