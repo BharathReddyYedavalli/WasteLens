@@ -175,29 +175,38 @@ def check_program(
         raise HTTPException(422, "Choose a listed item category.")
     program = PROGRAMS[program_id]
     matched = _match(program_id, postal_name)
-    fallback = (
-        "Only residential rules are documented here; school and business bins may use other contractors."
-        if context != "residential" else
-        "You must confirm that the selected city program actually collects waste at this address."
-        if not service_confirmed else
-        "This ZIP's postal city differs from the selected program. ZIPs can cross municipal boundaries, "
-        "but this service cannot verify your address. Contact the relevant waste authority."
-        if not matched else
-        "The selected official program does not explicitly specify this item. "
-        "Confirm exact material and acceptance with its collection service."
-    )
-    rule_entry = RULES_BY_PROGRAM[program_id].get(category)
-    supported = context == "residential" and service_confirmed and matched and rule_entry is not None
-    if supported:
-        status = rule_entry.status
-        direction = rule_entry.direction
-        source_url = rule_entry.source_url
+    collection_rules = RULES_BY_PROGRAM[program_id]
+    item_rule = collection_rules.get(category)
+    service_matches = context == "residential" and service_confirmed and matched
+    has_documented_item = service_matches and item_rule is not None
+
+    if not service_matches:
+        if context != "residential":
+            direction = (
+                "Only residential rules are documented here; school and business bins may use other contractors."
+            )
+        elif not service_confirmed:
+            direction = (
+                "You must confirm that the selected city program actually collects waste at this address."
+            )
+        else:
+            direction = (
+                "This ZIP's postal city differs from the selected program. ZIPs can cross municipal boundaries, "
+                "but this service cannot verify your address. Contact the relevant waste authority."
+            )
+    else:
+        direction = (
+            "The selected official program does not explicitly specify this item. "
+            "Confirm exact material and acceptance with its collection service."
+        )
+
+    if has_documented_item:
+        status = item_rule.status
+        direction = item_rule.direction
+        source_url = item_rule.source_url
     else:
         status = "unverified"
-        direction = fallback if not (matched and service_confirmed and context == "residential") else (
-            rule_entry.direction if rule_entry is not None and rule_entry.status == "unverified" else fallback
-        )
-        source_url = rule_entry.source_url if rule_entry is not None else program["source_url"]
+        source_url = item_rule.source_url if item_rule is not None else program["source_url"]
 
     return {
         "program_id": program_id,
@@ -212,6 +221,6 @@ def check_program(
         "scope": "Residential service only. School and business policies are separate.",
         "program_match": matched,
         "service_confirmed": service_confirmed,
-        "documented_program_rule": supported and status != "unverified",
+        "documented_program_rule": has_documented_item and status != "unverified",
         "local_acceptance_verified": False,  # User-confirmed service, not independently verified address.
     }
