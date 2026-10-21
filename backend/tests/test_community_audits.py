@@ -85,7 +85,7 @@ def test_ai_suggestions_require_login_and_do_not_invent_impact(tmp_path, monkeyp
     monkeypatch.delenv("WASTELENS_ADMIN_PASSWORD", raising=False)
     payload = {"title": "School lunch", "counts": {
         "recycle": 4, "trash": 13, "reuse": 1, "compost": 0, "unsure": 7
-    }, "language": "en", "model_id": "gemini-3.8-flash"}
+    }, "language": "en", "model_id": "gemini-3.5-flash-lite"}
     with TestClient(app) as client:
         assert client.post("/api/audits/suggestions", headers=HEADERS, json=payload).status_code == 401
         assert signup(client, "Volunteer", "auditideas@example.net").status_code == 200
