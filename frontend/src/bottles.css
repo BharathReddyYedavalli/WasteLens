@@ -46,20 +46,6 @@
 .deposit-official{display:inline-flex;align-items:center;gap:9px;margin:20px 0 4px;color:#fff4ae;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:5px}
 .deposit-result-note{margin-top:16px;display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.65;color:#f5f9fd}
 .deposit-result-note svg{flex-shrink:0;margin-top:2px}
-.deposit-photo-helper{margin-top:28px;border:1.5px solid #e4daee;background:#f6efff;border-radius:22px;overflow:hidden}
-.deposit-photo-helper summary{list-style:none;cursor:pointer;padding:19px 23px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:15px;font-weight:900;color:#55417c}
-.deposit-photo-helper summary::-webkit-details-marker{display:none}
-.deposit-photo-helper summary span{font-size:12px;color:#76698b;font-weight:600;margin-left:auto}
-.deposit-photo-inside{border-top:1px solid #e7dbf0;padding:22px 24px;background:#fffdff}
-.deposit-photo-inside p{font-size:13px;color:#4f5271;line-height:1.7}
-.deposit-photo-controls{display:flex;gap:15px;align-items:center;flex-wrap:wrap;margin:18px 0}
-.deposit-photo-controls input{max-width:300px;font-size:12px}
-.deposit-photo-controls button{display:flex;gap:8px;align-items:center;background:#6b55a1;color:#fff;padding:12px 17px;border:0;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer}
-.deposit-photo-controls button:disabled{opacity:.5;cursor:not-allowed}
-.deposit-photo-inside small{font-size:11px;color:#5b6173;line-height:1.7;display:block}
-.deposit-ai-read{background:#eee8fe;padding:15px;border-radius:12px;color:#453c70}
-.deposit-ai-read strong{font-size:13px}
-.deposit-ai-read p{margin:6px 0}
 .deposit-error{margin:12px 0;padding:13px;border-radius:10px;background:#fff2ed;color:#a13828;font-weight:800}
 .deposit-after{margin:38px 0 0;padding:27px;display:flex;align-items:center;gap:30px;justify-content:space-between;background:#fff8e5;border-radius:20px;border:1px solid #efd8a1}
 .deposit-after h2{font:700 26px "Nunito","Poppins",sans-serif;margin:0 0 7px}
