@@ -13,9 +13,11 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 
 from .accounts import bootstrap_admin, get_user, initialize, record_scan, router as account_router
 from .gamification import router as game_router, xp_for_scan, new_badges_for_scan
+from .community_audits import router as audit_router
 from .places import router as places_router
 from .deposit_rules import router as deposit_router
-from .deposit_scan import inspect_deposit_photo
+from .local_rules import router as local_rules_router
+from .program_rules import router as program_rules_router
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
 from .chat import ChatRequest, answer_chat
 
@@ -37,7 +39,10 @@ app = FastAPI(
 app.include_router(account_router)
 app.include_router(places_router)
 app.include_router(game_router)
+app.include_router(audit_router)
 app.include_router(deposit_router)
+app.include_router(local_rules_router)
+app.include_router(program_rules_router)
 
 
 @app.get("/api/health")
@@ -115,21 +120,3 @@ async def ai_chat(payload: ChatRequest):
         raise HTTPException(exc.status_code, exc.reason) from exc
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
-
-
-
-@app.post("/api/deposit/inspect")
-async def deposit_photo_inspection(image: UploadFile = File(...)):
-    # Explicit user action; never save the photo or grant deposit value here.
-    if image.content_type not in {"image/jpeg","image/png","image/webp"}:
-        raise HTTPException(415, "Choose a JPG, PNG or WebP photo.")
-    data = await image.read(MAX_BYTES + 1)
-    if len(data) > MAX_BYTES:
-        raise HTTPException(413, "The image must be under 8 MB.")
-    try:
-        guess = await run_in_threadpool(inspect_deposit_photo, data)
-        return {"suggestion": guess.model_dump(), "deposit_verified": False}
-    except InvalidPhoto as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except AIUnavailable as exc:
-        raise HTTPException(exc.status_code, exc.reason) from exc

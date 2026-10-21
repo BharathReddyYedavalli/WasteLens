@@ -1,0 +1,76 @@
+/* Shared, opt-in speech access for WasteLens. Audio controls never start on their own. */
+.wl-accessibility-settings{padding:10px 9px 13px;border-top:1px solid #d7e7dc;background:#f8fcf8;border-radius:13px;margin-top:6px;color:#264b42}
+.wl-speech-head{display:flex;align-items:center;gap:9px;margin:3px 0 13px;font-size:13px;color:#25594d}
+.wl-speech-toggle{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:12px;font-weight:750;padding:7px 3px;line-height:1.4}
+.wl-speech-toggle input{accent-color:#15856d;width:17px;height:17px;flex-shrink:0;cursor:pointer}
+.wl-voice-categories{padding:8px 0 9px 12px;border-left:2px solid #c9dfd3;margin:4px 0 12px 6px}
+.wl-speech-field{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0 6px;font-size:12px;font-weight:800}
+.wl-speech-rate{width:100%;accent-color:#168772;cursor:pointer}
+.wl-speech-select{width:100%;min-height:38px;max-width:100%;padding:8px 10px;font-size:12px;font-weight:700;background:#fff;border:1px solid #aacfc0;border-radius:9px;color:#204c42;cursor:pointer}
+.wl-speech-select:disabled{opacity:.65;cursor:not-allowed}
+.wl-speech-preview{display:flex;gap:8px;margin:15px 0 10px;flex-wrap:wrap}
+.wl-speech-preview button{display:flex;align-items:center;gap:8px;justify-content:center;cursor:pointer;color:#fff;background:#146c63;border:0;border-radius:10px;padding:10px 12px;font-weight:800;font-size:12px}
+.wl-speech-preview button:disabled{opacity:.55;cursor:not-allowed}
+.wl-speech-hint,.wl-speech-notice{font-size:11px;line-height:1.65;margin:9px 0 0}
+.wl-speech-notice{padding:10px;border-radius:9px;background:#fff0d2;color:#764c24;font-weight:700}
+.wl-speech-hint{color:#4a6a5e}
+.wl-listen-wrap{display:inline-flex;flex-wrap:wrap;align-items:center;gap:7px;max-width:100%;margin:6px 0}
+.wl-listen-button,.wl-listen-pause{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;border:1.5px solid #8ebeb3;border-radius:11px;padding:8px 12px;cursor:pointer;font:800 12px "Poppins",sans-serif;color:#1e665a;background:#effbf5;box-shadow:none}
+.wl-listen-button:hover:not(:disabled),.wl-listen-pause:hover{background:#dbf5e8}
+.wl-listen-button.is-speaking{background:#d5efe7;border-color:#168873;color:#145e50}
+.wl-listen-button:disabled{opacity:.7;cursor:not-allowed}
+.wl-listen-error{font-size:11px;line-height:1.5;color:#a83d33;max-width:330px;font-weight:700}
+.wl-scan-read{margin:12px 0 9px}
+.wl-journey-read{display:flex;margin:17px 0 5px}
+.journey-chapter .wl-listen-button{background:#ffffffde;color:#204e4a;border-color:#5f897f80}
+.chapter-navy .wl-listen-button{background:#ebf7ff;color:#24536d;border-color:#c1dfea}
+.chat-turn-content{display:flex;flex-direction:column;min-width:0;align-items:flex-start;max-width:100%}
+.chat-turn-content .chat-bubble{max-width:100%;overflow-wrap:anywhere}
+.chat-turn-content .wl-listen-wrap{margin-top:7px}
+.chat-turn.from-ai .wl-listen-button{background:#f6fff8;color:#22665c;border-color:#a6cbb9}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-accessibility-settings{
+  color:var(--wl-copy);background:var(--wl-surface);border-color:var(--wl-stroke)
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.wl-speech-head,.wl-speech-toggle,.wl-speech-field){
+  color:var(--wl-copy)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-voice-categories{border-color:var(--wl-stroke)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.wl-speech-hint,.wl-speech-notice){color:var(--wl-subcopy)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-speech-select{
+  background:var(--wl-paper);border-color:var(--wl-stroke);color:var(--wl-copy)
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-listen-button,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-listen-pause{
+  color:var(--wl-copy)!important;background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.wl-listen-button:hover,.wl-listen-button.is-speaking,.wl-listen-pause:hover){
+  color:var(--wl-copy)!important;background:var(--wl-selected)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-speech-preview button{
+  background:var(--wl-accent);color:var(--wl-inverted);border:1px solid var(--wl-stroke)
+}
+:root[data-wl-theme="dark"] .wl-speech-preview button{color:#143e45}
+:root[data-wl-theme="dark"] .wl-speech-notice{
+  background:#3c3a4c;color:#fbdfb8!important
+}
+:root[data-wl-theme="dark"] .wl-listen-error{color:#ffc2b1}
+@media(max-width:550px){
+  .wl-accessibility-settings{padding:9px}
+  .wl-listen-button,.wl-listen-pause{min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){
+  .wl-listen-wrap button{transition:none!important}
+}
+
+
+/* Story scenes use vivid dark backdrops independently of the site's palette. */
+.journey-vignette .wl-vignette-read{justify-content:center}
+.journey-vignette .wl-listen-button,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .journey-vignette .wl-listen-button{
+  background:#fffdf3!important;color:#1b514a!important;border:2px solid #ffffff!important;
+}
+.journey-vignette .wl-listen-button:hover,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .journey-vignette .wl-listen-button:hover{
+  background:#e0f5ea!important;color:#155c50!important;
+}
+.journey-vignette .wl-listen-pause{background:#fffdf3!important;color:#1b514a!important}

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
-import { AlertTriangle, ArrowUp, Bot, MessageCircle, Sparkles, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowUp, Bot, Sparkles, Trash2 } from "lucide-react";
 import type { ItemAnalysis } from "./types";
 import { useLanguage } from "./i18n";
+import { ReadAloudButton } from "./Speech";
 
 type Turn = { role: "user" | "assistant"; text: string };
 type Props = {
   scan: ItemAnalysis | null;
-  model: string;
   configured: boolean;
   onScan: () => void;
 };
@@ -23,7 +23,7 @@ const generalPrompts = [
   "How can I reduce plastic waste?"
 ];
 
-export default function AskWasteLens({ scan, model, configured, onScan }: Props) {
+export default function AskWasteLens({ scan, configured, onScan }: Props) {
   const { language, t } = useLanguage();
   const [messages, setMessages] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
@@ -50,7 +50,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question, model_id:model, history, scan, language}),
+        body: JSON.stringify({question, history, scan, language}),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Could not get an AI reply.");
@@ -82,7 +82,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
       </div>
     </div>
     <div className="assistant-card">
-      <div className="assistant-context">
+      {scan&&<div className="assistant-context">
         <div className="context-main">
           <Sparkles size={18}/>
           <div>
@@ -90,13 +90,10 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
             
           </div>
         </div>
-        <button type="button" className="context-action" onClick={onScan}>{scan ? t("View scan") : t("Scan an object")}</button>
-      </div>
+        <button type="button" className="context-action" onClick={onScan}>{t("View scan")}</button>
+      </div>}
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
-          <MessageCircle size={34}/>
-          <h2>{scan ? t("Anything else you want to know?") : t("What's on your mind?")}</h2>
-          
           <div className="chat-suggestions">
             {(scan ? startingPrompts : generalPrompts).map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
@@ -105,7 +102,10 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
         </div> : messages.map((message,index) => <div
           key={index} className={message.role === "user" ? "chat-turn from-user" : "chat-turn from-ai"}>
           {message.role === "assistant" && <span className="mini-avatar"><Bot size={15}/></span>}
-          <div className="chat-bubble">{message.text}</div>
+          <div className="chat-turn-content">
+            <div className="chat-bubble">{message.text}</div>
+            {message.role === "assistant" && <ReadAloudButton id={"chat-answer-"+index} category="chat" text={message.text}/>}
+          </div>
         </div>)}
         {busy && <div className="chat-wait" role="status"><Bot size={17}/> Thinking…</div>}
       </div>
@@ -121,7 +121,7 @@ export default function AskWasteLens({ scan, model, configured, onScan }: Props)
           disabled={busy || !configured || !input.trim()}><ArrowUp size={19}/></button>
       </form>
       <div className="chat-footer">
-        <details className="chat-privacy"><summary>About your chat</summary><p>Chats stay in this browser session. Your questions and scan details are sent to Gemini, but your photo is not sent again. Google may use free tier content to improve its products. Check local recycling rules before acting.</p></details>
+        <details className="chat-privacy"><summary>Privacy</summary><p>Questions and scan details go to Gemini; your photo is not resent. Chats stay in this browser session. Google may use free-tier content to improve its services.</p></details>
         {messages.length > 0 && <button type="button" disabled={busy} onClick={() => {setMessages([]);setError("");}}><Trash2 size={14}/> {t("Clear chat")}</button>}
       </div>
     </div>

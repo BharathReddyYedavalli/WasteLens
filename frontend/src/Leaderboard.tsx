@@ -43,8 +43,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <div><h1>{t("Leaderboard")}</h1></div></div>
     {data?.me ? <>
       <div className="level-panel">
-        <div className="level-top"><div><span className="level-label">YOUR PROGRESS</span>
-          <h2>{t("Level")} {data.me.level}</h2></div>
+        <div className="level-top"><div><h2>{t("Level")} {data.me.level}</h2></div>
           <strong><Sparkles size={22}/>{data.me.xp.toLocaleString()} XP</strong>
         </div>
         <div className="level-track" role="progressbar" aria-label="Progress to next level"
@@ -61,8 +60,8 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <section className="badge-panel"><h2>{t("Your badges")}</h2><div className="badge-grid">
         {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
       </div></section>
-    </> : <div className="league-guest"><Leaf size={32}/><h2>{t("Join the challenge")}</h2>
-      <p>{t("Sign in to earn XP and collect badges as you scan.")}</p>
+    </> : <div className="league-guest"><Leaf size={32}/><h2>{t("Save your progress")}</h2>
+      <p>{t("Sign in to save scans and earn badges.")}</p>
       <button className="button primary" type="button" onClick={onSignIn}>{t("Sign in")}</button></div>}
     <section className="league-ranking">
       <div className="league-ranking-heading"><div><h2>{t("Top scanners")}</h2></div><Users size={25}/></div>
@@ -70,7 +69,7 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
         <div key={person.rank} className={"rank-entry "+(person.is_you?"its-you":"")}>
           <span className="rank-number">{person.rank===1?"🏆":"#"+person.rank}</span>
           <div className="rank-user"><strong>{person.name}{person.is_you?" (you)":""}</strong>
-          <span>Level {person.level} · {person.scans} scans · {person.actions} actions</span></div>
+          <span>{person.scans} scans · {person.actions} actions</span></div>
           <strong className="rank-xp">{person.xp.toLocaleString()} XP</strong>
         </div>)}</div> : <div className="rank-empty">{t("The board is empty. You can be the first!")}</div>}
       {data?.me && <div className="privacy-toggle"><div><strong>{t("Show me on the leaderboard")}</strong>

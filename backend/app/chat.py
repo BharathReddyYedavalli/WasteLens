@@ -11,7 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from .vision import AIUnavailable, ItemAnalysis, MODELS, configured
+from .vision import AIUnavailable, ItemAnalysis, DEFAULT_MODEL, MODELS, configured
 
 MAX_HISTORY = 12
 
@@ -21,7 +21,7 @@ class ChatTurn(BaseModel):
 
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1, max_length=1200)
-    model_id: str
+    model_id: str = DEFAULT_MODEL
     history: list[ChatTurn] = Field(default_factory=list, max_length=MAX_HISTORY)
     scan: ItemAnalysis | None = None
     language: Literal["en", "es", "hi"] = "en"
@@ -104,7 +104,7 @@ def answer_chat(payload: ChatRequest) -> str:
         if code == 429:
             raise AIUnavailable("Gemini free-tier limit reached. Please try again later.", 429) from exc
         if code == 404:
-            raise AIUnavailable("The selected Gemini model is unavailable for your API project. Try the alternative model.", 502) from exc
+            raise AIUnavailable("Gemini is unavailable for this API project. Check model access in Google AI Studio.", 502) from exc
         if code in (400, 401, 403):
             raise AIUnavailable("Google rejected the AI request. Check your model and API project permissions.", 502) from exc
         raise AIUnavailable("The AI chat service is unavailable right now.", 502) from exc

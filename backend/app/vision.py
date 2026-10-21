@@ -7,21 +7,32 @@ improve their services. Never log photo bytes, API keys or provider responses.
 from __future__ import annotations
 
 from io import BytesIO
+import logging
 import os
+import random
+import time
 from pathlib import Path
 from typing import Literal
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field, ValidationError
 
+from .vision_safety import review_sorting_safety
+
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MODEL = "gemini-3.8-flash"
+DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MODELS = {
-    DEFAULT_MODEL: "Gemini 3.8 Flash · recommended",
-    "gemini-3.5-flash-lite": "Gemini 3.5 Flash-Lite · faster alternative",
+    DEFAULT_MODEL: "Gemini 3.5 Flash-Lite",
 }
 MAX_BYTES = 8 * 1024 * 1024
 MAX_PIXELS = 25_000_000
+
+# Keep retries owned by the scanner; the Google SDK can also retry internally.
+# The cap avoids multiplying two independent retry policies when Gemini is busy.
+SCAN_HTTP_TIMEOUT_MS = 30_000
+SCAN_MAX_ATTEMPTS = 3
+SCAN_RETRY_CODES = frozenset({500, 502, 503, 504})
+logger = logging.getLogger(__name__)
 
 PROMPT = """You are WasteLens, an image-based assistant for US household waste sorting.
 Focus on the item the person intends to sort, not the person's shirt or room.
@@ -56,6 +67,7 @@ Do not fabricate any recycling-center name, exact address, map result,
 certification, live policy, or environmental savings.
 Never claim local acceptance is known without verified location-specific data.
 Clearly state uncertainty when a photograph is insufficient.
+When material is unknown, do not select a recycling or compost bin on a guess.
 Avoid generic filler. Use warm, simple writing with short, direct sentences.
 Do not use dashes as punctuation, advertising phrases, vague enthusiasm,
 or repeated cautions. Give concrete help for this exact object.
@@ -107,6 +119,30 @@ def configured() -> bool:
     return bool(os.environ.get("GEMINI_API_KEY", "").strip())
 
 
+def explain_provider_error(code: int | None) -> tuple[str, int]:
+    """Return actionable, credential-safe messages; never forward raw provider responses."""
+    if code == 429:
+        return ("Google Gemini's request limit was reached (HTTP 429). Wait and retry, "
+                "or check your Google AI Studio quota.", 429)
+    if code == 404:
+        return ("Google couldn't find or grant access to this Gemini model (HTTP 404). "
+                "Retry shortly or check model availability in Google AI Studio.", 502)
+    if code in (401, 403):
+        return ("Google rejected this API key or project permission (HTTP " + str(code) + "). "
+                "Check the key and API access in Google AI Studio.", 502)
+    if code == 400:
+        return ("Google rejected the analysis request (HTTP 400). "
+                "Check the request and model availability.", 502)
+    if code in (500, 502, 503, 504):
+        return ("Google Gemini is temporarily unavailable or overloaded (HTTP " + str(code) + "). "
+                "Wait a moment and retry.", 502)
+    if code is not None:
+        return ("Google Gemini returned an error (HTTP " + str(code) + "). "
+                "Check your AI Studio project and try again.", 502)
+    return ("Google Gemini returned an error without an HTTP status. "
+            "Check connectivity and your AI Studio project, then retry.", 502)
+
+
 def prepare_photo(image_bytes: bytes) -> bytes:
     if not image_bytes or len(image_bytes) > MAX_BYTES:
         raise InvalidPhoto("Use a JPG, PNG or WebP photograph no larger than 8 MB.")
@@ -138,9 +174,11 @@ def analyze_photo(
         raise InvalidPhoto("Unsupported language.")
     if len(object_hint) > 160:
         raise InvalidPhoto("The object hint must be 160 characters or fewer.")
+    # Validate the user's upload before checking external credentials, so a bad
+    # photo gets the correct error even on an unconfigured installation.
+    safe_jpeg = prepare_photo(image_bytes)
     if not configured():
         raise AIUnavailable("A Gemini API key is required. Add GEMINI_API_KEY to your local .env file.")
-    safe_jpeg = prepare_photo(image_bytes)
     # Deliberately import lazily: app/tests work without the optional provider dependency.
     try:
         from google import genai
@@ -161,32 +199,50 @@ def analyze_photo(
            "If several objects are present, focus on the prominent object only when clear.")
     )
     try:
-        client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-        response = client.models.generate_content(
-            model=model_id,
-            contents=[
-                types.Part.from_bytes(data=safe_jpeg, mime_type="image/jpeg"),
-                user_prompt,
-            ],
-            config=types.GenerateContentConfig(
-                system_instruction=PROMPT,
-                response_mime_type="application/json",
-                response_schema=ItemAnalysis,
-                max_output_tokens=4096,
+        client = genai.Client(
+            api_key=os.environ["GEMINI_API_KEY"],
+            http_options=types.HttpOptions(
+                timeout=SCAN_HTTP_TIMEOUT_MS,
+                retry_options=types.HttpRetryOptions(attempts=1),
             ),
         )
+        contents = [types.Part.from_bytes(data=safe_jpeg, mime_type="image/jpeg"), user_prompt]
+        config = types.GenerateContentConfig(
+            system_instruction=PROMPT,
+            response_mime_type="application/json",
+            response_schema=ItemAnalysis,
+            max_output_tokens=4096,
+        )
+        start_time = time.monotonic()
+        for attempt in range(SCAN_MAX_ATTEMPTS):
+            try:
+                response = client.models.generate_content(
+                    model=model_id, contents=contents, config=config,
+                )
+                break
+            except APIError as exc:
+                code = getattr(exc, "code", None)
+                elapsed = time.monotonic() - start_time
+                # Never log the provider exception body, image, user hint, or API key.
+                logger.warning(
+                    "Gemini scanner request failed: status=%s attempt=%d/%d elapsed_s=%.1f",
+                    code, attempt + 1, SCAN_MAX_ATTEMPTS, elapsed,
+                )
+                if code not in SCAN_RETRY_CODES or attempt + 1 == SCAN_MAX_ATTEMPTS:
+                    raise
+                # Retry only short-lived server failures, with capped exponential
+                # backoff and jitter; quota and credential errors must not loop.
+                time.sleep(min(2 ** attempt, 2) + random.uniform(0, 0.4))
         if not response.text:
             raise AIUnavailable("The AI did not return an item analysis. Try another clear photo.", 502)
         analysis = ItemAnalysis.model_validate_json(response.text)
+        logger.info(
+            "Gemini scanner succeeded: model=%s attempts=%d elapsed_s=%.1f",
+            model_id, attempt + 1, time.monotonic() - start_time,
+        )
     except APIError as exc:
-        code = getattr(exc, "code", None)
-        if code == 429:
-            raise AIUnavailable("Free-tier limit reached. Wait before trying another photo.", 429) from exc
-        if code == 404:
-            raise AIUnavailable("This AI model isn't available for your Google API project. Refresh the page and select a current Gemini model, or try the alternative model.", 502) from exc
-        if code in (400, 401, 403):
-            raise AIUnavailable("The Gemini API key, selected model, or project permissions need attention.", 502) from exc
-        raise AIUnavailable("The image analysis service is currently unavailable. Try again later.", 502) from exc
+        reason, status = explain_provider_error(getattr(exc, "code", None))
+        raise AIUnavailable(reason, status) from exc
     except (ValueError, ValidationError) as exc:
         raise AIUnavailable("The AI returned an invalid result. Try analyzing the item again.", 502) from exc
     except AIUnavailable:
@@ -194,14 +250,5 @@ def analyze_photo(
     except Exception as exc:
         raise AIUnavailable("Could not reach the AI provider. Check your connection and try again.", 502) from exc
 
-    # Do not manufacture a location or assume every item should be sent to a recycler.
-    if not analysis.location_helpful:
-        analysis.collection_search_term = ""
-    if analysis.identification != "likely":
-        # Don't present unsafe projects for objects not identified well enough.
-        analysis.reuse_projects = []
-        analysis.route = "needs_identification"
-        analysis.route_title = "Confirm the item before disposing"
-        analysis.location_helpful = False
-        analysis.collection_search_term = ""
-    return analysis
+    # Apply deterministic safeguards before returning or saving AI advice.
+    return review_sorting_safety(analysis, language)

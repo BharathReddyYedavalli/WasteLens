@@ -1,0 +1,231 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CheckCircle2, ChevronDown, ExternalLink, MapPin, ShieldAlert } from "lucide-react";
+import { useLanguage } from "./i18n";
+
+type CollectionContext = "residential" | "school" | "commercial";
+
+type Category = { id: string; label: string };
+type Program = {
+  id: string; name: string; city: string; state: string;
+  source_url: string; postal_area_match: boolean;
+};
+type Catalog = {
+  zip_code: string; postal_area: string; notice: string;
+  programs: Program[]; categories: Category[];
+};
+type RuleResult = {
+  item_name: string;
+  status: "recycle" | "trash" | "dropoff" | "special" | "unverified";
+  status_label: string;
+  direction: string;
+  source_url: string;
+  program: string;
+  scope: string;
+};
+type Props = {
+  zipCode: string;
+  onZipChange: (value: string) => void;
+};
+
+async function readJson<T>(response: Response): Promise<T> {
+  const data: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const detail = data && typeof data === "object" && "detail" in data
+      ? (data as {detail?: unknown}).detail : null;
+    throw new Error(typeof detail === "string" ? detail : "Could not check local policies right now.");
+  }
+  return data as T;
+}
+
+export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
+  const { t, language } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState("");
+  const [selectedItem, setSelectedItem] = useState("");
+  const [collectionType, setCollectionType] = useState<CollectionContext>("residential");
+  const [confirmed, setConfirmed] = useState(false);
+  const [result, setResult] = useState<RuleResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const pendingCheck = useRef<AbortController | null>(null);
+  const [error, setError] = useState("");
+  const validZip = /^\d{5}$/.test(zipCode.trim());
+
+  function clearPendingRuleCheck() {
+    pendingCheck.current?.abort();
+    pendingCheck.current = null;
+    setChecking(false);
+    setResult(null);
+  }
+
+  function updateZipCode(value: string) {
+    clearPendingRuleCheck();
+    setConfirmed(false);
+    onZipChange(value.replace(/\D/g, "").slice(0, 5));
+  }
+
+  function updateCollectionType(nextType: CollectionContext) {
+    clearPendingRuleCheck();
+    setCollectionType(nextType);
+    setConfirmed(false);
+    setSelectedProgram("");
+  }
+
+  function updateProgram(programId: string) {
+    clearPendingRuleCheck();
+    setSelectedProgram(programId);
+    setConfirmed(false);
+    setError("");
+  }
+
+  function updateItem(itemId: string) {
+    clearPendingRuleCheck();
+    setSelectedItem(itemId);
+    setError("");
+  }
+
+  function updateConfirmation(isConfirmed: boolean) {
+    clearPendingRuleCheck();
+    setConfirmed(isConfirmed);
+  }
+
+  useEffect(() => {
+    // Reset the source and confirmation when the ZIP changes. A previous
+    // city's result must never follow the user into another postal area.
+    pendingCheck.current?.abort();
+    pendingCheck.current = null;
+    setChecking(false);
+    setCatalog(null);
+    setResult(null);
+    setSelectedProgram("");
+    setSelectedItem("");
+    setConfirmed(false);
+    setError("");
+    if (!open || !validZip) {
+      setLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setLoading(true);
+    fetch("/api/local-rules/programs?zip_code=" + encodeURIComponent(zipCode.trim()),
+      { signal: controller.signal })
+      .then(response => readJson<Catalog>(response))
+      .then(data => { if (!controller.signal.aborted) setCatalog(data); })
+      .catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "Local rules are unavailable."); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [open, zipCode, validZip]);
+
+  const matchingPrograms = useMemo(
+    () => catalog?.programs.filter(program => program.postal_area_match) ?? [],
+    [catalog]
+  );
+
+  async function checkSelectedRule() {
+    if (!validZip || !catalog || !selectedProgram || !selectedItem || !confirmed
+      || collectionType !== "residential" || checking) return;
+    pendingCheck.current?.abort();
+    const controller = new AbortController();
+    pendingCheck.current = controller;
+    setChecking(true);
+    setError("");
+    setResult(null);
+    try {
+      const query = new URLSearchParams({
+        zip_code: zipCode.trim(),
+        program_id: selectedProgram,
+        category: selectedItem,
+        context: collectionType,
+        service_confirmed: "true",
+      });
+      const data = await readJson<RuleResult>(
+        await fetch("/api/local-rules/check?" + query.toString(), {signal: controller.signal})
+      );
+      if (!controller.signal.aborted) setResult(data);
+    } catch (e) {
+      if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "Could not check local policy.");
+    } finally {
+      if (!controller.signal.aborted) setChecking(false);
+    }
+  }
+
+  const currentProgram = matchingPrograms.find(program => program.id === selectedProgram);
+  return <details className="local-rules-checker" open={open}
+    onToggle={event => setOpen(event.currentTarget.open)}>
+    <summary><MapPin size={19}/>{t("Check local recycling rules")}
+      <ChevronDown size={17} className="local-rules-chevron"/></summary>
+    <div className="local-rules-body">
+      <div className="local-rules-controls">
+        <label htmlFor="local-rule-zip">{t("Your ZIP code")}
+          <input id="local-rule-zip" inputMode="numeric" autoComplete="postal-code"
+            maxLength={5} pattern="[0-9]{5}" placeholder="e.g. 75070 or 94103"
+            value={zipCode} onChange={event => updateZipCode(event.target.value)}/>
+        </label>
+        <label htmlFor="local-rule-context">{t("Where is the waste collected?")}
+          <select id="local-rule-context" value={collectionType}
+            onChange={event => updateCollectionType(event.target.value as CollectionContext)}>
+            <option value="residential">{t("At home (residential)")}</option>
+            <option value="school">{t("At school")}</option>
+            <option value="commercial">{t("At a business")}</option>
+          </select>
+        </label>
+      </div>
+      {!validZip&&<p className="local-rules-scope">{t("Enter a five-digit ZIP code to look for a covered collection program.")}</p>}
+      {loading&&<p className="local-rules-scope" role="status">{t("Looking up your postal area…")}</p>}
+      {catalog&&<p className="local-rules-postal">
+        <MapPin size={15}/>{t("ZIP postal area")}: <strong>{catalog.postal_area}</strong>
+        <span>{t("A ZIP code does not prove which city or collection service covers your address.")}</span>
+      </p>}
+      {validZip&&catalog&&collectionType!=="residential"&&
+        <p className="local-rules-scope" role="status">{t("School and business waste services use site-specific contracts. Ask your facility or hauler for its accepted-material list.")}</p>}
+      {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length===0&&
+        <div className="local-rule-result local-rule-unverified" role="status">
+          <div className="local-rule-result-head"><ShieldAlert size={19}/>
+            <strong>{t("No verified residential program for this ZIP yet")}</strong></div>
+          <p>{t("You can still scan items and find nearby collection locations. Check the rules directly with your city or waste provider before using a bin.")}</p>
+          <a href="https://www.epa.gov/recycle" target="_blank" rel="noopener noreferrer">
+            {t("General EPA recycling guidance")} <ExternalLink size={15}/></a>
+        </div>}
+      {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length>0&&<>
+        <div className="local-rules-controls">
+          <label htmlFor="local-rule-program">{t("Confirm your collection program")}
+            <select id="local-rule-program" value={selectedProgram} onChange={event => updateProgram(event.target.value)}>
+              <option value="">{t("Select your actual service")}</option>
+              {matchingPrograms.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </label>
+          <label htmlFor="local-rule-category">{t("Confirm the item type")}
+            <select id="local-rule-category" value={selectedItem} onChange={event => updateItem(event.target.value)}>
+              <option value="">{t("Choose an item")}</option>
+              {catalog.categories.map(item=><option key={item.id} value={item.id}>{t(item.label)}</option>)}
+            </select>
+          </label>
+        </div>
+        <label className="local-rules-confirm">
+          <input type="checkbox" checked={confirmed} disabled={!selectedProgram}
+            onChange={event => updateConfirmation(event.target.checked)}/>
+          <span>{t("I confirm this city residential collection program serves my address.")}</span>
+        </label>
+        <button type="button" className="local-rule-check-button" onClick={()=>void checkSelectedRule()}
+          disabled={!currentProgram||!selectedItem||!confirmed||checking}>
+          {checking?t("Checking…"):t("Check the official rule")}
+        </button>
+        {currentProgram&&<p className="local-rules-scope">{t("Guidance is for this selected residential service, not school, commercial, or neighboring city bins.")}</p>}
+      </>}
+      {error&&<p role="alert" className="local-rules-error">{error}</p>}
+      {result&&<div className={"local-rule-result local-rule-"+result.status} role="status">
+        <div className="local-rule-result-head">
+          {result.status==="recycle"?<CheckCircle2 size={20}/>:<ShieldAlert size={20}/>}
+          <strong>{t(result.status_label)}</strong>
+        </div>
+        <p><strong>{result.program}</strong></p>
+        {language!=="en"&&<p className="local-rules-language-note">{t("Source-based disposal instructions are currently provided in English; follow the official link for precise requirements.")}</p>}
+        <p>{result.direction}</p>
+        <a href={result.source_url} target="_blank" rel="noopener noreferrer">
+          {t("View the official collection guidance")} <ExternalLink size={15}/>
+        </a>
+      </div>}
+    </div>
+  </details>;
+}

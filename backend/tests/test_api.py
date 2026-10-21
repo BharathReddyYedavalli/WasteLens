@@ -10,8 +10,8 @@ client = TestClient(app)
 def test_health_and_catalog():
     assert client.get("/api/health").json()["ok"] is True
     catalog = client.get("/api/ai/status").json()
-    assert catalog["default_model"] == "gemini-3.8-flash"
-    assert len(catalog["models"]) == 2
+    assert catalog["default_model"] == "gemini-3.5-flash-lite"
+    assert catalog["models"] == [{"id": "gemini-3.5-flash-lite", "name": "Gemini 3.5 Flash-Lite"}]
     assert "GEMINI_API_KEY" not in catalog
 
 def test_invalid_upload():
@@ -40,7 +40,7 @@ def test_real_response_contract_with_provider_mock(monkeypatch):
     import app.main as api
     def fake_analyze(data, model, hint):
         assert data.startswith(b"TEST")
-        assert model == "gemini-3.8-flash"
+        assert model == "gemini-3.5-flash-lite"
         assert hint == "the bottle"
         return ItemAnalysis(
             item_name="Reusable water bottle",
@@ -76,3 +76,9 @@ def test_bad_image_rejected_by_validator():
         assert False
     except InvalidPhoto:
         pass
+
+def test_retired_flash_model_rejected_before_provider_request():
+    r = client.post("/api/ai/analyze",
+        data={"model_id": "gemini-3.8-flash"},
+        files={"image": ("photo.jpg", b"not-processed", "image/jpeg")})
+    assert r.status_code == 400

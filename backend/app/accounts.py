@@ -75,6 +75,16 @@ CREATE TABLE IF NOT EXISTS scan_actions (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS scan_actions_user_index ON scan_actions(user_id);
+CREATE TABLE IF NOT EXISTS community_audits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    entries_json TEXT NOT NULL,
+    counts_json TEXT NOT NULL,
+    item_count INTEGER NOT NULL CHECK(item_count BETWEEN 1 AND 15000),
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS community_audits_user_index ON community_audits(user_id,id DESC);
 CREATE TABLE IF NOT EXISTS quiz_awards (
     user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     quiz_id TEXT NOT NULL CHECK(quiz_id='bottle_journey_v1'),

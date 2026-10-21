@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
-  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, UserRound, History, ShieldCheck,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen
+  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
+  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, Info, Menu, X
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
@@ -11,13 +11,16 @@ import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
 import BadgeCelebration from "./BadgeCelebration";
 import SortPlan from "./SortPlan";
+import LocalRulesGuide from "./LocalRulesGuide";
 import AuditKit from "./AuditKit";
+import AboutWasteLens from "./AboutWasteLens";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
+import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
+import { ReadAloudButton, useSpeech } from "./Speech";
 import { LANGUAGES, useLanguage } from "./i18n";
 
 type PhotoPreview = { file: File; src: string };
-const initialModel = "gemini-3.8-flash";
 
 function ErrorText({ message }: { message: string }) {
   return <div className="error-msg" role="alert"><AlertTriangle size={18}/>{message}</div>;
@@ -25,17 +28,21 @@ function ErrorText({ message }: { message: string }) {
 
 export default function App() {
   const { language, setLanguage, t } = useLanguage();
+  const [theme, setTheme] = useAppearanceTheme();
+  const [navOpen, setNavOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const { stop: stopReading } = useSpeech();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
-  const [model, setModel] = useState(initialModel);
   const [camera, setCamera] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const [preview, setPreview] = useState<PhotoPreview | null>(null);
   const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
+  const [auditFromScan, setAuditFromScan] = useState<string | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey">("identifier");
+  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about">("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
@@ -65,7 +72,6 @@ export default function App() {
       .then(data => {
         if (!active) return;
         setStatus(data);
-        setModel(data.default_model);
       })
       .catch(() => { if (active) setStatusError("Start the WasteLens Python backend to use the AI identifier."); });
     return () => { active = false; };
@@ -81,8 +87,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    stopReading();
     window.scrollTo(0,0);
-  },[view]);
+  },[view,stopReading]);
 
   useEffect(() => {
     if (camera && videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
@@ -141,7 +148,7 @@ export default function App() {
     }
   }
 
-  function usePhoto(file?: File) {
+  function selectPhoto(file?: File) {
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
       setError("Choose a JPG, PNG or WebP image no larger than 8 MB.");
@@ -156,7 +163,7 @@ export default function App() {
   }
 
   function onUpload(event: ChangeEvent<HTMLInputElement>) {
-    usePhoto(event.target.files?.[0]);
+    selectPhoto(event.target.files?.[0]);
     event.target.value = "";
   }
 
@@ -173,7 +180,7 @@ export default function App() {
     if (!context) { setCameraError("Cannot capture the photo in this browser."); return; }
     context.drawImage(video, 0, 0);
     canvas.toBlob(blob => {
-      if (blob) usePhoto(new File([blob], "capture.jpg", {type: "image/jpeg"}));
+      if (blob) selectPhoto(new File([blob], "capture.jpg", {type: "image/jpeg"}));
       else setCameraError("Couldn't capture the image. Try uploading a photo.");
     }, "image/jpeg", 0.86);
   }
@@ -182,20 +189,30 @@ export default function App() {
     if (!preview || busy) return;
     setBusy(true); setResult(null); setError(""); setCelebration(null);
     try {
-      const form = new FormData();
-      form.append("image", preview.file);
-      form.append("model_id", model);
-      form.append("object_hint", hint.trim());
-       form.append("language", language);
-      if (/^\d{5}$/.test(location.trim())) form.append("zip_code", location.trim());
-      const response = await fetch("/api/ai/analyze", { method: "POST", body: form });
-      const data = await response.json();
-      if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Analysis failed");
-      const scanResult = data as VisionResponse;
+      const scanForm = new FormData();
+      scanForm.append("image", preview.file);
+      scanForm.append("object_hint", hint.trim());
+      scanForm.append("language", language);
+      if (/^\d{5}$/.test(location.trim())) {
+        scanForm.append("zip_code", location.trim());
+      }
+
+      const response = await fetch("/api/ai/analyze", {
+        method: "POST",
+        body: scanForm,
+      });
+      const responseBody = await response.json();
+      if (!response.ok) {
+        throw new Error(typeof responseBody.detail === "string"
+          ? responseBody.detail : "Analysis failed");
+      }
+
+      const scanResult = responseBody as VisionResponse;
       setResult(scanResult);
-      const earned = scanResult.unlocked_badges?.[0];
-      if (earned && scanResult.scan_id) {
-        setCelebration({ scan: scanResult.scan_id, badge: earned });
+
+      const newBadge = scanResult.unlocked_badges?.[0];
+      if (newBadge && scanResult.scan_id) {
+        setCelebration({ scan: scanResult.scan_id, badge: newBadge });
       }
       setRecordedAction("");
       setActionError("");
@@ -225,9 +242,9 @@ export default function App() {
     setSelectedFacility(null);
     try {
       const response = await fetch("/api/facilities?zip_code=" + encodeURIComponent(location.trim()));
-      const data = await readJson<FacilitySearchResponse>(response);
-      setFacilities(data);
-      setSelectedFacility(data.facilities[0]?.id ?? null);
+      const searchResults = await readJson<FacilitySearchResponse>(response);
+      setFacilities(searchResults);
+      setSelectedFacility(searchResults.facilities[0]?.id ?? null);
     } catch (e) {
       setFacilityError(e instanceof Error ? e.message : "Could not find collection locations.");
     } finally { setFacilityBusy(false); }
@@ -268,43 +285,114 @@ export default function App() {
   }
 
   const analysis = result?.analysis;
-  return <div className="site">
+  const needsConfirmation = Boolean(analysis && (analysis.identification !== "likely" || analysis.route === "needs_identification"));
+  function openPage(next: typeof view) {
+    stopCamera();
+    setNavOpen(false);
+    setAuditFromScan(null);
+    setView(next);
+  }
+  function recordObservedItem() {
+    if (!analysis) return;
+    stopCamera();
+    setNavOpen(false);
+    // This is a temporary navigation hint, not an audit entry or verification.
+    setAuditFromScan(analysis.item_name);
+    setView("audit");
+  }
+  function showNearbyOptions() {
+    document.getElementById("nearby")?.scrollIntoView({ block: "start" });
+  }
+
+  useEffect(() => {
+    if (!navOpen) return;
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setNavOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    const screenChanged = () => {
+      if (window.innerWidth > 900) setNavOpen(false);
+    };
+    window.addEventListener("keydown", dismiss);
+    window.addEventListener("resize", screenChanged);
+    document.querySelector<HTMLButtonElement>(".community-navigation .nav-item")?.focus();
+    return () => {
+      window.removeEventListener("keydown", dismiss);
+      window.removeEventListener("resize", screenChanged);
+    };
+  }, [navOpen]);
+
+  return <div className="site" data-theme={theme}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
-      <button type="button" className="brand" onClick={() => setView("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
-      <div className="language-picker">
-        <label htmlFor="wastelens-lang">{t("Choose language")}</label>
-        <select id="wastelens-lang" value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
-          {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
-        </select>
+      <button ref={menuButtonRef} type="button" className="community-menu-toggle"
+        aria-label={navOpen ? t("Close menu") : t("Open menu")}
+        aria-expanded={navOpen} aria-controls="wastelens-primary-navigation"
+        onClick={() => setNavOpen(current => !current)}>
+        {navOpen ? <X size={23}/> : <Menu size={23}/>}
+      </button>
+      <button type="button" className="brand" onClick={() => openPage("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
+      <div className="topbar-actions">
+        <div className="language-picker">
+          <label htmlFor="wastelens-lang" className="visually-hidden">{t("Choose language")}</label>
+          <select id="wastelens-lang" aria-label={t("Choose language")} value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
+            {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
+          </select>
+        </div>
+        <AccountMenu user={user} theme={theme} onThemeChange={setTheme}
+          onNavigate={next => openPage(next)}/>
       </div>
     </header>
+    {navOpen && <button type="button" className="community-nav-backdrop"
+      aria-label={t("Close menu")} onClick={() => setNavOpen(false)}/>}
     <div className="site-layout">
-      <aside className="side-nav" aria-label="WasteLens navigation">
-        
-        <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"} aria-current={view === "identifier" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("identifier"); }}><ScanLine size={19}/> {t("Scan")}</button>
-        <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"} aria-current={view === "chat" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("chat"); }}><MessageCircle size={18}/> {t("Ask")}</button>
-        <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"} aria-current={view === "finder" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("finder"); }}><MapPin size={19}/> {t("Find a place")}</button>
-        <button type="button" className={view === "history" ? "nav-item active" : "nav-item"} aria-current={view === "history" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("history"); }}><History size={19}/> {t("My activity")}</button>
-        <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"} aria-current={view === "leaderboard" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("leaderboard"); }}><Trophy size={19}/> {t("Leaderboard")}</button>
-        <button type="button" className={view === "deposits" ? "nav-item active" : "nav-item"} aria-current={view === "deposits" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("deposits"); }}><Coins size={19}/> {t("Bottle returns")}</button>
-        <button type="button" className={view === "journey" ? "nav-item active" : "nav-item"} aria-current={view === "journey" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("journey"); }}><BookOpen size={19}/> {t("Bottle journey")}</button>
-        <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"} aria-current={view === "audit" ? "page" : undefined}
-          onClick={() => { stopCamera(); setView("audit"); }}><ClipboardList size={19}/> {t("Waste audit")}</button>
-        {user?.role === "admin" && <button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
-          onClick={() => { stopCamera(); setView("admin"); }}><ShieldCheck size={19}/> {t("Admin")}</button>}
-        <div className="side-nav-bottom">
-          <button type="button" className={view === "account" ? "nav-item active" : "nav-item"}
-          onClick={() => { stopCamera(); setView("account"); }}><UserRound size={19}/> {user ? user.name : t("Sign in")}</button>
+      <aside id="wastelens-primary-navigation"
+        className={"side-nav community-navigation" + (navOpen ? " is-open" : "")}
+        aria-label="WasteLens navigation">
+        <div className="community-nav-scroll">
+          <div className="community-nav-group" aria-label={t("Understand")}>
+            <span className="community-nav-heading">{t("UNDERSTAND")}</span>
+            <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"}
+              aria-current={view === "identifier"?"page":undefined} onClick={() => openPage("identifier")}>
+              <ScanLine size={18}/>{t("Scan")}</button>
+            <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"}
+              aria-current={view === "chat"?"page":undefined} onClick={() => openPage("chat")}>
+              <MessageCircle size={18}/>{t("Ask")}</button>
+            <button type="button" className={view === "journey" ? "nav-item active" : "nav-item"}
+              aria-current={view === "journey"?"page":undefined} onClick={() => openPage("journey")}>
+              <BookOpen size={18}/>{t("Bottle journey")}</button>
+          </div>
+          <div className="community-nav-group" aria-label={t("Take action")}>
+            <span className="community-nav-heading">{t("TAKE ACTION")}</span>
+            <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"}
+              aria-current={view === "finder"?"page":undefined} onClick={() => openPage("finder")}>
+              <MapPin size={18}/>{t("Find a place")}</button>
+            <button type="button" className={view === "deposits" ? "nav-item active" : "nav-item"}
+              aria-current={view === "deposits"?"page":undefined} onClick={() => openPage("deposits")}>
+              <Coins size={18}/>{t("Bottle returns")}</button>
+            <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"}
+              aria-current={view === "audit"?"page":undefined} onClick={() => openPage("audit")}>
+              <ClipboardList size={18}/>{t("Waste audit")}</button>
+          </div>
+          <div className="community-nav-group" aria-label={t("Progress")}>
+            <span className="community-nav-heading">{t("PROGRESS")}</span>
+            <button type="button" className={view === "history" ? "nav-item active" : "nav-item"}
+              aria-current={view === "history"?"page":undefined} onClick={() => openPage("history")}>
+              <History size={18}/>{t("My activity")}</button>
+            <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"}
+              aria-current={view === "leaderboard"?"page":undefined} onClick={() => openPage("leaderboard")}>
+              <Trophy size={18}/>{t("Leaderboard")}</button>
+            {user?.role === "admin"&&<button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
+              aria-current={view === "admin"?"page":undefined} onClick={() => openPage("admin")}>
+              <ShieldCheck size={18}/>{t("Admin")}</button>}
+          </div>
         </div>
+        <button type="button" className={"nav-item community-about-nav "+(view === "about"?"active":"")}
+          aria-current={view === "about"?"page":undefined}
+          onClick={() => openPage("about")}><Info size={18}/>{t("About")}</button>
       </aside>
       <div className="page-content">
     <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
@@ -312,13 +400,21 @@ export default function App() {
       <div className="intro">
         <div className="intro-copy">
           <h1>{t("Before you toss it, scan it.")}</h1>
-          <p>{t("See how to reuse it, sort it, or find a place nearby.")}</p>
+          <p>{t("Scan an item, find local options, or plan a cleanup.")}</p>
         </div>
         <div className="intro-art" aria-hidden="true">
           <span className="intro-art-circle one"></span>
           <span className="intro-art-circle two"></span>
           <Recycle size={58} strokeWidth={1.8}/>
         </div>
+      </div>
+      <div className="community-mission-path" aria-label={t("Quick links")}>
+        <button type="button" onClick={() => openPage("journey")}><BookOpen size={19}/>
+          <strong>{t("Learn the story")}</strong></button>
+        <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
+          <strong>{t("Find a place")}</strong></button>
+        <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
+          <strong>{t("Run an audit")}</strong></button>
       </div>
 
       <div className="workspace">
@@ -333,8 +429,7 @@ export default function App() {
             preview ? <img src={preview.src} alt="Your selected item photograph"/> :
             <div className="camera-empty">
               <div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
-              <h3>{t("What's in front of you?")}</h3>
-              <p>{t("Use your camera or upload a photo.")}</p>
+              <p>{t("Use your camera or choose a photo.")}</p>
             </div>}
         </div>
 
@@ -361,21 +456,6 @@ export default function App() {
             onChange={event => {setHint(event.target.value); setResult(null);}}
             placeholder="Example: The blue bottle I'm holding"/>
         </div>}
-        <details className="model-options">
-          <summary><span>{t("Change AI model")}</span><ChevronDown size={17}/></summary>
-          <div className="model-picker">
-            <label htmlFor="model">{t("Choose a model")}</label>
-            <div className="picker">
-              <select id="model" value={model} disabled={!status || busy} onChange={event => {
-                setModel(event.target.value); setResult(null);
-              }}>
-                {(status?.models ?? [{id: initialModel, name: "Gemini 3.8 Flash"}]).map(option =>
-                  <option key={option.id} value={option.id}>{option.name}</option>)}
-              </select>
-              <ChevronDown size={16}/>
-            </div>
-          </div>
-        </details>
         <div className="photo-privacy-summary"><ShieldAlert size={16}/> {t("Photos go to Google Gemini when you scan. Free tier data may be used to improve Google's services.")}</div>
         <details className="privacy-details">
           <summary>{t("Photo privacy")} <ChevronDown size={15}/></summary>
@@ -391,7 +471,7 @@ export default function App() {
         <div className="result-title">
           <div>
             <h2>{analysis.item_name}</h2>
-            {analysis.identification !== "likely" && <p>{analysis.visual_description}</p>}
+            {needsConfirmation && <p>{analysis.visual_description}</p>}
           </div>
           <span className="type-badge"><Recycle size={16}/>{analysis.route_title}</span>
         </div>
@@ -399,20 +479,32 @@ export default function App() {
           <span className="material-line"><strong>{t("Material")}:</strong> {analysis.material_guess}</span>
           {Boolean(result?.earned_xp) && <span className="earned-xp"><Sparkles size={17}/> +{result?.earned_xp} XP earned</span>}
         </div>
+        <ReadAloudButton id="scan-summary" category="scan" className="wl-scan-read"
+          text={[analysis.item_name,analysis.route_title,analysis.material_guess,
+            analysis.visual_description,analysis.follow_up_question,...analysis.cautions].filter(Boolean).join(". ")}/>
         <button className="button primary ask-item-button" type="button" onClick={() => setView("chat")}>
           <MessageCircle size={18}/> {t("Ask about this item")}
         </button>
-        {analysis.identification !== "likely" && <div className="uncertain"><AlertTriangle size={18}/> Identification is uncertain. Confirm what the item is before using this advice.</div>}
+        {needsConfirmation && <div className="uncertain"><AlertTriangle size={18}/>{t("The item or material needs confirmation. Check before sorting.")}</div>}
         {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
         <div className="stack">
           <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
+          <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "local-rules"}
+            zipCode={location} onZipChange={setLocation}/>
+          <nav className="scan-next-actions" aria-label={t("Next steps")}>
+            <button type="button" onClick={showNearbyOptions}>
+              <MapPin size={18}/>{t("Find nearby options")}
+            </button>
+            <button type="button" onClick={recordObservedItem}>
+              <ClipboardList size={18}/>{t("Record an observation")}
+            </button>
+          </nav>
           <article className="result-card blue reuse-section">
             <div className="reuse-heading">
               <div>
                 <h3><Lightbulb size={21}/> {t("Give it another life")}</h3>
                 
               </div>
-              {Boolean(analysis.reuse_projects?.length) && <span className="reuse-count">{analysis.reuse_projects!.length} ideas</span>}
             </div>
             {analysis.reuse_projects?.length ? <div className="reuse-projects">
               {analysis.reuse_projects.map((project, i) =>
@@ -421,9 +513,7 @@ export default function App() {
                     <span className="reuse-project-index">{String(i + 1).padStart(2, "0")}</span>
                     <span className="reuse-project-summary">
                       <strong>{project.title}</strong>
-                      <span>{project.outcome}</span>
                     </span>
-                    <span className="reuse-project-meta">{project.difficulty} · ~{project.minutes_estimate} min</span>
                     <ChevronDown size={17} className="reuse-chevron"/>
                   </summary>
                   <div className="reuse-project-body">
@@ -486,7 +576,6 @@ export default function App() {
             </div>}
             {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
-            {!user && <p className="finder-note">Sign in to save scans and earn XP.</p>}
           </article>
           {user && result?.scan_id && <article className="result-card action-card">
             <h3><Check size={21}/> {t("What did you do with it?")}</h3>
@@ -500,7 +589,7 @@ export default function App() {
             </div>
             {recordedAction && <p className="action-confirmed">Saved as {recordedAction}.</p>}
             {actionError && <p className="inline-error" role="alert">{actionError}</p>}
-            <details className="action-info"><summary>About tracking</summary><p>Only you can confirm what happened to an item. A scan does not count as recycling.</p></details>
+            
           </article>}
         </div>
       </section>}
@@ -522,11 +611,15 @@ export default function App() {
       </section> : view === "deposits" ? <BottleReturns/> : view === "journey" ?
         <BottleJourney user={user}
           onUnlock={badge => setCelebration({scan: -Date.now(), badge})}
-          onSignIn={() => setView("account")}/> : view === "audit" ? <AuditKit/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
+          onSignIn={() => setView("account")}
+          onScan={() => setView("identifier")}
+          onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit user={user} onSignIn={() => openPage("account")}
+          scannedItem={auditFromScan} onBackToScan={() => openPage("identifier")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
+        <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
-        <AskWasteLens scan={analysis ?? null} model={model} configured={Boolean(status?.configured)}
+        <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
           onScan={() => setView("identifier")}/>
       </div>
       
