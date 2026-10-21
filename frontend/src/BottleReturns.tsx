@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ChangeEvent } from "react";
-import { Camera, CircleHelp, GlassWater, Link2, ShieldCheck, Sparkles } from "lucide-react";
+import { CircleHelp, GlassWater, Link2, ShieldCheck } from "lucide-react";
 import { useLanguage } from "./i18n";
 
 export type DepositStateCode = "CA"|"CT"|"HI"|"IA"|"ME"|"MA"|"MI"|"NY"|"OR"|"VT";
@@ -9,8 +8,6 @@ type Material = "aluminum"|"glass"|"plastic"|"carton"|"pouch"|"other";
 type Resin = "pet1"|"hdpe2"|"other"|"unknown";
 type DepositResult = { state:string;state_code:DepositStateCode;status:"yes"|"no"|"check";per_container_cents:number;
  total_cents:number;count:number;reason:string;source_url:string;state_tip:string;amount_is_confirmed:boolean;label:string;note:string };
-type LabelSuggestion = {drink:Drink;material:Material;resin:Resin;ounces:number|null;visible_mark:string;
-  confidence:"clear"|"uncertain";guidance:string};
 const STATES: {code:DepositStateCode; name:string}[] = [
   {code:"CA",name:"California"},{code:"CT",name:"Connecticut"},{code:"HI",name:"Hawaii"},
   {code:"IA",name:"Iowa"},{code:"ME",name:"Maine"},{code:"MA",name:"Massachusetts"},
@@ -44,9 +41,6 @@ export default function BottleReturns() {
   const [paid,setPaid] = useState<"yes"|"no"|"unsure">("unsure");
   const [result,setResult] = useState<DepositResult|null>(null);
   const [error,setError] = useState("");
-  const [photo,setPhoto] = useState<File|null>(null);
-  const [reading,setReading] = useState(false);
-  const [suggestion,setSuggestion] = useState<LabelSuggestion|null>(null);
   useEffect(()=>{
     const size=Number(ounces),amount=Number(count);
     if(!Number.isFinite(size)||size<=0||size>512||!Number.isInteger(amount)||amount<1||amount>5000){
@@ -60,30 +54,6 @@ export default function BottleReturns() {
       .then(setResult).catch(e=>{if(!ctrl.signal.aborted)setError(e.message||"Can't calculate right now.");});
     return ()=>ctrl.abort();
   },[state,drink,material,resin,ounces,count,paid]);
-  function selectPhoto(e:ChangeEvent<HTMLInputElement>){
-    const f=e.target.files?.[0]??null;
-    if(f && (!["image/jpeg","image/png","image/webp"].includes(f.type)||f.size>8*1024*1024)){
-      setError("Use a JPG, PNG or WebP photo under 8 MB.");setPhoto(null);return;
-    }
-    setPhoto(f);setSuggestion(null);setError("");
-  }
-  async function readLabel(){
-    if(!photo||reading)return;
-    setReading(true);setError("");setSuggestion(null);
-    try{
-      const form=new FormData();form.append("image",photo);
-      const res=await fetch("/api/deposit/inspect",{method:"POST",body:form});
-      const data=await res.json();
-      if(!res.ok)throw new Error(typeof data.detail==="string"?data.detail:"Could not read the label.");
-      const guess=data.suggestion as LabelSuggestion;
-      setSuggestion(guess);
-      // Prefill only readable metadata. Refund estimates still require manual confirmation.
-      setDrink(guess.drink);setMaterial(guess.material);setResin(guess.resin);
-      if(guess.ounces && guess.ounces>0)setOunces(String(guess.ounces));
-      setPaid("unsure");
-    }catch(e){setError(e instanceof Error?e.message:"Could not read the photo.");}
-    finally{setReading(false);}
-  }
   return <section className="deposit-page">
     <div className="deposit-top">
       <div className="deposit-top-copy"><h1>{t("Check bottle returns")}</h1>
@@ -153,26 +123,9 @@ export default function BottleReturns() {
             <p>{result.state_tip}</p>
           </details>
         </>:<><strong className="deposit-amount">?</strong><p>Choose a valid size and amount to check.</p></>}
-        <div className="deposit-result-note"><ShieldCheck size={18}/> A photo or label alone cannot confirm a refund. Your local return location makes the final decision.</div>
+        <div className="deposit-result-note"><ShieldCheck size={18}/> Refund eligibility depends on where the deposit was paid and the return program.</div>
       </div>
     </div>
-    <details className="deposit-photo-helper">
-      <summary><Camera size={21}/> {t("Read a bottle label")}</summary>
-      <div className="deposit-photo-inside">
-        <div className="deposit-photo-controls">
-          <input aria-label="Bottle label photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={selectPhoto}/>
-          <button type="button" disabled={!photo||reading} onClick={()=>void readLabel()}>
-            <Sparkles size={17}/>{reading?t("Reading…"):t("Read label")}
-          </button>
-        </div>
-        {suggestion&&<div className="deposit-ai-read" role="status">
-          <strong>{t("Check these details above")}</strong>
-          <p>{suggestion.visible_mark? "Visible print: "+suggestion.visible_mark:"No refund text could be read clearly."}</p>
-          <p>{suggestion.guidance}</p>
-        </div>}
-        <small>Photos go to Google Gemini only when you choose Read label. Google's free tier may use submitted content to improve its services. WasteLens does not save this photo.</small>
-      </div>
-    </details>
     {error&&<p className="deposit-error" role="alert">{error}</p>}
   </section>;
 }
