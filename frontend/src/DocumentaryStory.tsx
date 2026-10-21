@@ -257,7 +257,6 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
     <section className="documentary-decision" data-documentary-section id="doc-decision">
       <div className="documentary-decision-label">{line("YOU DECIDE","TÚ DECIDES","आप तय करें")[language]}</div>
       <h2>{line("What will you do with the next bottle?","¿Qué harás con la próxima botella?","अगली बोतल का क्या करेंगे?")[language]}</h2>
-      <p>{line("The right choice depends on the container and your local rules.","La mejor opción depende del envase y las normas locales.","सही विकल्प बोतल और स्थानीय नियमों पर निर्भर है।")[language]}</p>
       <div className="documentary-decision-options">
         {(["refill","return","recycle"] as const).map((c,i)=><button type="button" key={c} className={choice===c?"active":""}
           aria-pressed={choice===c} onClick={()=>setChoice(c)}>
@@ -272,7 +271,6 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
       <div className="documentary-final-photo"><RealPhoto photo={photos.collectors}/></div>
       <div className="documentary-final-content">
         <h2>{line("What can you do next?","¿Qué puedes hacer ahora?","अब आप क्या कर सकते हैं?")[language]}</h2>
-        <p>{line("Choose one change you can repeat at school or at home.","Elige un cambio que puedas repetir en la escuela o en casa.","एक ऐसा बदलाव चुनें जिसे स्कूल या घर पर बार-बार अपना सकें।")[language]}</p>
         <div className="documentary-actions">
           {actions.map(item=><label className="documentary-action" key={item.key}>
             <input type="checkbox" checked={pledged.includes(item.key)}
