@@ -318,19 +318,14 @@ or make claims about refund locations' real-time acceptance. Some states
 also have retailer-specific limits or product exemptions that cannot be
 inferred from these fields. Consult the linked state page before traveling.
 
-Optional photo label reader uses the configured Gemini API to suggest
-drink type, material, printed deposit message and capacity only if visibly
-legible, before the human checks those values. No AI-derived label or image
-establishes whether the deposit was paid in the selected state.
-
 ### A Bottle's Journey tab
 
 An original **long illustrated scroll experience** tells a ten-chapter story,
 with current source links for claims and original embedded vector drawings
 rather than copying Neal.fun assets. At the very bottom is a five-question
-quiz. Correct answers are validated by the backend. Four out of five earns
-the Bottle Explorer badge and **30 XP exactly once** for each signed-in
-user. Anonymous visitors can learn and submit but cannot earn account XP.
+quiz about reuse, litter, recycling symbols, and deposit returns. Correct
+answers are validated by the backend. Four out of five earns the Bottle
+Explorer badge and **30 XP exactly once** for each signed-in user. Anonymous visitors can learn and submit but cannot earn account XP.
 Badge progress contributes to the existing XP and opt-in leaderboard.
 The 2026 source and language translations should be reviewed regularly as
 laws can change.
@@ -350,7 +345,8 @@ laws can change.
 
 Validation covers ten-state baseline rates, selected exceptions and size
 boundaries, user paid-deposit conditions, signed-in quiz reward uniqueness,
-and camera helper error codes using mock AI output. It does **not** prove
-live Gemini label recognition, redemption location operations, accessibility
-audits, or visual appearance on all browser sizes. Run those manually before
+and quiz reward checks. The former bottle photo-reader feature and
+`/api/deposit/inspect` endpoint were removed during interface cleanup. Tests
+do **not** prove redemption location operations, accessibility audits, or
+visual appearance on all browser sizes. Review those manually before
 the Congressional App Challenge demonstration.
