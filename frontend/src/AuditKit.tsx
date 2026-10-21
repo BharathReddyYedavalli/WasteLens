@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, Check, ChevronDown, ClipboardList, Download, FilePlus2, Lightbulb, LoaderCircle, LockKeyhole, PieChart, Printer, Save, Sparkles, Trash2, Undo2 } from "lucide-react";
+import { BarChart3, CalendarDays, Check, ChevronDown, ClipboardList, Download, FilePlus2, Lightbulb, LoaderCircle, LockKeyhole, PieChart, Printer, Save, Sparkles, Trash2, Undo2 } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { SessionUser } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
