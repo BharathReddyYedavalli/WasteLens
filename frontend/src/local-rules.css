@@ -152,3 +152,43 @@
 .site .local-rules-body .local-rule-result p strong {font-weight:780}
 :root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.local-rules-postal,.local-rules-confirm) {background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important}
 :root[data-wl-theme]:not([data-wl-theme="light"]) .site .local-rules-postal span {color:var(--wl-subcopy)!important}
+
+/* Stage 3: only shown when a verified residential program cannot answer. */
+.site .local-discovery {
+  display:grid;gap:12px;padding:16px;border:1.5px solid #c7ded2;
+  border-radius:13px;background:#f4faf6;
+}
+.site .local-discovery>label {display:grid;gap:7px;font-size:14px;font-weight:700;color:inherit}
+.site .local-discovery select {
+  width:100%;min-height:44px;padding:10px 12px;font:inherit;font-size:14px;
+  border:1.5px solid #bad1c7;border-radius:10px;background:#fff;color:#244b43;
+}
+.site .local-discovery-toggle {
+  justify-self:start;cursor:pointer;border:0;background:transparent;
+  text-decoration:underline;text-underline-offset:3px;color:#196f61;
+  font-weight:780;font-size:13px;padding:6px 0;
+}
+.site .local-discovery-result {
+  display:grid;gap:12px;background:#fff;border:1px solid #d1e3d9;
+  border-radius:12px;padding:16px;color:#244b43;
+}
+.site .local-discovery-result>strong {display:flex;align-items:center;gap:9px;font-size:15px}
+.site .local-discovery-result p {margin:0;font-size:13px;line-height:1.65}
+.site .local-discovery-links {display:flex;flex-wrap:wrap;gap:9px}
+.site .local-discovery-links a {
+  display:inline-flex;align-items:center;gap:6px;border:1px solid #b6d3c4;
+  border-radius:9px;padding:9px 11px;background:#f6fbf8;
+  color:#176454;font-size:12px;font-weight:750;line-height:1.45;
+  text-underline-offset:3px;
+}
+.site .local-discovery-caveat {color:#547164;font-size:12px!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.local-discovery,.local-discovery-result) {
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.local-discovery select,.local-discovery-links a) {
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.local-discovery-toggle,.local-discovery-caveat) {
+  color:var(--wl-subcopy)!important;
+}
+@media(max-width:560px) {.site .local-discovery-links a{width:100%;justify-content:space-between}}

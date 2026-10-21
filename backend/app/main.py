@@ -18,6 +18,7 @@ from .places import router as places_router
 from .deposit_rules import router as deposit_router
 from .local_rules import router as local_rules_router
 from .program_rules import router as program_rules_router
+from .guidance_discovery import router as discovery_router
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
 from .chat import ChatRequest, answer_chat
 
@@ -43,6 +44,7 @@ app.include_router(audit_router)
 app.include_router(deposit_router)
 app.include_router(local_rules_router)
 app.include_router(program_rules_router)
+app.include_router(discovery_router)
 
 
 @app.get("/api/health")

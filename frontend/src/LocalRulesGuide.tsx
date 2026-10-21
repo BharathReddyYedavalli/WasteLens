@@ -22,6 +22,12 @@ type RuleResult = {
   program: string;
   scope: string;
 };
+type DiscoveryLink = { label: string; url: string; kind: "official_reference" | "unverified_web_search" };
+type Discovery = {
+  zip_code: string; postal_area: string; item_name: string; status: "unverified";
+  local_acceptance_verified: false; next_step: string; disclaimer: string;
+  official_links: DiscoveryLink[]; local_search: DiscoveryLink;
+};
 type Props = {
   zipCode: string;
   onZipChange: (value: string) => void;
@@ -43,6 +49,11 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [selectedProgram, setSelectedProgram] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
+  const [discoveryItem, setDiscoveryItem] = useState("");
+  const [showOtherProvider, setShowOtherProvider] = useState(false);
+  const [discovery, setDiscovery] = useState<Discovery | null>(null);
+  const [discovering, setDiscovering] = useState(false);
+  const pendingDiscovery = useRef<AbortController | null>(null);
   const [collectionType, setCollectionType] = useState<CollectionContext>("residential");
   const [confirmed, setConfirmed] = useState(false);
   const [result, setResult] = useState<RuleResult | null>(null);
@@ -59,7 +70,15 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
     setResult(null);
   }
 
+  function clearDiscovery() {
+    pendingDiscovery.current?.abort();
+    pendingDiscovery.current = null;
+    setDiscovering(false);
+    setDiscovery(null);
+  }
+
   function updateZipCode(value: string) {
+    clearDiscovery();
     clearPendingRuleCheck();
     setConfirmed(false);
     onZipChange(value.replace(/\D/g, "").slice(0, 5));
@@ -67,6 +86,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
 
   function updateCollectionType(nextType: CollectionContext) {
     clearPendingRuleCheck();
+    clearDiscovery();
     setCollectionType(nextType);
     setConfirmed(false);
     setSelectedProgram("");
@@ -74,6 +94,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
 
   function updateProgram(programId: string) {
     clearPendingRuleCheck();
+    clearDiscovery();
     setSelectedProgram(programId);
     setConfirmed(false);
     setError("");
@@ -100,6 +121,12 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
     setResult(null);
     setSelectedProgram("");
     setSelectedItem("");
+    setDiscoveryItem("");
+    setShowOtherProvider(false);
+    pendingDiscovery.current?.abort();
+    pendingDiscovery.current = null;
+    setDiscovery(null);
+    setDiscovering(false);
     setConfirmed(false);
     setError("");
     if (!open || !validZip) {
@@ -150,7 +177,31 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
     }
   }
 
+  async function findGuidance() {
+    if (!validZip || !catalog || !discoveryItem || discovering) return;
+    clearDiscovery();
+    const controller = new AbortController();
+    pendingDiscovery.current = controller;
+    setDiscovering(true);
+    setError("");
+    try {
+      const query = new URLSearchParams({
+        zip_code: zipCode.trim(), category: discoveryItem, context: collectionType,
+      });
+      const data = await readJson<Discovery>(
+        await fetch("/api/local-rules/discovery?" + query.toString(), {signal: controller.signal})
+      );
+      if (!controller.signal.aborted) setDiscovery(data);
+    } catch (e) {
+      if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "Could not load guidance.");
+    } finally {
+      if (!controller.signal.aborted) setDiscovering(false);
+    }
+  }
+
   const currentProgram = matchingPrograms.find(program => program.id === selectedProgram);
+  const canDiscover = validZip && catalog &&
+    (collectionType !== "residential" || matchingPrograms.length === 0 || showOtherProvider);
   return <details className="local-rules-checker" open={open}
     onToggle={event => setOpen(event.currentTarget.open)}>
     <summary><MapPin size={19}/>{t("Check local recycling rules")}
@@ -184,8 +235,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
           <div className="local-rule-result-head"><ShieldAlert size={19}/>
             <strong>{t("No verified residential program for this ZIP yet")}</strong></div>
           <p>{t("You can still scan items and find nearby collection locations. Check the rules directly with your city or waste provider before using a bin.")}</p>
-          <a href="https://www.epa.gov/recycle" target="_blank" rel="noopener noreferrer">
-            {t("General EPA recycling guidance")} <ExternalLink size={15}/></a>
+
         </div>}
       {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length>0&&<>
         <div className="local-rules-controls">
@@ -212,7 +262,40 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
           {checking?t("Checking…"):t("Check the official rule")}
         </button>
         {currentProgram&&<p className="local-rules-scope">{t("Guidance is for this selected residential service, not school, commercial, or neighboring city bins.")}</p>}
+        <button type="button" className="local-discovery-toggle" aria-expanded={showOtherProvider}
+          onClick={() => {clearDiscovery();setShowOtherProvider(current=>!current);}}>
+          {showOtherProvider?t("Hide other options"):t("My collection provider isn't listed")}
+        </button>
       </>}
+      {canDiscover&&<section className="local-discovery" aria-label={t("Find local recycling guidance")}>
+        <label htmlFor="local-discovery-item">{t("What item are you checking?")}
+          <select id="local-discovery-item" value={discoveryItem} onChange={event=>{
+            clearDiscovery();setDiscoveryItem(event.target.value);
+          }}>
+            <option value="">{t("Choose an item")}</option>
+            {catalog?.categories.map(item=><option key={item.id} value={item.id}>{t(item.label)}</option>)}
+          </select>
+        </label>
+        <button className="local-rule-check-button" type="button" disabled={!discoveryItem||discovering}
+          onClick={()=>void findGuidance()}>
+          {discovering?t("Checking…"):t("Find guidance and contacts")}
+        </button>
+        {discovery&&<div className="local-discovery-result" role="status">
+          <strong><ShieldAlert size={18}/>{t("Local acceptance not confirmed")}</strong>
+          <p>{discovery.next_step}</p>
+          {language!=="en"&&<p className="local-rules-language-note">{t("Source-based disposal instructions are currently provided in English; follow the official link for precise requirements.")}</p>}
+          <div className="local-discovery-links">
+            {discovery.official_links.map(link=>
+              <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer">
+                {link.label}<ExternalLink size={14}/>
+              </a>)}
+            <a href={discovery.local_search.url} target="_blank" rel="noopener noreferrer">
+              {t("Search for your local waste provider")} <ExternalLink size={14}/>
+            </a>
+          </div>
+          <p className="local-discovery-caveat">{discovery.disclaimer}</p>
+        </div>}
+      </section>}
       {error&&<p role="alert" className="local-rules-error">{error}</p>}
       {result&&<div className={"local-rule-result local-rule-"+result.status} role="status">
         <div className="local-rule-result-head">

@@ -349,3 +349,30 @@ and quiz reward checks. The former bottle photo-reader feature and
 do **not** prove redemption location operations, accessibility audits, or
 visual appearance on all browser sizes. Review those manually before
 the Congressional App Challenge demonstration.
+
+
+### Nationwide official-guidance discovery (Stage 3)
+
+The municipal item-by-item policy catalog still contains **only four** source-reviewed
+residential programs: Frisco, McKinney, San Francisco (Recology), and Los Angeles.
+It is **not** a national database of accepted curbside materials.
+
+For a ZIP without a supported program, or for a household with another provider,
+open **Check local recycling rules**, select the collection setting and item,
+then choose **Find guidance and contacts**. The new
+`GET /api/local-rules/discovery?zip_code=10001&category=plastic_clamshell`
+endpoint returns a postal-area hint, item-specific EPA references, a state
+environmental-agency homepage where curated from EPA's directory, and a clearly
+labeled external search for the user's actual city/county/hauler. The endpoint
+does not scrape Google, determine municipal boundaries, validate service
+contracts, or infer curbside eligibility. The query link opens search results,
+**not** a verified official government page. Schools and businesses receive
+contract-specific warnings. Lithium-ion batteries always receive EPA-based
+safety instructions before any local provider is confirmed.
+
+All discovery responses are marked `unverified`,
+`local_acceptance_verified=false` and
+`documented_program_rule=false`. The existing four-city API and rules
+remain unchanged. A state website is a reference, not a promise that an item
+or facility is accepted. The bundled ZIP postal dataset can be incomplete;
+unknown ZIPs return an explicit lookup error rather than guessing.
