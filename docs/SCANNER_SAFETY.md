@@ -10,7 +10,16 @@ real-world accuracy rate or guarantee correct sorting for all materials.
   dimensions, applies EXIF orientation, and downscales to JPEG.
 - Gemini must return the structured ItemAnalysis schema; failed responses
   produce actionable errors without exposing API credentials.
-- Transient provider 5xx errors get one bounded retry, not unlimited retries.
+- Transient provider HTTP 500/502/503/504 errors get at most **two scanner-level retries**
+  (three attempts total), with short exponential backoff and jitter.
+  The Google SDK's own retry loop is disabled for this route so retries do not
+  multiply. HTTP 429, authentication errors, and invalid requests are not retried.
+- Each Gemini scanner request has a 30-second SDK timeout. With retries this is
+  a per-attempt limit, **not** a 30-second bound on the entire scan.
+- Backend diagnostic logs record only model, elapsed time, retry attempt and
+  provider status code; they never include provider error bodies, photos,
+  user hints or the API key. Persistent provider outages still produce an error;
+  these safeguards cannot guarantee availability.
 - Photo bytes are not saved by WasteLens. The photo is sent to Google Gemini;
   authenticated users may save text analysis results, not the image.
 
@@ -55,6 +64,10 @@ listing establishes school contractor acceptance.
   not the live provider or a photographed benchmark dataset.
 
 ## Regression tests
+
+Mocked provider tests also cover success after transient errors, exhausted
+503 retries, no retry for 429/credential errors, configured HTTP timeout,
+and sanitized diagnostics. No live Gemini API calls are made in CI.
 
 Tests cover ambiguous images, material uncertainty, hazardous labels in three
 languages, battery charger false positives, explicit special-drop-off routes,
