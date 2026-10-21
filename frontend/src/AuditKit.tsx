@@ -35,30 +35,66 @@ const itemTypes:{id:ItemType;label:string}[]=[
   {id:"other",label:"Other item"},
 ];
 const initial:Draft={title:"",entries:[]};
-function validEntry(entry:Entry):boolean{
-  if(!entry||typeof entry!=="object" || !kinds.some(k=>k.id===entry.kind) ||
-      typeof entry.at!=="string" || Number.isNaN(Date.parse(entry.at)))return false;
-  if(entry.item_type!==undefined&&!itemTypes.some(k=>k.id===entry.item_type))return false;
-  if(entry.sorting_check!==undefined){
-    if(!["matches","mismatch"].includes(entry.sorting_check) ||
-       entry.rules_checked!==true || !entry.item_type || entry.kind==="unsure")return false;
-  }else if(entry.rules_checked!==undefined)return false;
+function validEntry(entry: Entry): boolean {
+  const hasValidKind = kinds.some(kind => kind.id === entry?.kind);
+  const hasValidDate = typeof entry?.at === "string" && !Number.isNaN(Date.parse(entry.at));
+  if (!entry || typeof entry !== "object" || !hasValidKind || !hasValidDate) {
+    return false;
+  }
+
+  if (entry.item_type !== undefined && !itemTypes.some(item => item.id === entry.item_type)) {
+    return false;
+  }
+
+  if (entry.sorting_check !== undefined) {
+    const isKnownAssessment = ["matches", "mismatch"].includes(entry.sorting_check);
+    if (!isKnownAssessment || entry.rules_checked !== true ||
+        !entry.item_type || entry.kind === "unsure") {
+      return false;
+    }
+  } else if (entry.rules_checked !== undefined) {
+    return false;
+  }
+
   return true;
 }
-function readDraft():Draft{
-  try{
-    const s=localStorage.getItem(STORAGE_KEY);if(!s)return initial;
-    const data=JSON.parse(s) as Partial<Draft>;
-    if(typeof data.title!=="string"||!Array.isArray(data.entries))return initial;
-    return {title:data.title.slice(0,60),entries:data.entries.filter(
-      (entry):entry is Entry=>validEntry(entry as Entry)
-    ).slice(-15000)};
-  }catch{return initial;}
+
+function readDraft(): Draft {
+  try {
+    const storedDraft = localStorage.getItem(STORAGE_KEY);
+    if (!storedDraft) return initial;
+
+    const draft = JSON.parse(storedDraft) as Partial<Draft>;
+    if (typeof draft.title !== "string" || !Array.isArray(draft.entries)) return initial;
+
+    return {
+      title: draft.title.slice(0, 60),
+      entries: draft.entries
+        .filter((entry): entry is Entry => validEntry(entry as Entry))
+        .slice(-15000),
+    };
+  } catch {
+    return initial;
+  }
 }
-function calculate(entries:Entry[]):Counts{
-  const totals={recycle:0,compost:0,trash:0,reuse:0,unsure:0};
-  for(const entry of entries)totals[entry.kind]++;
+
+function calculate(entries: Entry[]): Counts {
+  const totals: Counts = { recycle: 0, compost: 0, trash: 0, reuse: 0, unsure: 0 };
+  for (const entry of entries) totals[entry.kind]++;
   return totals;
+}
+
+function mostCommonItems(entries: Entry[]): [ItemType, number][] {
+  const countsByType = new Map<ItemType, number>();
+
+  for (const entry of entries) {
+    if (!entry.item_type) continue;
+    countsByType.set(entry.item_type, (countsByType.get(entry.item_type) ?? 0) + 1);
+  }
+
+  return [...countsByType.entries()]
+    .sort((first, second) => second[1] - first[1])
+    .slice(0, 3);
 }
 function escapeCSV(value:string){const safe=/^[=+@\-\t\r]/.test(value)?"'"+value:value;return '"'+safe.replaceAll('"','""')+'"';}
 function saveCSV(draft:Draft){
@@ -170,18 +206,8 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
     e=>e.rules_checked===true&&(e.sorting_check==="matches"||e.sorting_check==="mismatch")
   ),[audit.entries]);
   const flagged=useMemo(()=>reviewed.filter(e=>e.sorting_check==="mismatch"),[reviewed]);
-  const frequentItems=useMemo(()=>{
-    const grouped=new Map<ItemType,number>();
-    for(const entry of labeled)if(entry.item_type)
-      grouped.set(entry.item_type,(grouped.get(entry.item_type)||0)+1);
-    return [...grouped.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3);
-  },[labeled]);
-  const flaggedItems=useMemo(()=>{
-    const grouped=new Map<ItemType,number>();
-    for(const entry of flagged)if(entry.item_type)
-      grouped.set(entry.item_type,(grouped.get(entry.item_type)||0)+1);
-    return [...grouped.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3);
-  },[flagged]);
+  const frequentItems = useMemo(() => mostCommonItems(labeled), [labeled]);
+  const flaggedItems = useMemo(() => mostCommonItems(flagged), [flagged]);
   function log(kind:Kind){
     if(total>=15000)return;
     const entry:Entry={kind,at:new Date().toISOString()};
