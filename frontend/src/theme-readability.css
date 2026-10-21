@@ -1,0 +1,149 @@
+/* Stage 2: theme-specific readability fixes.
+   Light remains exactly as designed. Never style Leaflet popups or the journey artwork here. */
+
+/* Navigation: every active state must have readable text AND icons. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .community-navigation :is(.nav-item.active,.community-about-nav.active) {
+  background:var(--wl-accent)!important;color:#fff!important;border-color:transparent!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .community-navigation :is(.nav-item.active,.community-about-nav.active) svg {
+  color:#fff!important;
+}
+:root[data-wl-theme="dark"] .site .community-navigation :is(.nav-item.active,.community-about-nav.active),
+:root[data-wl-theme="dark"] .site .community-navigation :is(.nav-item.active,.community-about-nav.active) svg {
+  color:var(--wl-inverted)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .community-mission-path button {
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .community-mission-path :is(strong,small) {color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .community-mission-path svg {color:var(--wl-icon-copy)!important}
+
+/* Saved scans, including dates, expandable tips, and related headings. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .account-card .history-card {
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .history-card :is(h3,h4,strong,li,p,details,details summary) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .history-card time {color:var(--wl-subcopy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.account-card,.result-card) .round-icon,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .round-icon {
+  background:var(--wl-icon-surface)!important;color:var(--wl-icon-copy)!important;
+}
+
+/* Seven-day chart and activity totals on My Scans. Existing bar height and color remain. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .habit-snapshot {
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;box-shadow:0 6px 0 var(--wl-panel-shadow)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .habit-numbers>div {
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .habit-snapshot :is(h3,h4,.habit-numbers strong,.habit-numbers svg,.habit-plot-head svg) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .habit-snapshot :is(.habit-numbers span,.habit-day,.habit-caveat) {
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .habit-week {
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .habit-export {
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+
+/* Results: older CSS set dark green text even when the card background was dark. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .result-card {
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;box-shadow:0 7px 0 var(--wl-panel-shadow)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.result-title h2,.result-card h3,.result-card p,.result-card li,.result-title p,.material-line,.result-card summary) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.material-line,.type-badge,.question,.scan-audit-handoff) {
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .result-card svg {color:var(--wl-icon-copy)!important}
+/* Status warnings are deliberately excluded: caution colors communicate real sorting uncertainty. */
+
+/* Chat messages, input composer, contextual bar, and buttons. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.assistant-context,.assistant-composer,.chat-bubble,.chat-suggestions button) {
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .from-user .chat-bubble {
+  background:var(--wl-selected)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.assistant-welcome,.assistant-welcome p,.assistant-welcome h2,.assistant-context strong,.chat-wait,.chat-privacy summary,.chat-privacy p,.chat-footer button) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .assistant-composer textarea {
+  background:transparent!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.assistant-composer textarea,.finder-form input,.finder-row input,.auth-form input,.correction-form input,.hint-area input,.deposit-fields input,.deposit-fields select,.community-advice-buttons select)::placeholder {
+  color:var(--wl-subcopy)!important;opacity:1;
+}
+
+/* Inputs, tables, finder panels, and secondary informational surfaces. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.auth-form input,.correction-form input,.finder-form input,.finder-row input,.hint-area input,.assistant-composer textarea,.community-advice-buttons select,.community-ai-model select,.account-card input) {
+  background:var(--wl-surface-raised)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.community-advice-buttons select,.community-ai-model select,.deposit-fields select,.audit-observation-fields select) option {
+  background:var(--wl-paper);color:var(--wl-copy);
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .admin-stats>div,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .table-wrap th {
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .admin-stats :is(strong,span),
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .table-wrap :is(th,td) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .table-wrap :is(th,td) {border-color:var(--wl-stroke)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.map-summary,.map-filters,.map-disclaimer,.map-visit-info,.finder-outcome) {
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.map-summary h4,.map-summary p,.map-summary-stats,.map-summary-stats span,.map-summary h4 .map-zip,.map-disclaimer,.map-visit-info p,.map-visit-info summary) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.map-filter,.facility-item) {
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.map-filter.chosen,.facility-item.selected) {
+  background:var(--wl-selected)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .map-filter span {
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.account-privacy,.privacy-details,.league-rules) {
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.account-privacy summary,.privacy-details summary,.account-privacy p,.privacy-details p) {
+  color:var(--wl-copy)!important;
+}
+
+/* Keyboard focus must not disappear on the dark background. */
+:root[data-wl-theme="dark"] .site :is(button,a,input,select,textarea,summary):focus-visible {
+  outline:3px solid #f5c778!important;outline-offset:3px;
+}
+
+/* The finder results panel is a separate surface from the actual Leaflet map.
+   Do not theme map tiles or popups, which retain their own readable styling. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.free-map-shell,.facility-side-panel,.facility-side-heading,.location-card) {
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .location-card.picked {
+  background:var(--wl-selected)!important;box-shadow:inset 3px 0 var(--wl-accent)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .location-card:hover {
+  background:var(--wl-surface)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.facility-side-heading strong,.location-card strong,.no-map-results strong,.no-map-results p,.location-info small,.location-meta,.location-tags,.location-phone,.facility-side-heading small) {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .location-index {
+  background:var(--wl-icon-surface)!important;color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .map-corner-label {
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
