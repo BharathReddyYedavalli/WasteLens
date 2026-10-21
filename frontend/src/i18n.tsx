@@ -9,6 +9,20 @@ export const LANGUAGES: { code: Language; label: string }[] = [
 ];
 
 const strings: Record<string, { es: string; hi: string }> = {
+  "Scan an item, then check how your local program handles it.": {
+    es: "Escanea un objeto y comprueba cómo lo gestiona tu servicio local.",
+    hi: "किसी वस्तु को स्कैन करें, फिर देखें कि आपकी स्थानीय सेवा इसे कैसे संभालती है।"
+  },
+  "Suggested next action": { es: "Siguiente paso sugerido", hi: "सुझाया गया अगला कदम" },
+  "Confirm the item before sorting": { es: "Identifica el objeto antes de separarlo", hi: "छँटाई से पहले वस्तु की पुष्टि करें" },
+  "AI suggestion, not a confirmed local bin rule.": {
+    es: "Es una sugerencia de IA, no una norma local confirmada.",
+    hi: "यह AI का सुझाव है, पुष्टि किया हुआ स्थानीय नियम नहीं।"
+  },
+  "Count where items end up at school or work. Find patterns to improve sorting.": {
+    es: "Cuenta dónde acaban los residuos en tu escuela o trabajo para mejorar la separación.",
+    hi: "स्कूल या काम पर वस्तुएँ किस डिब्बे में जाती हैं, गिनें और छँटाई के रुझान पहचानें।"
+  },
   "Scan": { es: "Escanear", hi: "स्कैन करें" },
   "Ask": { es: "Preguntar", hi: "पूछें" },
   "Find a place": { es: "Buscar un lugar", hi: "केंद्र खोजें" },

@@ -376,3 +376,35 @@ All discovery responses are marked `unverified`,
 remain unchanged. A state website is a reference, not a promise that an item
 or facility is accepted. The bundled ZIP postal dataset can be incomplete;
 unknown ZIPs return an explicit lookup error rather than guessing.
+
+
+### Point-of-disposal presentation (Stage 4)
+
+**Better recycling starts at the bin.** WasteLens is an interactive web prototype
+intended to help people make an informed decision *before* choosing a bin. The
+homepage keeps **“Before you toss it, scan it.”** After a scan, the prominent
+next-action panel shows the **AI's suggested route, not a verified local
+acceptance rule**. If the item is uncertain, it asks for confirmation instead.
+The checklist, official-program checker (including Stage 3 discovery), map,
+chat, reuse, and self-reported action recording remain available.
+
+The panel's **Check local rules** button opens the existing ZIP/program
+checker rather than inventing or automating a recycling decision. The
+**Waste audit** tab lets a school or office tally manually observed items by
+destination and review sorting patterns. Audit observations cannot establish
+actual recycling or measured environmental savings.
+
+**Proposed use case:** A school could eventually run the web interface beside
+waste bins on a tablet or kiosk to prompt decisions at the point of disposal.
+This repo is **not** a deployed physical kiosk; no school deployment,
+on-site pilot, measured diversion improvement, or school-partner approval is
+claimed. Before public deployment, a school would need to validate site-
+specific hauler rules, access and privacy, hardware, connectivity, and any
+necessary permissions.
+
+To review Stage 4, scan a recognizable item, confirm the action panel appears
+before the checklist, open **Check local rules**, and verify that unknown
+ZIPs still display unverified discovery references rather than fabricated
+local acceptance. Then check the **About** and **Waste audit** pages in all
+six themes and on a mobile viewport. CI checks structural invariants and
+builds but does not replace visual or live AI tests.
