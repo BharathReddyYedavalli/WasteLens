@@ -56,7 +56,7 @@ Prerequisites: Python 3.11, Node.js 22+, and a **Gemini API key** obtained from 
 - `GET /api/scans`, `POST /api/scans/{id}/feedback` — a signed-in user's own last 200 item analyses and Yes/No/correction.
 - `GET /api/admin/overview`, `/api/admin/users`, `/api/admin/feedback` — read-only data scoped to the seeded administrator role.
 
-Current free-tier model options: `gemini-3.8-flash` (default) and `gemini-3.5-flash-lite` (comparison). Google's account-specific free tier limits change; check https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/gemini-api/docs/rate-limits before relying on free usage.
+WasteLens uses `gemini-3.5-flash-lite` for all new scanner, chat, audit-advice, and bottle-label requests, without a model picker. Older scan histories retain their original model IDs. Google's account-specific free tier limits change; check https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/gemini-api/docs/rate-limits before relying on free usage.
 
 ## User privacy / limits
 
