@@ -6,32 +6,32 @@ import { actionHeaders } from "./AccountArea";
 import DocumentaryStory from "./DocumentaryStory";
 
 const quiz=[
-  {id:"ca",question:"In California, how much is CRV for a regular 24 oz eligible bottle?",
-    options:[["ca5","5 cents"],["ca10","10 cents"],["ca25","25 cents"]]},
-  {id:"mi",question:"Can an ordinary still water bottle earn Michigan's 10¢ deposit?",
-    options:[["mi_yes","Yes, every water bottle"],["mi_no","No, ordinary water isn't covered"],["mi_all","Only if it's blue"]]},
-  {id:"or",question:"What is a special Oregon bottle bill rule?",
-    options:[["or_all","All wine bottles qualify"],["or_can","Qualifying wine in a metal can may qualify"],["or_none","Wine is always excluded"]]},
-  {id:"hi",question:"Does Hawaii refund its separate 1¢ container fee?",
-    options:[["hi_yes","Yes, you get 6¢ back"],["hi_fee","No, only the 5¢ deposit is refundable"],["hi_none","There is no deposit"]]},
-  {id:"state",question:"What's essential before returning a deposit bottle?",
-    options:[["anywhere","Return it in any deposit state"],["same_state","Confirm the deposit was paid in that state"],["all_plastic","All plastic bottles qualify"]]},
+  {id:"reuse",question:"What's an easy way to use fewer single-use bottles?",
+    options:[["refill","Use a refillable bottle"],["more_bottles","Buy extra single-use bottles"],["throw_away","Throw bottles away sooner"]]},
+  {id:"symbol",question:"Does the recycling symbol guarantee an item is accepted near you?",
+    options:[["symbol_yes","Yes, everywhere"],["check_rules","No, check local collection rules"],["only_green","Only if the bottle is green"]]},
+  {id:"ocean",question:"What can happen to plastic litter left outdoors?",
+    options:[["disappear","It disappears quickly"],["rivers","It can reach rivers and oceans"],["become_food","It turns into food for wildlife"]]},
+  {id:"deposit",question:"Why return an eligible deposit bottle?",
+    options:[["return_deposit","You may get a deposit refund"],["return_all","Every bottle earns money everywhere"],["bury","It is better to bury it"]]},
+  {id:"prevention",question:"What helps stop waste before it reaches a beach or river?",
+    options:[["leave_it","Leave it for a cleanup team"],["prevent_litter","Reuse items and dispose of waste responsibly"],["ocean_dump","Put unwanted plastic in the water"]]},
 ];
 
 const translatedQuiz: Record<"es"|"hi",{question:string;options:string[]}[]> = {
   es:[
-    {question:"En California, ¿cuánto vale un envase elegible de 24 onzas?",options:["5 centavos","10 centavos","25 centavos"]},
-    {question:"¿Una botella común de agua natural recibe 10¢ en Míchigan?",options:["Sí, todas","No, el agua natural no está incluida","Solo si es azul"]},
-    {question:"¿Qué regla especial tiene Oregón?",options:["Toda botella de vino está incluida","Ciertos vinos en lata pueden estar incluidos","Ningún vino está incluido"]},
-    {question:"¿Hawái devuelve la tarifa adicional de 1¢?",options:["Sí, devuelve 6¢","No, solo devuelve el depósito de 5¢","No existe ningún depósito"]},
-    {question:"¿Qué debes comprobar antes de devolver una botella?",options:["Puedo devolverla en cualquier estado","Que se pagó el depósito en ese estado","Toda botella de plástico está incluida"]},
+    {question:"¿Cómo puedes usar menos botellas desechables?",options:["Usa una botella rellenable","Compra más botellas desechables","Tira las botellas antes"]},
+    {question:"¿El símbolo de reciclaje garantiza que acepten un objeto cerca de ti?",options:["Sí, en todas partes","No, consulta las reglas locales","Solo si la botella es verde"]},
+    {question:"¿Qué puede pasar con el plástico tirado al aire libre?",options:["Desaparece enseguida","Puede llegar a ríos y océanos","Se convierte en comida para animales"]},
+    {question:"¿Por qué devolver una botella elegible con depósito?",options:["Puedes recuperar el depósito","Todas las botellas pagan en cualquier lugar","Es mejor enterrarla"]},
+    {question:"¿Qué ayuda a evitar que la basura llegue a ríos o playas?",options:["Déjala para una limpieza","Reutiliza y desecha correctamente","Tira el plástico al agua"]},
   ],
   hi:[
-    {question:"कैलिफ़ोर्निया में 24 औंस की पात्र बोतल पर कितने सेंट मिलते हैं?",options:["5 सेंट","10 सेंट","25 सेंट"]},
-    {question:"क्या मिशिगन में साधारण पानी की बोतल पर 10 सेंट मिलते हैं?",options:["हाँ, हर बोतल पर","नहीं, साधारण पानी शामिल नहीं है","सिर्फ नीली बोतल पर"]},
-    {question:"ओरेगन का कौन सा नियम सही है?",options:["हर वाइन बोतल शामिल है","कुछ वाइन के धातु कैन पात्र हैं","कोई वाइन पात्र नहीं है"]},
-    {question:"क्या हवाई अलग 1 सेंट शुल्क वापस करता है?",options:["हाँ, 6 सेंट वापस","नहीं, केवल 5 सेंट जमा राशि","कोई जमा शुल्क नहीं है"]},
-    {question:"बोतल जमा करने से पहले क्या जाँचना चाहिए?",options:["किसी भी राज्य में लौटाएँ","उस राज्य में जमा राशि दी गई थी","हर प्लास्टिक बोतल पात्र है"]},
+    {question:"कम डिस्पोज़ेबल बोतलें इस्तेमाल करने का आसान तरीका क्या है?",options:["दोबारा भरी जा सकने वाली बोतल इस्तेमाल करें","और डिस्पोज़ेबल बोतलें खरीदें","बोतलें जल्दी फेंक दें"]},
+    {question:"क्या रीसायक्लिंग का चिन्ह साबित करता है कि स्थानीय सेवा वस्तु लेगी?",options:["हाँ, हर जगह","नहीं, स्थानीय नियम जाँचें","सिर्फ हरी बोतल के लिए"]},
+    {question:"बाहर फेंके गए प्लास्टिक कचरे का क्या हो सकता है?",options:["जल्दी गायब हो जाता है","नदी और समुद्र तक पहुँच सकता है","जानवरों का भोजन बन जाता है"]},
+    {question:"पात्र जमा वाली बोतल वापस क्यों करें?",options:["जमा राशि वापस मिल सकती है","हर बोतल से हर जगह पैसे मिलते हैं","उसे दबाना बेहतर है"]},
+    {question:"कचरा नदी या समुद्र तट तक पहुँचने से कैसे रोकें?",options:["सफ़ाई टीम के लिए छोड़ दें","दोबारा उपयोग करें और कचरा सही जगह डालें","प्लास्टिक पानी में डाल दें"]},
   ],
 };
 
