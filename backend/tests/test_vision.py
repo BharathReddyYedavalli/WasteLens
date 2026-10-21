@@ -51,7 +51,7 @@ def test_reuse_project_schema_and_backwards_compatibility():
 
 @pytest.mark.parametrize("provider_code,expected_status,expected_hint", [
     (429, 429, "request limit"),
-    (404, 502, "other model"),
+    (404, 502, "model availability"),
     (401, 502, "API key"),
     (403, 502, "API key"),
     (400, 502, "request"),
