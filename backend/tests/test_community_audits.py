@@ -167,3 +167,8 @@ def test_audit_spot_checks_do_not_turn_into_ai_impact_claims(tmp_path, monkeypat
         assert result.status_code == 200
         assert result.json()["source"] == "practical"
         assert "verified" not in " ".join(result.json()["suggestions"]).lower()
+
+def test_audit_suggestion_default_model_is_flash_lite():
+    from app.community_audits import AuditSuggestions
+    payload = AuditSuggestions(title="Lunch", counts={"trash": 2})
+    assert payload.model_id == "gemini-3.5-flash-lite"
