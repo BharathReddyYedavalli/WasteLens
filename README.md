@@ -320,9 +320,8 @@ inferred from these fields. Consult the linked state page before traveling.
 
 ### A Bottle's Journey tab
 
-An original **long illustrated scroll experience** tells a ten-chapter story,
-with current source links for claims and original embedded vector drawings
-rather than copying Neal.fun assets. At the very bottom is a five-question
+An original **long-form illustrated scroll experience** uses real
+photos and source links to tell a seven-chapter story. At the very bottom is a five-question
 quiz about reuse, litter, recycling symbols, and deposit returns. Correct
 answers are validated by the backend. Four out of five earns the Bottle
 Explorer badge and **30 XP exactly once** for each signed-in user. Anonymous visitors can learn and submit but cannot earn account XP.
