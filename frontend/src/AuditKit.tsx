@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, CalendarDays, Check, ChevronDown, ClipboardList, Download, FilePlus2, Lightbulb, LoaderCircle, LockKeyhole, PieChart, Printer, Save, Sparkles, Trash2, Undo2 } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, ClipboardList, Download, FilePlus2, Lightbulb, LoaderCircle, LockKeyhole, PieChart, Printer, Save, Sparkles, Trash2, Undo2 } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { SessionUser } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
@@ -383,7 +383,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
     {total>0&&<div className="community-advice">
       <div className="community-advice-heading"><Lightbulb size={25}/><div>
         <h2>{t("Turn findings into community action")}</h2>
-        <p>{t("Only the audit name and counts go to Gemini when you ask.")}</p>
+        
       </div></div>
       <div className="community-advice-buttons">
         <button type="button" disabled={!total||adviceBusy} onClick={()=>void suggest()}>
@@ -416,23 +416,10 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
                 <Trash2 size={17}/>{t("Delete")}</button></div>
           </div>)}
         </div>}
-      {user&&saved.length>1&&<details className="community-comparison"><summary><BarChart3 size={18}/>{t("Compare saved audits")}</summary>
-        <p>{t("Compare similar activities and time periods.")}</p>
-        {saved.slice(0,6).reverse().map(item=>{
-          const problem=(item.counts.trash||0)+(item.counts.unsure||0);
-          const percent=item.item_count?Math.round(100*problem/item.item_count):0;
-          return <div className="community-comparison-row" key={item.id}>
-            <span title={item.title}>{item.title}</span>
-            <div className="community-comparison-track" role="progressbar"
-              aria-label={item.title+" "+percent+"%"} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}>
-              <span style={{width:percent+"%"}}/>
-            </div><strong>{percent}%</strong>
-          </div>;
-        })}
-      </details>}
+
     </div>
     <details className="audit-note"><summary>{t("About these numbers")}</summary>
-      <p>{t("These are human-entered observations, not proof of recycling, diversion or carbon savings. Saved audits belong to your account on this server. Drafts stay in this browser, and separate local servers do not synchronize.")}</p>
+      <p>{t("These are human-entered observations, not proof of recycling, diversion or carbon savings. When you request AI suggestions, only the audit name and category counts go to Gemini. Saved audits belong to your account on this server. Drafts stay in this browser, and separate local servers do not synchronize.")}</p>
     </details>
   </section>;
 }
