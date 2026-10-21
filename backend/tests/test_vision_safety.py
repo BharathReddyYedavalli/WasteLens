@@ -149,7 +149,7 @@ def test_unhelpful_location_keyword_discarded_when_location_not_needed():
 def test_broken_upload_reported_before_missing_api_key(monkeypatch):
     monkeypatch.setattr("app.vision.configured", lambda: False)
     with pytest.raises(InvalidPhoto):
-        analyze_photo(b"not a real photo", "gemini-3.8-flash")
+        analyze_photo(b"not a real photo", "gemini-3.5-flash-lite")
 
 
 def test_mocked_gemini_response_runs_through_safety_before_return(monkeypatch):
@@ -161,7 +161,7 @@ def test_mocked_gemini_response_runs_through_safety_before_return(monkeypatch):
     )
 
     def mock_generate_content(**kwargs):
-        assert kwargs["model"] == "gemini-3.8-flash"
+        assert kwargs["model"] == "gemini-3.5-flash-lite"
         return SimpleNamespace(text=model_answer.model_dump_json())
 
     fake_client = SimpleNamespace(
@@ -173,7 +173,7 @@ def test_mocked_gemini_response_runs_through_safety_before_return(monkeypatch):
     buffer = BytesIO()
     image.save(buffer, format="PNG")
 
-    analyzed = analyze_photo(buffer.getvalue(), "gemini-3.8-flash")
+    analyzed = analyze_photo(buffer.getvalue(), "gemini-3.5-flash-lite")
     assert analyzed.route == "special_dropoff"
     assert analyzed.reuse_projects == []
     assert all("Cut the battery apart" not in x for x in analyzed.disposal_steps)
