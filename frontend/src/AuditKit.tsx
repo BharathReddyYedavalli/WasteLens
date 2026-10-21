@@ -395,9 +395,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
       {advice&&<div className="community-advice-result" aria-live="polite">
         <span className="community-recommendation-source">{advice.source==="gemini"?t("AI-generated ideas"):t("Practical recommendations")}</span>
         <ol>{advice.suggestions.map((item,i)=><li key={i}>{item}</li>)}</ol>
-        <p>{advice.source==="gemini"
-          ?t("AI-generated from manually observed counts. Verify materials and local acceptance before acting.")
-          :t("Gemini was unavailable. These suggestions use category-based guidance instead.")}</p>
+        {advice.source!=="gemini"&&<p>{t("Gemini was unavailable. These suggestions use category-based guidance instead.")}</p>}
         <ReadAloudButton id="community-audit-advice" category="steps" text={advice.suggestions.join(". ")}/>
       </div>}
     </div>}
