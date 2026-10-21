@@ -1,4 +1,4 @@
-import { BookOpen, HeartHandshake, Leaf, MapPin, Recycle, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { BookOpen, HeartHandshake, Leaf, MapPin, Recycle, Sparkles, Users } from "lucide-react";
 import { useLanguage } from "./i18n";
 
 export default function AboutWasteLens({onScan,onAudit,onJourney}:{
@@ -31,11 +31,6 @@ export default function AboutWasteLens({onScan,onAudit,onJourney}:{
         "सफ़ाई और स्कूल-कचरा सर्वेक्षण दर्ज करें, रुझान देखें और अगला कार्यक्रम बेहतर बनाएँ।")}</p></article>
     </div>
     <div className="community-about-footer">
-      <p><ShieldCheck size={20}/>{tr(
-        "A scan or audit does not prove something was recycled. Always check local rules.",
-        "Un escaneo o una auditoría no demuestra que algo se recicló. Comprueba las normas locales.",
-        "स्कैन या सर्वेक्षण से रीसायक्लिंग साबित नहीं होती। स्थानीय नियम ज़रूर जाँचें।"
-      )}</p>
       <div className="community-about-links">
         <button type="button" onClick={onScan}><Recycle size={17}/>{tr("Start with a scan","Empezar a escanear","स्कैन करें")}</button>
         <button type="button" onClick={onAudit}><MapPin size={17}/>{tr("Plan a cleanup audit","Preparar una auditoría","सफ़ाई सर्वेक्षण शुरू करें")}</button>
