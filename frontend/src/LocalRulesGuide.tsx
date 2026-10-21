@@ -156,9 +156,6 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
     <summary><MapPin size={19}/>{t("Check local recycling rules")}
       <ChevronDown size={17} className="local-rules-chevron"/></summary>
     <div className="local-rules-body">
-      <p className="local-rules-scope">
-        {t("WasteLens works nationwide. Verified municipal rules are available for selected residential programs only.")}
-      </p>
       <div className="local-rules-controls">
         <label htmlFor="local-rule-zip">{t("Your ZIP code")}
           <input id="local-rule-zip" inputMode="numeric" autoComplete="postal-code"
