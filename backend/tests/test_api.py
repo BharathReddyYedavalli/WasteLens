@@ -76,3 +76,9 @@ def test_bad_image_rejected_by_validator():
         assert False
     except InvalidPhoto:
         pass
+
+def test_retired_flash_model_rejected_before_provider_request():
+    r = client.post("/api/ai/analyze",
+        data={"model_id": "gemini-3.8-flash"},
+        files={"image": ("photo.jpg", b"not-processed", "image/jpeg")})
+    assert r.status_code == 400
