@@ -7,7 +7,9 @@ improve their services. Never log photo bytes, API keys or provider responses.
 from __future__ import annotations
 
 from io import BytesIO
+import logging
 import os
+import random
 import time
 from pathlib import Path
 from typing import Literal
@@ -25,6 +27,13 @@ MODELS = {
 }
 MAX_BYTES = 8 * 1024 * 1024
 MAX_PIXELS = 25_000_000
+
+# Keep retries owned by the scanner; the Google SDK can also retry internally.
+# The cap avoids multiplying two independent retry policies when Gemini is busy.
+SCAN_HTTP_TIMEOUT_MS = 30_000
+SCAN_MAX_ATTEMPTS = 3
+SCAN_RETRY_CODES = frozenset({500, 502, 503, 504})
+logger = logging.getLogger(__name__)
 
 PROMPT = """You are WasteLens, an image-based assistant for US household waste sorting.
 Focus on the item the person intends to sort, not the person's shirt or room.
@@ -191,7 +200,13 @@ def analyze_photo(
            "If several objects are present, focus on the prominent object only when clear.")
     )
     try:
-        client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        client = genai.Client(
+            api_key=os.environ["GEMINI_API_KEY"],
+            http_options=types.HttpOptions(
+                timeout=SCAN_HTTP_TIMEOUT_MS,
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
+        )
         contents = [types.Part.from_bytes(data=safe_jpeg, mime_type="image/jpeg"), user_prompt]
         config = types.GenerateContentConfig(
             system_instruction=PROMPT,
@@ -199,22 +214,33 @@ def analyze_photo(
             response_schema=ItemAnalysis,
             max_output_tokens=4096,
         )
-        # One bounded retry for Google-side transient errors. Do not retry 429,
-        # rejected credentials, invalid requests, or unknown statuses.
-        for attempt in range(2):
+        start_time = time.monotonic()
+        for attempt in range(SCAN_MAX_ATTEMPTS):
             try:
                 response = client.models.generate_content(
                     model=model_id, contents=contents, config=config,
                 )
                 break
             except APIError as exc:
-                if attempt == 0 and getattr(exc, "code", None) in (500, 502, 503, 504):
-                    time.sleep(1.0)
-                    continue
-                raise
+                code = getattr(exc, "code", None)
+                elapsed = time.monotonic() - start_time
+                # Never log the provider exception body, image, user hint, or API key.
+                logger.warning(
+                    "Gemini scanner request failed: status=%s attempt=%d/%d elapsed_s=%.1f",
+                    code, attempt + 1, SCAN_MAX_ATTEMPTS, elapsed,
+                )
+                if code not in SCAN_RETRY_CODES or attempt + 1 == SCAN_MAX_ATTEMPTS:
+                    raise
+                # Retry only short-lived server failures, with capped exponential
+                # backoff and jitter; quota and credential errors must not loop.
+                time.sleep(min(2 ** attempt, 2) + random.uniform(0, 0.4))
         if not response.text:
             raise AIUnavailable("The AI did not return an item analysis. Try another clear photo.", 502)
         analysis = ItemAnalysis.model_validate_json(response.text)
+        logger.info(
+            "Gemini scanner succeeded: model=%s attempts=%d elapsed_s=%.1f",
+            model_id, attempt + 1, time.monotonic() - start_time,
+        )
     except APIError as exc:
         reason, status = explain_provider_error(getattr(exc, "code", None))
         raise AIUnavailable(reason, status) from exc
