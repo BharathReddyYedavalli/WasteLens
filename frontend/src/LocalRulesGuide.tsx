@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, ChevronDown, ExternalLink, MapPin, ShieldAlert } from "lucide-react";
 import { useLanguage } from "./i18n";
 
+type CollectionContext = "residential" | "school" | "commercial";
+
 type Category = { id: string; label: string };
 type Program = {
   id: string; name: string; city: string; state: string;
@@ -41,7 +43,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [selectedProgram, setSelectedProgram] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
-  const [collectionType, setCollectionType] = useState<"residential" | "school" | "commercial">("residential");
+  const [collectionType, setCollectionType] = useState<CollectionContext>("residential");
   const [confirmed, setConfirmed] = useState(false);
   const [result, setResult] = useState<RuleResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -49,6 +51,44 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
   const pendingCheck = useRef<AbortController | null>(null);
   const [error, setError] = useState("");
   const validZip = /^\d{5}$/.test(zipCode.trim());
+
+  function clearPendingRuleCheck() {
+    pendingCheck.current?.abort();
+    pendingCheck.current = null;
+    setChecking(false);
+    setResult(null);
+  }
+
+  function updateZipCode(value: string) {
+    clearPendingRuleCheck();
+    setConfirmed(false);
+    onZipChange(value.replace(/\D/g, "").slice(0, 5));
+  }
+
+  function updateCollectionType(nextType: CollectionContext) {
+    clearPendingRuleCheck();
+    setCollectionType(nextType);
+    setConfirmed(false);
+    setSelectedProgram("");
+  }
+
+  function updateProgram(programId: string) {
+    clearPendingRuleCheck();
+    setSelectedProgram(programId);
+    setConfirmed(false);
+    setError("");
+  }
+
+  function updateItem(itemId: string) {
+    clearPendingRuleCheck();
+    setSelectedItem(itemId);
+    setError("");
+  }
+
+  function updateConfirmation(isConfirmed: boolean) {
+    clearPendingRuleCheck();
+    setConfirmed(isConfirmed);
+  }
 
   useEffect(() => {
     // Reset the source and confirmation when the ZIP changes. A previous
@@ -77,10 +117,12 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
     return () => controller.abort();
   }, [open, zipCode, validZip]);
 
-  const matches = useMemo(
-    () => catalog?.programs.filter(p => p.postal_area_match) ?? [], [catalog]
+  const matchingPrograms = useMemo(
+    () => catalog?.programs.filter(program => program.postal_area_match) ?? [],
+    [catalog]
   );
-  async function check() {
+
+  async function checkSelectedRule() {
     if (!validZip || !catalog || !selectedProgram || !selectedItem || !confirmed
       || collectionType !== "residential" || checking) return;
     pendingCheck.current?.abort();
@@ -108,7 +150,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
     }
   }
 
-  const selected = matches.find(p => p.id === selectedProgram);
+  const currentProgram = matchingPrograms.find(program => program.id === selectedProgram);
   return <details className="local-rules-checker" open={open}
     onToggle={event => setOpen(event.currentTarget.open)}>
     <summary><MapPin size={19}/>{t("Check local recycling rules")}
@@ -121,18 +163,11 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
         <label htmlFor="local-rule-zip">{t("Your ZIP code")}
           <input id="local-rule-zip" inputMode="numeric" autoComplete="postal-code"
             maxLength={5} pattern="[0-9]{5}" placeholder="e.g. 75070 or 94103"
-            value={zipCode} onChange={event=>{
-              pendingCheck.current?.abort();setResult(null);setConfirmed(false);
-              onZipChange(event.target.value.replace(/\D/g,"").slice(0,5));
-            }}/>
+            value={zipCode} onChange={event => updateZipCode(event.target.value)}/>
         </label>
         <label htmlFor="local-rule-context">{t("Where is the waste collected?")}
           <select id="local-rule-context" value={collectionType}
-            onChange={event => {
-              setCollectionType(event.target.value as "residential"|"school"|"commercial");
-              pendingCheck.current?.abort();setChecking(false);
-              setConfirmed(false);setSelectedProgram("");setResult(null);
-            }}>
+            onChange={event => updateCollectionType(event.target.value as CollectionContext)}>
             <option value="residential">{t("At home (residential)")}</option>
             <option value="school">{t("At school")}</option>
             <option value="commercial">{t("At a business")}</option>
@@ -147,7 +182,7 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
       </p>}
       {validZip&&catalog&&collectionType!=="residential"&&
         <p className="local-rules-scope" role="status">{t("School and business waste services use site-specific contracts. Ask your facility or hauler for its accepted-material list.")}</p>}
-      {validZip&&catalog&&collectionType==="residential"&&matches.length===0&&
+      {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length===0&&
         <div className="local-rule-result local-rule-unverified" role="status">
           <div className="local-rule-result-head"><ShieldAlert size={19}/>
             <strong>{t("No verified residential program for this ZIP yet")}</strong></div>
@@ -155,22 +190,16 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
           <a href="https://www.epa.gov/recycle" target="_blank" rel="noopener noreferrer">
             {t("General EPA recycling guidance")} <ExternalLink size={15}/></a>
         </div>}
-      {validZip&&catalog&&collectionType==="residential"&&matches.length>0&&<>
+      {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length>0&&<>
         <div className="local-rules-controls">
           <label htmlFor="local-rule-program">{t("Confirm your collection program")}
-            <select id="local-rule-program" value={selectedProgram} onChange={event=>{
-              pendingCheck.current?.abort();setChecking(false);
-              setSelectedProgram(event.target.value);setConfirmed(false);setResult(null);setError("");
-            }}>
+            <select id="local-rule-program" value={selectedProgram} onChange={event => updateProgram(event.target.value)}>
               <option value="">{t("Select your actual service")}</option>
-              {matches.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+              {matchingPrograms.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           </label>
           <label htmlFor="local-rule-category">{t("Confirm the item type")}
-            <select id="local-rule-category" value={selectedItem} onChange={event=>{
-              pendingCheck.current?.abort();setChecking(false);
-              setSelectedItem(event.target.value);setResult(null);setError("");
-            }}>
+            <select id="local-rule-category" value={selectedItem} onChange={event => updateItem(event.target.value)}>
               <option value="">{t("Choose an item")}</option>
               {catalog.categories.map(item=><option key={item.id} value={item.id}>{t(item.label)}</option>)}
             </select>
@@ -178,14 +207,14 @@ export default function LocalRulesGuide({ zipCode, onZipChange }: Props) {
         </div>
         <label className="local-rules-confirm">
           <input type="checkbox" checked={confirmed} disabled={!selectedProgram}
-            onChange={event=>{pendingCheck.current?.abort();setChecking(false);setConfirmed(event.target.checked);setResult(null);}}/>
+            onChange={event => updateConfirmation(event.target.checked)}/>
           <span>{t("I confirm this city residential collection program serves my address.")}</span>
         </label>
-        <button type="button" className="local-rule-check-button" onClick={()=>void check()}
-          disabled={!selected||!selectedItem||!confirmed||checking}>
+        <button type="button" className="local-rule-check-button" onClick={()=>void checkSelectedRule()}
+          disabled={!currentProgram||!selectedItem||!confirmed||checking}>
           {checking?t("Checking…"):t("Check the official rule")}
         </button>
-        {selected&&<p className="local-rules-scope">{t("Guidance is for this selected residential service, not school, commercial, or neighboring city bins.")}</p>}
+        {currentProgram&&<p className="local-rules-scope">{t("Guidance is for this selected residential service, not school, commercial, or neighboring city bins.")}</p>}
       </>}
       {error&&<p role="alert" className="local-rules-error">{error}</p>}
       {result&&<div className={"local-rule-result local-rule-"+result.status} role="status">
