@@ -165,3 +165,13 @@ def test_invalid_structured_response_is_not_retried(gemini_stub):
     assert "invalid result" in caught.value.reason
     assert len(gemini_stub.attempts) == 1
     assert gemini_stub.sleeps == []
+
+def test_installed_google_sdk_supports_scanner_transport_policy():
+    from google.genai import types
+
+    options = types.HttpOptions(
+        timeout=vision.SCAN_HTTP_TIMEOUT_MS,
+        retry_options=types.HttpRetryOptions(attempts=1),
+    )
+    assert options.timeout == vision.SCAN_HTTP_TIMEOUT_MS
+    assert options.retry_options.attempts == 1
