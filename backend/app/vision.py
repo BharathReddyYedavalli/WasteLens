@@ -20,10 +20,9 @@ from pydantic import BaseModel, Field, ValidationError
 from .vision_safety import review_sorting_safety
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MODEL = "gemini-3.8-flash"
+DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MODELS = {
-    DEFAULT_MODEL: "Gemini 3.8 Flash · recommended",
-    "gemini-3.5-flash-lite": "Gemini 3.5 Flash-Lite · faster alternative",
+    DEFAULT_MODEL: "Gemini 3.5 Flash-Lite",
 }
 MAX_BYTES = 8 * 1024 * 1024
 MAX_PIXELS = 25_000_000
@@ -127,16 +126,16 @@ def explain_provider_error(code: int | None) -> tuple[str, int]:
                 "or check your Google AI Studio quota.", 429)
     if code == 404:
         return ("Google couldn't find or grant access to this Gemini model (HTTP 404). "
-                "Try the other model in Change AI model.", 502)
+                "Retry shortly or check model availability in Google AI Studio.", 502)
     if code in (401, 403):
         return ("Google rejected this API key or project permission (HTTP " + str(code) + "). "
                 "Check the key and API access in Google AI Studio.", 502)
     if code == 400:
         return ("Google rejected the analysis request (HTTP 400). "
-                "The request format or selected model may be incompatible. Try the other model.", 502)
+                "Check the request and model availability.", 502)
     if code in (500, 502, 503, 504):
         return ("Google Gemini is temporarily unavailable or overloaded (HTTP " + str(code) + "). "
-                "Wait a minute, then retry or choose the other AI model.", 502)
+                "Wait a moment and retry.", 502)
     if code is not None:
         return ("Google Gemini returned an error (HTTP " + str(code) + "). "
                 "Check your AI Studio project and try again.", 502)
