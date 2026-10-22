@@ -120,10 +120,9 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
         <button aria-label="Send message" title="Send message" type="submit"
           disabled={busy || !configured || !input.trim()}><ArrowUp size={19}/></button>
       </form>
-      <div className="chat-footer">
-        <details className="chat-privacy"><summary>Privacy</summary><p>Questions and scan details go to Gemini; your photo is not resent. Chats stay in this browser session. Google may use free-tier content to improve its services.</p></details>
-        {messages.length > 0 && <button type="button" disabled={busy} onClick={() => {setMessages([]);setError("");}}><Trash2 size={14}/> {t("Clear chat")}</button>}
-      </div>
+      {messages.length > 0 && <div className="chat-footer">
+        <button type="button" disabled={busy} onClick={() => {setMessages([]);setError("");}}><Trash2 size={14}/> {t("Clear chat")}</button>
+      </div>}
     </div>
   </section>;
 }

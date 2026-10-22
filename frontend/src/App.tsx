@@ -462,11 +462,6 @@ export default function App() {
             onChange={event => {setHint(event.target.value); setResult(null);}}
             placeholder="Example: The blue bottle I'm holding"/>
         </div>}
-        <div className="photo-privacy-summary"><ShieldAlert size={16}/> {t("Photos go to Google Gemini when you scan. Free tier data may be used to improve Google's services.")}</div>
-        <details className="privacy-details">
-          <summary>{t("Photo privacy")} <ChevronDown size={15}/></summary>
-          <p>Avoid faces and personal details in your photos. WasteLens does not save the photo. {user ? "Your item results are saved to your account." : "Sign in if you want to save your item results."}</p>
-        </details>
         {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>Add your Gemini API key in the <code>.env</code> file and restart the backend.</span></div>}
         {statusError && <ErrorText message={statusError}/>}
         {cameraError && <ErrorText message={cameraError}/>}

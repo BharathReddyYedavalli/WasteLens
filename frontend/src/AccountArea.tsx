@@ -159,7 +159,6 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     <p><strong>Name:</strong> {user.name}</p>
     <p><strong>Email:</strong> {user.email}</p>
     {user.role === "admin" && <p><strong>Role:</strong> Admin</p>}
-    <details className="account-privacy"><summary><LockKeyhole size={16}/> Privacy</summary><p>Your results are saved to your account. We do not save photos.</p></details>
     <button className="button outline" onClick={() => void logout()}>{t("Sign out")}</button>
     {error && <p className="inline-error" role="alert">{error}</p>}
   </section>;
