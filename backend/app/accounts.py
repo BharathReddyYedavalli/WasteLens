@@ -310,13 +310,15 @@ def my_scans(request: Request):
     user = require_user(request)
     with database() as db:
         records = db.execute(
-            """SELECT id,item_name,model_id,analysis_json,zip_code,feedback,correction,created_at
-               FROM scans WHERE user_id=? ORDER BY id DESC LIMIT 200""",
+            """SELECT s.id,s.item_name,s.model_id,s.analysis_json,s.zip_code,
+                      s.feedback,s.correction,s.created_at,a.action
+               FROM scans AS s LEFT JOIN scan_actions AS a ON a.scan_id=s.id
+               WHERE s.user_id=? ORDER BY s.id DESC LIMIT 200""",
             (user["id"],),
         ).fetchall()
     return {"scans": [
         {**{k: r[k] for k in ("id","item_name","model_id","zip_code","feedback","correction","created_at")},
-         "analysis": json.loads(r["analysis_json"])} for r in records
+         "analysis": json.loads(r["analysis_json"]), "action": r["action"]} for r in records
     ]}
 
 

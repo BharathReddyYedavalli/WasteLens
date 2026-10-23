@@ -39,7 +39,6 @@ export default function App() {
   const [preview, setPreview] = useState<PhotoPreview | null>(null);
   const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
-  const [auditFromScan, setAuditFromScan] = useState<string | null>(null);
   const [rulesOpenRequest, setRulesOpenRequest] = useState(0);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -53,9 +52,6 @@ export default function App() {
   const [correction, setCorrection] = useState("");
   const [feedbackError, setFeedbackError] = useState("");
   const [feedbackBusy, setFeedbackBusy] = useState(false);
-  const [recordedAction, setRecordedAction] = useState("");
-  const [actionBusy, setActionBusy] = useState(false);
-  const [actionError, setActionError] = useState("");
   const [celebration, setCelebration] = useState<{ scan: number; badge: WasteLensBadge } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -135,8 +131,6 @@ export default function App() {
     setFeedbackSent(null);
     setCorrectChoice(null);
     setFeedbackError("");
-    setRecordedAction("");
-    setActionError("");
     setCelebration(null);
     setRulesOpenRequest(0);
   }
@@ -229,8 +223,6 @@ export default function App() {
       if (newBadge && scanResult.scan_id) {
         setCelebration({ scan: scanResult.scan_id, badge: newBadge });
       }
-      setRecordedAction("");
-      setActionError("");
       setFeedbackSent(null);
       setCorrectChoice(null);
       setFeedbackError("");
@@ -284,36 +276,12 @@ export default function App() {
     } finally { setFeedbackBusy(false); }
   }
 
-  async function markAction(action: string) {
-    if (!result?.scan_id || !user || actionBusy) return;
-    setActionBusy(true);
-    setActionError("");
-    try {
-      await readJson(await fetch("/api/scans/" + result.scan_id + "/action", {
-        method: "POST", headers: actionHeaders, credentials: "same-origin",
-        body: JSON.stringify({action}),
-      }));
-      setRecordedAction(action);
-    } catch (reason) {
-      setActionError(reason instanceof Error ? reason.message : "Could not save that action.");
-    } finally {setActionBusy(false);}
-  }
-
   const analysis = result?.analysis;
   const needsConfirmation = Boolean(analysis && (analysis.identification !== "likely" || analysis.route === "needs_identification"));
   function openPage(next: typeof view) {
     stopCamera();
     setNavOpen(false);
-    setAuditFromScan(null);
     setView(next);
-  }
-  function recordObservedItem() {
-    if (!analysis) return;
-    stopCamera();
-    setNavOpen(false);
-    // This is a temporary navigation hint, not an audit entry or verification.
-    setAuditFromScan(analysis.item_name);
-    setView("audit");
   }
   function returnToScannedItem() {
     stopCamera();
@@ -496,7 +464,7 @@ export default function App() {
         </div>
         <ReadAloudButton id="scan-summary" category="scan" className="wl-scan-read"
           text={[analysis.item_name,analysis.route_title,analysis.material_guess,
-            analysis.visual_description,analysis.follow_up_question,...analysis.cautions].filter(Boolean).join(". ")}/>
+            analysis.visual_description,analysis.follow_up_question,...analysis.disposal_steps,...analysis.cautions].filter(Boolean).join(". ")}/>
         <div className="scan-decision" aria-label={t("Suggested next action")}>
           <div className="scan-decision-copy">
             <span className="scan-decision-label">{t("Suggested next action")}</span>
@@ -513,6 +481,7 @@ export default function App() {
           {analysis.disposal_steps.length > 0 && <section className="scan-quick-steps" aria-label={t("What to do with it")}>
             <h3>{t("What to do with it")}</h3>
             <ol>{analysis.disposal_steps.slice(0,3).map((step,index)=><li key={index}>{step}</li>)}</ol>
+            <ScanStepTools key={result?.scan_id ?? preview?.src ?? "tools"} analysis={analysis}/>
           </section>}
           {analysis.cautions.length > 0 && <p className="scan-primary-caution">
             <ShieldAlert size={18}/>{analysis.cautions[0]}
@@ -528,10 +497,6 @@ export default function App() {
             </button>
           </nav>
         </div>
-        <details className="scan-more-details" key={result?.scan_id ?? preview?.src ?? "details"}>
-          <summary><span>{t("More details")}</span><ChevronDown size={20} aria-hidden="true"/></summary>
-          <div className="stack scan-extra-content">
-            <ScanStepTools key={result?.scan_id ?? preview?.src ?? "tools"} analysis={analysis}/>
             {(analysis.reuse_projects?.length || analysis.reuse_ideas.length>0) ? <details className="scan-subdetails scan-reuse-details">
               <summary><Lightbulb size={18}/>{t("Give it another life")}<ChevronDown size={17}/></summary>
           <article className="result-card blue reuse-section">
@@ -573,15 +538,9 @@ export default function App() {
                   {analysis.cautions.slice(1).filter((c,i,a)=>c.trim()!==analysis.cautions[0]?.trim()&&a.indexOf(c)===i).map((c,i)=><li key={i}>{c}</li>)}
                 </ul>
               </details>}
-            <details className="scan-subdetails scan-feedback-details">
-              <summary><Check size={18}/>{t("Feedback and activity")}<ChevronDown size={17}/></summary>
-              <div className="scan-feedback-content">
-                <button type="button" className="scan-audit-link" onClick={recordObservedItem}>
-                  <ClipboardList size={18}/>{t("Record an observation")}
-                </button>
-          <article className="result-card muted">
-            <h3><Check size={21}/> {t("Was that right?")}</h3>
-            
+            <section className="scan-feedback-inline" aria-label={t("Was that right?")}>
+              <span className="scan-feedback-question"><Check size={17}/>{t("Was that right?")}</span>
+              <div className="scan-feedback-controls">
             <div className="feedback-actions">
               <button className={"button " + (correctChoice === "yes" ? "primary" : "outline")}
                 disabled={feedbackBusy} onClick={() => { setCorrectChoice("yes"); void submitFeedback(true); }}>
@@ -602,25 +561,8 @@ export default function App() {
             </div>}
             {feedbackSent && <p className="feedback-confirmed" role="status">{t("Thank you! Your")} {t(feedbackSent === "yes" ? "Yes" : "No")} {t("feedback was saved to your account.")}</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
-          </article>
-          {user && result?.scan_id && <article className="result-card action-card">
-            <h3><Check size={21}/> {t("What did you do with it?")}</h3>
-            <div className="action-choices">
-              {(["recycled", "reused", "composted", "donated"] as const).map(choice =>
-                <button type="button" key={choice} className={"button " + (recordedAction === choice ? "primary" : "outline")}
-                  disabled={actionBusy} onClick={() => void markAction(choice)}>
-                  {t(choice[0].toUpperCase() + choice.slice(1))}
-                </button>
-              )}
-            </div>
-            {recordedAction && <p className="action-confirmed">{t("Saved as")} {t(recordedAction[0].toUpperCase()+recordedAction.slice(1))}.</p>}
-            {actionError && <p className="inline-error" role="alert">{actionError}</p>}
-            
-          </article>}
               </div>
-            </details>
-          </div>
-        </details>
+            </section>
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
         <h1><MapPin size={30}/> {t("Find a place")}</h1>
@@ -643,7 +585,7 @@ export default function App() {
           onSignIn={() => setView("account")}
           onScan={() => setView("identifier")}
           onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit user={user} onSignIn={() => openPage("account")}
-          scannedItem={auditFromScan} onBackToScan={() => openPage("identifier")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
+          scannedItem={null} onBackToScan={() => openPage("identifier")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
         <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}

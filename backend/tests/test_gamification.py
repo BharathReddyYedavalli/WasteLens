@@ -131,6 +131,9 @@ def test_actions_belong_to_owner_and_do_not_increase_xp(client):
     assert client.post(url,headers=HEADERS,json={"action":"unknown"}).status_code == 422
     assert client.post(url,headers=HEADERS,json={"action":"recycled"}).status_code == 200
     assert client.post(url,headers=HEADERS,json={"action":"reused"}).status_code == 200
+    # My Activity must be able to display the saved action on each scan.
+    saved = client.get("/api/scans").json()["scans"]
+    assert next(row for row in saved if row["id"] == scan_id)["action"] == "reused"
     me = client.get("/api/leaderboard").json()["me"]
     assert me["actions"] == 1
     assert me["xp"] == 20

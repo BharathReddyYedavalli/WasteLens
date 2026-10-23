@@ -1,6 +1,5 @@
 import {useState} from "react";
 import {ClipboardCopy,Printer} from "lucide-react";
-import {ReadAloudButton} from "./Speech";
 import {useLanguage} from "./i18n";
 import type {ItemAnalysis} from "./types";
 
@@ -22,6 +21,5 @@ export default function ScanStepTools({analysis}:{analysis:ItemAnalysis}){
     <button type="button" onClick={()=>window.print()}>
       <Printer size={16}/>{t("Save or print")}
     </button>
-    <ReadAloudButton id="sort-plan-steps" category="steps" text={fullText.replace(/\n/g,". ")}/>
   </div>;
 }

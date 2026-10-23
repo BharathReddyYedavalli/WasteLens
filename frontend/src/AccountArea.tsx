@@ -28,6 +28,8 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [scans, setScans] = useState<SavedScan[]>([]);
+  const [actionSaving, setActionSaving] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<{id:number;message:string} | null>(null);
   const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [feedback, setFeedback] = useState<AdminFeedback[]>([]);
@@ -82,6 +84,23 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
     } catch (e) { setError(e instanceof Error ? e.message : "Could not sign out."); }
   }
 
+  async function logAction(scanId:number, action:"recycled"|"reused"|"composted"|"donated") {
+    if (actionSaving !== null) return;
+    setActionError(null);
+    setActionSaving(scanId);
+    try {
+      await readJson<{action:string}>(await fetch("/api/scans/" + scanId + "/action",{
+        method:"POST",headers:actionHeaders,credentials:"same-origin",
+        body:JSON.stringify({action}),
+      }));
+      setScans(items=>items.map(item=>item.id===scanId?{...item,action}:item));
+    }catch(reason){
+      setActionError({id:scanId,message:reason instanceof Error?reason.message:"Could not save that action."});
+    }finally{
+      setActionSaving(null);
+    }
+  }
+
   if (!user) {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><UserPlus/></div>
@@ -121,6 +140,22 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
         <details><summary>{t("See the tips for this item")}</summary>
           <h4>{t("Disposal")}</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
           <h4>{t("Reuse")}</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
+        </details>
+        <details className="history-action-log">
+          <summary>{t("What did you do with it?")}</summary>
+          <div className="action-choices">
+            {(["recycled","reused","composted","donated"] as const).map(choice=>
+              <button key={choice} type="button"
+                className={"button "+(scan.action===choice?"primary":"outline")}
+                disabled={actionSaving!==null}
+                aria-pressed={scan.action===choice}
+                onClick={()=>void logAction(scan.id,choice)}>
+                {t(choice[0].toUpperCase()+choice.slice(1))}
+              </button>
+            )}
+          </div>
+          {scan.action&&<p className="action-confirmed">{t("Saved as")} {t(scan.action[0].toUpperCase()+scan.action.slice(1))}.</p>}
+          {actionError?.id===scan.id&&<p role="alert" className="inline-error">{actionError.message}</p>}
         </details>
       </article>)}</div>
     </section>;

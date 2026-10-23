@@ -1,203 +1,82 @@
-/* Scan results — first-pass simplification only.
-   Primary action stays visible; all existing detailed tools remain in More details.
-   Scoped to the Scan result so no other WasteLens page is affected. */
-.site .scan-essential {
-  display:grid;
-  gap:14px;
-  margin:16px 0;
+/* Focused Scan result. No outer More details panel. Scoped to the Scan
+   component to avoid changing the other application pages. */
+.site .scan-essential{display:grid;gap:14px;margin:16px 0}
+.site .scan-quick-steps{
+  border:1.5px solid #d1e5dc;border-radius:18px;padding:18px 22px;
+  background:#fffefa;color:#244d43;
 }
-.site .scan-quick-steps {
-  background:#fffefa;
-  color:#244d43;
-  border:1.5px solid #d1e5dc;
-  border-radius:18px;
-  padding:18px 22px;
-}
-.site .scan-quick-steps h3 {
-  margin:0 0 12px;
-  color:inherit;
+.site .scan-quick-steps h3{
+  margin:0 0 12px;color:inherit;
   font:750 clamp(17px,2vw,21px)/1.3 "Nunito","Poppins",sans-serif;
 }
-.site .scan-quick-steps ol {
-  display:grid;
-  gap:9px;
-  padding-left:25px;
-  margin:0;
-  font-size:15px;
-  line-height:1.55;
+.site .scan-quick-steps ol{display:grid;gap:9px;padding-left:25px;margin:0;font-size:15px;line-height:1.55}
+.site .scan-quick-steps li::marker{color:#168369;font-weight:800}
+.site .scan-primary-caution{
+  display:flex;align-items:flex-start;gap:10px;padding:12px 15px;margin:0;
+  border:1px solid #ebd2a4;border-radius:12px;background:#fff6e8;
+  color:#775324;font-size:14px;line-height:1.55;
 }
-.site .scan-quick-steps li::marker {color:#168369;font-weight:800}
-.site .scan-primary-caution {
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  padding:12px 15px;
-  margin:0;
-  border:1px solid #ebd2a4;
-  border-radius:12px;
-  background:#fff6e8;
-  color:#775324;
-  font-size:14px;
-  line-height:1.55;
+.site .scan-primary-caution svg{flex-shrink:0;margin-top:2px}
+.site .scan-step-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:15px}
+.site .scan-step-tools>button{
+  display:inline-flex;align-items:center;gap:8px;min-height:39px;
+  padding:8px 12px;border:1.5px solid #bcdace;border-radius:11px;
+  background:#f5fbf8;color:#215549;
+  font:750 13px/1.4 "Nunito","Poppins",sans-serif;cursor:pointer;
 }
-.site .scan-primary-caution svg {flex-shrink:0;margin-top:2px}
-.site .scan-more-details {
-  margin:16px 0 0;
-  border:1.5px solid #cee1d9;
-  border-radius:17px;
-  background:#fffefa;
-  overflow:clip;
-}
-.site .scan-more-details > summary {
-  list-style:none;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:15px 19px;
-  min-height:52px;
-  color:#245649;
-  font:800 16px/1.4 "Nunito","Poppins",sans-serif;
-}
-.site .scan-more-details > summary::-webkit-details-marker {display:none}
-.site .scan-more-details > summary:hover {background:#f0faf5}
-.site .scan-more-details > summary:focus-visible {
-  outline:3px solid #dcaa5a;
-  outline-offset:-3px;
-}
-.site .scan-more-details > summary svg {
-  transition:transform .16s ease;
-  flex-shrink:0;
-}
-.site .scan-more-details[open] > summary svg {transform:rotate(180deg)}
-.site .scan-extra-content {
-  padding:16px 19px 21px;
-  border-top:1px solid #d5e8de;
-}
-.site .scan-extra-content .scan-next-actions button {flex-grow:0}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.scan-quick-steps,.scan-more-details) {
-  background:var(--wl-paper)!important;
-  border-color:var(--wl-stroke)!important;
-  color:var(--wl-copy)!important;
-}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.scan-quick-steps h3,.scan-quick-steps li,.scan-more-details>summary) {
-  color:var(--wl-copy)!important;
-}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-more-details>summary:hover {
-  background:var(--wl-surface)!important;
-}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-extra-content {
-  border-color:var(--wl-stroke)!important;
-}
-@media(max-width:620px) {
-  .site .scan-quick-steps {padding:16px}
-  .site .scan-extra-content {padding:13px}
-  .site .scan-more-details>summary {padding:14px 16px}
-}
-@media(prefers-reduced-motion:reduce) {
-  .site .scan-more-details>summary svg {transition:none}
-}
-@media print {
-  .site .scan-more-details {overflow:visible}
-  .site .scan-more-details > summary {display:none}
-}
-
-
-/* Stage 2: avoid repeating the checklist and caution content. */
-.site .scan-step-tools {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  align-items:center;
-}
-.site .scan-step-tools>button,
-.site .scan-audit-link {
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  min-height:42px;
-  padding:9px 12px;
-  border:1.5px solid #bcdace;
-  border-radius:11px;
-  background:#f5fbf8;
-  color:#215549;
-  font:750 13px/1.4 "Nunito","Poppins",sans-serif;
-  cursor:pointer;
-}
-.site .scan-step-tools .wl-listen-wrap {display:inline-flex;align-items:center;gap:6px}
-.site .scan-step-tools>button:hover,
-.site .scan-audit-link:hover {background:#e8f5ee}
-.site .scan-step-tools :is(button):focus-visible,
+.site .scan-step-tools>button:hover{background:#e8f5ee}
+.site .scan-step-tools>button:focus-visible,
 .site .scan-subdetails>summary:focus-visible,
-.site .scan-audit-link:focus-visible {
-  outline:3px solid #dcae68;
-  outline-offset:2px;
+.site .scan-feedback-inline button:focus-visible{
+  outline:3px solid #dcae68;outline-offset:2px;
 }
-.site .scan-subdetails {
-  border:1px solid #d4e3db;
-  border-radius:13px;
-  background:#fffefa;
-  overflow:clip;
+.site .scan-subdetails{
+  margin:11px 0;border:1px solid #d4e3db;border-radius:13px;
+  background:#fffefa;overflow:clip;
 }
-.site .scan-subdetails>summary {
-  display:flex;
-  list-style:none;
-  cursor:pointer;
-  align-items:center;
-  gap:9px;
-  padding:13px 15px;
-  font:780 14px/1.5 "Nunito","Poppins",sans-serif;
-  color:#28574c;
+.site .scan-subdetails>summary{
+  display:flex;list-style:none;cursor:pointer;align-items:center;gap:9px;
+  padding:13px 15px;font:780 14px/1.5 "Nunito","Poppins",sans-serif;color:#28574c;
 }
-.site .scan-subdetails>summary::-webkit-details-marker {display:none}
-.site .scan-subdetails>summary svg:last-child {margin-left:auto;transition:transform .18s ease}
-.site .scan-subdetails[open]>summary svg:last-child {transform:rotate(180deg)}
-.site .scan-subdetails>summary:hover {background:#eff9f3}
-.site .scan-subdetails .reuse-section {
-  margin:0 12px 12px;
-  padding:12px!important;
-  box-shadow:none!important;
-  border-radius:12px!important;
+.site .scan-subdetails>summary::-webkit-details-marker{display:none}
+.site .scan-subdetails>summary svg:last-child{margin-left:auto;transition:transform .18s ease}
+.site .scan-subdetails[open]>summary svg:last-child{transform:rotate(180deg)}
+.site .scan-subdetails>summary:hover{background:#eff9f3}
+.site .scan-subdetails .reuse-section{
+  margin:0 12px 12px;padding:12px!important;
+  box-shadow:none!important;border-radius:12px!important;
 }
-.site .scan-other-cautions {
-  margin:0;
-  padding:2px 21px 15px 36px;
-  line-height:1.65;
-  font-size:14px;
+.site .scan-other-cautions{margin:0;padding:2px 21px 15px 36px;line-height:1.65;font-size:14px}
+.site .scan-feedback-inline{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+  margin:14px 0 6px;padding:13px 16px;
+  background:#f7fbf8;border:1px solid #d4e5db;border-radius:13px;
 }
-.site .scan-feedback-content {
-  display:grid;
-  gap:12px;
-  padding:0 12px 12px;
+.site .scan-feedback-question{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:#28574c}
+.site .scan-feedback-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.site .scan-feedback-controls .feedback-actions{display:flex;gap:8px;margin:0}
+.site .scan-feedback-controls .feedback-actions .button{min-height:38px;padding:7px 14px}
+.site .scan-feedback-controls .correction-form{width:100%}
+.site .scan-feedback-inline :is(.feedback-confirmed,.inline-error){margin:0}
+.history-card .history-action-log{margin-top:12px;border-top:1px solid #dbe8e0;padding-top:9px}
+.history-card .history-action-log>summary{cursor:pointer;font-weight:750}
+.history-card .history-action-log .action-choices{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px}
+.history-card .history-action-log .action-choices .button{font-size:13px;padding:7px 10px}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.scan-quick-steps,.scan-subdetails,.scan-feedback-inline){
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
 }
-.site .scan-feedback-content .result-card {
-  padding:16px!important;
-  box-shadow:none!important;
-  border-radius:12px!important;
-}
-.site .scan-feedback-content .result-card h3 {font-size:17px!important}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-subdetails {
-  background:var(--wl-paper)!important;
-  color:var(--wl-copy)!important;
-  border-color:var(--wl-stroke)!important;
-}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-subdetails>summary {
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.scan-quick-steps h3,.scan-subdetails>summary,.scan-feedback-question){
   color:var(--wl-copy)!important;
 }
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-subdetails>summary:hover {
-  background:var(--wl-surface)!important;
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-step-tools>button{
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
 }
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-step-tools>button,
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-audit-link {
-  background:var(--wl-surface)!important;
-  color:var(--wl-copy)!important;
-  border-color:var(--wl-stroke)!important;
+@media(max-width:620px){
+  .site .scan-quick-steps{padding:16px}
+  .site .scan-step-tools>button{flex:1 1 auto;justify-content:center}
+  .site .scan-subdetails .reuse-section{margin:0 9px 9px}
+  .site .scan-feedback-inline{align-items:flex-start}
 }
-@media(max-width:620px) {
-  .site .scan-step-tools>button {flex:1 1 auto;justify-content:center}
-  .site .scan-subdetails .reuse-section {margin:0 9px 9px}
-}
-@media(prefers-reduced-motion:reduce) {
-  .site .scan-subdetails>summary svg:last-child {transition:none}
+@media(prefers-reduced-motion:reduce){
+  .site .scan-subdetails>summary svg:last-child{transition:none}
 }
