@@ -50,8 +50,6 @@ class AuditEntry(BaseModel):
 class SaveAudit(BaseModel):
     title: str = Field(min_length=1, max_length=60)
     entries: list[AuditEntry] = Field(min_length=1, max_length=15000)
-    location: str = Field(default="", max_length=80)
-    session: str = Field(default="", max_length=60)
 
 
 class AuditSuggestions(BaseModel):
@@ -73,15 +71,14 @@ def list_audits(request: Request):
     user = require_user(request)
     with database() as db:
         rows = db.execute(
-            """SELECT id,title,counts_json,item_count,created_at,context_json
+            """SELECT id,title,counts_json,item_count,created_at
                FROM community_audits WHERE user_id=? ORDER BY id DESC LIMIT 100""",
             (user["id"],),
         ).fetchall()
     return {"audits": [
         {"id": row["id"], "title": row["title"],
          "counts": json.loads(row["counts_json"]),
-         "item_count": row["item_count"], "created_at": row["created_at"],
-          "context": json.loads(row["context_json"])}
+         "item_count": row["item_count"], "created_at": row["created_at"]}
         for row in rows
     ]}
 
@@ -91,14 +88,13 @@ def get_audit(audit_id: int, request: Request):
     user = require_user(request)
     with database() as db:
         row = db.execute(
-            "SELECT id,title,entries_json,created_at,context_json FROM community_audits WHERE id=? AND user_id=?",
+            "SELECT id,title,entries_json,created_at FROM community_audits WHERE id=? AND user_id=?",
             (audit_id, user["id"]),
         ).fetchone()
     if row is None:
         raise HTTPException(404, "Saved audit not found.")
     return {"audit": {"id": row["id"], "title": row["title"],
-                      "entries": json.loads(row["entries_json"]), "created_at": row["created_at"],
-                       "context": json.loads(row["context_json"])}}
+                      "entries": json.loads(row["entries_json"]), "created_at": row["created_at"]}}
 
 
 @router.post("/audits", status_code=201)
@@ -129,13 +125,11 @@ def save_audit(payload: SaveAudit, request: Request):
             raise HTTPException(409, "You have reached 100 saved audits. Delete an older audit before saving another.")
         cursor = db.execute(
             """INSERT INTO community_audits
-               (user_id,title,entries_json,counts_json,item_count,created_at,context_json)
-               VALUES (?,?,?,?,?,?,?)""",
-            (user["id"], title, json.dumps(entries), json.dumps(counts), len(entries), now_iso(),
-             json.dumps({"location": payload.location.strip(), "session": payload.session.strip()})),
+               (user_id,title,entries_json,counts_json,item_count,created_at)
+               VALUES (?,?,?,?,?,?)""",
+            (user["id"], title, json.dumps(entries), json.dumps(counts), len(entries), now_iso()),
         )
-    return {"id": cursor.lastrowid, "title": title, "counts": counts, "item_count": len(entries),
-            "context": {"location": payload.location.strip(), "session": payload.session.strip()}}
+    return {"id": cursor.lastrowid, "title": title, "counts": counts, "item_count": len(entries)}
 
 
 @router.delete("/audits/{audit_id}")

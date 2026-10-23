@@ -37,7 +37,7 @@ test("kiosk purpose is honest and local rules remain essential", () => {
   assert.match(about, /future use we are exploring, not a device already installed/);
   assert.match(about, /Confirm your actual service before choosing a bin or drop-off/);
   assert.match(about, /Schools and offices can tally observed waste/);
-  assert.match(audit, /Observe what enters each bin\. Find patterns/);
+  assert.match(audit, /Count where items end up at school or work/);
 });
 
 test("existing scanner, checklist, local rules, map, audits, and rewards stay wired", () => {
