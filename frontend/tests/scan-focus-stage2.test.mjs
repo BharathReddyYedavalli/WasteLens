@@ -14,8 +14,8 @@ test("More details disappears entirely and optional reuse stays available",()=>{
   assert.match(snippet,/reuse_ideas\.map/);
 });
 test("Extra unique cautions available, first caution shown only once",()=>{
-  assert.match(snippet,/analysis\.cautions\[0\]/);
-  assert.match(snippet,/analysis\.cautions\.slice\(1\)/);
+  assert.match(snippet,/scanCautions\[0\]/);
+  assert.match(snippet,/scanCautions\.slice\(1\)/);
   assert.match(snippet,/t\("Other precautions"\)/);
   assert.doesNotMatch(snippet,/t\("A few things to check"\)/);
 });

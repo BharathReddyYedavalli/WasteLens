@@ -19,18 +19,16 @@ test("homepage keeps its established heading and an actionable message", () => {
 });
 
 test("the scan result prioritizes a cautious action and opens real local rules", () => {
-  const decision = app.indexOf('className="scan-decision"');
+  const decision = app.indexOf('scan-decision-unified');
   const checklist = app.indexOf("<ScanStepTools ");
   const localChecker = app.indexOf("<LocalRulesGuide ");
-  // Copy and print now sit directly below the main instructions.
+  // Instructions and copy/print sit in one card; the local rules accordion follows it.
   assert.ok(decision > 0 && checklist > decision && localChecker > checklist);
   assert.doesNotMatch(app,/className="scan-more-details"/);
   assert.match(app, /needsConfirmation \? t\("Confirm the item before sorting"\) : analysis\.route_title/);
   assert.match(app, /AI suggestion, not a confirmed local bin rule/);
-  assert.match(app, /function showLocalRules\(\) \{\s*setRulesOpenRequest\(current => current \+ 1\)/);
-  assert.match(app, /onClick=\{showLocalRules\}/);
-  assert.match(app, /openRequest=\{rulesOpenRequest\}/);
-  assert.match(rules, /if \(openRequest <= 0\) return;\s*setOpen\(true\)/);
+  assert.doesNotMatch(app, /onClick=\{showLocalRules\}/);
+  assert.match(app, /<LocalRulesGuide /);
   assert.match(rules, /id="scan-local-rules"/);
 });
 

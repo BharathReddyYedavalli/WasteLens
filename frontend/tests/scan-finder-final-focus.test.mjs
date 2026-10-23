@@ -24,18 +24,19 @@ test("Scan-to-Finder remembers the item and reuses existing ZIP without extra AI
 });
 test("Local rules retain critical safeguards with much smaller postal note", () => {
   assert.match(guide, /useState\(false\)/);
-  assert.match(guide, /className="local-rules-postal-compact"/);
-  assert.doesNotMatch(guide, /className="local-rules-postal"/);
+  assert.doesNotMatch(guide, /local-rules-postal/);
+  assert.doesNotMatch(guide, /School and business waste services use site-specific contracts/);
+  assert.doesNotMatch(guide, /Guidance is for this selected residential service/);
   assert.match(guide, /selectedProgram, setSelectedProgram/);
   assert.match(guide, /selectedItem, setSelectedItem/);
   assert.match(guide, /confirmed, setConfirmed/);
   assert.match(guide, /service_confirmed: "true"/);
   assert.match(guide, /source_url/);
-  assert.match(styles, /\.local-rules-postal-compact/);
+  assert.match(styles, /\.scan-decision-unified/);
   assert.match(styles, /\.finder-scan-context/);
 });
-test("New Finder and ZIP texts include Spanish and Hindi", () => {
-  for (const key of ["ZIP area","ZIP codes do not confirm your collection service.","From your scan",
+test("Finder context includes Spanish and Hindi", () => {
+  for (const key of ["From your scan",
     "These locations are not confirmed to accept this item. Contact them before visiting."]) {
     assert.ok(strings.includes(JSON.stringify(key) + ":") || strings.includes('"' + key + '":'),key);
   }
