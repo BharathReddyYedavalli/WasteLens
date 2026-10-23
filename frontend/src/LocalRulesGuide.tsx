@@ -232,12 +232,6 @@ export default function LocalRulesGuide({ zipCode, onZipChange, openRequest = 0 
       </div>
       {!validZip&&<p className="local-rules-scope">{t("Enter a five-digit ZIP code to look for a covered collection program.")}</p>}
       {loading&&<p className="local-rules-scope" role="status">{t("Looking up your postal area…")}</p>}
-      {catalog&&<p className="local-rules-postal-compact">
-        <MapPin size={15}/>
-        <span>{t("ZIP area")}: <strong>{catalog.postal_area}</strong> · {t("ZIP codes do not confirm your collection service.")}</span>
-      </p>}
-      {validZip&&catalog&&collectionType!=="residential"&&
-        <p className="local-rules-scope" role="status">{t("School and business waste services use site-specific contracts. Ask your facility or hauler for its accepted-material list.")}</p>}
       {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length===0&&
         <div className="local-rule-result local-rule-unverified" role="status">
           <div className="local-rule-result-head"><ShieldAlert size={19}/>
@@ -269,7 +263,6 @@ export default function LocalRulesGuide({ zipCode, onZipChange, openRequest = 0 
           disabled={!currentProgram||!selectedItem||!confirmed||checking}>
           {checking?t("Checking…"):t("Check the official rule")}
         </button>
-        {currentProgram&&<p className="local-rules-scope">{t("Guidance is for this selected residential service, not school, commercial, or neighboring city bins.")}</p>}
         <button type="button" className="local-discovery-toggle" aria-expanded={showOtherProvider}
           onClick={() => {clearDiscovery();setShowOtherProvider(current=>!current);}}>
           {showOtherProvider?t("Hide other options"):t("My collection provider isn't listed")}
