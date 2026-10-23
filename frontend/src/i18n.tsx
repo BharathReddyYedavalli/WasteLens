@@ -15,7 +15,6 @@ const strings: Record<string, { es: string; hi: string }> = {
     es: "El código postal no confirma tu servicio de recogida.",
     hi: "ज़िप कोड से आपकी कचरा संग्रह सेवा की पुष्टि नहीं होती।"
   },
-  "From your scan": { es: "De tu escaneo", hi: "आपके स्कैन से" },
   "These locations are not confirmed to accept this item. Contact them before visiting.": {
     es: "No se ha confirmado que estos lugares acepten este objeto. Comunícate con ellos antes de ir.",
     hi: "यह पुष्टि नहीं हुई है कि ये केंद्र इस वस्तु को स्वीकार करते हैं। जाने से पहले संपर्क करें।"
