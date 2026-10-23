@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, RefObject } from "react";
 import { AlertTriangle, Camera, CheckCircle2, MapPin, RotateCcw, ScanLine, ShieldAlert, Sparkles, Upload } from "lucide-react";
 import type { ItemAnalysis } from "./types";
 import LocalRulesGuide from "./LocalRulesGuide";
 import { ReadAloudButton } from "./Speech";
 import { useLanguage } from "./i18n";
+import { KIOSK_ITEMS, type KioskProfile, type KioskItem } from "./kioskTypes";
 
 type Props = {
   videoRef: RefObject<HTMLVideoElement | null>;
@@ -35,6 +36,21 @@ export default function KioskScreen({
   onStartCamera,onStopCamera,onCapture,onUpload,onAnalyze,onNextItem
 }:Props){
   const {t}=useLanguage();
+  const [profile,setProfile]=useState<KioskProfile|null>(null);
+  const [profileError,setProfileError]=useState(false);
+  const [selectedType,setSelectedType]=useState<KioskItem| "">("");
+  useEffect(()=>{
+    let active=true;
+    fetch("/api/kiosk/profile",{cache:"no-store"}).then(async response=>{
+      if(!response.ok)throw Error("Kiosk rules unavailable");
+      return await response.json() as KioskProfile;
+    }).then(data=>{if(active)setProfile(data);})
+      .catch(()=>{if(active)setProfileError(true);});
+    return()=>{active=false;};
+  },[]);
+  useEffect(()=>setSelectedType(""),[analysis]);
+  const selection=profile?.rules.find(rule=>rule.item_type===selectedType);
+  const selectedBin=profile?.bins.find(bin=>bin.id===selection?.bin_id);
   const uncertain=Boolean(analysis&&(analysis.identification!=="likely"||analysis.route==="needs_identification"));
   useEffect(()=>{
     if(analysis)document.querySelector<HTMLElement>(".wl-kiosk-results")?.scrollIntoView({block:"start"});
@@ -102,9 +118,32 @@ export default function KioskScreen({
           <MapPin size={21}/>{t("Check local rules")}
         </button>
       </section>
-      <div className="wl-kiosk-rule-context">
+
+      {profile?.configured&&<section className="wl-kiosk-site-panel" aria-label={t("Your location's bins")}>
+        <div className="wl-kiosk-site-name"><MapPin size={20}/>
+          <strong>{profile.organization}</strong></div>
+        <h3>{t("Find your site's bin")}</h3>
+        <p>{t("Choose the item type only if it matches what you are holding. Check its material and condition.")}</p>
+        <label className="wl-kiosk-site-select">
+          <span>{t("Confirm item type")}</span>
+          <select value={selectedType} onChange={e=>setSelectedType(e.target.value as KioskItem|"")}>
+            <option value="">{t("Choose an item (or ask staff)")}</option>
+            {KIOSK_ITEMS.filter(item=>profile.rules.some(rule=>rule.item_type===item.id))
+              .map(item=><option key={item.id} value={item.id}>{t(item.label)}</option>)}
+          </select>
+        </label>
+        {selectedType&&selectedBin&&<div className="wl-kiosk-site-decision" role="status">
+          <span>{t("Staff-provided bin")}</span>
+          <strong>{selectedBin.name}</strong>
+          <p>{t("This is based on the site's manually entered collection rules, not automatic verification.")}</p>
+        </div>}
+        <p className="wl-kiosk-site-source">{t("Rule source")}: {profile.source}</p>
+        <p className="wl-kiosk-site-source">{t("Last reviewed")}: {profile.reviewed_at?.slice(0,10)}</p>
+        <p className="wl-kiosk-site-warning">{t("If the item is different or the rules are uncertain, ask staff instead of guessing.")}</p>
+      </section>}
+      {(!profile?.configured||profileError)&&<div className="wl-kiosk-rule-context">
         <p><ShieldAlert size={16}/>{t("This kiosk does not yet have verified rules for your school or office. Confirm the correct bin with staff.")}</p>
-      </div>
+      </div>}
       <LocalRulesGuide zipCode={zipCode} onZipChange={onZipChange} openRequest={rulesOpenRequest}/>
       <button type="button" className="wl-kiosk-next" onClick={onNextItem}>
         <RotateCcw size={22}/>{t("Next item — clear screen")}

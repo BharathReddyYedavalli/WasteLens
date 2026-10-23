@@ -15,6 +15,7 @@ import LocalRulesGuide from "./LocalRulesGuide";
 import AuditKit from "./AuditKit";
 import AboutWasteLens from "./AboutWasteLens";
 import KioskScreen from "./KioskScreen";
+import KioskSetup from "./KioskSetup";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
 import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
@@ -695,6 +696,7 @@ export default function App() {
         <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
+      {!kioskMode && view === "admin" && user?.role === "admin" && <KioskSetup/>}
       {!kioskMode && <div hidden={view !== "chat"}>
         <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
           onScan={() => setView("identifier")}/>

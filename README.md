@@ -442,3 +442,38 @@ The new frontend tests check the optional interface, isolation,
 translations and safe labeling; backend tests check that signed-in
 kiosk requests do not create scans or XP. No real AI provider or
 physical kiosk deployment is assumed by these tests.
+
+## Change 2 — Site-specific kiosk bins (staff-provided rules)
+
+The kiosk can now use a **single admin-configured site profile** for the
+current installation (for example, one cafeteria or office). Existing
+Waste Audit, My Activity, and the normal Scan page have not been changed.
+
+**Admin setup:** Sign in as the bootstrapped administrator (configured via
+`WASTELENS_ADMIN_EMAIL` and `WASTELENS_ADMIN_PASSWORD`), open **Admin**
+from the sidebar, scroll to **Kiosk bin setup**, and enter:
+- A non-sensitive site name and where you checked the waste hauler/facility
+  accepted-material instructions. This source label is **public**.
+- Two to four bin names that match the bins actually present.
+- Choose the correct bin for each supported item type only if staff have
+  confirmed acceptance. Leave everything else **Not confirmed**.
+- Check the confirmation box and press **Save kiosk rules**.
+
+On the shared Kiosk Mode, a completed photo analysis can display
+**Find your site's bin**. The kiosk visitor must **manually confirm the
+item type**, since AI shape/material identification cannot verify
+site-specific acceptance. Only configured items receive a staff-provided
+bin name. Anything uncertain remains an **ask staff** situation. The
+source and review date are displayed; none of the manual entries are
+independently checked by WasteLens. An empty database shows the existing
+general local-rule warning; the kiosk never invents school/office rules
+from residential acceptance rules or Gemini.
+
+The configuration is persisted in the current backend's SQLite database
+and **can only be modified by authenticated admins** with the same-origin
+request header. Reading the public configured bin names, item-to-bin
+mappings, source label, and review date is intentional; don't put personal
+data in site/source fields. Rules will not follow the user to another
+backend or database. Check actual bin signage and collection contracts
+before deploying. This is a software prototype and not a verified
+recycling outcome, sensor-equipped kiosk, or real-world pilot.

@@ -1,0 +1,60 @@
+/* Staff-provided collection bins, scoped to Kiosk Mode and Admin only. */
+.site .wl-kiosk-site-panel {
+  display:grid;gap:13px;
+  padding:clamp(17px,3vw,27px);border:1px solid var(--wl-stroke,#cfe2d8);
+  border-radius:18px;background:var(--wl-paper,#fffefa);
+  color:var(--wl-copy,#214938);
+}
+.site .wl-kiosk-site-name{display:flex;gap:10px;align-items:center;color:var(--wl-copy,#256047)}
+.site .wl-kiosk-site-panel h3 {font-size:22px;color:var(--wl-copy,#254937);margin:0}
+.site .wl-kiosk-site-panel p {font-size:13px;line-height:1.65;margin:0;color:var(--wl-copy,#4c6756)}
+.site .wl-kiosk-site-select{display:grid;gap:8px;max-width:600px}
+.site .wl-kiosk-site-select span{font-size:13px;font-weight:800}
+.site .wl-kiosk-site-select select {min-height:54px;border-radius:12px;
+  border:1px solid var(--wl-stroke,#b3d2c1);background:var(--wl-paper,#fff);
+  color:var(--wl-copy,#254937);padding:10px 14px;font-size:16px;width:100%}
+.site .wl-kiosk-site-decision{padding:21px;text-align:center;display:grid;justify-items:center;gap:7px;
+  border:2px solid #25836b;background:var(--wl-selected,#ecf8ee);border-radius:14px}
+.site .wl-kiosk-site-decision span{font-size:13px;font-weight:800;color:var(--wl-copy,#285e48)}
+.site .wl-kiosk-site-decision strong{font:850 clamp(23px,4vw,37px)/1.2 "Nunito","Poppins",sans-serif;color:var(--wl-copy,#1e654b)}
+.site .wl-kiosk-site-warning{font-weight:700}
+.site .wl-kiosk-site-source{font-size:12px!important;overflow-wrap:anywhere}
+.site .wl-kiosk-setup{max-width:1120px;margin:25px auto 40px;padding:25px;
+  border:1px solid var(--wl-stroke,#cbded1);border-radius:19px;
+  background:var(--wl-paper,#fffefa);color:var(--wl-copy,#254937)}
+.site .wl-kiosk-setup-heading{display:flex;gap:13px;align-items:center;margin-bottom:15px}
+.site .wl-kiosk-setup-heading h2{margin:0;font-size:24px}
+.site .wl-kiosk-setup-heading p{margin:3px 0;color:var(--wl-subcopy,#597463);font-size:13px}
+.site .wl-kiosk-setup-fields{display:grid;gap:13px;max-width:800px}
+.site .wl-kiosk-setup-fields label,.site .wl-kiosk-bin-input,.site .wl-kiosk-rule-grid label{
+  font-size:13px;font-weight:800;display:grid;gap:6px}
+.site .wl-kiosk-setup input:not([type=checkbox]),.site .wl-kiosk-setup textarea,
+.site .wl-kiosk-setup select{background:var(--wl-surface,#fff);
+  border:1px solid var(--wl-stroke,#c6ddcc);border-radius:10px;
+  color:var(--wl-copy,#214938);font-size:14px;padding:11px 12px;min-height:44px;
+  width:100%;min-width:0}
+.site .wl-kiosk-setup-section{margin-top:23px;border-top:1px solid var(--wl-stroke,#d6e8da);padding-top:17px}
+.site .wl-kiosk-setup-section h3{font-size:18px;margin:0 0 10px}
+.site .wl-kiosk-setup-section>p{font-size:13px;color:var(--wl-subcopy,#597463);margin:0 0 15px}
+.site .wl-kiosk-setup-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.site .wl-kiosk-setup-row button,.site .wl-kiosk-bin-input button,.site .wl-kiosk-setup-save{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+  min-height:43px;border:1px solid var(--wl-stroke,#bfdbc5);border-radius:10px;
+  background:var(--wl-surface,#fff);color:var(--wl-copy,#22533f);padding:9px 13px;font-weight:800}
+.site .wl-kiosk-setup button:disabled{opacity:.4;cursor:not-allowed}
+.site .wl-kiosk-bin-input{grid-template-columns:85px 1fr auto;align-items:center;max-width:620px;margin:10px 0}
+.site .wl-kiosk-rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.site .wl-kiosk-confirmation{display:flex;align-items:flex-start;gap:11px;font-size:13px;
+  line-height:1.6;margin:19px 0;font-weight:700}
+.site .wl-kiosk-confirmation input{width:20px;height:20px;flex-shrink:0}
+.site .wl-kiosk-setup-save{background:#146a52;color:#fff;border-color:#146a52}
+.site .wl-kiosk-setup-error{color:#bd3f31;font-size:13px}
+.site .wl-kiosk-setup-success{color:var(--wl-copy,#157557);font-size:13px;font-weight:800}
+.site .wl-kiosk-setup :is(button,input,select,textarea):focus-visible,.site .wl-kiosk-site-select select:focus-visible{
+  outline:3px solid #e0ad52;outline-offset:2px}
+@media(max-width:640px){
+  .site .wl-kiosk-setup{margin:18px 8px 30px;padding:16px}
+  .site .wl-kiosk-rule-grid{grid-template-columns:1fr}
+  .site .wl-kiosk-bin-input{grid-template-columns:1fr auto}
+  .site .wl-kiosk-bin-input span{grid-column:1/-1}
+}
