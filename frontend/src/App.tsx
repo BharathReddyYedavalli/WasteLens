@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
-  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
+  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History,
   MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, Info, Menu, X
 } from "lucide-react";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
@@ -392,9 +392,6 @@ export default function App() {
             <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"}
               aria-current={view === "leaderboard"?"page":undefined} onClick={() => openPage("leaderboard")}>
               <Trophy size={18}/>{t("Leaderboard")}</button>
-            {user?.role === "admin"&&<button type="button" className={view === "admin" ? "nav-item active" : "nav-item"}
-              aria-current={view === "admin"?"page":undefined} onClick={() => openPage("admin")}>
-              <ShieldCheck size={18}/>{t("Admin")}</button>}
           </div>
         </div>
         <button type="button" className={"nav-item community-about-nav "+(view === "about"?"active":"")}
