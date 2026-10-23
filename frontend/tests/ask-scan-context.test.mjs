@@ -72,7 +72,7 @@ test("Ask uses current scan-specific prompts and keeps general prompts without s
 
 test("View scan targets scanned item result heading rather than the last action scroll",()=>{
   const app=src("App.tsx");
-  assert.match(app,/returnToScanResultRef=useRef\(false\)/);
+  assert.match(app,/returnToScanResultRef\s*=\s*useRef\(false\)/);
   assert.match(app,/useLayoutEffect\(\(\) => \{/);
   assert.match(app,/scanResultsRef\.current\.scrollIntoView\(\{block:"start",behavior:"instant"\}\)/);
   assert.match(app,/id="scan-results"/);
