@@ -7,18 +7,18 @@ const app=read("App.tsx");
 const result=app.slice(app.indexOf('{analysis && <section id="scan-results"'),app.indexOf('</> : view === "finder"'));
 
 test("One focused Scan result, no More details container",()=>{
-  for(const item of ['scan-decision','scan-quick-steps','<ScanStepTools','<LocalRulesGuide','scan-next-actions','scan-feedback-inline']){
+  for(const item of ['scan-decision-unified','scan-action-steps','<ScanStepTools','<LocalRulesGuide','scan-next-actions','scan-feedback-inline']){
     assert.ok(result.includes(item),item);
   }
   assert.doesNotMatch(result,/scan-more-details|scan-extra-content|t\("More details"\)/);
   assert.match(result,/analysis\.disposal_steps\.slice\(0,3\)/);
-  assert.match(result,/analysis\.cautions\[0\]/);
+  assert.match(result,/scanCautions\[0\]/);
 });
 test("Sorting remains safe and local rules accessible",()=>{
   assert.match(result,/needsConfirmation/);
   assert.match(result,/AI suggestion, not a confirmed local bin rule/);
-  assert.match(result,/onClick=\{showLocalRules\}/);
-  assert.match(result,/openRequest=\{rulesOpenRequest\}/);
+  assert.match(result,/className="scan-clarification"/);
+  assert.match(result,/className="scan-inline-caution"/);
   assert.match(result,/openPage\("finder", true\)/);
   assert.match(result,/setView\("chat"\)/);
 });
@@ -28,7 +28,7 @@ test("Actions beside instructions work without a second Listen",()=>{
   assert.match(tools,/window\.print\(\)/);
   assert.doesNotMatch(tools,/ReadAloudButton/);
   assert.match(result,/id="scan-summary"/);
-  assert.match(result,/\.\.\.analysis\.disposal_steps/);
+  assert.match(result,/\.\.\.\(!needsConfirmation \? analysis\.disposal_steps : \[\]\)/);
 });
 test("No repeated checklist or nearby form",()=>{
   assert.doesNotMatch(result,/<SortPlan|id="nearby"|className="finder-row"/);
