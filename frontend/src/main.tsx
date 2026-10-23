@@ -21,5 +21,6 @@ import "./theme-readability.css";
 import "./kiosk-presentation.css";
 import "./station-visual.css";
 import "./station-home.css";
+import "./station-polish.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
