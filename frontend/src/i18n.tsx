@@ -10,6 +10,7 @@ export const LANGUAGES: { code: Language; label: string }[] = [
 ];
 
 const strings: Record<string, { es: string; hi: string }> = {
+  "Loading community locations…": { es: "Cargando centros del mapa comunitario…", hi: "समुदाय के केंद्र लोड हो रहे हैं…" },
   "Google Maps nearby recycling locations": { es: "Centros de reciclaje cercanos en Google Maps", hi: "Google Maps पर आस-पास के रीसायक्लिंग केंद्र" },
   "Finding nearby places…": { es: "Buscando lugares cercanos…", hi: "आस-पास के स्थान खोज रहे हैं…" },
   "View on Google Maps": { es: "Ver en Google Maps", hi: "Google Maps पर देखें" },
