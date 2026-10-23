@@ -41,5 +41,5 @@ test("mobile, non-Scan pages and theme colors stay protected",()=>{
   assert.match(css,/:root\[data-wl-theme="dark"\]/);
   assert.match(css,/@media print/);
   assert.doesNotMatch(css,/\.(?:audit-kit|habit-snapshot|documentary|bottle-journey)\s*\{/);
-  assert.doesNotMatch(css,/pointer-events:none[^;]*;\s*\}\s*\.site .*button/s);
+  assert.doesNotMatch(css,/\.camera-controls\s*\{[^}]*pointer-events:\s*none/s);
 });

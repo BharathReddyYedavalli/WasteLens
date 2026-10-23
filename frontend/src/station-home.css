@@ -111,7 +111,7 @@
   display:grid!important;
   place-items:center;
   transform:rotate(9deg)!important;
-  opacity:.88;
+  opacity:.32;
   box-shadow:6px 7px 0 rgba(14,125,105,.42)!important;
   z-index:1;
 }
