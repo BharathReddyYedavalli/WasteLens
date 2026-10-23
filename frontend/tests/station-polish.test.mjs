@@ -27,7 +27,7 @@ test("Camera gets more room on desktop without altering mobile stack",()=>{
 });
 test("Other pages retain their components but share consistent card and controls styles",()=>{
   for(const feature of ["<AuditKit","<AccountArea","<BottleJourney","<BottleReturns",
-    "<Leaderboard","<RecyclingResults","<SortPlan","<LocalRulesGuide","<AskWasteLens"]) {
+    "<Leaderboard","<RecyclingResults","<ScanStepTools","<LocalRulesGuide","<AskWasteLens"]) {
     assert.ok(app.includes(feature),feature);
   }
   for(const c of [".assistant-card",".finder-card",".account-card",".history-card",
