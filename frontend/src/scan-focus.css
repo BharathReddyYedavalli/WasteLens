@@ -1,0 +1,155 @@
+/* Focused Scan result. No outer More details panel. Scoped to the Scan
+   component to avoid changing the other application pages. */
+.site .scan-essential{display:grid;gap:14px;margin:16px 0}
+.site .scan-quick-steps{
+  border:1.5px solid #d1e5dc;border-radius:18px;padding:18px 22px;
+  background:#fffefa;color:#244d43;
+}
+.site .scan-quick-steps h3{
+  margin:0 0 12px;color:inherit;
+  font:750 clamp(17px,2vw,21px)/1.3 "Nunito","Poppins",sans-serif;
+}
+.site .scan-quick-steps ol{display:grid;gap:9px;padding-left:25px;margin:0;font-size:15px;line-height:1.55}
+.site .scan-quick-steps li::marker{color:#168369;font-weight:800}
+.site .scan-primary-caution{
+  display:flex;align-items:flex-start;gap:10px;padding:12px 15px;margin:0;
+  border:1px solid #ebd2a4;border-radius:12px;background:#fff6e8;
+  color:#775324;font-size:14px;line-height:1.55;
+}
+.site .scan-primary-caution svg{flex-shrink:0;margin-top:2px}
+.site .scan-step-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:15px}
+.site .scan-step-tools>button{
+  display:inline-flex;align-items:center;gap:8px;min-height:39px;
+  padding:8px 12px;border:1.5px solid #bcdace;border-radius:11px;
+  background:#f5fbf8;color:#215549;
+  font:750 13px/1.4 "Nunito","Poppins",sans-serif;cursor:pointer;
+}
+.site .scan-step-tools>button:hover{background:#e8f5ee}
+.site .scan-step-tools>button:focus-visible,
+.site .scan-subdetails>summary:focus-visible,
+.site .scan-feedback-inline button:focus-visible{
+  outline:3px solid #dcae68;outline-offset:2px;
+}
+.site .scan-subdetails{
+  margin:11px 0;border:1px solid #d4e3db;border-radius:13px;
+  background:#fffefa;overflow:clip;
+}
+.site .scan-subdetails>summary{
+  display:flex;list-style:none;cursor:pointer;align-items:center;gap:9px;
+  padding:13px 15px;font:780 14px/1.5 "Nunito","Poppins",sans-serif;color:#28574c;
+}
+.site .scan-subdetails>summary::-webkit-details-marker{display:none}
+.site .scan-subdetails>summary svg:last-child{margin-left:auto;transition:transform .18s ease}
+.site .scan-subdetails[open]>summary svg:last-child{transform:rotate(180deg)}
+.site .scan-subdetails>summary:hover{background:#eff9f3}
+.site .scan-subdetails .reuse-section{
+  margin:0 12px 12px;padding:12px!important;
+  box-shadow:none!important;border-radius:12px!important;
+}
+.site .scan-other-cautions{margin:0;padding:2px 21px 15px 36px;line-height:1.65;font-size:14px}
+.site .scan-feedback-inline{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+  margin:14px 0 6px;padding:13px 16px;
+  background:#f7fbf8;border:1px solid #d4e5db;border-radius:13px;
+}
+.site .scan-feedback-question{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:#28574c}
+.site .scan-feedback-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.site .scan-feedback-controls .feedback-actions{display:flex;gap:8px;margin:0}
+.site .scan-feedback-controls .feedback-actions .button{min-height:38px;padding:7px 14px}
+.site .scan-feedback-controls .correction-form{width:100%}
+.site .scan-feedback-inline :is(.feedback-confirmed,.inline-error){margin:0}
+.history-card .history-action-log{margin-top:12px;border-top:1px solid #dbe8e0;padding-top:9px}
+.history-card .history-action-log>summary{cursor:pointer;font-weight:750}
+.history-card .history-action-log .action-choices{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px}
+.history-card .history-action-log .action-choices .button{font-size:13px;padding:7px 10px}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.scan-quick-steps,.scan-subdetails,.scan-feedback-inline){
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.scan-quick-steps h3,.scan-subdetails>summary,.scan-feedback-question){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-step-tools>button{
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+@media(max-width:620px){
+  .site .scan-quick-steps{padding:16px}
+  .site .scan-step-tools>button{flex:1 1 auto;justify-content:center}
+  .site .scan-subdetails .reuse-section{margin:0 9px 9px}
+  .site .scan-feedback-inline{align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  .site .scan-subdetails>summary svg:last-child{transition:none}
+}
+
+/* Final Scan + Finder polish: clearer cross-page continuity. */
+.site .finder-scan-context{
+  display:flex;align-items:flex-start;gap:12px;
+  margin:14px 0;padding:13px 16px;
+  background:var(--wl-paper,#f6fbf8);
+  border:1px solid var(--wl-stroke,#bddbd0);
+  border-radius:14px;color:var(--wl-copy,#275346);
+}
+.site .finder-scan-context>svg{flex-shrink:0;margin-top:2px}
+.site .finder-scan-context strong{display:block;font-size:15px;line-height:1.45}
+.site .finder-scan-context p{margin:4px 0 0;font-size:13px;line-height:1.55;color:inherit}
+@media(max-width:620px){
+  .site .finder-scan-context{padding:11px 13px}
+}
+
+/* One decision card replaces multiple overlapping alerts and instruction panels. */
+.site .scan-decision-unified{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr);
+  justify-content:stretch;
+  align-items:start!important;
+  gap:13px!important;
+  margin:14px 0!important;
+  padding:20px 23px!important;
+}
+.site .scan-decision-unified .scan-decision-copy strong{
+  font-size:clamp(21px,2.1vw,28px);
+  line-height:1.3;
+}
+.site .scan-decision-unified .scan-action-steps{
+  display:grid;gap:8px;
+  margin:0;padding-left:23px;
+  color:inherit;font-size:15px;line-height:1.55;
+}
+.site .scan-decision-unified .scan-action-steps li::marker{font-weight:800;color:#18816b}
+.site .scan-decision-unified .scan-clarification{
+  display:flex;align-items:flex-start;gap:9px;
+  font-size:14px;line-height:1.55;
+  margin:0;color:inherit;
+}
+.site .scan-decision-unified .scan-clarification svg{
+  flex-shrink:0;margin-top:2px;
+}
+.site .scan-decision-unified .scan-inline-caution{
+  display:flex;align-items:flex-start;gap:9px;
+  margin:0;padding:12px 0 0;
+  border-top:1px solid #d7e5dc;
+  color:#75562a;font-size:14px;line-height:1.55;
+}
+.site .scan-decision-unified .scan-inline-caution svg{flex-shrink:0;margin-top:2px}
+.site .scan-decision-unified .scan-decision-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.site .scan-decision-unified .scan-decision-actions .button{min-height:43px;padding:9px 14px}
+.site .scan-decision-unified .scan-step-tools{margin-top:0}
+.site .scan-decision-unified .scan-step-tools>button{
+  min-height:38px!important;padding:7px 12px!important;
+  border:1.5px solid #bcdace!important;
+  background:#f5fbf8!important;color:#215549!important;
+  font:750 13px/1.4 "Nunito","Poppins",sans-serif!important;
+}
+.site .scan-decision-unified .scan-step-tools>button:hover{background:#e8f5ee!important}
+.site .scan-decision-unified.needs-confirmation{border-color:#e5d3ab}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision-unified :is(.scan-clarification,.scan-inline-caution,.scan-action-steps){
+  color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision-unified .scan-step-tools>button{
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+@media(max-width:620px){
+  .site .scan-decision-unified{padding:16px!important}
+  .site .scan-decision-unified .scan-step-tools>button{flex:1 1 auto;justify-content:center}
+}

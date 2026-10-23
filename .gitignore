@@ -1,0 +1,22 @@
+# downloaded model weights, logs and credentials
+models/
+.env
+.env.*
+!.env.example
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+frontend/node_modules/
+frontend/dist/
+.DS_Store
+
+# Never commit personal camera evaluation images or per-image labels
+benchmark_photos/
+benchmark_results/
+
+# Local private user accounts, history and SQLite write-ahead files
+backend/data/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm

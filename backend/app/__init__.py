@@ -1,0 +1,1 @@
+"""WasteLens camera classification backend."""

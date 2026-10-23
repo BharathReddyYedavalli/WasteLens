@@ -1,0 +1,345 @@
+/* Account menu with a real click target, not a hover-only submenu. */
+.topbar{position:relative;z-index:130;overflow:visible}
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:13px;margin-left:auto}
+.wl-account-menu{position:relative;flex-shrink:0}
+.wl-account-trigger{display:flex;align-items:center;gap:9px;cursor:pointer;background:#fffdf5;border:1.5px solid #d0e0d7;color:#254c47;border-radius:15px;padding:7px 12px 7px 8px;font-weight:800;font-size:13px;max-width:235px;min-height:46px}
+.wl-account-trigger:hover,.wl-account-trigger[aria-expanded="true"]{background:#e9f7ef;border-color:#60ad99}
+.wl-account-trigger svg.rotated,.wl-profile-action[aria-expanded="true"] .wl-action-chevron{transform:rotate(180deg)}
+.wl-account-avatar{width:31px;height:31px;display:grid;place-items:center;background:#d7f2e7;color:#116f68;border-radius:11px;flex-shrink:0}
+.wl-account-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:145px}
+.wl-profile-dropdown{position:absolute;right:0;top:calc(100% + 11px);z-index:200;width:min(360px,calc(100vw - 24px));max-height:min(75vh,600px);overflow-y:auto;background:#fffef8;box-shadow:0 22px 60px #1e4c4640;border:1.5px solid #cee3d8;border-radius:19px;padding:15px}
+.wl-profile-heading{font-size:13px;font-weight:900;color:#32645a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:9px 11px 13px}
+.wl-profile-action{display:flex;gap:12px;width:100%;align-items:center;padding:13px 12px;font-weight:800;font-size:13px;color:#214c46;background:transparent;border:0;border-radius:12px;text-align:left;cursor:pointer}
+.wl-profile-action:hover,.wl-profile-action.selected{background:#e8f5ee}
+.wl-profile-action svg{color:#1a8570;flex-shrink:0}
+.wl-profile-action .wl-action-chevron{margin-left:auto;transition:transform .15s}
+.wl-theme-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:9px 2px 3px}
+.wl-theme-choice{cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:7px;padding:7px 7px 9px;border:2px solid transparent;border-radius:13px;background:#f1f5f0;color:#264b46;font-size:12px;font-weight:800}
+.wl-theme-choice:hover{border-color:#92c9b7;transform:translateY(-1px)}
+.wl-theme-choice.active{border-color:#118a75;background:#e5f8ef}
+.wl-theme-thumbnail{height:74px;display:flex;align-items:flex-end;justify-content:flex-end;padding:8px;border-radius:9px;background-size:cover;background-position:center}
+.wl-theme-thumbnail svg{background:#fffef2dc;box-shadow:0 2px 6px #1115;color:#184944;border-radius:9px;padding:4px;width:29px;height:29px}
+.wl-theme-thumbnail-light{background-image:url("/themes/light.svg")}
+.wl-theme-thumbnail-dark{background-image:url("/themes/dark.svg")}
+.wl-theme-thumbnail-ocean{background-image:url("/themes/ocean.svg")}
+.wl-theme-thumbnail-beach{background-image:url("/themes/beach.svg")}
+.wl-theme-thumbnail-forest{background-image:url("/themes/forest.svg")}
+.wl-theme-thumbnail-sunset{background-image:url("/themes/sunset.svg")}
+.wl-theme-check{position:absolute;right:13px;bottom:9px;color:#087d68}
+.wl-account-menu :is(button):focus-visible{outline:3px solid #db873e;outline-offset:3px}
+
+/* Each palette comes with an illustrated landscape, not merely a color swap. */
+:root[data-wl-theme="dark"]{color-scheme:dark;--wl-wallpaper:url("/themes/dark.svg");--wl-wash:#101f36f2;--wl-paper:#203650;--wl-canvas:#13263d;--wl-copy:#eaf4fb;--wl-subcopy:#c8dce7;--wl-stroke:#47607b;--wl-accent:#6cd5cb;--wl-intro-wash:#1e3258e9}
+:root[data-wl-theme="ocean"]{--wl-wallpaper:url("/themes/ocean.svg");--wl-wash:#e8f7f9e8;--wl-paper:#f3fcff;--wl-canvas:#def4fa;--wl-copy:#17485c;--wl-subcopy:#3a6674;--wl-stroke:#a9d3dd;--wl-accent:#147da0;--wl-intro-wash:#d6f5f9df}
+:root[data-wl-theme="beach"]{--wl-wallpaper:url("/themes/beach.svg");--wl-wash:#fff5e6e8;--wl-paper:#fffaf0;--wl-canvas:#fff0d7;--wl-copy:#604632;--wl-subcopy:#715b43;--wl-stroke:#e4cfae;--wl-accent:#ad592f;--wl-intro-wash:#fff3d6dc}
+:root[data-wl-theme="forest"]{--wl-wallpaper:url("/themes/forest.svg");--wl-wash:#eaf4e9e8;--wl-paper:#f8fcf2;--wl-canvas:#e0f0e0;--wl-copy:#214d3f;--wl-subcopy:#456452;--wl-stroke:#bed5c2;--wl-accent:#27795c;--wl-intro-wash:#e6f2dfd9}
+:root[data-wl-theme="sunset"]{--wl-wallpaper:url("/themes/sunset.svg");--wl-wash:#fff0eae8;--wl-paper:#fff9f4;--wl-canvas:#fde4e5;--wl-copy:#593b57;--wl-subcopy:#76516b;--wl-stroke:#e7cada;--wl-accent:#a14f82;--wl-intro-wash:#fff0e5dd}
+:root[data-wl-theme]:not([data-wl-theme="light"]) body,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site{background:var(--wl-canvas)!important;color:var(--wl-copy)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .page-content{
+  background-image:linear-gradient(180deg,var(--wl-wash),var(--wl-wash)),var(--wl-wallpaper)!important;
+  background-position:top center!important;background-size:auto,cover!important;background-repeat:no-repeat!important;
+  background-attachment:scroll!important;min-height:75vh;color:var(--wl-copy)
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .topbar,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .side-nav{background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .brand,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .brand strong{color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .side-nav .nav-item{color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .side-nav .nav-item:hover{background:var(--wl-canvas)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .side-nav .nav-item.active{background:var(--wl-accent)!important;color:#fff!important;box-shadow:none!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .language-picker,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .language-picker select,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-trigger,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-dropdown{background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .language-picker label,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-heading{color:var(--wl-subcopy)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-action,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice{color:var(--wl-copy)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-action:hover,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-action.selected{background:var(--wl-canvas)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice{background:var(--wl-canvas)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice.active{border-color:var(--wl-accent)}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .intro{
+  background-image:linear-gradient(90deg,var(--wl-intro-wash) 0%,var(--wl-intro-wash) 57%,transparent 100%),var(--wl-wallpaper)!important;
+  background-size:cover!important;background-position:center!important;box-shadow:inset 0 0 0 1px var(--wl-stroke)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .intro::before,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .intro::after{display:none}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .intro h1,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .intro p{color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.workspace,.account-card,.finder-card,.result-card,.league-page,.habit-snapshot,.audit-results,.audit-session,.audit-kit .audit-option,.history-card,.sort-plan,.assistant-screen,.deposit-calculator){
+  background-color:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.workspace h2,.account-card h2,.account-card h3,.finder-card h2,.result-card h2,.result-card h3,.audit-results h2,.league-page h1,.history-head h3){
+  color:var(--wl-copy)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.workspace p,.account-card p,.finder-card p,.habit-snapshot p,.audit-results p,.history-head time,.finder-note){
+  color:var(--wl-subcopy)!important
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.account-card input,.account-card textarea,.finder-card input,.workspace input,.workspace textarea,.workspace select,.audit-kit input,.deposit-page input,.deposit-page select){
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important
+}
+:root[data-wl-theme="dark"] .site :is(.button.outline,.outline,.audit-actions button,.history-card,.journey-login){
+  background:#203650!important;color:#eaf4fb!important;border-color:#55728e!important
+}
+:root[data-wl-theme="dark"] .site :is(.camera-empty p,.camera-empty h3){color:#fff!important}
+:root[data-wl-theme="dark"] .site :is(.deposit-page,.audit-kit,.account-card,.league-page){color:#eaf4fb}
+:root[data-wl-theme="dark"] .site :is(.account-privacy,.sort-plan,.history-card,.audit-session,.result-card){color:#eaf4fb}
+@media(max-width:680px){
+  .topbar{gap:10px}
+  .topbar-actions{gap:8px}
+  .wl-account-trigger{min-width:44px;max-width:128px;padding-right:9px}
+  .wl-account-name{max-width:70px;font-size:12px}
+  .wl-account-avatar{width:27px;height:27px}
+  .wl-profile-dropdown{right:-4px}
+}
+@media(max-width:400px){
+  .brand strong{font-size:19px!important}
+  .brand-mark{width:35px!important;height:35px!important}
+  .language-picker{padding:5px!important}
+  .language-picker select{max-width:79px!important;font-size:11px!important}
+  .wl-account-name{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .wl-theme-choice:hover{transform:none}
+  .wl-account-trigger svg,.wl-profile-action svg{transition:none}
+}
+
+
+/* Accessible themed surfaces.
+   The original 2026 sheet deliberately applies light colors with !important.
+   These rules load after it and target the real component class names. They
+   preserve the Light theme untouched, while making all five alternatives legible. */
+:root[data-wl-theme="dark"]{
+  --wl-paper:#20354c;--wl-canvas:#112237;--wl-wash:#101f36ed;
+  --wl-copy:#f2f7fc;--wl-subcopy:#cfdfec;--wl-stroke:#52708b;
+  --wl-accent:#71dbce;--wl-surface:#29425e;--wl-surface-raised:#304b68;
+  --wl-subtle-card:#283e57;--wl-highlight:#d6ad63;
+  --wl-selected:#344e61;--wl-icon-surface:#35556b;--wl-icon-copy:#b7ece0;
+  --wl-inverted:#103f43;--wl-panel-shadow:#0d1a2b;
+}
+:root[data-wl-theme="ocean"]{
+  --wl-surface:#e5f5fa;--wl-surface-raised:#fff;
+  --wl-subtle-card:#edf8fb;--wl-highlight:#c28b4e;
+  --wl-selected:#d6f1f5;--wl-icon-surface:#d2edf2;
+  --wl-icon-copy:#146e83;--wl-inverted:#fff;--wl-panel-shadow:#b1dbe1;
+}
+:root[data-wl-theme="beach"]{
+  --wl-surface:#fff3dd;--wl-surface-raised:#fffaf0;
+  --wl-subtle-card:#fff8e9;--wl-highlight:#bc8051;
+  --wl-selected:#fce5c6;--wl-icon-surface:#f9e3bf;
+  --wl-icon-copy:#85532e;--wl-inverted:#fff;--wl-panel-shadow:#ead5b8;
+}
+:root[data-wl-theme="forest"]{
+  --wl-surface:#edf7e9;--wl-surface-raised:#f9fcf3;
+  --wl-subtle-card:#f4f9ef;--wl-highlight:#a27838;
+  --wl-selected:#dcefdc;--wl-icon-surface:#dcebd8;
+  --wl-icon-copy:#316b4c;--wl-inverted:#fff;--wl-panel-shadow:#bdd6c2;
+}
+:root[data-wl-theme="sunset"]{
+  --wl-surface:#ffebf0;--wl-surface-raised:#fff8f6;
+  --wl-subtle-card:#fff4f6;--wl-highlight:#ab6680;
+  --wl-selected:#f9dce9;--wl-icon-surface:#f6dbe9;
+  --wl-icon-copy:#904c72;--wl-inverted:#fff;--wl-panel-shadow:#e8c3d5;
+}
+
+/* Header and navigation. A light turquoise active pill needs dark ink. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .side-nav .nav-item svg{
+  color:var(--wl-accent)!important;
+}
+:root[data-wl-theme="dark"] .side-nav .nav-item.active,
+:root[data-wl-theme="dark"] .side-nav .nav-item.active svg{
+  color:var(--wl-inverted)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-trigger:hover,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-trigger[aria-expanded="true"]{
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-account-avatar{
+  color:var(--wl-icon-copy);background:var(--wl-icon-surface);
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-profile-action svg{
+  color:var(--wl-icon-copy);
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice.active,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .wl-theme-choice:hover{
+  background:var(--wl-selected)!important;
+}
+
+/* Leaderboard: override each original light-only !important background.
+   Do not override the gradient progress tile's white-on-dark lettering. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-title h1,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .badge-panel h2,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-ranking h2{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-icon{
+  background:var(--wl-icon-surface)!important;color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .level-panel{
+  color:#fff!important;box-shadow:7px 7px 0 var(--wl-panel-shadow)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .level-panel :is(h2,strong,.level-label,.level-next){
+  color:#fff!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .level-track{
+  background:#ffffff5c;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats>div{
+  background:var(--wl-surface)!important;border:1.5px solid var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats strong{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats span{
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-stats svg{
+  color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .badge-panel,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-ranking,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-guest{
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;box-shadow:0 7px 0 var(--wl-panel-shadow)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge{
+  opacity:1!important;filter:none!important;color:var(--wl-copy)!important;
+  border:1.5px solid var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge.locked{
+  background:var(--wl-subtle-card)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge.unlocked{
+  background:var(--wl-selected)!important;border-color:var(--wl-highlight)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge strong{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge small{
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge-icon{
+  background:var(--wl-icon-surface)!important;color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .reward-badge.unlocked .reward-badge-icon{
+  background:var(--wl-highlight)!important;color:#202f3f!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-entry{
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-entry.its-you{
+  background:var(--wl-selected)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-user strong,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-number,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-xp{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-user span,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .privacy-toggle p,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .rank-empty,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-guest p{
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-ranking-heading{
+  color:var(--wl-icon-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .privacy-toggle{
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-rules{
+  color:var(--wl-copy)!important;background:var(--wl-surface)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-rules summary{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .league-page .league-rules p{
+  color:var(--wl-subcopy)!important;
+}
+
+/* Secondary surfaces throughout the app: the theme should remain readable
+   beyond the leaderboard, including the deposit calculator and waste audit. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .assistant-card,.assistant-screen,.account-card,.finder-card,
+  .deposit-form-card,.deposit-photo-helper,.deposit-photo-inside,
+  .audit-hero,.audit-results,.audit-kit .audit-option,.habit-snapshot,
+  .history-card,.sort-plan,.sort-step,.map-card,.map-visit-info
+){
+  background:var(--wl-paper)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .assistant-screen h1,.assistant-card h2,.finder-screen h1,
+  .deposit-page,.deposit-form-head h2,.deposit-after h2,
+  .audit-hero h1,.audit-results h2,.audit-kit .audit-count-row strong
+){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .deposit-fields label,.deposit-examples span,.deposit-photo-helper summary,
+  .deposit-photo-helper summary span,.deposit-photo-inside p,
+  .deposit-photo-inside small,.audit-hero p,.audit-session label,
+  .audit-count-row p,.audit-option strong,.audit-option-count,
+  .audit-note summary,.audit-note p,.audit-bar-row strong
+){
+  color:var(--wl-subcopy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .deposit-photo-helper,.deposit-ai-read,.deposit-after,.deposit-callout,
+  .audit-session,.audit-actions button,.deposit-examples button
+){
+  background:var(--wl-surface)!important;border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(
+  .deposit-photo-helper summary,.deposit-after p,.deposit-after a,
+  .deposit-callout p,.deposit-ai-read p,.deposit-ai-read strong,
+  .deposit-examples button,.audit-actions button
+){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result{
+  /* Original gradient carries white text; avoid the generic paper override. */
+  background:linear-gradient(150deg,#294f80,#394c94)!important;
+  color:#fff!important;border-color:#5779ae!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result.check{
+  background:linear-gradient(145deg,#7e4d80,#573e86)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result.no{
+  background:linear-gradient(145deg,#476667,#344e62)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result :is(p,h2,.deposit-mini-math,.deposit-result-note,.deposit-result-overline){
+  color:#fff!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-result .deposit-amount{
+  color:#ffdf83!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-fields :is(input,select),
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-photo-inside input{
+  background:var(--wl-surface-raised)!important;
+  color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-top{
+  background-image:linear-gradient(90deg,var(--wl-intro-wash) 0%,var(--wl-intro-wash) 58%,transparent 100%),var(--wl-wallpaper)!important;
+  background-size:cover!important;background-position:center!important;color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .deposit-top :is(h1,p,.deposit-kicker){
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .audit-kit .audit-bar-track{
+  background:var(--wl-canvas)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .audit-kit .audit-bar-row,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .audit-kit .audit-empty{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) :is(.audit-kit,.deposit-page) a:focus-visible{
+  outline:3px solid var(--wl-accent);outline-offset:3px;
+}
