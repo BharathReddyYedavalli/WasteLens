@@ -409,31 +409,32 @@ local acceptance. Then check the **About** and **Waste audit** pages in all
 six themes and on a mobile viewport. CI checks structural invariants and
 builds but does not replace visual or live AI tests.
 
-## Natural read-aloud voices (optional)
+## Natural AI read-aloud voices (Gemini only)
 
-The Accessibility dropdown now offers two **separate** voice sources:
-**Device voices (offline)**, which uses Safari/Windows built-in speech and
-does not send text anywhere, and **Natural AI voices (Gemini)**, which offers
-8 studio voices (4 female and 4 male) and generates WAV speech using the
-existing server-side `GEMINI_API_KEY`.
+WasteLens has **one** voice dropdown under **Account → Accessibility → Voice**.
+All eight studio voices remain: Aoede, Kore, Sulafat, Zephyr (female) and
+Puck, Charon, Achird, Algieba (male). New and existing users default to
+Aoede. Legacy `engine=device` / `voiceURI` preferences are ignored; existing
+read-aloud toggles, reading rate, and any previously selected Gemini voice
+are preserved.
 
-The default stays **Device voices**, so existing use does not introduce any
-new third-party transfer or API usage. To opt in, open the account menu →
-Accessibility → Voice source → Natural AI voices (Gemini), then choose a
-voice and press Test Voice or a Listen button. Only the selected text chunk
-is sent to Google's Gemini API **when the user presses a button**. No photos,
-account history, or API keys are included. This needs an Internet connection,
-the Python backend and access to Google's
-`gemini-3.8-flash-lite-tts` model. Generation may use Gemini free-tier
-quota or incur usage charges if your API project is on a paid tier; check
-pricing and age/provider terms before public or school deployment.
+Pressing **Listen** or **Test voice** explicitly sends only the spoken text
+chunk to the `/api/speech/generate` backend endpoint, which uses the existing
+server-side `GEMINI_API_KEY` to generate WAV audio through Google's Gemini
+speech model. No photos, user identity, full chat history or API key are sent
+in the speech request. Audio is transient and not saved to SQLite. Speech
+requires internet, a running Python backend, a valid Gemini key, and model
+access. API requests count toward quotas and **may incur charges** depending
+on the API project tier. Check Gemini billing, age/privacy and provider terms
+before using in a public school or unattended station.
 
-The backend limits requests (10 per minute per IP, maximum 600 characters
-per chunk) to reduce inadvertent quota use. Audio is transient, not stored
-in the SQLite database. If AI speech fails, it shows a clear message;
-switching back to Device voices retains the original local TTS feature.
-The browser-generated device voice list remains independent of cloud voices.
+**Device voices have been removed** from the UI and playback code. There is
+no silent robotic-voice fallback: a Gemini error shows a message and leaves
+the Listen/Test controls usable for a retry. Pausing, resuming, stopping,
+changing voice/language/rate, and leaving the component cancel ongoing
+speech. The existing backend caps requests at 10/minute per source IP and
+600 characters per request.
 
-Gemini model and documentation:
+Gemini documentation:
 https://ai.google.dev/gemini-api/docs/speech-generation
 https://ai.google.dev/gemini-api/docs/pricing
