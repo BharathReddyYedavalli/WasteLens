@@ -70,13 +70,14 @@ test("Ask uses current scan-specific prompts and keeps general prompts without s
   assert.match(srcAsk,/setMessages\(\[\]\)/);
 });
 
-test("View scan targets scanned item result heading rather than the last action scroll",()=>{
+test("View scan reliably scrolls to the very top of the Scan page",()=>{
   const app=src("App.tsx");
-  assert.match(app,/returnToScanResultRef\s*=\s*useRef\(false\)/);
-  assert.match(app,/useLayoutEffect\(\(\) => \{/);
-  assert.match(app,/scanResultsRef\.current\.scrollIntoView\(\{block:"start",behavior:"instant"\}\)/);
-  assert.match(app,/id="scan-results"/);
+  assert.match(app,/function returnToScannedItem\(\)/);
   assert.match(app,/onScan=\{returnToScannedItem\}/);
-  assert.match(app,/onClick=\{\(\) => setView\("chat"\)\}/);
-  assert.match(app,/returnToScanResultRef\.current = Boolean\(analysis\)/);
+  assert.match(app,/setView\("identifier"\)/);
+  assert.match(app,/window\.scrollTo\(\{top:0,left:0,behavior:"instant"\}\)/);
+  assert.match(app,/document\.scrollingElement\.scrollTop = 0/);
+  assert.match(app,/window\.requestAnimationFrame\(top\)/);
+  assert.doesNotMatch(app,/scanResultsRef\.current\.scrollIntoView/);
+  assert.doesNotMatch(app,/returnToScanResultRef/);
 });

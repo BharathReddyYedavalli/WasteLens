@@ -1,5 +1,6 @@
 /* Additional translations for the existing English/Spanish/Hindi interface. */
 export const moreTranslations:Record<string,{es:string;hi:string}> = {
+  "Administrator": {"es":"Administrador","hi":"व्यवस्थापक"},
   "Please wait…": {
     "es": "Espera…",
     "hi": "कृपया प्रतीक्षा करें…"
