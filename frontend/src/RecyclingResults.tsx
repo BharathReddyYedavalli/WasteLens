@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertCircle, BatteryCharging, Building2, LocateFixed, MapPin, Recycle } from "lucide-react";
 import MapPanel from "./MapPanel";
+import GooglePlacesFinder from "./GooglePlacesFinder";
 import { useLanguage } from "./i18n";
 import type { FacilitySearchResponse } from "./types";
 
@@ -15,12 +16,20 @@ type Filter = "all" | "centers" | "drop_off";
 export default function RecyclingResults({ results, selected, onSelect }: Props) {
   const { t } = useLanguage();
   const [filter, setFilter] = useState<Filter>("all");
+  const [googleFailed, setGoogleFailed] = useState(false);
+  const googleKey = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim();
+  const showCommunityMap = useCallback(() => setGoogleFailed(true), []);
+  useEffect(() => setGoogleFailed(false), [results?.zip_code]);
   const filtered = useMemo(() => results
     ? results.facilities.filter(place => filter === "all" ||
         (filter === "centers" ? place.kind === "center" : place.kind === "drop_off"))
     : [], [results, filter]);
   const viewData = useMemo(() => results ? {...results, facilities:filtered} : null, [results, filtered]);
   if (!results || !viewData) return null;
+  if (googleKey && !googleFailed) {
+    return <GooglePlacesFinder key={results.zip_code} apiKey={googleKey}
+      data={results} onFallback={showCommunityMap}/>;
+  }
 
   const isUnavailable = results.listing_status === "unavailable";
   const isPartial = results.listing_status === "partial";
@@ -29,6 +38,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
   const dropoffs = results.facilities.length - centers;
 
   return <div className="free-map-shell" aria-label={t("Nearby recycling locations")}>
+    {googleKey && googleFailed && <p className="google-map-caution" role="status">{t("Google Maps unavailable. Showing community map instead.")}</p>}
     <div className="map-summary">
       <div className="map-summary-loc">
         <div className="map-summary-icon"><MapPin size={19}/></div>
