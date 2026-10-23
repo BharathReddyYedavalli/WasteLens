@@ -299,7 +299,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         placeholder={t("Example: Cafeteria lunch")} onChange={e=>setAudit(a=>({...a,title:e.target.value}))}/>
     </div>
     <details className="audit-observation-entry" open={detailMode} onToggle={event=>setDetailMode(event.currentTarget.open)}>
-      <summary>{t("Add item details")} <span>{t("Optional")}</span><ChevronDown size={17}/></summary>
+      <summary>{t("Item details")} <span>{t("Optional")}</span><ChevronDown size={17}/></summary>
       <div className="audit-observation-fields">
         <label>{t("What item did you see?")}
           <select value={itemType} onChange={e=>{
@@ -313,16 +313,16 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         <label className="audit-policy-confirmation">
           <input type="checkbox" checked={rulesAcknowledged} disabled={!itemType}
             onChange={e=>{setRulesAcknowledged(e.target.checked);setSortingCheck("");}}/>
-          <span>{t("I checked the collection rules for this specific site.")}</span>
+          <span>{t("I've checked this location's sorting rules")}</span>
         </label>
-        {rulesAcknowledged&&itemType&&<label>{t("Based on those rules")}
+        {rulesAcknowledged&&itemType&&<label>{t("Was the item placed in the correct bin?")}
           <select value={sortingCheck} onChange={e=>setSortingCheck(e.target.value as SortingCheck|"")}>
             <option value="">{t("No placement assessment")}</option>
-            <option value="matches">{t("Placement matches the rules")}</option>
-            <option value="mismatch">{t("Possible wrong-bin placement")}</option>
+            <option value="matches">{t("Yes, correct bin")}</option>
+            <option value="mismatch">{t("No, possibly incorrect")}</option>
           </select>
         </label>}
-        <p>{t("Tap a destination below to record one item. School rules may differ from residential rules; Reuse and Not sure are never graded.")}</p>
+        <p>{t("Select the item, then tap the bin where you saw it go.")}</p>
       </div>
     </details>
     <div className="audit-count-row">
@@ -367,17 +367,17 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
           <div className="community-chart-card"><Timeline entries={audit.entries}/></div>
         </div>
         {labeled.length>0&&<div className="audit-sort-review">
-          <h3>{t("Sorting observations")}</h3>
+          <h3>{t("Sorting review")}</h3>
           <div className="audit-sort-metrics">
-            <div><strong>{labeled.length}</strong><span>{t("Items identified")}</span></div>
-            <div><strong>{reviewed.length}</strong><span>{t("Placements checked")}</span></div>
-            <div><strong>{flagged.length}</strong><span>{t("Possible wrong-bin placements")}</span></div>
+            <div><strong>{labeled.length}</strong><span>{t("Items categorized")}</span></div>
+            <div><strong>{reviewed.length}</strong><span>{t("Placements reviewed")}</span></div>
+            <div><strong>{flagged.length}</strong><span>{t("Flagged placements")}</span></div>
           </div>
           <p><strong>{t("Most observed")}:</strong> {frequentItems.map(([type,n])=>
             t(itemTypes.find(item=>item.id===type)?.label??type)+" ("+n+")").join(" · ")}</p>
           {flaggedItems.length>0&&<p><strong>{t("Flagged for follow-up")}:</strong> {flaggedItems.map(([type,n])=>
             t(itemTypes.find(item=>item.id===type)?.label??type)+" ("+n+")").join(" · ")}</p>}
-          <p className="audit-review-caveat">{t("These are observer-reported checks against site rules, not independently verified recycling outcomes.")}</p>
+          <p className="audit-review-caveat">{t("Placement reviews are entered by you, not checked automatically.")}</p>
         </div>}
       </>
     </div>}
