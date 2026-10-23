@@ -1,0 +1,351 @@
+/* WasteLens Station Home — visual-only Scan layout.
+   Two-column landing view makes the camera and existing controls visible immediately.
+   No buttons, handlers, components, route names or feature content are modified.
+   Safari supports :has(); use it to target only the existing Scan view. */
+
+/* A station layout, rather than the former three full-width rows. */
+@media (min-width:1101px) {
+  .site .site-layout main.shell:has(> .intro) {
+    display:grid;
+    grid-template-columns:minmax(290px,.82fr) minmax(0,1.5fr);
+    grid-template-rows:auto auto;
+    align-items:stretch;
+    column-gap:clamp(18px,2.4vw,30px);
+    row-gap:16px;
+    padding-top:26px;
+  }
+  .site .site-layout main.shell:has(> .intro)>* {
+    grid-column:1/-1;
+    min-width:0;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro {
+    grid-column:1;
+    grid-row:1;
+    align-self:stretch;
+  }
+  .site .site-layout main.shell:has(> .intro)> .community-mission-path {
+    grid-column:1;
+    grid-row:2;
+    align-self:start;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace {
+    grid-column:2;
+    grid-row:1 / span 2;
+    align-self:stretch;
+  }
+}
+
+/* Visually distinct hero: high contrast, short, and clearly paired with Scan. */
+.site .site-layout main.shell:has(> .intro)> .intro{
+  min-height:0!important;
+  margin:0!important;
+  padding:clamp(26px,3.1vw,42px)!important;
+  border-radius:25px!important;
+  background:#104e47!important;
+  background-image:linear-gradient(150deg,#0e655b 0%,#164841 65%,#183c3d 100%)!important;
+  box-shadow:0 16px 37px rgba(17,65,51,.17)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:flex-start!important;
+  position:relative!important;
+  overflow:hidden!important;
+  isolation:isolate;
+}
+.site .site-layout main.shell:has(> .intro)> .intro::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-88px!important;
+  right:-66px!important;
+  width:230px!important;
+  height:230px!important;
+  border:35px solid rgba(169,255,222,.09)!important;
+  background:none!important;
+  border-radius:50%!important;
+  transform:none!important;
+  opacity:1!important;
+  z-index:0!important;
+  pointer-events:none;
+}
+.site .site-layout main.shell:has(> .intro)> .intro::after{
+  content:""!important;
+  position:absolute!important;
+  right:-72px!important;
+  bottom:-80px!important;
+  width:190px!important;
+  height:190px!important;
+  border-radius:50%!important;
+  background:rgba(255,211,139,.13)!important;
+  z-index:0!important;
+  pointer-events:none;
+}
+.site .site-layout main.shell:has(> .intro) .intro-copy{
+  max-width:100%!important;
+  position:relative;
+  z-index:1;
+}
+.site .site-layout main.shell:has(> .intro)> .intro h1{
+  font-size:clamp(35px,3.05vw,50px)!important;
+  line-height:1.11!important;
+  letter-spacing:-.035em!important;
+  margin:0 0 20px!important;
+  max-width:410px!important;
+  color:#fffef7!important;
+  text-wrap:pretty;
+}
+.site .site-layout main.shell:has(> .intro)> .intro p{
+  font-size:clamp(14px,1.1vw,16px)!important;
+  line-height:1.75!important;
+  max-width:360px!important;
+  color:#ddf8ec!important;
+  margin:0!important;
+}
+.site .site-layout main.shell:has(> .intro) .intro-art{
+  width:102px!important;
+  height:102px!important;
+  position:absolute!important;
+  right:19px!important;
+  bottom:17px!important;
+  border-radius:23px!important;
+  display:grid!important;
+  place-items:center;
+  transform:rotate(9deg)!important;
+  opacity:.32;
+  box-shadow:6px 7px 0 rgba(14,125,105,.42)!important;
+  z-index:1;
+}
+.site .site-layout main.shell:has(> .intro) .intro-art svg{
+  width:55px;height:55px;
+}
+
+/* The existing quick links become a concise two-card step below the welcome. */
+.site .site-layout main.shell:has(> .intro)> .community-mission-path{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:12px!important;
+  margin:0!important;
+  width:100%;
+}
+.site .site-layout main.shell:has(> .intro)> .community-mission-path button{
+  width:100%!important;
+  min-width:0;
+  min-height:67px!important;
+  padding:15px 19px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:13px!important;
+  background:#fffef9!important;
+  border:1.5px solid #d0e3d8!important;
+  color:#194f43!important;
+  box-shadow:0 7px 22px rgba(14,64,48,.045)!important;
+  border-radius:15px!important;
+  text-align:left;
+}
+.site .site-layout main.shell:has(> .intro)> .community-mission-path button svg{
+  width:24px!important;height:24px!important;
+  color:#14806b!important;
+  flex-shrink:0;
+}
+.site .site-layout main.shell:has(> .intro)> .community-mission-path button strong{
+  color:inherit!important;
+  font-size:15px!important;
+  line-height:1.4!important;
+}
+.site .site-layout main.shell:has(> .intro)> .community-mission-path button:hover{
+  border-color:#49a28b!important;
+  background:#f0faf4!important;
+}
+.site .site-layout main.shell:has(> .intro)> .community-mission-path button:focus-visible{
+  outline:3px solid #d69d43!important;outline-offset:3px!important;
+}
+
+/* Camera is the first visual action. Controls show above the fold on desktop. */
+.site .site-layout main.shell:has(> .intro)> .workspace{
+  margin:0!important;
+  min-height:0;
+  padding:clamp(19px,2.15vw,29px)!important;
+  border-radius:25px!important;
+  border:1.5px solid #c9e3d4!important;
+  background:#fffefa!important;
+  box-shadow:0 14px 40px rgba(18,68,52,.105)!important;
+  display:block;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .workspace-head{
+  margin-bottom:15px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .round-icon{
+  width:48px;height:48px;
+  border-radius:15px;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace h2{
+  font-size:clamp(23px,2vw,28px)!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-stage{
+  height:clamp(245px,25vw,312px)!important;
+  min-height:0!important;
+  margin:0!important;
+  border-radius:16px!important;
+  border:2px solid #168a78!important;
+  background:#102d2a!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-empty{
+  display:grid;
+  place-items:center;
+  gap:11px;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-empty p{
+  margin:0;
+  font-size:15px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls{
+  display:flex!important;
+  justify-content:center;
+  align-items:stretch;
+  gap:12px!important;
+  margin:18px 0 4px!important;
+  flex-wrap:wrap;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button{
+  flex:1 1 205px;
+  min-height:60px!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  padding:13px 18px!important;
+  display:inline-flex;
+  gap:10px;
+  justify-content:center;
+  align-items:center;
+  border-radius:13px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button.primary{
+  background:#127a67!important;
+  border-color:#127a67!important;
+  color:#fff!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button.outline{
+  background:#edf8f2!important;
+  border:1.5px solid #bedfcf!important;
+  color:#174f41!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls button:hover:not(:disabled){
+  filter:brightness(.96);
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls button:disabled{
+  opacity:.55;
+}
+
+/* Original results and every other feature retain their normal full-page width. */
+.site .site-layout main.shell:has(> .intro)> :is(.results,.finder-row,.scan-next-actions){
+  grid-column:1/-1;
+  min-width:0;
+}
+
+/* Theme-aware layout without hiding/renaming any sidebar page. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .intro{
+  background:var(--wl-accent)!important;
+  background-image:linear-gradient(155deg,var(--wl-accent) 0%,var(--wl-copy) 175%)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .intro h1{
+  color:#fff!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .intro p{
+  color:#fff!important;
+}
+:root[data-wl-theme="dark"] .site .site-layout main.shell:has(> .intro)> .intro{
+  background:#244e55!important;
+  background-image:linear-gradient(135deg,#1e5d67,#203650)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .workspace,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .community-mission-path button{
+  background:var(--wl-paper)!important;
+  border-color:var(--wl-stroke)!important;
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .community-mission-path button strong{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button.outline{
+  color:var(--wl-copy)!important;
+  background:var(--wl-canvas)!important;
+  border-color:var(--wl-stroke)!important;
+}
+
+/* On tablets/phones, all Scan content flows vertically as before. */
+@media(max-width:1100px){
+  .site .site-layout main.shell:has(> .intro){
+    display:block!important;
+    padding-top:0;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro{
+    min-height:190px!important;
+    margin:20px 0 14px!important;
+    padding:clamp(22px,3.5vw,32px)!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro h1{
+    max-width:760px!important;
+    font-size:clamp(34px,4.8vw,52px)!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .community-mission-path{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+    margin-bottom:16px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace .camera-stage{
+    height:clamp(280px,39vw,390px)!important;
+  }
+}
+@media(max-width:620px){
+  .site .site-layout main.shell:has(> .intro)> .intro{
+    min-height:180px!important;
+    padding:21px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro h1{
+    max-width:100%!important;
+    font-size:clamp(30px,7.2vw,38px)!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro p{
+    font-size:13px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro-art{
+    width:72px!important;height:72px!important;
+    right:15px!important;bottom:14px!important;
+    opacity:.46!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro-art svg{
+    width:39px;height:39px;
+  }
+  .site .site-layout main.shell:has(> .intro)> .community-mission-path button{
+    min-height:60px!important;
+    padding:12px 13px!important;
+    gap:8px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .community-mission-path button strong{
+    font-size:12px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .community-mission-path button svg{
+    width:20px!important;height:20px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace{
+    padding:16px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace .camera-stage{
+    height:clamp(240px,64vw,340px)!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button{
+    flex-basis:100%;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .site .site-layout main.shell:has(> .intro)> .intro,
+  .site .site-layout main.shell:has(> .intro)> .workspace{
+    animation:none!important;
+  }
+}
+@media print{
+  .site .site-layout main.shell:has(> .intro){
+    display:block!important;
+  }
+}

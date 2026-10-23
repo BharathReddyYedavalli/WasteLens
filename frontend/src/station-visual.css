@@ -1,0 +1,304 @@
+/* WasteLens Station UI — visual changes only, no behavior or route changes.
+   This stylesheet deliberately loads last and uses the EXISTING .site markup.
+   Keep original components, forms, dialogs, themes, story art and maps intact. */
+
+.site {
+  --station-radius: 21px;
+  --station-radius-sm: 13px;
+  --station-elevation: 0 10px 30px rgba(23,66,55,.075);
+  --station-border: #d4e6da;
+  --station-panel: #fffef9;
+  --station-copy: #20463d;
+  --station-muted: #4d6b61;
+  --station-accent: #116f64;
+}
+
+/* Full-height station frame. The established responsive drawer stays in place. */
+@media (min-width:1101px) {
+  .site .site-layout {
+    grid-template-columns:272px minmax(0,1fr)!important;
+  }
+  .site .community-navigation {
+    width:272px!important;
+    padding:23px 13px 20px!important;
+  }
+}
+.site .page-content{min-width:0}
+.site .site-layout main.shell{
+  width:min(1260px,calc(100% - 64px))!important;
+}
+/* Bottle Journey keeps its wider photographic reading canvas. */
+.site .site-layout main.story-shell{
+  width:min(1360px,calc(100% - 36px))!important;
+}
+.site .topbar{
+  box-shadow:0 1px 0 rgba(24,70,57,.11),0 7px 20px rgba(16,50,40,.045)!important;
+}
+.site .brand-mark{
+  width:48px!important;height:48px!important;
+  display:grid;place-items:center;
+}
+.site .brand strong{font-size:26px!important}
+.site .topbar-actions{gap:14px}
+.site .language-picker,
+.site .wl-account-trigger{
+  min-height:50px;border-radius:13px;
+}
+.site .language-picker select{font-size:14px!important;cursor:pointer}
+.site .wl-account-trigger{padding-inline:11px 15px;font-size:14px}
+.site .wl-profile-action{min-height:48px;font-size:14px}
+
+/* Keep EVERY navigation entry. Just make each entry easier to touch. */
+.site .community-nav-scroll{gap:21px!important}
+.site .community-nav-group{gap:4px!important}
+.site .community-nav-heading{
+  font-size:12px!important;letter-spacing:.05em!important;
+  padding:3px 11px 8px!important;
+}
+.site .community-navigation .nav-item{
+  min-height:52px!important;
+  font-size:14px!important;
+  padding:12px 14px!important;
+  gap:12px!important;
+  border-radius:14px!important;
+  line-height:1.4!important;
+}
+.site .community-navigation .nav-item svg{
+  width:21px!important;height:21px!important;
+}
+.site .community-navigation .community-about-nav{
+  min-height:52px!important;
+  border-radius:14px!important;
+}
+.site .community-navigation .nav-item:focus-visible{
+  outline:3px solid #d2a04a!important;outline-offset:2px;
+}
+
+/* The familiar Scan header becomes a strong, readable station welcome. */
+.site .site-layout .intro{
+  min-height:208px!important;
+  margin:30px 0 24px!important;
+  padding:clamp(26px,3.25vw,45px)!important;
+  border-radius:25px!important;
+}
+.site .site-layout .intro h1{
+  font-size:clamp(36px,4.25vw,57px)!important;
+  line-height:1.12!important;
+  max-width:850px!important;
+  margin-bottom:14px!important;
+}
+.site .site-layout .intro p{
+  font-size:clamp(15px,1.3vw,18px)!important;
+  line-height:1.65!important;
+  max-width:720px!important;
+}
+.site .intro-art{flex:0 0 auto}
+.site .site-layout .community-mission-path{
+  gap:13px!important;
+  margin-bottom:25px!important;
+}
+.site .site-layout .community-mission-path button{
+  min-height:59px!important;
+  border-radius:15px!important;
+  padding:13px 20px!important;
+  flex:1 1 200px!important;
+}
+.site .site-layout .community-mission-path button strong{
+  font-size:15px!important;
+}
+.site .community-mission-path svg{width:22px;height:22px}
+
+/* Bigger physical-camera area, without changing photo capture or upload logic. */
+.site .workspace{
+  border-radius:25px!important;
+  padding:clamp(20px,3vw,34px)!important;
+  border-width:1.5px!important;
+  box-shadow:var(--station-elevation)!important;
+}
+.site .workspace-head{margin-bottom:18px}
+.site .head-with-icon{gap:14px}
+.site .round-icon{
+  width:52px;height:52px;
+  border-radius:15px;flex-shrink:0;
+}
+.site .workspace h2{font-size:clamp(24px,2.25vw,30px)!important}
+.site .camera-stage{
+  height:clamp(310px,40vw,505px);
+  border-radius:19px!important;
+  border-width:2px!important;
+}
+.site .camera-empty{padding:28px}
+.site .camera-empty p{font-size:15px!important;line-height:1.6}
+.site .camera-controls{gap:13px;margin:22px 0 15px}
+.site .camera-controls .button{
+  min-height:57px!important;
+  font-size:15px!important;
+  padding:14px 23px!important;
+  border-radius:13px!important;
+}
+.site .camera-controls .button svg{width:20px;height:20px}
+.site .hint-area input{
+  min-height:52px;font-size:15px;padding:12px 15px;
+  border-radius:12px;
+}
+
+/* Primary controls feel like a kiosk: legible, spacious, keyboard accessible.
+   No changes to button behavior, data attributes, or disabled states. */
+.site .button,
+.site .scan-decision button,
+.site .finder-form button,
+.site .sort-plan-tools button,
+.site .community-audit-toolbar button,
+.site .community-about-links button{
+  min-height:50px;
+  border-radius:12px;
+  font-size:14px;
+  line-height:1.4;
+}
+.site .button:focus-visible,
+.site :is(.camera-controls button,.community-mission-path button,.scan-decision button):focus-visible{
+  outline:3px solid #d6a355!important;
+  outline-offset:3px!important;
+}
+.site :is(button,input,select,textarea,summary){
+  touch-action:manipulation;
+}
+
+/* Important: resize visible inputs without forcing fixed widths on internal widgets. */
+.site :is(.finder-form,.auth-form,.deposit-fields,.audit-observation-fields) :is(input,select,textarea),
+.site .finder-row input,
+.site .correction-form input{
+  min-height:48px;
+  font-size:15px!important;
+  border-radius:11px;
+}
+.site :is(.finder-form,.auth-form,.deposit-fields,.audit-observation-fields) label{
+  font-size:14px!important;
+  line-height:1.5;
+}
+.site :is(.finder-form,.auth-form) .button{
+  min-height:50px!important;
+  font-size:14px!important;
+}
+
+/* Consistent station cards while preserving each tool's internal structure. */
+.site :is(.finder-card,.account-card,.result-card,.sort-plan,.history-card,
+  .community-dashboard,.community-advice,.community-saved,.league-ranking,
+  .deposit-form-card,.community-chart-card){
+  border-radius:var(--station-radius)!important;
+}
+.site :is(.finder-card,.account-card,.result-card,.sort-plan,.history-card,
+  .community-chart-card){
+  box-shadow:var(--station-elevation);
+}
+.site .result-title{gap:16px}
+.site .scan-decision{
+  border-radius:18px!important;
+  padding:22px 25px;
+  gap:19px;
+}
+.site .scan-decision-copy strong{
+  font-size:clamp(23px,2.45vw,32px);
+  line-height:1.24;
+}
+.site .scan-decision-copy p{font-size:14px;line-height:1.6}
+.site .scan-decision button{
+  min-height:54px;
+  padding:13px 19px;
+  font-size:14px;
+}
+.site .sort-step{min-height:51px;line-height:1.65}
+.site .sort-plan-tools{gap:10px;flex-wrap:wrap}
+.site .sort-plan-tools button{min-height:48px}
+
+/* Larger but not oversized headers on existing tools and dashboards. */
+.site :is(.finder-screen,.account-card,.league-page,.community-audit,.deposit-page){
+  scroll-margin-top:calc(var(--wl-topbar-height) + 16px);
+}
+.site .finder-screen h1{font-size:clamp(32px,3.1vw,43px)!important}
+.site .community-dashboard-heading h2,
+.site .community-advice-heading h2{line-height:1.3}
+.site .audit-option{min-height:126px}
+.site .audit-option:focus-visible{
+  outline:3px solid #d6a355!important;outline-offset:2px!important;
+}
+.site .history-grid{gap:16px}
+.site .badge-grid{gap:14px}
+
+/* Small status/help text must remain readable, but not overwhelm main actions. */
+.site :is(.hint-area label,.finder-form label,.scan-decision-label,
+  .community-chart-note,.habit-caveat){
+  line-height:1.55;
+}
+.site :is(.notice,.error-msg,.inline-error){line-height:1.6}
+
+/* Preserve existing palette choices. The station layer adapts to them. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site{
+  --station-elevation:0 10px 30px rgba(0,0,0,.08);
+  --station-border:var(--wl-stroke);
+  --station-panel:var(--wl-paper);
+  --station-copy:var(--wl-copy);
+  --station-muted:var(--wl-subcopy);
+  --station-accent:var(--wl-accent);
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(
+  .workspace,.finder-card,.account-card,.result-card,.sort-plan,.history-card,
+  .community-chart-card){
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision-copy strong{
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme="dark"] .site .community-navigation .nav-item.active svg{
+  color:var(--wl-inverted,#113d40)!important;
+}
+
+/* No horizontal clipping on tablets or phones. Preserve current mobile drawer. */
+@media(max-width:1100px){
+  .site .site-layout main.shell{width:calc(100% - 36px)!important}
+  .site .community-navigation .nav-item{min-height:49px!important}
+}
+@media(max-width:900px){
+  .site .site-layout main.shell{width:calc(100% - 30px)!important}
+  .site .site-layout main.story-shell{width:calc(100% - 14px)!important}
+  .site .community-menu-toggle{min-width:46px;min-height:46px}
+  .site .site-layout .intro{min-height:175px!important;margin-top:20px!important}
+  .site .camera-stage{height:clamp(285px,49vw,430px)}
+  .site .community-navigation .nav-item{min-height:53px!important}
+}
+@media(max-width:620px){
+  .site .topbar-actions{gap:7px}
+  .site .brand-mark{width:38px!important;height:38px!important}
+  .site .brand strong{font-size:20px!important}
+  .site .language-picker{min-height:42px}
+  .site .wl-account-trigger{min-height:42px}
+  .site .site-layout main.shell{width:calc(100% - 26px)!important}
+  .site .site-layout .intro{padding:22px 20px!important;border-radius:20px!important}
+  .site .site-layout .intro h1{font-size:clamp(32px,7.3vw,42px)!important}
+  .site .site-layout .intro p{font-size:14px!important}
+  .site .site-layout .community-mission-path{gap:9px!important}
+  .site .site-layout .community-mission-path button{min-height:53px!important;padding:12px 14px!important}
+  .site .workspace{padding:15px!important;border-radius:20px!important}
+  .site .camera-stage{height:clamp(245px,70vw,345px)}
+  .site .camera-controls{flex-direction:column;align-items:stretch}
+  .site .camera-controls .button{width:100%;min-height:55px!important}
+  .site .scan-decision{padding:17px;flex-direction:column;align-items:stretch}
+  .site .scan-decision button{width:100%}
+  .site .round-icon{width:45px;height:45px}
+  .site .workspace h2{font-size:23px!important}
+}
+@media(max-width:385px){
+  .site .brand strong{font-size:18px!important}
+  .site .site-layout main.shell{width:calc(100% - 20px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .site :is(.button,.nav-item,.workspace,.result-card,.intro){
+    animation:none!important;transition:none!important;transform:none!important;
+  }
+}
+@media print{
+  /* Printing the results must not acquire new shadows or navigation furniture. */
+  .site :is(.workspace,.result-card,.sort-plan,.account-card,.history-card){
+    box-shadow:none!important;
+  }
+}

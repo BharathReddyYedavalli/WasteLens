@@ -19,5 +19,7 @@ import "./audit-spot-check.css";
 import "./workflow-links.css";
 import "./theme-readability.css";
 import "./kiosk-presentation.css";
+import "./station-visual.css";
+import "./station-home.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
