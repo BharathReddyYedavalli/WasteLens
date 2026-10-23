@@ -27,5 +27,9 @@ def test_language_style_is_specific_and_transcript_is_untouched(monkeypatch):
         style=payload["contents"][0]["parts"][0]["speech_metadata"]["style"]
         assert len(style)>15
         assert payload["contents"][0]["parts"][0]["text"] in ("Hello WasteLens","Hola. ¿Dónde va esto?","नमस्ते। यह कहाँ जाएगा?")
-    assert "español" in seen[1]["contents"][0]["parts"][0]["speech_metadata"]["style"]
-    assert "हिंदी" in seen[2]["contents"][0]["parts"][0]["speech_metadata"]["style"]
+    # The transcript carries the language; Gemini 3.8 auto-detects it.
+    # Preserve the formerly functioning short English style for each locale.
+    for payload in seen:
+        assert payload["contents"][0]["parts"][0]["speech_metadata"]["style"] == (
+            "clear, natural, conversational; say the exact words"
+        )
