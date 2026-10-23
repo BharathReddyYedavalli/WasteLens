@@ -28,10 +28,6 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Other precautions": { es: "Otras precauciones", hi: "अन्य सावधानियाँ" },
   "Feedback and activity": { es: "Comentarios y actividad", hi: "प्रतिक्रिया और गतिविधि" },
   "Confirm the item before sorting": { es: "Identifica el objeto antes de separarlo", hi: "छँटाई से पहले वस्तु की पुष्टि करें" },
-  "AI suggestion, not a confirmed local bin rule.": {
-    es: "Es una sugerencia de IA, no una norma local confirmada.",
-    hi: "यह AI का सुझाव है, पुष्टि किया हुआ स्थानीय नियम नहीं।"
-  },
   "Count where items end up at school or work. Find patterns to improve sorting.": {
     es: "Cuenta dónde acaban los residuos en tu escuela o trabajo para mejorar la separación.",
     hi: "स्कूल या काम पर वस्तुएँ किस डिब्बे में जाती हैं, गिनें और छँटाई के रुझान पहचानें।"
