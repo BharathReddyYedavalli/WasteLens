@@ -59,6 +59,7 @@ type ReadingContext={
   available:boolean;
   activeId:string|null;
   paused:boolean;
+  loadingId:string|null;
   error:string;
   errorId:string|null;
   speak:(id:string,text:string)=>void;
@@ -78,6 +79,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   const [options,setOptions]=useState<SpeechOptions>(getSaved);
   const [activeId,setActiveId]=useState<string|null>(null);
   const [paused,setPaused]=useState(false);
+  const [loadingId,setLoadingId]=useState<string|null>(null);
   const [error,setError]=useState("");
   const [errorId,setErrorId]=useState<string|null>(null);
   const version=useRef(0);
@@ -107,6 +109,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
       void old.context.close().catch(()=>{});
     }
     setActiveId(null);
+    setLoadingId(null);
     setPaused(false);
   },[]);
 
@@ -144,6 +147,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
     cloud.current=state;
     const myVersion=version.current;
     setActiveId(id);
+    setLoadingId(id);
     void ctx.resume().catch(()=>{});
     // Slightly larger chunks mean fewer provider calls for longer chat answers.
     const chunks=splitSpeech(text,580);
@@ -192,6 +196,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
         state.source=source;
         source.onended=()=>{if(myVersion===version.current)void next();};
         source.start();
+        setLoadingId(null);
       }catch(err){
         if(myVersion!==version.current||cloud.current!==state)return;
         const message=err instanceof Error?err.message:"Gemini speech could not play.";
@@ -214,7 +219,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   },[activeId]);
 
   return <SpeechContext.Provider value={{
-    options,update,available,activeId,paused,error,errorId,speak,stop,togglePause,
+    options,update,available,activeId,paused,loadingId,error,errorId,speak,stop,togglePause,
     dismissError:()=>{setError("");setErrorId(null);}
   }}>{children}</SpeechContext.Provider>;
 }
@@ -222,9 +227,10 @@ export function SpeechProvider({children}:{children:ReactNode}){
 export function ReadAloudButton({id,text,category,className=""}:{
   id:string;text:string;category:SpeechCategory;className?:string;
 }){
-  const {t}=useLanguage();
-  const {options,available,activeId,paused,speak,stop,togglePause,error,errorId}=useSpeech();
+  const {language,t}=useLanguage();
+  const {options,available,activeId,paused,loadingId,speak,stop,togglePause,error,errorId}=useSpeech();
   const active=activeId===id;
+  const loading=loadingId===id;
   const activeRef=useRef(active);
   activeRef.current=active;
   useEffect(()=>()=>{if(activeRef.current)stop();},[stop]);
@@ -235,9 +241,9 @@ export function ReadAloudButton({id,text,category,className=""}:{
       title={!available?t("Speech is not available in this browser"):undefined}
       onClick={()=>active?stop():speak(id,text)}>
       {active?<Square size={15}/>:<Volume2 size={16}/>}
-      {t(active?"Stop reading":"Listen")}
+      {loading?(language==="es"?"Generando audio…":language==="hi"?"ऑडियो बन रहा है…":"Generating audio…"):t(active?"Stop reading":"Listen")}
     </button>
-    {active&&<button type="button" className="wl-listen-pause" onClick={togglePause}
+    {active&&!loading&&<button type="button" className="wl-listen-pause" onClick={togglePause}
       aria-label={t(paused?"Resume reading":"Pause reading")}
       title={t(paused?"Resume reading":"Pause reading")}>
       {paused?<Play size={15}/>:<Pause size={15}/>}
@@ -248,8 +254,9 @@ export function ReadAloudButton({id,text,category,className=""}:{
 
 export function SpeechSettingsPanel(){
   const {language,t}=useLanguage();
-  const {options,update,available,activeId,paused,error,speak,stop,togglePause,dismissError}=useSpeech();
+  const {options,update,available,activeId,paused,loadingId,error,errorId,speak,stop,togglePause,dismissError}=useSpeech();
   const testId="voice-settings-preview";
+  const previewLoading=loadingId===testId;
   const availableVoices=LANGUAGE_VOICES[language];
   const activeVoice=selectedVoice(language,options.aiVoice);
   const previewActive=useRef(false);
@@ -299,16 +306,22 @@ export function SpeechSettingsPanel(){
               :"Hello. This is the WasteLens reading voice.");
           }}>
           {activeId===testId?<VolumeX size={16}/>:<Volume2 size={16}/>}
-          {t(activeId===testId?"Stop reading":"Test voice")}
+          {previewLoading
+            ?(language==="es"?"Generando voz…":language==="hi"?"आवाज़ बन रही है…":"Generating voice…")
+            :t(activeId===testId?"Stop reading":"Test voice")}
         </button>
-        {activeId===testId&&<button type="button" onClick={togglePause}>
+        {activeId===testId&&!previewLoading&&<button type="button" onClick={togglePause}>
           {t(paused?"Resume":"Pause")}
         </button>}
       </div>
+      {previewLoading&&<p className="wl-speech-notice" role="status">
+        {language==="es"?"Preparando el audio con Gemini…":language==="hi"?"Gemini से ऑडियो तैयार हो रहा है…":"Preparing audio with Gemini…"}
+      </p>}
+      {error&&errorId===testId&&<p className="wl-speech-notice" role="alert">{error}</p>}
     </>}
     {!available&&<p className="wl-speech-notice" role="status">
       {t("Speech is not available in this browser")}
     </p>}
-    {error&&<p className="wl-speech-notice" role="alert">{error}</p>}
+    {error&&errorId!==testId&&<p className="wl-speech-notice" role="alert">{error}</p>}
   </div>;
 }
