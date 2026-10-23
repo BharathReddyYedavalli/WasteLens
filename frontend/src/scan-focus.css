@@ -80,3 +80,25 @@
 @media(prefers-reduced-motion:reduce){
   .site .scan-subdetails>summary svg:last-child{transition:none}
 }
+
+/* Final Scan + Finder polish: compact ZIP note, clearer cross-page continuity. */
+.site .local-rules-postal-compact{
+  display:flex;align-items:flex-start;gap:8px;
+  margin:0;padding:3px 0;
+  font-size:13px;line-height:1.5;color:var(--wl-copy,#44675c);
+}
+.site .local-rules-postal-compact svg{flex-shrink:0;margin-top:2px;color:var(--wl-copy,#44675c)}
+.site .local-rules-postal-compact strong{font-weight:800;color:inherit}
+.site .finder-scan-context{
+  display:flex;align-items:flex-start;gap:12px;
+  margin:14px 0;padding:13px 16px;
+  background:var(--wl-paper,#f6fbf8);
+  border:1px solid var(--wl-stroke,#bddbd0);
+  border-radius:14px;color:var(--wl-copy,#275346);
+}
+.site .finder-scan-context>svg{flex-shrink:0;margin-top:2px}
+.site .finder-scan-context strong{display:block;font-size:15px;line-height:1.45}
+.site .finder-scan-context p{margin:4px 0 0;font-size:13px;line-height:1.55;color:inherit}
+@media(max-width:620px){
+  .site .finder-scan-context{padding:11px 13px}
+}
