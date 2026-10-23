@@ -445,29 +445,3 @@ Test the three-step workflow in all themes and sizes and confirm that opening
 an old audit still works. GitHub CI covers backwards compatibility, the DB
 migration, and the React source-flow contracts, but cannot establish live
 touchscreen ergonomics without browser review.
-
-### Personal activity dashboard (Final Refinement Stage 2)
-
-The signed-in **My Activity** page separates three genuinely different
-statistics: all-time scans (attempts at identifying items), actions explicitly
-self-reported in the last seven days, and independently tracked gamification
-XP/levels/badges. It queries the existing `/api/habits` and
-`/api/leaderboard` endpoints without creating or estimating impact numbers.
-The weekly chart shows scanning and logged actions as **separate** series.
-XP is for engagement, not validated recycling or CO2. The dashboard shows
-earned badges only; the separate Leaderboard page retains community rankings.
-
-Recent saved classifications are compact cards with an AI-suggested route and
-expandable disposal/reuse details. Show the most recent six first, with a
-button to show all saved items fetched from the account history endpoint.
-The existing stored scans and feedback remain intact, as do the scanner,
-Waste Audit, and all six appearance themes. Buttons jump directly from My
-Activity to scanning or starting an organizational Waste Audit. Signed-out
-visitors continue to see the existing login form.
-
-The server's `seven_day_actions` is limited to the past seven UTC days,
-whereas `total_scans` and XP are all-time. The action breakdown is also
-seven-day-only. A recorded action is not proof of municipal acceptance,
-diversion, or environmental impact. Account sync applies only within the
-same configured WasteLens backend/database. Smoke-test mobile/desktop and
-alternate themes before recording the demo video.

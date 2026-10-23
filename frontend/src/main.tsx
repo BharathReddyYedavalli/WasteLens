@@ -20,6 +20,5 @@ import "./workflow-links.css";
 import "./theme-readability.css";
 import "./kiosk-presentation.css";
 import "./guided-audit.css";
-import "./my-activity.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
