@@ -10,42 +10,58 @@ const compiled=ts.transpileModule(src("aiSpeechVoices.ts"),{
 const {AI_VOICES}=await import("data:text/javascript;base64,"+
   Buffer.from(compiled).toString("base64"));
 
-test("Gemini studio voices provide curated female and male options",()=>{
+test("all eight existing Gemini male/female voices remain selectable",()=>{
   assert.equal(AI_VOICES.length,8);
   assert.equal(AI_VOICES.filter(v=>v.gender==="female").length,4);
   assert.equal(AI_VOICES.filter(v=>v.gender==="male").length,4);
   assert.equal(new Set(AI_VOICES.map(v=>v.id)).size,8);
 });
 
-test("Natural AI voice playback is opt-in and uses server side key only",()=>{
+test("Gemini is the only speech engine and is always the default",()=>{
   const code=src("Speech.tsx");
-  assert.match(code,/engine:"device",aiVoice:"Aoede"/);
-  assert.match(code,/Natural AI voices \(Gemini\)/);
-  assert.match(code,/options\.engine==="ai"/);
+  assert.match(code,/const defaults:SpeechOptions=\{[\s\S]*?aiVoice:"Aoede"/);
+  assert.match(code,/Ignore obsolete saved "device" engine and voiceURI values/);
+  assert.match(code,/aiVoice:AI_VOICES\.find\(v=>v\.id===data\.aiVoice\)\?\.id\?\?defaults\.aiVoice/);
+  assert.doesNotMatch(code,/<select id="wl-speech-engine"/);
+  assert.doesNotMatch(code,/Device voices \(offline\)|System default|speechSynthesis|SpeechSynthesisUtterance|naturalVoices|\bvoiceURI\s*:/);
+  assert.match(code,/<select id="wl-speech-voice"/);
+  assert.match(code,/AI_VOICES\.filter\(v=>v\.gender==="female"\)/);
+  assert.match(code,/AI_VOICES\.filter\(v=>v\.gender==="male"\)/);
+});
+
+test("Gemini request is user-initiated and API key stays on the backend",()=>{
+  const code=src("Speech.tsx");
+  assert.match(code,/onClick=\{\(\)=>active\?stop\(\):speak\(id,text\)\}/);
+  assert.match(code,/onClick=\{\(\)=>\{[\s\S]*?speak\(testId,/);
   assert.match(code,/fetch\("\/api\/speech\/generate"/);
   assert.match(code,/"X-WasteLens-Request":"1"/);
   assert.match(code,/voice:options\.aiVoice,language/);
   assert.doesNotMatch(code,/GEMINI_API_KEY|AIza[0-9A-Za-z_-]+/);
+  assert.match(code,/quotas or charges/);
 });
 
-test("Safari cloud audio playback is unlocked on click and cancellable",()=>{
+test("Safari AI audio playback is unlocked on click and cancellable",()=>{
   const code=src("Speech.tsx");
   assert.match(code,/const ctx=new AudioContext\(\)/);
   assert.match(code,/ctx\.resume\(\)/);
   assert.match(code,/ctx\.decodeAudioData\(bytes\)/);
   assert.match(code,/old\.abort\.abort\(\)/);
   assert.match(code,/source\.onended=\(\)=>/);
-  assert.match(code,/void context\.suspend\(\)/);
-  assert.match(code,/void context\.resume\(\)/);
-  assert.match(code,/old\.abort\.abort\(\)/);
+  assert.match(code,/context\.suspend\(\)/);
+  assert.match(code,/context\.resume\(\)/);
   assert.match(code,/old\.context\.close\(\)/);
+  assert.match(code,/setError\(message\)/);
+  assert.match(code,/role="alert"/);
 });
 
-test("Existing device voices stay selectable with no changes to feature components",()=>{
+test("original read-aloud preferences, categories and controls remain",()=>{
   const code=src("Speech.tsx");
-  assert.match(code,/naturalVoices\(voices,language\)/);
-  assert.match(code,/voiceGroup\(voice\)/);
-  assert.match(code,/onChange=\{e=>update\(\{voiceURI:e\.target\.value\}\)\}/);
-  assert.match(code,/const synth=window\.speechSynthesis/);
-  assert.match(code,/You choose Listen|when you press Listen/i);
+  assert.match(code,/const storageKey="wastelens-voice-preferences"/);
+  assert.match(code,/read.*aloud/i);
+  assert.match(code,/options\.rate\.toFixed\(1\)/);
+  assert.match(code,/Pause reading/);
+  assert.match(code,/Resume reading/);
+  assert.match(code,/options\[category\]/);
+  for(const name of ["scan","steps","chat","journey"])
+    assert.ok(code.includes(name),name);
 });
