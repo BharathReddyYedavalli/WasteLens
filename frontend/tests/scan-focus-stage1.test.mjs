@@ -16,7 +16,7 @@ test("One focused Scan result, no More details container",()=>{
 });
 test("Sorting remains safe and local rules accessible",()=>{
   assert.match(result,/needsConfirmation/);
-  assert.match(result,/AI suggestion, not a confirmed local bin rule/);
+  assert.doesNotMatch(result,/AI suggestion, not a confirmed local bin rule/);
   assert.match(result,/className="scan-clarification"/);
   assert.match(result,/className="scan-inline-caution"/);
   assert.match(result,/openPage\("finder", true\)/);
