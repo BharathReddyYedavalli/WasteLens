@@ -48,6 +48,15 @@ test("kiosk styling is isolated and alternative themes remain supported",()=>{
   assert.match(styles,/:root\[data-wl-theme\]:not\(\[data-wl-theme="light"\]\)/);
   assert.match(styles,/focus-visible/);
 });
+test("kiosk alone overrides legacy forced sidebar grid and full-width shell",()=>{
+  const legacy=src("layout-cleanup.css");
+  assert.match(legacy,/grid-template-columns:256px minmax\(0,1fr\)!important/);
+  assert.match(legacy,/\.site-layout main\.shell\{width:min\(1160px,calc\(100% - 56px\)\)!important/);
+  assert.match(styles,/\.site\.wl-kiosk-active \.site-layout\s*\{[^}]*display:block!important;[^}]*grid-template-columns:none!important/s);
+  assert.match(styles,/\.site\.wl-kiosk-active \.site-layout>\.page-content\s*\{[^}]*width:100%!important/s);
+  assert.match(styles,/\.site\.wl-kiosk-active \.site-layout main\.wl-kiosk-shell\s*\{[^}]*width:min\(900px,calc\(100% - 28px\)\)!important/s);
+  assert.doesNotMatch(styles,/(^|\n)\.site-layout\s*\{/);
+});
 test("major new labels have Spanish and Hindi versions",()=>{
   for(const key of ["Kiosk Mode","Exit kiosk","Where does this go?","Next item — clear screen",
     "This kiosk does not yet have verified rules for your school or office. Confirm the correct bin with staff."])
