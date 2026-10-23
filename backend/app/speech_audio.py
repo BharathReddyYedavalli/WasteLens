@@ -6,6 +6,9 @@ never receives the Google API key. No spoken text or audio is stored.
 from __future__ import annotations
 
 import base64
+import binascii
+import io
+import wave
 import os
 import threading
 import time
@@ -70,6 +73,9 @@ def _generate(text: str, voice: str, language: str, key: str) -> bytes:
         }]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
+            # Unary Gemini 3.8 requests support an explicit RIFF/WAV response.
+            # Safari's AudioContext.decodeAudioData needs a decodable container.
+            "responseFormat": {"audio": {"mimeType": "AUDIO_WAV", "sampleRate": 24000}},
             "speechConfig": {"voiceConfig": {"voice": voice}},
         },
     }
@@ -100,16 +106,31 @@ def _generate(text: str, voice: str, language: str, key: str) -> bytes:
         if result.status_code != 200:
             raise HTTPException(502, "Gemini couldn't generate audio right now.")
         parts = result.json()["candidates"][0]["content"]["parts"]
-        encoded = next(part["inlineData"]["data"] for part in parts if part.get("inlineData"))
+        data = next(part["inlineData"] for part in parts if part.get("inlineData"))
+        encoded = data["data"]
         if len(encoded) > (MAX_AUDIO_BYTES * 4 // 3) + 8:
             raise HTTPException(502, "Generated audio was too large.")
-        wav = base64.b64decode(encoded, validate=True)
-        if len(wav) > MAX_AUDIO_BYTES or not wav.startswith(b"RIFF") or wav[8:12] != b"WAVE":
-            raise HTTPException(502, "Gemini returned an unsupported audio format.")
-        return wav
+        audio_bytes = base64.b64decode(encoded, validate=True)
+        if audio_bytes.startswith(b"RIFF") and audio_bytes[8:12] == b"WAVE":
+            if len(audio_bytes) > MAX_AUDIO_BYTES:
+                raise HTTPException(502, "Generated audio was too large.")
+            return audio_bytes
+        # Defensive fallback for an upstream legacy/raw PCM audio/l16 reply.
+        mime = data.get("mimeType", "").lower()
+        if mime.startswith("audio/l16") and len(audio_bytes) % 2 == 0:
+            if len(audio_bytes) > MAX_AUDIO_BYTES - 44:
+                raise HTTPException(502, "Generated audio was too large.")
+            wav_file = io.BytesIO()
+            with wave.open(wav_file, "wb") as output:
+                output.setnchannels(1)
+                output.setsampwidth(2)
+                output.setframerate(24000)
+                output.writeframes(audio_bytes)
+            return wav_file.getvalue()
+        raise HTTPException(502, "Gemini returned audio Safari cannot play.")
     except HTTPException:
         raise
-    except (httpx.HTTPError, KeyError, ValueError, IndexError, StopIteration, TypeError) as exc:
+    except (httpx.HTTPError, binascii.Error, KeyError, ValueError, IndexError, StopIteration, TypeError) as exc:
         raise HTTPException(502, "Natural speech couldn't be generated. Please try again.") from exc
 
 

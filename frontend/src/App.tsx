@@ -62,8 +62,6 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
-  const scanResultsRef = useRef<HTMLElement>(null);
-  const returnToScanResultRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -91,14 +89,17 @@ export default function App() {
 
   useLayoutEffect(() => {
     stopReading();
-    if (view === "identifier" && returnToScanResultRef.current && scanResultsRef.current) {
-      // The Scan page is already rendered here. Return to the identified item,
-      // not the last action button far down the page.
-      scanResultsRef.current.scrollIntoView({block:"start",behavior:"instant"});
-    } else {
-      window.scrollTo(0,0);
-    }
-    returnToScanResultRef.current = false;
+    // Each navigation begins at the top. View scan must never jump to the
+    // results section halfway down the Scan page.
+    const top = () => {
+      window.scrollTo({top:0,left:0,behavior:"instant"});
+      if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    };
+    top();
+    // On Safari, restoring the previous scroll position can happen right after
+    // a conditional view is mounted. Repeat after layout is committed.
+    const frame = window.requestAnimationFrame(top);
+    return () => window.cancelAnimationFrame(frame);
   },[view,stopReading]);
 
   useEffect(() => {
@@ -320,7 +321,8 @@ export default function App() {
   function returnToScannedItem() {
     stopCamera();
     setNavOpen(false);
-    returnToScanResultRef.current = Boolean(analysis);
+    // Blur View scan before hiding Ask so Safari doesn't restore focus scroll.
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setView("identifier");
   }
   function showLocalRules() {
@@ -483,7 +485,7 @@ export default function App() {
         {error && <ErrorText message={error}/>}
       </div>
 
-      {analysis && <section ref={scanResultsRef} id="scan-results" className="results" aria-live="polite"
+      {analysis && <section id="scan-results" className="results" aria-live="polite"
         style={{scrollMarginTop:"calc(var(--wl-topbar-height, 76px) + 18px)"}}>
         <div className="result-title">
           <div>

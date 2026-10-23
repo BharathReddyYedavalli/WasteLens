@@ -85,7 +85,7 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
       aria-expanded={open} aria-controls="wl-profile-dropdown" aria-haspopup="dialog"
       onClick={() => { setOpen(previous => !previous); setShowThemes(false); setShowAccessibility(false); }}>
       <span className="wl-account-avatar" aria-hidden="true"><UserRound size={18}/></span>
-      <span className="wl-account-name">{user?.name || t("Sign in")}</span>
+      <span className="wl-account-name">{user?.role==="admin"&&user.name.trim().toLowerCase()==="administrator" ? t("Administrator") : (user?.name || t("Sign in"))}</span>
       <ChevronDown size={16} className={open ? "rotated" : ""} aria-hidden="true"/>
     </button>
     {open && <div id="wl-profile-dropdown" className="wl-profile-dropdown" role="dialog"

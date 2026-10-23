@@ -49,7 +49,7 @@ test("shows a pending state and never displays Pause before audio starts",()=>{
 test("failed requests display an accessible visible error next to Test voice",()=>{
   const speech=read("Speech.tsx");
   assert.match(speech,/setErrorId\(id\);\s*setError\(message\)/s);
-  assert.match(speech,/error&&errorId===testId&&<p className="wl-speech-notice" role="alert">/);
+  assert.match(speech,/error&&errorId===testId&&<p className="wl-speech-notice" role="alert" aria-live="assertive">/);
   assert.match(speech,/error&&errorId!==testId/);
   assert.match(speech,/signal:state\.abort\.signal/);
 });
@@ -59,4 +59,13 @@ test("changing voice or language cancels an outdated pending request",()=>{
   assert.match(speech,/options\.aiVoice,stop\]\)/);
   assert.match(speech,/old\.abort\.abort\(\)/);
   assert.match(speech,/myVersion!==version\.current\|\|cloud\.current!==state/);
+});
+
+test("a failed Test Voice stays visibly retryable with its error",()=>{
+  const speech=read("Speech.tsx");
+  assert.match(speech,/Retry voice/);
+  assert.match(speech,/Reintentar voz/);
+  assert.match(speech,/फिर से आवाज़ जाँचें/);
+  assert.match(speech,/errorId===testId&&error/);
+  assert.match(speech,/role="alert" aria-live="assertive"/);
 });

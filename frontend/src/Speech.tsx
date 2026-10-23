@@ -296,6 +296,9 @@ export function SpeechSettingsPanel(){
             <option key={v.id} value={v.id}>{v.id} — {v.style}</option>)}
         </optgroup>
       </select>
+      {error&&errorId===testId&&<p className="wl-speech-notice" role="alert" aria-live="assertive">
+        {error}
+      </p>}
       <div className="wl-speech-preview">
         <button type="button" disabled={!available}
           onClick={()=>{
@@ -308,7 +311,9 @@ export function SpeechSettingsPanel(){
           {activeId===testId?<VolumeX size={16}/>:<Volume2 size={16}/>}
           {previewLoading
             ?(language==="es"?"Generando voz…":language==="hi"?"आवाज़ बन रही है…":"Generating voice…")
-            :t(activeId===testId?"Stop reading":"Test voice")}
+            :errorId===testId&&error
+              ?(language==="es"?"Reintentar voz":language==="hi"?"फिर से आवाज़ जाँचें":"Retry voice")
+              :t(activeId===testId?"Stop reading":"Test voice")}
         </button>
         {activeId===testId&&!previewLoading&&<button type="button" onClick={togglePause}>
           {t(paused?"Resume":"Pause")}
@@ -317,7 +322,6 @@ export function SpeechSettingsPanel(){
       {previewLoading&&<p className="wl-speech-notice" role="status">
         {language==="es"?"Preparando el audio con Gemini…":language==="hi"?"Gemini से ऑडियो तैयार हो रहा है…":"Preparing audio with Gemini…"}
       </p>}
-      {error&&errorId===testId&&<p className="wl-speech-notice" role="alert">{error}</p>}
     </>}
     {!available&&<p className="wl-speech-notice" role="status">
       {t("Speech is not available in this browser")}
