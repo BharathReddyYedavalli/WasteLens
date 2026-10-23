@@ -97,10 +97,8 @@ def get_audit(audit_id: int, request: Request):
                       "entries": json.loads(row["entries_json"]), "created_at": row["created_at"]}}
 
 
-@router.post("/audits", status_code=201)
-def save_audit(payload: SaveAudit, request: Request):
-    require_same_origin_action(request)
-    user = require_user(request)
+def _prepare_audit(payload: SaveAudit) -> tuple[str, list[dict], dict[str, int]]:
+    """Validate each observation and prepare exactly the same data for POST and PUT."""
     title = payload.title.strip()
     if not title:
         raise HTTPException(422, "Give the audit a name before saving.")
@@ -117,6 +115,14 @@ def save_audit(payload: SaveAudit, request: Request):
             observation["rules_checked"] = True
         entries.append(observation)
     counts = _counts(entries)
+    return title, entries, counts
+
+
+@router.post("/audits", status_code=201)
+def save_audit(payload: SaveAudit, request: Request):
+    require_same_origin_action(request)
+    user = require_user(request)
+    title, entries, counts = _prepare_audit(payload)
     with database() as db:
         count = db.execute(
             "SELECT COUNT(*) FROM community_audits WHERE user_id=?", (user["id"],)
@@ -130,6 +136,24 @@ def save_audit(payload: SaveAudit, request: Request):
             (user["id"], title, json.dumps(entries), json.dumps(counts), len(entries), now_iso()),
         )
     return {"id": cursor.lastrowid, "title": title, "counts": counts, "item_count": len(entries)}
+
+
+@router.put("/audits/{audit_id}")
+def update_audit(audit_id: int, payload: SaveAudit, request: Request):
+    """Update only the signed-in user's existing audit. Never insert on a missing ID."""
+    require_same_origin_action(request)
+    user = require_user(request)
+    title, entries, counts = _prepare_audit(payload)
+    with database() as db:
+        cursor = db.execute(
+            """UPDATE community_audits
+               SET title=?, entries_json=?, counts_json=?, item_count=?
+               WHERE id=? AND user_id=?""",
+            (title, json.dumps(entries), json.dumps(counts), len(entries), audit_id, user["id"]),
+        )
+        if cursor.rowcount == 0:
+            raise HTTPException(404, "Saved audit not found for this account.")
+    return {"id": audit_id, "title": title, "counts": counts, "item_count": len(entries)}
 
 
 @router.delete("/audits/{audit_id}")
