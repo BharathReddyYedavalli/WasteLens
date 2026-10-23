@@ -47,6 +47,7 @@ export default function App() {
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
+  const [finderScan, setFinderScan] = useState<string | null>(null);
   const [feedbackSent, setFeedbackSent] = useState<"yes" | "no" | null>(null);
   const [correctChoice, setCorrectChoice] = useState<"yes" | "no" | null>(null);
   const [correction, setCorrection] = useState("");
@@ -133,6 +134,7 @@ export default function App() {
     setFeedbackError("");
     setCelebration(null);
     setRulesOpenRequest(0);
+    setFinderScan(null);
   }
 
   async function startCamera() {
@@ -197,6 +199,7 @@ export default function App() {
     if (!preview || busy) return;
     setRulesOpenRequest(0);
     setBusy(true); setResult(null); setError(""); setCelebration(null);
+    setFinderScan(null);
     try {
       const scanForm = new FormData();
       scanForm.append("image", preview.file);
@@ -235,26 +238,29 @@ export default function App() {
   }
 
 
-  async function searchFacilities(event: React.FormEvent) {
-    event.preventDefault();
-    if (!/^\d{5}$/.test(location.trim())) {
+  async function lookupFacilities(zipCode: string) {
+    if (!/^\d{5}$/.test(zipCode.trim())) {
       setFacilityError("Enter a valid five-digit US ZIP code.");
       return;
     }
     setFacilityBusy(true);
     setFacilityError("");
-    // ZIPs are resolved from the locally bundled US postal coordinate data,
-    // so the map does not depend on a paid geocoder.
+    // ZIPs use bundled postal coordinates; material acceptance is NOT verified.
     setFacilities(null);
     setSelectedFacility(null);
     try {
-      const response = await fetch("/api/facilities?zip_code=" + encodeURIComponent(location.trim()));
+      const response = await fetch("/api/facilities?zip_code=" + encodeURIComponent(zipCode.trim()));
       const searchResults = await readJson<FacilitySearchResponse>(response);
       setFacilities(searchResults);
       setSelectedFacility(searchResults.facilities[0]?.id ?? null);
     } catch (e) {
       setFacilityError(e instanceof Error ? e.message : "Could not find collection locations.");
     } finally { setFacilityBusy(false); }
+  }
+
+  function searchFacilities(event: React.FormEvent) {
+    event.preventDefault();
+    void lookupFacilities(location);
   }
 
   async function submitFeedback(correct: boolean) {
@@ -278,9 +284,20 @@ export default function App() {
 
   const analysis = result?.analysis;
   const needsConfirmation = Boolean(analysis && (analysis.identification !== "likely" || analysis.route === "needs_identification"));
-  function openPage(next: typeof view) {
+  function openPage(next: typeof view, fromScan = false) {
     stopCamera();
     setNavOpen(false);
+    if (next === "finder") {
+      setFinderScan(fromScan && analysis ? analysis.item_name : null);
+      // A Scan-to-Finder transition uses the ZIP already entered in local rules.
+      // Only location results are fetched; no facility is claimed to accept this item.
+      if (fromScan && /^\d{5}$/.test(location.trim())) {
+        void lookupFacilities(location);
+      } else if (fromScan) {
+        setFacilities(null);
+        setSelectedFacility(null);
+      }
+    }
     setView(next);
   }
   function returnToScannedItem() {
@@ -398,13 +415,6 @@ export default function App() {
           <Recycle size={58} strokeWidth={1.8}/>
         </div>
       </div>
-      <div className="community-mission-path" aria-label={t("Quick links")}>
-        <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
-          <strong>{t("Find a place")}</strong></button>
-        <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
-          <strong>{t("Run an audit")}</strong></button>
-      </div>
-
       <div className="workspace">
         <div className="workspace-head">
           <div className="head-with-icon">
@@ -450,6 +460,12 @@ export default function App() {
         {error && <ErrorText message={error}/>}
       </div>
 
+            <div className="community-mission-path" aria-label={t("Quick links")}>
+              <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
+                <strong>{t("Find a place")}</strong></button>
+              <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
+                <strong>{t("Run an audit")}</strong></button>
+            </div>
       {analysis && <section id="scan-results" className="results" aria-live="polite"
         style={{scrollMarginTop:"calc(var(--wl-topbar-height, 76px) + 18px)"}}>
         <div className="result-title">
@@ -489,7 +505,7 @@ export default function App() {
           <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "local-rules"}
             zipCode={location} onZipChange={setLocation} openRequest={rulesOpenRequest}/>
           <nav className="scan-next-actions" aria-label={t("Next steps")}>
-            <button type="button" onClick={() => openPage("finder")}>
+            <button type="button" onClick={() => openPage("finder", true)}>
               <MapPin size={18}/>{t("Find nearby options")}
             </button>
             <button type="button" onClick={() => setView("chat")}>
@@ -566,6 +582,12 @@ export default function App() {
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
         <h1><MapPin size={30}/> {t("Find a place")}</h1>
+        {finderScan && <div className="finder-scan-context" role="status">
+          <ScanLine size={21}/>
+          <div><strong>{t("From your scan")}: {finderScan}</strong>
+            <p>{t("These locations are not confirmed to accept this item. Contact them before visiting.")}</p>
+          </div>
+        </div>}
         
         <div className="finder-card">
           <form className="finder-form" onSubmit={event => void searchFacilities(event)}>
