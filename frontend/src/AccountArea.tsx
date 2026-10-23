@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, History, LockKeyhole, ShieldCheck, UserPlus } from "lucide-react";
+import { AlertTriangle, Check, History, LockKeyhole, ShieldCheck, UserPlus } from "lucide-react";
 import type { SessionUser, SavedScan, AdminOverview, AdminUser, AdminFeedback } from "./types";
 import { useLanguage } from "./i18n";
 import HabitSnapshot from "./HabitSnapshot";
@@ -33,6 +33,8 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [feedback, setFeedback] = useState<AdminFeedback[]>([]);
+  const [reviewOnly, setReviewOnly] = useState(false);
+  const shownFeedback = reviewOnly ? feedback.filter(entry=>entry.feedback === "no") : feedback;
 
   useEffect(() => {
     if (!user || mode !== "history") return;
@@ -170,22 +172,37 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
       <div className="admin-stats">
         <div><strong>{overview?.users ?? "…"}</strong><span>{t("Accounts")}</span></div>
         <div><strong>{overview?.scans ?? "…"}</strong><span>{t("Saved scans")}</span></div>
-        <div><strong>{overview?.yes ?? "…"}</strong><span>{t("Yes responses")}</span></div>
-        <div><strong>{overview?.no ?? "…"}</strong><span>{t("No responses")}</span></div>
+        <div><strong>{overview?.yes ?? "…"}</strong><span>{t("Reported correct")}</span></div>
+        <div><strong>{overview?.no ?? "…"}</strong><span>{t("Reported incorrect")}</span></div>
       </div>
+      <h3>{t("Scan identification feedback")}</h3>
+      <p className="admin-feedback-intro">{t('These answers come from "Was that right?" after a scan. Yes means the user agreed with the item name; No means they reported a mistake. They are user reports, not a measured accuracy score.')}</p>
+      <div className="admin-feedback-tools">
+        <p>{t("Showing the most recent 500 feedback entries.")}</p>
+        <button type="button" className="admin-feedback-toggle" aria-pressed={reviewOnly}
+          onClick={()=>setReviewOnly(current=>!current)}>
+          {reviewOnly ? t("Show all feedback") : t("Show reported mistakes only")}
+        </button>
+      </div>
+      <div className="table-wrap"><table><thead><tr>
+        <th>{t("Account")}</th><th>{t("Identified item")}</th><th>{t("User response")}</th><th>{t("Suggested correction")}</th><th>{t("Date")}</th>
+      </tr></thead>
+        <tbody>{shownFeedback.map(entry => <tr key={entry.id}>
+          <td>{entry.user_name}</td><td>{entry.item_name}</td>
+          <td>{entry.feedback === "yes"
+            ? <span className="admin-answer admin-answer-correct"><Check size={14}/>{t("Looks correct")}</span>
+            : <span className="admin-answer admin-answer-incorrect"><AlertTriangle size={14}/>{t("Needs correction")}</span>}</td>
+          <td>{entry.correction || t("Not provided")}</td>
+          <td>{new Date(entry.created_at).toLocaleDateString()}</td>
+        </tr>)}</tbody>
+      </table></div>
+      {shownFeedback.length===0 && <p className="admin-feedback-empty">
+        {reviewOnly ? t("No reported mistakes in these feedback entries.") : t("No classification feedback has been submitted yet.")}
+      </p>}
       <h3>{t("Users")}</h3>
       <div className="table-wrap"><table><thead><tr><th>{t("Name")}</th><th>{t("Email")}</th><th>{t("Role")}</th><th>{t("Scans")}</th></tr></thead>
         <tbody>{users.map(member => <tr key={member.id}><td>{member.name}</td><td>{member.email}</td><td>{member.role}</td><td>{member.scan_count}</td></tr>)}</tbody>
       </table></div>
-      <h3>{t("Classification feedback")}</h3>
-      <div className="table-wrap"><table><thead><tr><th>{t("Account")}</th><th>{t("Item")}</th><th>{t("Answer")}</th><th>{t("Correction")}</th><th>{t("Date")}</th></tr></thead>
-        <tbody>{feedback.map(entry => <tr key={entry.id}>
-          <td>{entry.user_name}</td><td>{entry.item_name}</td>
-          <td>{entry.feedback === "yes" ? <span className="yes-answer"><Check size={14}/> Yes</span> : t("No")}</td>
-          <td>{entry.correction || t("None")}</td><td>{new Date(entry.created_at).toLocaleDateString()}</td>
-        </tr>)}</tbody>
-      </table></div>
-      {!feedback.length && <p>{t("No classification feedback has been submitted yet.")}</p>}
     </section>;
   }
 
