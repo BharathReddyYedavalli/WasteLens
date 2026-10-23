@@ -82,6 +82,9 @@ export function SpeechProvider({children}:{children:ReactNode}){
   const [errorId,setErrorId]=useState<string|null>(null);
   const version=useRef(0);
   const cloud=useRef<{context:AudioContext;abort:AbortController;source:AudioBufferSourceNode|null}|null>(null);
+  // Small session-only audio cache. Replaying an answer doesn't call Gemini again.
+  // Nothing is written to localStorage, indexedDB or the backend.
+  const audioCache=useRef<Map<string,ArrayBuffer>>(new Map());
   const available=typeof window!=="undefined"&&"AudioContext" in window;
   const update=useCallback((next:Partial<SpeechOptions>)=>setOptions(old=>({...old,...next})),[]);
 
@@ -114,7 +117,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   },[language,options.enabled,options.scan,options.steps,options.chat,options.journey,
       options.rate,options.aiVoice,stop]);
 
-  useEffect(()=>()=>{stop();},[stop]);
+  useEffect(()=>()=>{stop();audioCache.current.clear();},[stop]);
 
   const speak=useCallback((id:string,source:string)=>{
     if(!options.enabled||!available){
@@ -141,28 +144,46 @@ export function SpeechProvider({children}:{children:ReactNode}){
     const myVersion=version.current;
     setActiveId(id);
     void ctx.resume().catch(()=>{});
-    const chunks=splitSpeech(text);
+    // Slightly larger chunks mean fewer provider calls for longer chat answers.
+    const chunks=splitSpeech(text,580);
     let index=0;
 
     const next=async():Promise<void>=>{
       if(myVersion!==version.current||cloud.current!==state)return;
       if(index>=chunks.length){stop();return;}
       try{
-        const response=await fetch("/api/speech/generate",{
-          method:"POST",
-          headers:{"Content-Type":"application/json","X-WasteLens-Request":"1"},
-          credentials:"same-origin",
-          signal:state.abort.signal,
-          body:JSON.stringify({text:chunks[index++],voice:options.aiVoice,language})
-        });
-        if(!response.ok){
-          const body=await response.json().catch(()=>({detail:"Natural speech is not available right now."}));
-          throw Error(typeof body.detail==="string"?body.detail:"Natural speech is not available right now.");
+        const chunk=chunks[index++];
+        const cacheKey=JSON.stringify([options.aiVoice,language,chunk]);
+        let bytes=audioCache.current.get(cacheKey);
+        const cacheHit=Boolean(bytes);
+        if(!bytes){
+          const response=await fetch("/api/speech/generate",{
+            method:"POST",
+            headers:{"Content-Type":"application/json","X-WasteLens-Request":"1"},
+            credentials:"same-origin",
+            signal:state.abort.signal,
+            body:JSON.stringify({text:chunk,voice:options.aiVoice,language})
+          });
+          if(!response.ok){
+            const body=await response.json().catch(()=>({detail:"Natural speech is not available right now."}));
+            throw Error(typeof body.detail==="string"?body.detail:"Natural speech is not available right now.");
+          }
+          bytes=await response.arrayBuffer();
         }
-        const bytes=await response.arrayBuffer();
         if(myVersion!==version.current||cloud.current!==state)return;
-        const audio=await ctx.decodeAudioData(bytes);
+        // Safari may detach an ArrayBuffer on decode, so pass a copy.
+        const audio=await ctx.decodeAudioData(bytes.slice(0));
         if(myVersion!==version.current||cloud.current!==state)return;
+        if(!cacheHit){
+          const cache=audioCache.current;
+          cache.set(cacheKey,bytes);
+          // LRU-style eviction keeps at most 8 short clips in memory.
+          while(cache.size>8){const first=cache.keys().next().value;if(first===undefined)break;cache.delete(first);}
+        }else{
+          // Move recently played material to the back of the eviction queue.
+          audioCache.current.delete(cacheKey);
+          audioCache.current.set(cacheKey,bytes);
+        }
         const source=ctx.createBufferSource();
         source.buffer=audio;
         source.playbackRate.value=options.rate;
@@ -265,13 +286,6 @@ export function SpeechSettingsPanel(){
             <option key={v.id} value={v.id}>{v.id} — {v.style}</option>)}
         </optgroup>
       </select>
-      <p className="wl-speech-hint">
-        {language==="es"
-          ?"Solo al pulsar Escuchar o Probar voz, enviamos el texto a Google Gemini para generar audio. Requiere internet y clave API, y puede consumir cuota o generar cargos."
-          :language==="hi"
-          ?"Listen या Test voice दबाने पर ही ऑडियो बनाने के लिए पाठ Google Gemini को भेजा जाता है। इंटरनेट और API कुंजी चाहिए; कोटा या शुल्क लग सकता है।"
-          :"When you press Listen or Test voice, text is sent to Google Gemini to generate speech. Internet and a Gemini API key are required; usage may count toward quotas or charges."}
-      </p>
       <div className="wl-speech-preview">
         <button type="button" disabled={!available}
           onClick={()=>{

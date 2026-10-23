@@ -7,7 +7,7 @@ type Drink = "soda"|"water"|"sparkling_water"|"beer"|"cider"|"juice"|"sports_ene
 type Material = "aluminum"|"glass"|"plastic"|"carton"|"pouch"|"other";
 type Resin = "pet1"|"hdpe2"|"other"|"unknown";
 type DepositResult = { state:string;state_code:DepositStateCode;status:"yes"|"no"|"check";per_container_cents:number;
- total_cents:number;count:number;reason:string;source_url:string;state_tip:string;amount_is_confirmed:boolean;label:string;note:string };
+ total_cents:number;count:number;ounces:number;reason:string;source_url:string;state_tip:string;amount_is_confirmed:boolean;label:string;note:string };
 const STATES: {code:DepositStateCode; name:string}[] = [
   {code:"CA",name:"California"},{code:"CT",name:"Connecticut"},{code:"HI",name:"Hawaii"},
   {code:"IA",name:"Iowa"},{code:"ME",name:"Maine"},{code:"MA",name:"Massachusetts"},
@@ -47,18 +47,32 @@ export default function BottleReturns() {
   const [paid,setPaid] = useState<"yes"|"no"|"unsure">("unsure");
   const [result,setResult] = useState<DepositResult|null>(null);
   const [error,setError] = useState("");
+  const [calculating,setCalculating] = useState(false);
   useEffect(()=>{
     const size=Number(ounces),amount=Number(count);
+    // Never display a result calculated for the previous input.
+    setResult(null);
+    setError("");
     if(!Number.isFinite(size)||size<=0||size>512||!Number.isInteger(amount)||amount<1||amount>5000){
-      setResult(null);return;
+      setCalculating(false);return;
     }
+    setCalculating(true);
     const ctrl=new AbortController();
-    fetch("/api/deposit/calculate",{
-      method:"POST",headers:{"Content-Type":"application/json"},signal:ctrl.signal,
-      body:JSON.stringify({state,drink,material,ounces:size,count:amount,paid_in_state:paid,resin})
-    }).then(async r=>{const data=await r.json();if(!r.ok)throw new Error("Check bottle details.");return data as DepositResult;})
-      .then(setResult).catch(e=>{if(!ctrl.signal.aborted)setError(e.message||"Can't calculate right now.");});
-    return ()=>ctrl.abort();
+    // A brief debounce avoids unnecessary requests while entering a number.
+    const timer=window.setTimeout(()=>{
+      fetch("/api/deposit/calculate",{
+        method:"POST",headers:{"Content-Type":"application/json"},signal:ctrl.signal,
+        body:JSON.stringify({state,drink,material,ounces:size,count:amount,paid_in_state:paid,resin})
+      }).then(async response=>{
+        if(!response.ok)throw new Error("Check bottle details.");
+        return response.json() as Promise<DepositResult>;
+      }).then(data=>{
+        if(!ctrl.signal.aborted){setResult({...data,ounces:size});setCalculating(false);}
+      }).catch(e=>{
+        if(!ctrl.signal.aborted){setCalculating(false);setError(e.message||"Can't calculate right now.");}
+      });
+    },180);
+    return ()=>{window.clearTimeout(timer);ctrl.abort();};
   },[state,drink,material,resin,ounces,count,paid]);
   return <section className="deposit-page">
     <div className="deposit-top">
@@ -98,6 +112,12 @@ export default function BottleReturns() {
           <label>{t("Size in fluid ounces")}
             <input type="number" min=".1" max="512" step="any" value={ounces}
               onChange={e=>setOunces(e.target.value)} inputMode="decimal"/>
+            {state==="CA"&&["aluminum","glass","plastic"].includes(material)&&
+              <small className="deposit-size-hint">
+                {language==="es"?"California: menos de 24 oz = 5¢; desde 24 oz = 10¢ por envase elegible.":
+                language==="hi"?"कैलिफ़ोर्निया: 24 औंस से कम = 5¢, 24 औंस या अधिक = 10¢ प्रति पात्र कंटेनर।":
+                "California: under 24 fl oz = 5¢; 24 fl oz or more = 10¢ per eligible container."}
+              </small>}
           </label>
           <label>{t("Number of containers")}
             <input type="number" min="1" max="5000" step="1" value={count}
@@ -118,6 +138,11 @@ export default function BottleReturns() {
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
+          <p className="deposit-size-used">
+            {language==="es"?`Calculado para ${result.ounces} onzas líquidas por envase.`:
+            language==="hi"?`प्रति कंटेनर ${result.ounces} फ़्लूइड औंस के लिए गणना।`:
+            `Calculated for ${result.ounces} fl oz per container.`}
+          </p>
           <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
           <p>{localizedDepositReason(result.reason,t)}</p>
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
@@ -128,7 +153,10 @@ export default function BottleReturns() {
             <div className="deposit-mini-math"><span>{result.count.toLocaleString(language==="hi"?"hi-IN":language==="es"?"es-ES":"en-US")} {t("containers")}</span><b>×</b><span>{result.per_container_cents}¢ {t("each")}</span></div>
             <p>{t(result.state_tip)}</p>
           </details>
-        </>:<><strong className="deposit-amount">?</strong><p>{t("Choose a valid size and amount to check.")}</p></>}
+        </>:<><strong className="deposit-amount">{calculating?"…":"?"}</strong><p>
+          {calculating?(language==="es"?"Calculando…":language==="hi"?"गणना हो रही है…":"Calculating…"):
+            t("Choose a valid size and amount to check.")}
+        </p></>}
         <div className="deposit-result-note"><ShieldCheck size={18}/> {t("Refund eligibility depends on where the deposit was paid and the return program.")}</div>
       </div>
     </div>
