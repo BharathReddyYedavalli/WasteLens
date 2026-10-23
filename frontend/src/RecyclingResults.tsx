@@ -28,24 +28,24 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
   const centers = results.facilities.filter(place => place.kind === "center").length;
   const dropoffs = results.facilities.length - centers;
 
-  return <div className="free-map-shell" aria-label="Nearby recycling locations">
+  return <div className="free-map-shell" aria-label={t("Nearby recycling locations")}>
     <div className="map-summary">
       <div className="map-summary-loc">
         <div className="map-summary-icon"><MapPin size={19}/></div>
         <div>
           <h4>{results.location_label} <span className="map-zip">· {results.zip_code}</span></h4>
-          <p>Within {results.radius_miles.toFixed(0)} miles</p>
+          <p>{t("Within")} {results.radius_miles.toFixed(0)} {t("miles")}</p>
         </div>
       </div>
       <div className="map-summary-stats">
         <strong>{isUnavailable ? "…" : results.facilities.length}</strong>
-        <span>places found</span>
+        <span>{t("places found")}</span>
       </div>
     </div>
 
     {isPartial && <div className="map-alert" role="status"><AlertCircle size={17}/>
-      <span>{isPartial ? "Some listings are offline. Showing city locations." : "Places aren't loading. Try again shortly."}</span></div>}
-    {results.facilities.length > 0 && <div className="map-filters" aria-label="Filter collection locations">
+      <span>{isPartial ? t("Some listings are offline. Showing city locations.") : t("Places aren't loading. Try again shortly.")}</span></div>}
+    {results.facilities.length > 0 && <div className="map-filters" aria-label={t("Filter collection locations")}>
       <button type="button" className={filter === "all" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("all")}>{t("All")} <span>{results.facilities.length}</span></button>
       <button type="button" className={filter === "centers" ? "map-filter chosen" : "map-filter"}
@@ -55,9 +55,9 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
     </div>}
 
     <div className="map-explorer">
-      <div className="facility-side-panel" aria-label="Scrollable list of mapped recycling locations">
+      <div className="facility-side-panel" aria-label={t("Scrollable list of mapped recycling locations")}>
         <div className="facility-side-heading">
-          <strong>{filtered.length ? t("Places near you") : isUnavailable ? "Can't load places" : t("No places found")}</strong>
+          <strong>{filtered.length ? t("Places near you") : isUnavailable ? t("Can't load places") : t("No places found")}</strong>
           
         </div>
         {filtered.length ? filtered.map((place, i) =>
@@ -70,26 +70,26 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
             <span className="location-info">
               <strong>{place.name}</strong>
               <small>{place.address}</small>
-              <span className="location-meta"><LocateFixed size={13}/> {place.distance_miles.toFixed(1)} miles · {place.kind === "center" ? "Recycling center" : "Drop off spot"}</span>
-              {place.listing_source === "official" && <span className="official-source-tag">City published location</span>}
+              <span className="location-meta"><LocateFixed size={13}/> {place.distance_miles.toFixed(1)} {t("miles")} · {t(place.kind === "center" ? "Recycling center" : "Drop off spot")}</span>
+              {place.listing_source === "official" && <span className="official-source-tag">{t("City published location")}</span>}
               {place.tagged_materials.length > 0 && <span className="location-tags">
-                <BatteryCharging size={12}/> {place.listing_source === "official" ? "Listed materials:" : "OSM tags:"} {place.tagged_materials.slice(0,4).join(" · ")}
+                <BatteryCharging size={12}/> {t(place.listing_source === "official" ? "Listed materials:" : "OSM tags:")} {place.tagged_materials.slice(0,4).join(" · ")}
               </span>}
               {active === place.id && <>
-                {place.phone && <span className="location-phone">Phone: {place.phone}</span>}
+                {place.phone && <span className="location-phone">{t("Phone:")} {place.phone}</span>}
                 {place.access_note && <span className="location-caution">{place.access_note}</span>}
                 {place.coordinate_note && <span className="location-caution">{place.coordinate_note}</span>}
                 
               </>}
             </span>
           </button>
-          {active === place.id && place.source_url && <a className="facility-official-link" href={place.source_url} target="_blank" rel="noopener noreferrer">View {place.listing_source === "official" ? "city details" : "map record"}</a>}
+          {active === place.id && place.source_url && <a className="facility-official-link" href={place.source_url} target="_blank" rel="noopener noreferrer">{t("View")} {t(place.listing_source === "official" ? "city details" : "map record")}</a>}
           </div>
         ) : <div className="no-map-results">
           <Recycle size={25}/>
-          <strong>{isUnavailable ? "Can't load places right now" : "No places on this map yet"}</strong>
-          <p>{isUnavailable ? "The map still works. Please try again soon." :
-            "We couldn't find a listed location nearby. There may still be recycling options in your area."}</p>
+          <strong>{isUnavailable ? t("Can't load places right now") : t("No places on this map yet")}</strong>
+          <p>{isUnavailable ? t("The map still works. Please try again soon.") :
+            t("We couldn't find a listed location nearby. There may still be recycling options in your area.")}</p>
         </div>}
       </div>
       <div className="map-visual">
@@ -99,7 +99,7 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
     </div>
     <details className="map-visit-info">
       <summary>{t("Before you go")}</summary>
-      <p>Call to check whether the facility takes your item, its hours and any residency rules. Map locations may be approximate. Listings come from OpenStreetMap and city websites.</p>
+      <p>{t("Call to check whether the facility takes your item, its hours and any residency rules. Map locations may be approximate. Listings come from OpenStreetMap and city websites.")}</p>
     </details>
   </div>;
 }

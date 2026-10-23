@@ -440,7 +440,7 @@ export default function App() {
         </div>
 
         <div className="camera-controls">
-          <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label="Upload item photo"/>
+          <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label={t("Upload item photo")}/>
           {!camera && !preview && <>
             <button className="button primary" type="button" onClick={() => void startCamera()}><Camera size={18}/> {t("Use camera")}</button>
             <button className="button outline" type="button" onClick={() => uploadRef.current?.click()}><Upload size={18}/> {t("Choose a photo")}</button>
@@ -460,9 +460,9 @@ export default function App() {
           <label htmlFor="hint">{t("Focus on one item")} <span>{t("Optional")}</span></label>
           <input id="hint" maxLength={160} value={hint} disabled={busy}
             onChange={event => {setHint(event.target.value); setResult(null);}}
-            placeholder="Example: The blue bottle I'm holding"/>
+            placeholder={t("Example: The blue bottle I'm holding")}/>
         </div>}
-        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>Add your Gemini API key in the <code>.env</code> file and restart the backend.</span></div>}
+        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>{t("Add your Gemini API key in the")} <code>.env</code> {t("file and restart the backend.")}</span></div>}
         {statusError && <ErrorText message={statusError}/>}
         {cameraError && <ErrorText message={cameraError}/>}
         {error && <ErrorText message={error}/>}
@@ -477,7 +477,7 @@ export default function App() {
         </div>
         <div className="result-meta-line">
           <span className="material-line"><strong>{t("Material")}:</strong> {analysis.material_guess}</span>
-          {Boolean(result?.earned_xp) && <span className="earned-xp"><Sparkles size={17}/> +{result?.earned_xp} XP earned</span>}
+          {Boolean(result?.earned_xp) && <span className="earned-xp"><Sparkles size={17}/> +{result?.earned_xp} {t("XP earned")}</span>}
         </div>
         <ReadAloudButton id="scan-summary" category="scan" className="wl-scan-read"
           text={[analysis.item_name,analysis.route_title,analysis.material_guess,
@@ -544,7 +544,7 @@ export default function App() {
                 ? <><ul>{analysis.reuse_ideas.map((x,i)=><li key={i}>{x}</li>)}</ul></>
                 : <p>{t("No safe reuse idea for this item yet.")}</p>}
             </div>}
-            <details className="reuse-fine-print"><summary>{t("Before trying a project")}</summary><p>Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.</p></details>
+            <details className="reuse-fine-print"><summary>{t("Before trying a project")}</summary><p>{t("Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.")}</p></details>
           </article>
           {analysis.cautions.length > 0 && <article className="result-card muted">
             <h3><ShieldAlert size={21}/> {t("A few things to check")}</h3>
@@ -584,7 +584,7 @@ export default function App() {
               <button className="button primary" disabled={feedbackBusy}
                 onClick={() => void submitFeedback(false)}>{t("Submit feedback")}</button>
             </div>}
-            {feedbackSent && <p className="feedback-confirmed" role="status">Thank you! Your {feedbackSent === "yes" ? "Yes" : "No"} feedback was saved to your account.</p>}
+            {feedbackSent && <p className="feedback-confirmed" role="status">{t("Thank you! Your")} {t(feedbackSent === "yes" ? "Yes" : "No")} {t("feedback was saved to your account.")}</p>}
             {feedbackError && <p className="inline-error" role="alert">{feedbackError}</p>}
           </article>
           {user && result?.scan_id && <article className="result-card action-card">
@@ -597,7 +597,7 @@ export default function App() {
                 </button>
               )}
             </div>
-            {recordedAction && <p className="action-confirmed">Saved as {recordedAction}.</p>}
+            {recordedAction && <p className="action-confirmed">{t("Saved as")} {t(recordedAction[0].toUpperCase()+recordedAction.slice(1))}.</p>}
             {actionError && <p className="inline-error" role="alert">{actionError}</p>}
             
           </article>}

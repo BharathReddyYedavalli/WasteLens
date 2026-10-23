@@ -94,12 +94,12 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
         <label>{t("Password")}<input type="password" required minLength={signup ? 10 : 1} maxLength={256}
           value={password} onChange={event => setPassword(event.target.value)}
           autoComplete={signup ? "new-password" : "current-password"}/></label>
-        <button className="button primary" disabled={busy}>{busy ? "Please wait…" : (signup ? t("Sign up") : t("Sign in"))}</button>
+        <button className="button primary" disabled={busy}>{busy ? t("Please wait…") : (signup ? t("Sign up") : t("Sign in"))}</button>
       </form>
       <button className="link-button" onClick={() => { setSignup(!signup); setError(""); }}>
         {signup ? t("Already have an account? Sign in") : t("New here? Create an account")}
       </button>
-      <details className="account-privacy"><summary><LockKeyhole size={16}/> {t("Your account and privacy")}</summary><p>Your password is securely hashed. Saved scans contain item results, not photos.</p></details>
+      <details className="account-privacy"><summary><LockKeyhole size={16}/> {t("Your account and privacy")}</summary><p>{t("Your password is securely hashed. Saved scans contain item results, not photos.")}</p></details>
       {error && <p className="inline-error" role="alert">{error}</p>}
     </section>;
   }
@@ -107,58 +107,58 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   if (mode === "history") {
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><History/></div>
-        <div><h2>{t("My scans")}</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
+        <div><h2>{t("My scans")}</h2><p>{scans.length} {t("saved")} {t(scans.length === 1 ? "item" : "items")}</p></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       <HabitSnapshot/>
       {scans.length === 0 && <p>{t("Nothing here yet. Scan your first item to save it.")}</p>}
       <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
         <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
-        <p><strong>Material:</strong> {scan.analysis.material_guess}</p>
-        <p><strong>What to do:</strong> {scan.analysis.route_title}</p>
+        <p><strong>{t("Material:")}</strong> {scan.analysis.material_guess}</p>
+        <p><strong>{t("What to do:")}</strong> {scan.analysis.route_title}</p>
         
-        {scan.feedback && <p><strong>Your feedback:</strong> {scan.feedback === "yes" ? "Correct" : "Needs correction"}</p>}
-        {scan.correction && <p><strong>Correction:</strong> {scan.correction}</p>}
+        {scan.feedback && <p><strong>{t("Your feedback:")}</strong> {t(scan.feedback === "yes" ? "Correct" : "Needs correction")}</p>}
+        {scan.correction && <p><strong>{t("Correction:")}</strong> {scan.correction}</p>}
         <details><summary>{t("See the tips for this item")}</summary>
-          <h4>Disposal</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
-          <h4>Reuse</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
+          <h4>{t("Disposal")}</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
+          <h4>{t("Reuse")}</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
         </details>
       </article>)}</div>
     </section>;
   }
 
   if (mode === "admin") {
-    if (user.role !== "admin") return <section className="account-card"><h2>Administrator access required</h2></section>;
+    if (user.role !== "admin") return <section className="account-card"><h2>{t("Administrator access required")}</h2></section>;
     return <section className="account-card">
       <div className="head-with-icon"><div className="round-icon"><ShieldCheck/></div>
         <div><h2>{t("Admin dashboard")}</h2></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
       <div className="admin-stats">
-        <div><strong>{overview?.users ?? "…"}</strong><span>Accounts</span></div>
-        <div><strong>{overview?.scans ?? "…"}</strong><span>Saved scans</span></div>
-        <div><strong>{overview?.yes ?? "…"}</strong><span>Yes responses</span></div>
-        <div><strong>{overview?.no ?? "…"}</strong><span>No responses</span></div>
+        <div><strong>{overview?.users ?? "…"}</strong><span>{t("Accounts")}</span></div>
+        <div><strong>{overview?.scans ?? "…"}</strong><span>{t("Saved scans")}</span></div>
+        <div><strong>{overview?.yes ?? "…"}</strong><span>{t("Yes responses")}</span></div>
+        <div><strong>{overview?.no ?? "…"}</strong><span>{t("No responses")}</span></div>
       </div>
-      <h3>Users</h3>
-      <div className="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Scans</th></tr></thead>
+      <h3>{t("Users")}</h3>
+      <div className="table-wrap"><table><thead><tr><th>{t("Name")}</th><th>{t("Email")}</th><th>{t("Role")}</th><th>{t("Scans")}</th></tr></thead>
         <tbody>{users.map(member => <tr key={member.id}><td>{member.name}</td><td>{member.email}</td><td>{member.role}</td><td>{member.scan_count}</td></tr>)}</tbody>
       </table></div>
-      <h3>Classification feedback</h3>
-      <div className="table-wrap"><table><thead><tr><th>Account</th><th>Item</th><th>Answer</th><th>Correction</th><th>Date</th></tr></thead>
+      <h3>{t("Classification feedback")}</h3>
+      <div className="table-wrap"><table><thead><tr><th>{t("Account")}</th><th>{t("Item")}</th><th>{t("Answer")}</th><th>{t("Correction")}</th><th>{t("Date")}</th></tr></thead>
         <tbody>{feedback.map(entry => <tr key={entry.id}>
           <td>{entry.user_name}</td><td>{entry.item_name}</td>
-          <td>{entry.feedback === "yes" ? <span className="yes-answer"><Check size={14}/> Yes</span> : "No"}</td>
-          <td>{entry.correction || "None"}</td><td>{new Date(entry.created_at).toLocaleDateString()}</td>
+          <td>{entry.feedback === "yes" ? <span className="yes-answer"><Check size={14}/> Yes</span> : t("No")}</td>
+          <td>{entry.correction || t("None")}</td><td>{new Date(entry.created_at).toLocaleDateString()}</td>
         </tr>)}</tbody>
       </table></div>
-      {!feedback.length && <p>No classification feedback has been submitted yet.</p>}
+      {!feedback.length && <p>{t("No classification feedback has been submitted yet.")}</p>}
     </section>;
   }
 
   return <section className="account-card">
     <h2>{t("My account")}</h2>
-    <p><strong>Name:</strong> {user.name}</p>
-    <p><strong>Email:</strong> {user.email}</p>
-    {user.role === "admin" && <p><strong>Role:</strong> Admin</p>}
+    <p><strong>{t("Name:")}</strong> {user.name}</p>
+    <p><strong>{t("Email:")}</strong> {user.email}</p>
+    {user.role === "admin" && <p><strong>{t("Role:")}</strong> {t("Admin")}</p>}
     <button className="button outline" onClick={() => void logout()}>{t("Sign out")}</button>
     {error && <p className="inline-error" role="alert">{error}</p>}
   </section>;

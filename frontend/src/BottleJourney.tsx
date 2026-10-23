@@ -101,9 +101,9 @@ export default function BottleJourney({user,onUnlock,onSignIn,onScan,onReturns}:
           </div>
         </fieldset>)}
         {result&&<div className={"journey-quiz-outcome "+(result.passed?"passed":"")} role="status">
-          <strong>{result.score} out of {result.total} correct</strong>
+          <strong>{language==="es"?`${result.score} de ${result.total} correctas`:language==="hi"?`${result.total} में से ${result.score} सही`:`${result.score} out of ${result.total} correct`}</strong>
           <p>{language==="en"?result.message:result.unlocked_badge?(language==="es"?"¡Insignia desbloqueada!":"बैज मिला!") :result.passed?(language==="es"?"¡Excelente!":"बहुत बढ़िया!") :language==="es"?"Revisa las respuestas e inténtalo otra vez.":"जवाब जाँचें और फिर प्रयास करें।"}</p>
-          {result.unlocked_badge&&<span className="journey-badge-earned"><Award size={19}/> Bottle Explorer · +30 XP</span>}
+          {result.unlocked_badge&&<span className="journey-badge-earned"><Award size={19}/> {t("Bottle Explorer · +30 XP")}</span>}
           {result.passed&&!result.signed_in&&<button type="button" className="journey-login" onClick={onSignIn}>{t("Sign in to earn the badge")}</button>}
         </div>}
         {error&&<p role="alert" className="journey-quiz-error">{error}</p>}

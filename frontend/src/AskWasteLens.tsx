@@ -73,7 +73,7 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
     }
   }
 
-  return <section className="assistant-screen" aria-label="Ask WasteLens chatbot">
+  return <section className="assistant-screen" aria-label={t("Ask WasteLens chatbot")}>
     <div className="assistant-heading">
       <div className="assistant-logo"><Bot size={25}/></div>
       <div>
@@ -107,17 +107,17 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
             {message.role === "assistant" && <ReadAloudButton id={"chat-answer-"+index} category="chat" text={message.text}/>}
           </div>
         </div>)}
-        {busy && <div className="chat-wait" role="status"><Bot size={17}/> Thinking…</div>}
+        {busy && <div className="chat-wait" role="status"><Bot size={17}/> {t("Thinking…")}</div>}
       </div>
       {error && <div role="alert" className="chat-error"><AlertTriangle size={16}/>{error}</div>}
-      {!configured && <div className="chat-error"><AlertTriangle size={16}/> Start your Python backend and configure your Gemini API key to chat.</div>}
+      {!configured && <div className="chat-error"><AlertTriangle size={16}/> {t("Start your Python backend and configure your Gemini API key to chat.")}</div>}
       <form className="assistant-composer" onSubmit={event => void send(event)}>
-        <label htmlFor="ask-input" className="visually-hidden">Ask a question about an item or recycling</label>
+        <label htmlFor="ask-input" className="visually-hidden">{t("Ask a question about an item or recycling")}</label>
         <textarea id="ask-input" rows={2} maxLength={1200}
           value={input} onChange={event => setInput(event.target.value)}
           onKeyDown={onKeyDown} disabled={busy}
           placeholder={t("Ask a question…")} />
-        <button aria-label="Send message" title="Send message" type="submit"
+        <button aria-label={t("Send message")} title={t("Send message")} type="submit"
           disabled={busy || !configured || !input.trim()}><ArrowUp size={19}/></button>
       </form>
       {messages.length > 0 && <div className="chat-footer">

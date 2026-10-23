@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
+import { useLanguage } from "./i18n";
 import "leaflet/dist/leaflet.css";
 import type { FacilitySearchResponse } from "./types";
 
@@ -11,6 +12,7 @@ type Props = {
 
 /** Leaflet map with real OSM points, in-page selections and rich detail popups. */
 export default function MapPanel({ data, selected, onSelect }: Props) {
+  const {t}=useLanguage();
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<Map<string, L.Marker>>(new Map());
@@ -63,22 +65,22 @@ export default function MapPanel({ data, selected, onSelect }: Props) {
       const address = document.createElement("p");
       address.textContent = place.address;
       const kind = document.createElement("small");
-      kind.textContent = (place.kind === "center" ? "Center · " : "Drop-off · ") +
-        place.distance_miles.toFixed(1) + " mi from ZIP center";
+      kind.textContent = t(place.kind === "center" ? "Center · " : "Drop-off · ") +
+        place.distance_miles.toFixed(1) + " "+t("mi from ZIP center");
       popup.append(title, address, kind);
       if (place.tagged_materials.length) {
         const tags = document.createElement("p");
-        tags.textContent = "OSM tags: " + place.tagged_materials.join(", ");
+        tags.textContent = t("OSM tags:") + " " + place.tagged_materials.join(", ");
         popup.append(tags);
       }
       if (place.phone) {
         const phone = document.createElement("p");
-        phone.textContent = "Unverified phone: " + place.phone;
+        phone.textContent = t("Unverified phone:") + " " + place.phone;
         popup.append(phone);
       }
       if (place.listing_source === "official") {
         const source = document.createElement("p");
-        source.textContent = "Published on an official city website.";
+        source.textContent = t("Published on an official city website.");
         popup.append(source);
       }
       if (place.access_note) {
@@ -94,14 +96,14 @@ export default function MapPanel({ data, selected, onSelect }: Props) {
       if (place.source_url && place.source_url.startsWith("https://")) {
         const link = document.createElement("a");
         link.href = place.source_url;
-        link.textContent = place.listing_source === "official" ? "City details" : "OpenStreetMap record";
+        link.textContent = t(place.listing_source === "official" ? "City details" : "OpenStreetMap record");
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         popup.append(link);
       }
       const caution = document.createElement("p");
       caution.className = "map-popup-caution";
-      caution.textContent = "Call to confirm this item is accepted.";
+      caution.textContent = t("Call to confirm this item is accepted.");
       popup.append(caution);
 
       marker.bindPopup(popup, {maxWidth: 290});
@@ -126,7 +128,7 @@ export default function MapPanel({ data, selected, onSelect }: Props) {
       mapRef.current = null;
       markerRef.current.clear();
     };
-  }, [data, onSelect]);
+  }, [data, onSelect, t]);
 
   useEffect(() => {
     if (!selected || !mapRef.current) return;
@@ -140,5 +142,5 @@ export default function MapPanel({ data, selected, onSelect }: Props) {
   }, [selected, data]);
 
   return <div ref={container} className="embedded-map modern-map" role="region"
-    aria-label={"Interactive recycling finder map near " + data.location_label}/>;
+    aria-label={t("Interactive recycling finder map near")+" "+data.location_label}/>;
 }

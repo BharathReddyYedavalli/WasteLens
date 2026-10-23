@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import {moreTranslations} from "./i18n-more";
 
 export type Language = "en" | "es" | "hi";
 export const LANGUAGES: { code: Language; label: string }[] = [
@@ -534,7 +535,7 @@ export function LanguageProvider({ children }: {children: ReactNode}) {
   },[language]);
   return <I18n.Provider value={{
     language, setLanguage,
-    t: text => language === "en" ? text : strings[text]?.[language] ?? text,
+    t: text => language === "en" ? text : strings[text]?.[language] ?? moreTranslations[text]?.[language] ?? text,
   }}>{children}</I18n.Provider>;
 }
 export function useLanguage(): Context { return useContext(I18n); }
