@@ -18,46 +18,72 @@ export default function RecyclingResults({ results, selected, onSelect }: Props)
   const [filter, setFilter] = useState<Filter>("all");
   const [googleFailed, setGoogleFailed] = useState(false);
   const googleKey = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim();
+  const [communityResults, setCommunityResults] = useState<FacilitySearchResponse|null>(null);
+  const [communityLoading, setCommunityLoading] = useState(false);
   const showCommunityMap = useCallback(() => setGoogleFailed(true), []);
   useEffect(() => setGoogleFailed(false), [results?.zip_code]);
-  const filtered = useMemo(() => results
-    ? results.facilities.filter(place => filter === "all" ||
+  // Google uses an instant offline ZIP lookup; only request Overpass/OSM when
+  // Google Places fails or the user explicitly requests the community map.
+  useEffect(() => {
+    if (!googleKey || !googleFailed || !results) return;
+    const controller = new AbortController();
+    let active = true;
+    setCommunityLoading(true);
+    fetch("/api/facilities?zip_code=" + encodeURIComponent(results.zip_code),
+      {signal:controller.signal})
+      .then(async response => {
+        if (!response.ok) throw new Error("Community locations unavailable.");
+        return await response.json() as FacilitySearchResponse;
+      })
+      .then(data => {if(active) setCommunityResults(data);})
+      .catch(() => {
+        // The existing map can still show the ZIP center without provider POIs.
+      })
+      .finally(() => {if(active) setCommunityLoading(false);});
+    return () => {active=false;controller.abort();};
+  }, [googleKey, googleFailed, results?.zip_code]);
+  const source = googleKey && googleFailed && communityResults?.zip_code===results?.zip_code
+    ? communityResults : results;
+  const filtered = useMemo(() => source
+    ? source.facilities.filter(place => filter === "all" ||
         (filter === "centers" ? place.kind === "center" : place.kind === "drop_off"))
-    : [], [results, filter]);
-  const viewData = useMemo(() => results ? {...results, facilities:filtered} : null, [results, filtered]);
-  if (!results || !viewData) return null;
+    : [], [source, filter]);
+  const viewData = useMemo(() => source ? {...source, facilities:filtered} : null, [source, filtered]);
+  if (!results || !source || !viewData) return null;
   if (googleKey && !googleFailed) {
     return <GooglePlacesFinder key={results.zip_code} apiKey={googleKey}
       data={results} onFallback={showCommunityMap}/>;
   }
 
-  const isUnavailable = results.listing_status === "unavailable";
-  const isPartial = results.listing_status === "partial";
+  const isUnavailable = source.listing_status === "unavailable";
+  const isPartial = source.listing_status === "partial";
   const active = filtered.some(place => place.id === selected) ? selected : null;
-  const centers = results.facilities.filter(place => place.kind === "center").length;
-  const dropoffs = results.facilities.length - centers;
+  const centers = source.facilities.filter(place => place.kind === "center").length;
+  const dropoffs = source.facilities.length - centers;
 
   return <div className="free-map-shell" aria-label={t("Nearby recycling locations")}>
-    {googleKey && googleFailed && <p className="google-map-caution" role="status">{t("Google Maps unavailable. Showing community map instead.")}</p>}
+    {googleKey && googleFailed && <p className="google-map-caution" role="status">
+      {communityLoading ? t("Loading community locations…") : t("Google Maps unavailable. Showing community map instead.")}
+    </p>}
     <div className="map-summary">
       <div className="map-summary-loc">
         <div className="map-summary-icon"><MapPin size={19}/></div>
         <div>
-          <h4>{results.location_label} <span className="map-zip">· {results.zip_code}</span></h4>
-          <p>{t("Within")} {results.radius_miles.toFixed(0)} {t("miles")}</p>
+          <h4>{source.location_label} <span className="map-zip">· {source.zip_code}</span></h4>
+          <p>{t("Within")} {source.radius_miles.toFixed(0)} {t("miles")}</p>
         </div>
       </div>
       <div className="map-summary-stats">
-        <strong>{isUnavailable ? "…" : results.facilities.length}</strong>
+        <strong>{isUnavailable ? "…" : source.facilities.length}</strong>
         <span>{t("places found")}</span>
       </div>
     </div>
 
     {isPartial && <div className="map-alert" role="status"><AlertCircle size={17}/>
       <span>{isPartial ? t("Some listings are offline. Showing city locations.") : t("Places aren't loading. Try again shortly.")}</span></div>}
-    {results.facilities.length > 0 && <div className="map-filters" aria-label={t("Filter collection locations")}>
+    {source.facilities.length > 0 && <div className="map-filters" aria-label={t("Filter collection locations")}>
       <button type="button" className={filter === "all" ? "map-filter chosen" : "map-filter"}
-        onClick={() => setFilter("all")}>{t("All")} <span>{results.facilities.length}</span></button>
+        onClick={() => setFilter("all")}>{t("All")} <span>{source.facilities.length}</span></button>
       <button type="button" className={filter === "centers" ? "map-filter chosen" : "map-filter"}
         onClick={() => setFilter("centers")}><Building2 size={14}/> {t("Centers")} <span>{centers}</span></button>
       <button type="button" className={filter === "drop_off" ? "map-filter chosen" : "map-filter"}
