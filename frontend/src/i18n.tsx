@@ -10,6 +10,15 @@ export const LANGUAGES: { code: Language; label: string }[] = [
 ];
 
 const strings: Record<string, { es: string; hi: string }> = {
+  "ZIP area": { es: "Zona postal", hi: "डाक क्षेत्र" },
+  "ZIP codes do not confirm your collection service.": {
+    es: "El código postal no confirma tu servicio de recogida.",
+    hi: "ज़िप कोड से आपकी कचरा संग्रह सेवा की पुष्टि नहीं होती।"
+  },
+  "These locations are not confirmed to accept this item. Contact them before visiting.": {
+    es: "No se ha confirmado que estos lugares acepten este objeto. Comunícate con ellos antes de ir.",
+    hi: "यह पुष्टि नहीं हुई है कि ये केंद्र इस वस्तु को स्वीकार करते हैं। जाने से पहले संपर्क करें।"
+  },
   "Scan an item, then check how your local program handles it.": {
     es: "Escanea un objeto y comprueba cómo lo gestiona tu servicio local.",
     hi: "किसी वस्तु को स्कैन करें, फिर देखें कि आपकी स्थानीय सेवा इसे कैसे संभालती है।"
