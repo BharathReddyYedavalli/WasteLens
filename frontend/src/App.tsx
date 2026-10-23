@@ -39,7 +39,6 @@ export default function App() {
   const [preview, setPreview] = useState<PhotoPreview | null>(null);
   const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
-  const [rulesOpenRequest, setRulesOpenRequest] = useState(0);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
   const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about">("identifier");
@@ -133,12 +132,10 @@ export default function App() {
     setCorrectChoice(null);
     setFeedbackError("");
     setCelebration(null);
-    setRulesOpenRequest(0);
     setFinderScan(null);
   }
 
   async function startCamera() {
-    setRulesOpenRequest(0);
     setCameraError(""); setError(""); setResult(null); clearPreview();
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraError("Camera access requires localhost or HTTPS. Try uploading a photo instead.");
@@ -164,7 +161,6 @@ export default function App() {
       return;
     }
     stopCamera();
-    setRulesOpenRequest(0);
     setResult(null); setError(""); setCameraError("");
     setPreview(previous => {
       if (previous) URL.revokeObjectURL(previous.src);
@@ -197,7 +193,6 @@ export default function App() {
 
   async function analyze() {
     if (!preview || busy) return;
-    setRulesOpenRequest(0);
     setBusy(true); setResult(null); setError(""); setCelebration(null);
     setFinderScan(null);
     try {
@@ -284,6 +279,14 @@ export default function App() {
 
   const analysis = result?.analysis;
   const needsConfirmation = Boolean(analysis && (analysis.identification !== "likely" || analysis.route === "needs_identification"));
+  // When identification is uncertain, do not repeat the same generic safety
+  // statement in the decision, numbered instructions and warning banner.
+  // Preserve distinct hazard cautions (batteries, sharps, chemicals, etc.).
+  const scanCautions = analysis?.cautions.filter((c, index, all) => {
+    const normalized = c.trim().toLowerCase();
+    if (!normalized || all.findIndex(other => other.trim().toLowerCase() === normalized) !== index) return false;
+    return !(needsConfirmation && /^the photo alone is not enough to confirm safe disposal\.?$/.test(normalized));
+  }) ?? [];
   function openPage(next: typeof view, fromScan = false) {
     stopCamera();
     setNavOpen(false);
@@ -306,9 +309,6 @@ export default function App() {
     // Blur View scan before hiding Ask so Safari doesn't restore focus scroll.
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setView("identifier");
-  }
-  function showLocalRules() {
-    setRulesOpenRequest(current => current + 1);
   }
 
   useEffect(() => {
@@ -479,31 +479,42 @@ export default function App() {
           {Boolean(result?.earned_xp) && <span className="earned-xp"><Sparkles size={17}/> +{result?.earned_xp} {t("XP earned")}</span>}
         </div>
         <ReadAloudButton id="scan-summary" category="scan" className="wl-scan-read"
-          text={[analysis.item_name,analysis.route_title,analysis.material_guess,
-            analysis.visual_description,analysis.follow_up_question,...analysis.disposal_steps,...analysis.cautions].filter(Boolean).join(". ")}/>
-        <div className="scan-decision" aria-label={t("Suggested next action")}>
+          text={[analysis.item_name,needsConfirmation ? t("Confirm the item before sorting") : analysis.route_title,
+            analysis.material_guess,analysis.visual_description,analysis.follow_up_question,
+            ...(!needsConfirmation ? analysis.disposal_steps : []),...scanCautions].filter(Boolean).join(". ")}/>
+        <div className={"scan-decision scan-decision-unified" + (needsConfirmation ? " needs-confirmation" : "")}
+          aria-label={t("Suggested next action")}>
           <div className="scan-decision-copy">
             <span className="scan-decision-label">{t("Suggested next action")}</span>
             <strong>{needsConfirmation ? t("Confirm the item before sorting") : analysis.route_title}</strong>
-            <p>{t("AI suggestion, not a confirmed local bin rule.")}</p>
           </div>
-          <button type="button" onClick={showLocalRules}>
-            <MapPin size={17}/>{t("Check local rules")}
-          </button>
-        </div>
-        {needsConfirmation && <div className="uncertain"><AlertTriangle size={18}/>{t("The item or material needs confirmation. Check before sorting.")}</div>}
-        {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
-        <div className="scan-essential">
-          {analysis.disposal_steps.length > 0 && <section className="scan-quick-steps" aria-label={t("What to do with it")}>
-            <h3>{t("What to do with it")}</h3>
-            <ol>{analysis.disposal_steps.slice(0,3).map((step,index)=><li key={index}>{step}</li>)}</ol>
-            <ScanStepTools key={result?.scan_id ?? preview?.src ?? "tools"} analysis={analysis}/>
-          </section>}
-          {analysis.cautions.length > 0 && <p className="scan-primary-caution">
-            <ShieldAlert size={18}/>{analysis.cautions[0]}
+          {needsConfirmation ? (
+            <p className="scan-clarification"><AlertTriangle size={18}/>
+              <span>{analysis.follow_up_question || t("The item or material needs confirmation. Check before sorting.")}</span>
+            </p>
+          ) : <>
+            {analysis.disposal_steps.length > 0 && <ol className="scan-action-steps">
+              {analysis.disposal_steps.slice(0,3).map((step,index)=><li key={index}>{step}</li>)}
+            </ol>}
+            {analysis.follow_up_question && <p className="scan-clarification">
+              <span><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</span>
+            </p>}
+            <p className="scan-decision-disclaimer">{t("AI suggestion, not a confirmed local bin rule.")}</p>
+          </>}
+          {scanCautions.length > 0 && <p className="scan-inline-caution">
+            <ShieldAlert size={18}/><span>{scanCautions[0]}</span>
           </p>}
+          {needsConfirmation ? <div className="scan-decision-actions">
+            <button type="button" className="button primary" onClick={() => {
+              reset();
+              window.scrollTo({top:0,left:0,behavior:"instant"});
+            }}><RotateCcw size={17}/>{t("Try another photo")}</button>
+          </div> : analysis.disposal_steps.length > 0 &&
+            <ScanStepTools key={result?.scan_id ?? preview?.src ?? "tools"} analysis={analysis}/>}
+        </div>
+        <div className="scan-essential">
           <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "local-rules"}
-            zipCode={location} onZipChange={setLocation} openRequest={rulesOpenRequest}/>
+            zipCode={location} onZipChange={setLocation}/>
           <nav className="scan-next-actions" aria-label={t("Next steps")}>
             <button type="button" onClick={() => openPage("finder", true)}>
               <MapPin size={18}/>{t("Find nearby options")}
@@ -547,11 +558,11 @@ export default function App() {
             <details className="reuse-fine-print"><summary>{t("Before trying a project")}</summary><p>{t("Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.")}</p></details>
           </article>
             </details> : null}
-            {analysis.cautions.slice(1).filter((c,i,a)=>c.trim()!==analysis.cautions[0]?.trim()&&a.indexOf(c)===i).length>0 &&
+            {scanCautions.length > 1 &&
               <details className="scan-subdetails">
                 <summary><ShieldAlert size={18}/>{t("Other precautions")}<ChevronDown size={17}/></summary>
                 <ul className="scan-other-cautions">
-                  {analysis.cautions.slice(1).filter((c,i,a)=>c.trim()!==analysis.cautions[0]?.trim()&&a.indexOf(c)===i).map((c,i)=><li key={i}>{c}</li>)}
+                  {scanCautions.slice(1).map((c,i)=><li key={i}>{c}</li>)}
                 </ul>
               </details>}
             <section className="scan-feedback-inline" aria-label={t("Was that right?")}>
