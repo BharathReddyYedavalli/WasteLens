@@ -315,9 +315,6 @@ export default function App() {
     setAuditFromScan(analysis.item_name);
     setView("audit");
   }
-  function showNearbyOptions() {
-    document.getElementById("nearby")?.scrollIntoView({ block: "start" });
-  }
   function returnToScannedItem() {
     stopCamera();
     setNavOpen(false);
@@ -512,21 +509,34 @@ export default function App() {
         </div>
         {needsConfirmation && <div className="uncertain"><AlertTriangle size={18}/>{t("The item or material needs confirmation. Check before sorting.")}</div>}
         {analysis.follow_up_question && <div className="question"><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</div>}
-        <div className="stack">
-          <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
+        <div className="scan-essential">
+          {analysis.disposal_steps.length > 0 && <section className="scan-quick-steps" aria-label={t("What to do with it")}>
+            <h3>{t("What to do with it")}</h3>
+            <ol>{analysis.disposal_steps.slice(0,3).map((step,index)=><li key={index}>{step}</li>)}</ol>
+          </section>}
+          {analysis.cautions.length > 0 && <p className="scan-primary-caution">
+            <ShieldAlert size={18}/>{analysis.cautions[0]}
+          </p>}
           <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "local-rules"}
             zipCode={location} onZipChange={setLocation} openRequest={rulesOpenRequest}/>
           <nav className="scan-next-actions" aria-label={t("Next steps")}>
-            <button type="button" onClick={showNearbyOptions}>
+            <button type="button" onClick={() => openPage("finder")}>
               <MapPin size={18}/>{t("Find nearby options")}
             </button>
             <button type="button" onClick={() => setView("chat")}>
               <MessageCircle size={18}/>{t("Ask about this item")}
             </button>
-            <button type="button" onClick={recordObservedItem}>
-              <ClipboardList size={18}/>{t("Record an observation")}
-            </button>
           </nav>
+        </div>
+        <details className="scan-more-details" key={result?.scan_id ?? preview?.src ?? "details"}>
+          <summary><span>{t("More details")}</span><ChevronDown size={20} aria-hidden="true"/></summary>
+          <div className="stack scan-extra-content">
+            <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
+            <nav className="scan-next-actions" aria-label={t("Next steps")}>
+              <button type="button" onClick={recordObservedItem}>
+                <ClipboardList size={18}/>{t("Record an observation")}
+              </button>
+            </nav>
           <article className="result-card blue reuse-section">
             <div className="reuse-heading">
               <div>
@@ -619,7 +629,8 @@ export default function App() {
             {actionError && <p className="inline-error" role="alert">{actionError}</p>}
             
           </article>}
-        </div>
+          </div>
+        </details>
       </section>}
       </> : view === "finder" ? <section className="finder-screen">
         <h1><MapPin size={30}/> {t("Find a place")}</h1>

@@ -15,6 +15,7 @@ const strings: Record<string, { es: string; hi: string }> = {
     hi: "किसी वस्तु को स्कैन करें, फिर देखें कि आपकी स्थानीय सेवा इसे कैसे संभालती है।"
   },
   "Suggested next action": { es: "Siguiente paso sugerido", hi: "सुझाया गया अगला कदम" },
+  "More details": { es: "Más detalles", hi: "अधिक जानकारी" },
   "Confirm the item before sorting": { es: "Identifica el objeto antes de separarlo", hi: "छँटाई से पहले वस्तु की पुष्टि करें" },
   "AI suggestion, not a confirmed local bin rule.": {
     es: "Es una sugerencia de IA, no una norma local confirmada.",
