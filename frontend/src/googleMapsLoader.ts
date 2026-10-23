@@ -6,7 +6,7 @@
 let pending: Promise<void> | null = null;
 
 export function loadGoogleMaps(apiKey: string): Promise<void> {
-  if (typeof google !== "undefined" && google.maps?.importLibrary) {
+  if (typeof google !== "undefined" && typeof google.maps.importLibrary === "function") {
     return Promise.resolve();
   }
   if (pending) return pending;
