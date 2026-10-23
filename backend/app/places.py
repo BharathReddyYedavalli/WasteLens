@@ -163,6 +163,26 @@ def _parse_facilities(data: dict, center_lat: float, center_lng: float) -> list[
     return sorted(results, key=lambda x: x["distance_miles"])[:60]
 
 
+@router.get("/facilities/center")
+def facility_search_center(zip_code: str = Query(min_length=5, max_length=5)):
+    """Offline ZIP center for Google Places, without querying Overpass.
+
+    If Google is unavailable the frontend separately requests /facilities and
+    falls back to its existing Leaflet/OSM list and map.
+    """
+    if not re.fullmatch(r"\d{5}", zip_code):
+        raise HTTPException(422, "Enter a five-digit US ZIP code.")
+    latitude, longitude, label = resolve_zip(zip_code)
+    return {
+        "zip_code": zip_code, "location_label": label,
+        "center": {"latitude": latitude, "longitude": longitude},
+        "facilities": [], "radius_miles": 20.0,
+        "listing_status": "no_results", "provider": "ZIP coordinates only",
+        "acceptance_verified": False,
+        "notice": "Google Places results are retrieved separately in the browser.",
+    }
+
+
 @router.get("/facilities")
 def facilities(zip_code: str = Query(min_length=5, max_length=5)):
     """Return an approximate ZIP-centered map even if the live POI feed fails."""
