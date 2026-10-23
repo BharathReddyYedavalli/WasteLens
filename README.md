@@ -477,3 +477,46 @@ data in site/source fields. Rules will not follow the user to another
 backend or database. Check actual bin signage and collection contracts
 before deploying. This is a software prototype and not a verified
 recycling outcome, sensor-equipped kiosk, or real-world pilot.
+
+## Kiosk completion — shared-device flow (kiosk-only change)
+
+The complete optional kiosk experience offers **Scan with camera** and
+**Find an item**. Both are separate from the original Scan/website mode,
+which is intentionally untouched.
+
+- **Scan:** existing camera/photo -> opt-in Gemini recognition -> explicitly
+  described AI suggestion -> visitor confirms the item category -> staff
+  configured site bin shown if, and only if, that exact category has a
+  saved mapping. AI never asserts a physical bin based only on the photo.
+- **Find an item:** offline-from-Gemini search across 11 common categories,
+  with common synonyms and EN/ES/HI labels. Item lookup runs locally in
+  the browser; its bin mappings still require the WasteLens backend to
+  provide the site profile. Unmapped or unknown items say **ask staff**,
+  not "recycle."
+- **Shared-device privacy:** a manual Done/Next Person action clears the
+  photo, AI result, search, and ZIP through the existing reset handler.
+  The kiosk also clears after 120 seconds without pointer, keyboard,
+  scroll or touch activity; it displays a 20-second warning first and
+  offers Stay Here. Hiding the browser tab clears the session immediately.
+  The timers are mounted **only in KioskScreen**, never the website.
+- **Reliability:** visitors can use item search when the camera or AI
+  provider is unavailable; the Refresh Bin Rules action reloads the
+  current site's staff configuration. Site rules are not available
+  without the backend, and the device does not manufacture defaults.
+- **Accessibility:** large touch targets, labeled tabs, keyboardable
+  search/options, readable messages, existing scan read-aloud controls,
+  and reduced-motion styling.
+- **No gamification at shared kiosks:** scanning in kiosk mode does not
+  create personal scan history or XP. Grade/team challenges remain
+  intentionally outside shared device scanning because participation is
+  not proof of recycling.
+
+No website route, normal Scan page, Waste Audit, My Activity, leaderboard,
+Bottle Journey, sign-in page, database schema or API was modified by this
+completion step. The preexisting Kiosk Setup remains admin-only.
+
+**Before real deployment:** have the school/office waste-service provider
+verify every configured item and bin, check age/provider/privacy terms for
+the deployed AI scanner, and test the physical device and real collection
+service. This is a software prototype, not a sensor measuring actual
+diversion or an installed unattended kiosk.
