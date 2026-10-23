@@ -313,7 +313,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         <label className="audit-policy-confirmation">
           <input type="checkbox" checked={rulesAcknowledged} disabled={!itemType}
             onChange={e=>{setRulesAcknowledged(e.target.checked);setSortingCheck("");}}/>
-          <span>{t("I\'ve checked this location\'s sorting rules")}</span>
+          <span>{t("I've checked this location's sorting rules")}</span>
         </label>
         {rulesAcknowledged&&itemType&&<label>{t("Was the item placed in the correct bin?")}
           <select value={sortingCheck} onChange={e=>setSortingCheck(e.target.value as SortingCheck|"")}>
