@@ -1,0 +1,159 @@
+/* Final refinement Stage 2: a focused personal activity page.
+   Scoped to My Activity; the leaderboard, scanner and Waste Audit are unchanged. */
+.site .my-activity-page{max-width:1060px;margin:22px auto 70px}
+.site .my-activity-page .activity-hero {
+  display:flex;justify-content:space-between;align-items:center;gap:22px;
+  border-radius:20px;padding:clamp(21px,3vw,31px);
+  background:linear-gradient(120deg,#eaf8f0,#e6f4fa);border:1px solid #cde7d9;
+}
+.site .my-activity-page .activity-hero-copy {min-width:0}
+.site .my-activity-page .activity-hero-eyebrow {
+  display:flex;gap:9px;align-items:center;font-size:12px;font-weight:800;
+  color:#207b65;margin-bottom:8px;
+}
+.site .my-activity-page .activity-hero h1 {
+  font:850 clamp(30px,3.8vw,45px)/1.13 "Nunito","Poppins",sans-serif;
+  color:#164b3d;margin:0 0 10px;
+}
+.site .my-activity-page .activity-hero p{margin:0;max-width:580px;color:#416b5b;font-size:14px;line-height:1.7}
+.site .my-activity-page .activity-hero-actions{display:flex;flex-direction:column;gap:10px;min-width:190px}
+.site .my-activity-page .activity-hero-actions button,.site .my-activity-page .activity-empty button{
+  cursor:pointer;min-height:44px;display:flex;gap:8px;align-items:center;
+  justify-content:center;padding:10px 14px;background:#126957;color:white;
+  border:1px solid #126957;border-radius:11px;font-size:12px;font-weight:800;
+}
+.site .my-activity-page .activity-hero-actions button:nth-child(2) {
+  background:#fff;color:#226e5c;border-color:#a8cfbc;
+}
+.site .my-activity-page .activity-hero-actions button:hover,
+.site .my-activity-page .activity-empty button:hover{filter:brightness(.94)}
+.site .activity-snapshot{margin:19px 0 24px;color:#244d3f}
+.site .activity-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.site .activity-kpi {
+  display:grid;justify-items:start;gap:4px;padding:18px 19px;background:#fffdf8;
+  border:1px solid #d9e9dd;border-radius:16px;
+}
+.site .activity-kpi svg{color:#16866e}
+.site .activity-kpi strong{font:850 33px/1.25 "Nunito","Poppins",sans-serif;color:#204f42}
+.site .activity-kpi span{font-size:13px;font-weight:800;color:#2b6251}
+.site .activity-kpi small{font-size:11px;color:#688070;font-weight:650}
+.site .activity-sections{display:grid;grid-template-columns:1.17fr 1fr;gap:13px;margin-top:14px}
+.site .activity-panel{border-radius:16px;padding:19px;background:#fffdf8;border:1px solid #d9e9dd}
+.site .activity-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.site .activity-section-heading h3{display:flex;gap:8px;align-items:center;margin:0;font-size:17px;font-weight:850;color:#265847}
+.site .activity-section-heading h3 svg{color:#26896e}
+.site .activity-csv{display:flex;gap:5px;align-items:center;border:1px solid #c8d9ca;
+  background:#fff;border-radius:9px;padding:8px 10px;color:#295d49;font-size:11px;font-weight:800;cursor:pointer}
+.site .activity-week-key{display:flex;flex-wrap:wrap;gap:15px;font-size:11px;font-weight:750;color:#547463;margin:8px 0}
+.site .activity-week-key span{display:inline-flex;align-items:center;gap:6px}
+.site .activity-week-key i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.site .activity-key-scan{background:#188d77}
+.site .activity-key-action{background:#d69948}
+.site .activity-week-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;height:145px;
+  border-bottom:1px solid #d7e6dc;margin:10px 0 0}
+.site .activity-chart-day{display:flex;flex-direction:column;justify-content:flex-end;gap:8px;align-items:center;min-width:0}
+.site .activity-bar-pair{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:106px;width:100%}
+.site .activity-bar-pair span{display:block;width:min(18px,45%);border-radius:5px 5px 1px 1px;min-height:0}
+.site .activity-bar-scans{background:#188d77}
+.site .activity-bar-actions{background:#d69948}
+.site .activity-chart-day time{font-size:11px;font-weight:720;color:#597463}
+.site .activity-accuracy{color:#668070!important;font-size:11px!important;line-height:1.6!important;margin:12px 0 0!important}
+.site .activity-level-head{display:flex;justify-content:space-between;gap:10px;font-size:15px;color:#285b49}
+.site .activity-level-head span{font-weight:850}
+.site .activity-level-track{margin:11px 0 7px;height:10px;overflow:hidden;background:#dfebe1;border-radius:20px}
+.site .activity-level-track span{display:block;height:100%;background:#269b79;border-radius:20px}
+.site .activity-level p{color:#638071;font-size:11px;margin:0}
+.site .activity-badges{margin-top:21px;padding-top:14px;border-top:1px solid #e0ebe2}
+.site .activity-badges h4{display:flex;gap:9px;margin:0 0 12px;font-size:14px;color:#295b4b}
+.site .activity-badges h4 span{font-weight:800;color:#648170}
+.site .activity-badges>p{font-size:12px!important;color:#688072!important;line-height:1.6}
+.site .activity-badge-list{display:flex;flex-wrap:wrap;gap:7px}
+.site .activity-badge{display:flex;gap:6px;align-items:center;padding:8px 10px;border-radius:10px;
+  border:1px solid #e2cb8a;background:#fff5d6;color:#795a24;font-weight:800;font-size:11px}
+.site .activity-action-breakdown{margin-top:14px;border-radius:15px;padding:15px 19px;
+  border:1px solid #d9e9dd;background:#fffdf8}
+.site .activity-action-breakdown h3{margin:0 0 12px;font-size:14px;color:#275744}
+.site .activity-action-breakdown h3 small{font-size:11px;font-weight:650;color:#6c8876;margin-left:7px}
+.site .activity-action-breakdown>div{display:flex;flex-wrap:wrap;gap:8px}
+.site .activity-action-breakdown>div>span{display:inline-flex;gap:15px;align-items:center;
+  background:#edf7ef;border:1px solid #d0e3d5;border-radius:9px;
+  padding:8px 12px;font-size:12px;color:#275e49}
+.site .activity-action-breakdown strong{font-size:13px}
+.site .activity-loading {padding:22px;text-align:center;color:#607c6d}
+.site .activity-recent{margin-top:25px}
+.site .activity-recent-heading{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:16px}
+.site .activity-recent-heading h2{font:850 26px "Nunito","Poppins",sans-serif!important;color:#214f3e;margin:0 0 5px}
+.site .activity-recent-heading p{margin:0;color:#617c6a;font-size:12px;line-height:1.65}
+.site .activity-recent-heading>span{white-space:nowrap;border:1px solid #cce1d1;
+  border-radius:20px;background:#eff8ef;padding:7px 11px;color:#3a745b;font-weight:800;font-size:11px}
+.site .activity-scan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.site .my-activity-page .activity-scan-card {
+  background:#fffdf8;border:1px solid #dbe9dd;border-radius:16px;
+  padding:17px;min-width:0;
+}
+.site .my-activity-page .activity-scan-card h3{color:#245a44!important;margin:0;font-size:18px;overflow-wrap:anywhere}
+.site .my-activity-page .activity-scan-card time{color:#6c8473;font-size:11px;white-space:nowrap}
+.site .my-activity-page .activity-scan-card p{margin:7px 0;font-size:12px;color:#4a6c56}
+.site .my-activity-page .activity-item-route{margin:13px 0;background:#eaf6ee;border:1px solid #d1e8d8;border-radius:10px;padding:10px 12px}
+.site .my-activity-page .activity-item-route span{display:block;color:#597b67;font-size:11px;font-weight:740;margin-bottom:4px}
+.site .my-activity-page .activity-item-route strong{font-size:13px;line-height:1.45;color:#285941}
+.site .my-activity-page .activity-scan-card details{margin-top:12px;font-size:12px;color:#385d4a}
+.site .my-activity-page .activity-scan-card details summary{cursor:pointer;font-weight:780}
+.site .my-activity-page .activity-scan-card li{line-height:1.5;margin:5px 0}
+.site .activity-empty{display:grid;justify-items:start;gap:10px;background:#f2f9f4;
+  border:1px dashed #b6d5c2;border-radius:16px;padding:22px}
+.site .activity-empty strong{font-size:15px;color:#265746}
+.site .activity-empty p{font-size:13px;color:#587867;margin:0}
+.site .activity-see-all{display:flex;gap:8px;align-items:center;justify-content:center;
+  margin:15px auto 0;background:transparent;color:#246d56;border:1px solid #aacebb;
+  border-radius:11px;padding:11px 17px;cursor:pointer;font-size:13px;font-weight:800}
+.site .my-activity-page :is(button,a,summary):focus-visible{outline:3px solid #d8a056;outline-offset:3px}
+/* Keep the same contrast rules as the other custom-themed screens. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .my-activity-page .activity-hero,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(.activity-kpi,.activity-panel,.activity-action-breakdown,.activity-scan-card,.activity-item-route,.activity-empty){
+  background:var(--wl-paper)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .my-activity-page :is(
+  .activity-hero-eyebrow,.activity-hero h1,.activity-hero p,.activity-kpi strong,.activity-kpi span,.activity-kpi small,
+  .activity-section-heading h3,.activity-section-heading svg,.activity-week-key,.activity-chart-day time,
+  .activity-accuracy,.activity-level-head,.activity-level p,.activity-badges h4,.activity-badges>p,
+  .activity-action-breakdown h3,.activity-action-breakdown>div>span,.activity-recent-heading h2,
+  .activity-recent-heading p,.activity-recent-heading>span,.activity-scan-card h3,
+  .activity-scan-card p,.activity-scan-card time,.activity-item-route span,.activity-item-route strong,
+  .activity-empty strong,.activity-empty p,.activity-see-all,.activity-scan-card details
+) {color:var(--wl-copy)!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .my-activity-page :is(
+  .activity-action-breakdown>div>span,.activity-recent-heading>span,.activity-csv,.activity-badge,
+  .activity-empty button,.activity-see-all,.activity-hero-actions button
+) {
+  background:var(--wl-surface)!important;color:var(--wl-copy)!important;border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .my-activity-page :is(.activity-level-track,.activity-item-route) {
+  background:var(--wl-selected)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .my-activity-page :is(.activity-badges,.activity-week-chart){
+  border-color:var(--wl-stroke)!important;
+}
+@media(max-width:850px){
+  .site .my-activity-page .activity-hero{flex-direction:column;align-items:stretch}
+  .site .my-activity-page .activity-hero-actions{flex-direction:row;min-width:0;flex-wrap:wrap}
+  .site .my-activity-page .activity-hero-actions button{flex:1}
+  .site .activity-sections{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .site .activity-kpis{gap:7px}
+  .site .activity-kpi{padding:11px 10px}
+  .site .activity-kpi strong{font-size:26px}
+  .site .activity-kpi span{font-size:11px}
+  .site .activity-kpi small{font-size:10px}
+  .site .activity-scan-grid{grid-template-columns:1fr}
+  .site .activity-recent-heading{flex-direction:column;gap:9px}
+}
+@media(max-width:390px){
+  .site .activity-kpis{grid-template-columns:1fr 1fr}
+  .site .activity-kpi:last-child{grid-column:1/-1}
+}
+@media print{
+  .site .activity-hero-actions,.site .activity-csv,.site .activity-see-all{display:none!important}
+  .site .activity-snapshot,.site .activity-recent{break-inside:avoid}
+}

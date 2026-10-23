@@ -627,7 +627,8 @@ export default function App() {
           scannedItem={auditFromScan} onBackToScan={() => openPage("identifier")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
         <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
-        onLogout={() => { setUser(null); setView("identifier"); }}/>}
+        onLogout={() => { setUser(null); setView("identifier"); }}
+        onScan={() => openPage("identifier")} onAudit={() => openPage("audit")}/>}
       <div hidden={view !== "chat"}>
         <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
           onScan={() => setView("identifier")}/>

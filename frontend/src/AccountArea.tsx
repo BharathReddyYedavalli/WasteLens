@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, History, LockKeyhole, ShieldCheck, UserPlus } from "lucide-react";
+import { ArrowRight, Check, ClipboardList, History, LockKeyhole, ScanLine, ShieldCheck, UserPlus } from "lucide-react";
 import type { SessionUser, SavedScan, AdminOverview, AdminUser, AdminFeedback } from "./types";
 import { useLanguage } from "./i18n";
 import HabitSnapshot from "./HabitSnapshot";
@@ -17,9 +17,11 @@ type Props = {
   mode: "account" | "history" | "admin";
   onLogin: (user: SessionUser) => void;
   onLogout: () => void;
+  onScan: () => void;
+  onAudit: () => void;
 };
 
-export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
+export default function AccountArea({ user, mode, onLogin, onLogout, onScan, onAudit }: Props) {
   const { t } = useLanguage();
   const [signup, setSignup] = useState(false);
   const [name, setName] = useState("");
@@ -28,6 +30,8 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [scans, setScans] = useState<SavedScan[]>([]);
+  const [showAllScans, setShowAllScans] = useState(false);
+  const [loadingScans, setLoadingScans] = useState(false);
   const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [feedback, setFeedback] = useState<AdminFeedback[]>([]);
@@ -35,12 +39,14 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   useEffect(() => {
     if (!user || mode !== "history") return;
     let active = true;
-    fetch("/api/scans")
+    setScans([]);setShowAllScans(false);setLoadingScans(true);setError("");
+    fetch("/api/scans", { credentials:"same-origin" })
       .then(response => readJson<{ scans: SavedScan[] }>(response))
       .then(data => { if (active) setScans(data.scans); })
-      .catch(e => { if (active) setError(e.message); });
+      .catch(e => { if (active) setError(e.message); })
+      .finally(() => { if (active) setLoadingScans(false); });
     return () => { active = false; };
-  }, [user, mode]);
+  }, [user?.id, mode]);
 
   useEffect(() => {
     if (!user || user.role !== "admin" || mode !== "admin") return;
@@ -105,24 +111,51 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
   }
 
   if (mode === "history") {
-    return <section className="account-card">
-      <div className="head-with-icon"><div className="round-icon"><History/></div>
-        <div><h2>{t("My scans")}</h2><p>{scans.length} saved {scans.length === 1 ? "item" : "items"}</p></div></div>
-      {error && <p className="inline-error" role="alert">{error}</p>}
-      <HabitSnapshot/>
-      {scans.length === 0 && <p>{t("Nothing here yet. Scan your first item to save it.")}</p>}
-      <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
-        <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
-        <p><strong>Material:</strong> {scan.analysis.material_guess}</p>
-        <p><strong>What to do:</strong> {scan.analysis.route_title}</p>
-        
-        {scan.feedback && <p><strong>Your feedback:</strong> {scan.feedback === "yes" ? "Correct" : "Needs correction"}</p>}
-        {scan.correction && <p><strong>Correction:</strong> {scan.correction}</p>}
-        <details><summary>{t("See the tips for this item")}</summary>
-          <h4>Disposal</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
-          <h4>Reuse</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
-        </details>
-      </article>)}</div>
+    const visibleScans=showAllScans?scans:scans.slice(0,6);
+    return <section className="account-card my-activity-page">
+      <div className="activity-hero">
+        <div className="activity-hero-copy">
+          <div className="activity-hero-eyebrow"><History size={17}/>{t("Your WasteLens journey")}</div>
+          <h1>{t("My activity")}</h1>
+          <p>{t("See what you've scanned, the actions you've recorded and the progress you've earned.")}</p>
+        </div>
+        <div className="activity-hero-actions">
+          <button type="button" onClick={onScan}><ScanLine size={17}/>{t("Scan an item")}<ArrowRight size={16}/></button>
+          <button type="button" onClick={onAudit}><ClipboardList size={17}/>{t("Run a waste audit")}</button>
+        </div>
+      </div>
+      {error&&<p className="inline-error" role="alert">{error}</p>}
+      <HabitSnapshot userId={user.id}/>
+      <section className="activity-recent">
+        <div className="activity-recent-heading">
+          <div><h2>{t("Recent scans")}</h2>
+            <p>{t("Saved identification results. Check local rules before deciding where an item goes.")}</p></div>
+          <span>{scans.length} {t("saved items")}</span>
+        </div>
+        {loadingScans?<p role="status">{t("Loading scans…")}</p>:
+          scans.length===0?<div className="activity-empty">
+            <ScanLine size={28}/>
+            <strong>{t("No saved scans yet")}</strong>
+            <p>{t("Scan your first item to start building your history.")}</p>
+            <button type="button" onClick={onScan}>{t("Scan an item")}<ArrowRight size={16}/></button>
+          </div>:
+          <div className="history-grid activity-scan-grid">{visibleScans.map(scan=>
+            <article className="history-card activity-scan-card" key={scan.id}>
+              <div className="history-head"><h3>{scan.item_name}</h3>
+                <time dateTime={scan.created_at}>{new Date(scan.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</time></div>
+              <p className="activity-material">{t("Material")}: {scan.analysis.material_guess}</p>
+              <div className="activity-item-route"><span>{t("AI-suggested next step")}</span><strong>{scan.analysis.route_title}</strong></div>
+              {scan.feedback&&<p className="activity-feedback">{t("Your feedback")}: {t(scan.feedback==="yes"?"Correct":"Needs correction")}</p>}
+              {scan.correction&&<p className="activity-feedback">{t("Correction")}: {scan.correction}</p>}
+              <details><summary>{t("See the tips for this item")}</summary>
+                <h4>{t("Disposal")}</h4><ul>{scan.analysis.disposal_steps.map((tip,k)=><li key={k}>{tip}</li>)}</ul>
+                <h4>{t("Reuse")}</h4><ul>{scan.analysis.reuse_ideas.map((tip,k)=><li key={k}>{tip}</li>)}</ul>
+              </details>
+            </article>)}</div>}
+        {scans.length>6&&<button type="button" className="activity-see-all" onClick={()=>setShowAllScans(current=>!current)}>
+          {t(showAllScans?"Show fewer scans":"Show all saved scans")} <ArrowRight size={17}/>
+        </button>}
+      </section>
     </section>;
   }
 
