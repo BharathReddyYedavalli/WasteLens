@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Ear, Pause, Play, Square, Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { Language } from "./i18n";
-import { naturalVoices, voiceGroup } from "./voiceQuality";
+import { naturalVoices, voiceGroup, hasLanguageVoice } from "./voiceQuality";
 
 export type SpeechCategory = "scan" | "steps" | "chat" | "journey";
 type SpeechOptions = {
@@ -88,8 +88,18 @@ export function SpeechProvider({children}:{children:ReactNode}){
     const synth=window.speechSynthesis;
     const refresh=()=>setVoices(synth.getVoices());
     refresh();
+    // Safari sometimes exposes voices after mount without firing voiceschanged.
+    // Retry a few times, and reload on user returning to the browser.
+    const retries=[250,1000,2500].map(ms=>window.setTimeout(refresh,ms));
     synth.addEventListener("voiceschanged",refresh);
-    return ()=>synth.removeEventListener("voiceschanged",refresh);
+    window.addEventListener("focus",refresh);
+    document.addEventListener("visibilitychange",refresh);
+    return ()=>{
+      retries.forEach(id=>window.clearTimeout(id));
+      synth.removeEventListener("voiceschanged",refresh);
+      window.removeEventListener("focus",refresh);
+      document.removeEventListener("visibilitychange",refresh);
+    };
   },[available]);
 
   const stop=useCallback(()=>{
@@ -114,14 +124,12 @@ export function SpeechProvider({children}:{children:ReactNode}){
     const browserVoices=window.speechSynthesis.getVoices();
     const matching=naturalVoices(browserVoices,language);
     const preferred=matching.find(voice=>voice.voiceURI===options.voiceURI);
-    const voice=preferred??matching.find(voice=>voice.lang.toLowerCase()===locales[language].toLowerCase())??matching[0];
-    if(!voice){
-      stop();setErrorId(id);
-      setError(language==="en"
-        ? "No suitable English voice is available. Download a Premium or Enhanced voice in your Mac's accessibility speech settings."
-        :speechError("language-unavailable",language));
-      return;
-    }
+    // Use the browser's own default if it has not exposed a matching language
+    // or has not populated the voice list yet. Never block reading on a filter.
+    const localVoice=hasLanguageVoice(browserVoices,language)
+      ? matching.find(voice=>voice.lang.toLowerCase().replace("_","-")===locales[language].toLowerCase())??matching[0]
+      : undefined;
+    const voice=preferred??localVoice;
     stop();setError("");setErrorId(null);
     const myVersion=version.current;
     const chunks=splitSpeech(text);
@@ -132,7 +140,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
       const utterance=new SpeechSynthesisUtterance(chunks[index++]);
       current.current=utterance;
       utterance.lang=voice?.lang??locales[language];
-      if(voice)utterance.voice=voice;
+      if(voice)utterance.voice=voice; // Otherwise speechSynthesis chooses a system default.
       utterance.rate=options.rate;
       utterance.pitch=1;
       utterance.onstart=()=>{if(version.current===myVersion){setActiveId(id);setPaused(false);}};
@@ -195,7 +203,7 @@ export function SpeechSettingsPanel(){
   const groups=[
     {id:"female",label:language==="es"?"Voces femeninas":language==="hi"?"महिला आवाज़ें":"Female voices"},
     {id:"male",label:language==="es"?"Voces masculinas":language==="hi"?"पुरुष आवाज़ें":"Male voices"},
-    {id:"other",label:language==="es"?"Otras voces naturales":language==="hi"?"अन्य स्वाभाविक आवाज़ें":"Other natural voices"}
+    {id:"other",label:language==="es"?"Otras voces disponibles":language==="hi"?"अन्य उपलब्ध आवाज़ें":"Other available voices"}
   ] as const;
   const testId="voice-settings-preview";
   const previewActive=useRef(false);
@@ -223,9 +231,9 @@ export function SpeechSettingsPanel(){
         value={options.rate} onChange={e=>update({rate:Number(e.target.value)})}/>
       <label className="wl-speech-field" htmlFor="wl-speech-voice">{t("Voice")}</label>
       <select id="wl-speech-voice" className="wl-speech-select"
-        disabled={!available||matching.length===0} value={matching.some(v=>v.voiceURI===options.voiceURI)?options.voiceURI:""}
+        disabled={!available} value={matching.some(v=>v.voiceURI===options.voiceURI)?options.voiceURI:""}
         onChange={e=>update({voiceURI:e.target.value})}>
-        <option value="">{language==="es"?"Recomendada":language==="hi"?"सुझाई गई आवाज़":"Recommended"}{matching[0]?" — "+matching[0].name:""}</option>
+        <option value="">{language==="es"?"Voz del sistema":language==="hi"?"सिस्टम की आवाज़":"System default"}{hasLanguageVoice(voices,language)&&matching[0]?" — "+matching[0].name:""}</option>
         {groups.map(group=>{
           const choices=matching.filter(voice=>voiceGroup(voice)===group.id);
           return choices.length>0?<optgroup key={group.id} label={group.label}>
@@ -234,7 +242,7 @@ export function SpeechSettingsPanel(){
         })}
       </select>
       <div className="wl-speech-preview">
-        <button type="button" disabled={!available||matching.length===0}
+        <button type="button" disabled={!available}
           onClick={()=>{
             if(activeId===testId){stop();return;}
             dismissError();
@@ -248,9 +256,14 @@ export function SpeechSettingsPanel(){
     </>}
     {!available && <p className="wl-speech-notice" role="status">{t("Speech is not available in this browser")}</p>}
     {available&&matching.length===0&&<p className="wl-speech-notice" role="status">
-      {language==="en"?"No suitable English voices are available. Install a Premium or Enhanced voice in your Mac's accessibility settings.":
-      language==="es"?"No hay voces naturales disponibles en español. Instala una voz Premium o Enhanced en los ajustes de accesibilidad de tu Mac.":
-      "अभी हिंदी की अच्छी आवाज़ उपलब्ध नहीं है। Mac की Accessibility सेटिंग में Premium या Enhanced आवाज़ जोड़ें।"}
+      {language==="en"?"Safari hasn't listed its voices yet. System default can still read aloud. Try Test voice.":
+      language==="es"?"Safari aún no muestra voces. Puedes probar la voz predeterminada con Probar voz.":
+      "Safari ने अभी आवाज़ों की सूची नहीं दी है। फिर भी सिस्टम की आवाज़ से सुनने का परीक्षण करें।"}
+    </p>}
+    {available&&matching.length>0&&!hasLanguageVoice(voices,language)&&<p className="wl-speech-notice" role="status">
+      {language==="en"?"No English voice is listed yet. Other installed voices are shown; their pronunciation may not match English.":
+      language==="es"?"No se encontró una voz española. Se muestran otras voces instaladas, pero quizá no pronuncien bien el español.":
+      "हिंदी आवाज़ नहीं मिली। दूसरी उपलब्ध आवाज़ें दिख रही हैं, लेकिन वे हिंदी सही नहीं बोल सकतीं।"}
     </p>}
     {available&&<p className="wl-speech-hint">
       {language==="en"?"For more realistic voices: Mac System Settings → Accessibility → Read & Speak → System voice. Download a Premium or Enhanced voice, then refresh WasteLens.":
