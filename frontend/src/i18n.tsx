@@ -16,6 +16,8 @@ const strings: Record<string, { es: string; hi: string }> = {
   },
   "Suggested next action": { es: "Siguiente paso sugerido", hi: "सुझाया गया अगला कदम" },
   "More details": { es: "Más detalles", hi: "अधिक जानकारी" },
+  "Other precautions": { es: "Otras precauciones", hi: "अन्य सावधानियाँ" },
+  "Feedback and activity": { es: "Comentarios y actividad", hi: "प्रतिक्रिया और गतिविधि" },
   "Confirm the item before sorting": { es: "Identifica el objeto antes de separarlo", hi: "छँटाई से पहले वस्तु की पुष्टि करें" },
   "AI suggestion, not a confirmed local bin rule.": {
     es: "Es una sugerencia de IA, no una norma local confirmada.",

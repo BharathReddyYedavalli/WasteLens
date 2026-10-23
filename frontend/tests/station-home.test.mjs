@@ -27,7 +27,7 @@ test("full original site still owns scan and every other working tool",()=>{
   for(const source of ["<div className=\"intro\">","<div className=\"community-mission-path\"","<div className=\"workspace\">",
     "onClick={() => void startCamera()}","onClick={() => uploadRef.current?.click()}",
     "onClick={() => void analyze()}","<AuditKit","<AccountArea","<BottleJourney",
-    "<BottleReturns","<Leaderboard","<RecyclingResults","<SortPlan","<LocalRulesGuide"]) {
+    "<BottleReturns","<Leaderboard","<RecyclingResults","<ScanStepTools","<LocalRulesGuide"]) {
     assert.ok(app.includes(source),source);
   }
   assert.doesNotMatch(app,/KioskScreen|KioskSetup|kioskMode/);

@@ -10,7 +10,7 @@ import AskWasteLens from "./AskWasteLens";
 import AccountArea, { actionHeaders, readJson } from "./AccountArea";
 import Leaderboard from "./Leaderboard";
 import BadgeCelebration from "./BadgeCelebration";
-import SortPlan from "./SortPlan";
+import ScanStepTools from "./ScanStepTools";
 import LocalRulesGuide from "./LocalRulesGuide";
 import AuditKit from "./AuditKit";
 import AboutWasteLens from "./AboutWasteLens";
@@ -531,19 +531,10 @@ export default function App() {
         <details className="scan-more-details" key={result?.scan_id ?? preview?.src ?? "details"}>
           <summary><span>{t("More details")}</span><ChevronDown size={20} aria-hidden="true"/></summary>
           <div className="stack scan-extra-content">
-            <SortPlan key={result?.scan_id ?? preview?.src ?? "plan"} analysis={analysis}/>
-            <nav className="scan-next-actions" aria-label={t("Next steps")}>
-              <button type="button" onClick={recordObservedItem}>
-                <ClipboardList size={18}/>{t("Record an observation")}
-              </button>
-            </nav>
+            <ScanStepTools key={result?.scan_id ?? preview?.src ?? "tools"} analysis={analysis}/>
+            {(analysis.reuse_projects?.length || analysis.reuse_ideas.length>0) ? <details className="scan-subdetails scan-reuse-details">
+              <summary><Lightbulb size={18}/>{t("Give it another life")}<ChevronDown size={17}/></summary>
           <article className="result-card blue reuse-section">
-            <div className="reuse-heading">
-              <div>
-                <h3><Lightbulb size={21}/> {t("Give it another life")}</h3>
-                
-              </div>
-            </div>
             {analysis.reuse_projects?.length ? <div className="reuse-projects">
               {analysis.reuse_projects.map((project, i) =>
                 <details key={i} className="reuse-project">
@@ -574,23 +565,20 @@ export default function App() {
             </div>}
             <details className="reuse-fine-print"><summary>{t("Before trying a project")}</summary><p>{t("Check the item's material and condition. Take care with tools, sharp edges and electrical parts. These ideas come from AI.")}</p></details>
           </article>
-          {analysis.cautions.length > 0 && <article className="result-card muted">
-            <h3><ShieldAlert size={21}/> {t("A few things to check")}</h3>
-            <ul>{analysis.cautions.map((caution, i) => <li key={i}>{caution}</li>)}</ul>
-          </article>}
-          <article className="result-card green" id="nearby">
-            <h3><MapPin size={21}/> {t("Nearby places")}</h3>
-            
-            <form className="finder-row" onSubmit={event => void searchFacilities(event)}>
-              <input aria-label="US ZIP code" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} required
-                placeholder="ZIP code, like 75033" value={location}
-                onChange={event => setLocation(event.target.value)}/>
-              <button type="submit" disabled={facilityBusy} className="button primary"><Search size={15}/>{facilityBusy ? t("Searching…") : t("Search")}</button>
-            </form>
-            {facilityError && <ErrorText message={facilityError}/>}
-            <RecyclingResults results={facilities}
-                selected={selectedFacility} onSelect={setSelectedFacility}/>
-          </article>
+            </details> : null}
+            {analysis.cautions.slice(1).filter((c,i,a)=>c.trim()!==analysis.cautions[0]?.trim()&&a.indexOf(c)===i).length>0 &&
+              <details className="scan-subdetails">
+                <summary><ShieldAlert size={18}/>{t("Other precautions")}<ChevronDown size={17}/></summary>
+                <ul className="scan-other-cautions">
+                  {analysis.cautions.slice(1).filter((c,i,a)=>c.trim()!==analysis.cautions[0]?.trim()&&a.indexOf(c)===i).map((c,i)=><li key={i}>{c}</li>)}
+                </ul>
+              </details>}
+            <details className="scan-subdetails scan-feedback-details">
+              <summary><Check size={18}/>{t("Feedback and activity")}<ChevronDown size={17}/></summary>
+              <div className="scan-feedback-content">
+                <button type="button" className="scan-audit-link" onClick={recordObservedItem}>
+                  <ClipboardList size={18}/>{t("Record an observation")}
+                </button>
           <article className="result-card muted">
             <h3><Check size={21}/> {t("Was that right?")}</h3>
             
@@ -629,6 +617,8 @@ export default function App() {
             {actionError && <p className="inline-error" role="alert">{actionError}</p>}
             
           </article>}
+              </div>
+            </details>
           </div>
         </details>
       </section>}

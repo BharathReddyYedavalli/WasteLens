@@ -20,7 +20,7 @@ test("homepage keeps its established heading and an actionable message", () => {
 
 test("the scan result prioritizes a cautious action and opens real local rules", () => {
   const decision = app.indexOf('className="scan-decision"');
-  const checklist = app.indexOf("<SortPlan ");
+  const checklist = app.indexOf("<ScanStepTools ");
   const localChecker = app.indexOf("<LocalRulesGuide ");
   // Local rules are intentionally ahead of the long optional checklist.
   assert.ok(decision > 0 && localChecker > decision && checklist > localChecker);
@@ -43,12 +43,12 @@ test("kiosk purpose is honest and local rules remain essential", () => {
 });
 
 test("existing scanner, checklist, local rules, map, audits, and rewards stay wired", () => {
-  for (const component of ["SortPlan", "LocalRulesGuide", "RecyclingResults", "AuditKit", "BadgeCelebration"]) {
+  for (const component of ["ScanStepTools", "LocalRulesGuide", "RecyclingResults", "AuditKit", "BadgeCelebration"]) {
     assert.ok(app.includes(component), component);
   }
   assert.match(app, /onClick=\{recordObservedItem\}/);
   assert.match(app, /onClick=\{\(\) => openPage\("finder"\)\}/);
-  assert.match(app, /id="nearby"/);
+  assert.match(app, /openPage\("finder"\)/);
 });
 
 test("presentation CSS is last, responsive, and alternate-theme aware", () => {

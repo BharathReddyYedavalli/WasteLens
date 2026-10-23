@@ -16,7 +16,7 @@ test("Scan now presents a short disposal answer before optional details",()=>{
   assert.ok(position('className="scan-decision"')<position('className="scan-quick-steps"'));
   assert.ok(position('className="scan-quick-steps"')<position('<LocalRulesGuide'));
   assert.ok(position('<LocalRulesGuide')<position('className="scan-more-details"'));
-  assert.ok(position('className="scan-more-details"')<position('<SortPlan'));
+  assert.ok(position('className="scan-more-details"')<position('<ScanStepTools'));
   assert.match(scan,/analysis\.disposal_steps\.slice\(0,3\)/);
   assert.match(scan,/analysis\.cautions\[0\]/);
   assert.match(scan,/className="scan-more-details"/);
@@ -38,12 +38,14 @@ test("Local rules and next actions stay directly available without expanding Mor
 test("No existing detailed Scan features are deleted",()=>{
   const detail=app.slice(app.indexOf('className="scan-more-details"'),app.indexOf('</> : view === "finder"'));
   for(const fragment of [
-    '<SortPlan','reuse_projects.map','materials_needed.map','project.steps.map',
-    'analysis.cautions.map','id="nearby"','<RecyclingResults',
-    'onClick={recordObservedItem}','submitFeedback(true)','submitFeedback(false)',
+    '<ScanStepTools','reuse_projects.map','materials_needed.map','project.steps.map',
+    'analysis.cautions.slice(1)','onClick={recordObservedItem}',
+    'submitFeedback(true)','submitFeedback(false)',
     'onClick={() => void markAction(choice)}','result?.scan_id',
     'analysis.reuse_ideas'
   ])assert.ok(detail.includes(fragment),fragment);
+  assert.ok(!detail.includes('id="nearby"'),"duplicate finder removed from Scan");
+  assert.ok(!detail.includes('<SortPlan'),"repeated checklist removed");
   assert.match(app,/key=\{result\?\.scan_id \?\? preview\?\.src \?\? "details"\}/);
 });
 

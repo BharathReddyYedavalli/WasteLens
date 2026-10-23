@@ -20,7 +20,7 @@ test("station styling improves existing scanner without replacing it", () => {
     ".camera-controls", ".scan-decision", ".community-mission-path"]) {
     assert.ok(station.includes(cls), cls);
   }
-  for (const component of ["SortPlan", "LocalRulesGuide", "RecyclingResults",
+  for (const component of ["ScanStepTools", "LocalRulesGuide", "RecyclingResults",
     "AuditKit", "AccountArea", "BottleJourney", "BottleReturns", "AskWasteLens",
     "Leaderboard", "BadgeCelebration"]) {
     assert.ok(app.includes(component), component);

@@ -102,3 +102,102 @@
   .site .scan-more-details {overflow:visible}
   .site .scan-more-details > summary {display:none}
 }
+
+
+/* Stage 2: avoid repeating the checklist and caution content. */
+.site .scan-step-tools {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+.site .scan-step-tools>button,
+.site .scan-audit-link {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:9px 12px;
+  border:1.5px solid #bcdace;
+  border-radius:11px;
+  background:#f5fbf8;
+  color:#215549;
+  font:750 13px/1.4 "Nunito","Poppins",sans-serif;
+  cursor:pointer;
+}
+.site .scan-step-tools .wl-listen-wrap {display:inline-flex;align-items:center;gap:6px}
+.site .scan-step-tools>button:hover,
+.site .scan-audit-link:hover {background:#e8f5ee}
+.site .scan-step-tools :is(button):focus-visible,
+.site .scan-subdetails>summary:focus-visible,
+.site .scan-audit-link:focus-visible {
+  outline:3px solid #dcae68;
+  outline-offset:2px;
+}
+.site .scan-subdetails {
+  border:1px solid #d4e3db;
+  border-radius:13px;
+  background:#fffefa;
+  overflow:clip;
+}
+.site .scan-subdetails>summary {
+  display:flex;
+  list-style:none;
+  cursor:pointer;
+  align-items:center;
+  gap:9px;
+  padding:13px 15px;
+  font:780 14px/1.5 "Nunito","Poppins",sans-serif;
+  color:#28574c;
+}
+.site .scan-subdetails>summary::-webkit-details-marker {display:none}
+.site .scan-subdetails>summary svg:last-child {margin-left:auto;transition:transform .18s ease}
+.site .scan-subdetails[open]>summary svg:last-child {transform:rotate(180deg)}
+.site .scan-subdetails>summary:hover {background:#eff9f3}
+.site .scan-subdetails .reuse-section {
+  margin:0 12px 12px;
+  padding:12px!important;
+  box-shadow:none!important;
+  border-radius:12px!important;
+}
+.site .scan-other-cautions {
+  margin:0;
+  padding:2px 21px 15px 36px;
+  line-height:1.65;
+  font-size:14px;
+}
+.site .scan-feedback-content {
+  display:grid;
+  gap:12px;
+  padding:0 12px 12px;
+}
+.site .scan-feedback-content .result-card {
+  padding:16px!important;
+  box-shadow:none!important;
+  border-radius:12px!important;
+}
+.site .scan-feedback-content .result-card h3 {font-size:17px!important}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-subdetails {
+  background:var(--wl-paper)!important;
+  color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-subdetails>summary {
+  color:var(--wl-copy)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-subdetails>summary:hover {
+  background:var(--wl-surface)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-step-tools>button,
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-audit-link {
+  background:var(--wl-surface)!important;
+  color:var(--wl-copy)!important;
+  border-color:var(--wl-stroke)!important;
+}
+@media(max-width:620px) {
+  .site .scan-step-tools>button {flex:1 1 auto;justify-content:center}
+  .site .scan-subdetails .reuse-section {margin:0 9px 9px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .site .scan-subdetails>summary svg:last-child {transition:none}
+}
