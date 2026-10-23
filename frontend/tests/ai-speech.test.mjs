@@ -33,7 +33,7 @@ test("Safari cloud audio playback is unlocked on click and cancellable",()=>{
   assert.match(code,/const ctx=new AudioContext\(\)/);
   assert.match(code,/ctx\.resume\(\)/);
   assert.match(code,/ctx\.decodeAudioData\(bytes\)/);
-  assert.match(code,/state\.abort\.abort\(\)/); // old.abort happens through stop
+  assert.match(code,/old\.abort\.abort\(\)/);
   assert.match(code,/source\.onended=\(\)=>/);
   assert.match(code,/void context\.suspend\(\)/);
   assert.match(code,/void context\.resume\(\)/);
