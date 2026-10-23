@@ -42,6 +42,7 @@ export type SessionUser = { id: number; name: string; email: string; role: "user
 export type SavedScan = {
   id: number; item_name: string; model_id: string; analysis: ItemAnalysis;
   zip_code: string | null; feedback: "yes" | "no" | null; correction: string; created_at: string;
+  action?: "recycled" | "reused" | "composted" | "donated" | null;
 };
 export type AdminOverview = { users: number; scans: number; yes: number; no: number };
 export type AdminUser = SessionUser & { created_at: string; scan_count: number };

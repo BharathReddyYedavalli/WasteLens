@@ -22,9 +22,9 @@ test("the scan result prioritizes a cautious action and opens real local rules",
   const decision = app.indexOf('className="scan-decision"');
   const checklist = app.indexOf("<ScanStepTools ");
   const localChecker = app.indexOf("<LocalRulesGuide ");
-  // Local rules are intentionally ahead of the long optional checklist.
-  assert.ok(decision > 0 && localChecker > decision && checklist > localChecker);
-  assert.ok(app.indexOf('className="scan-more-details"') > localChecker);
+  // Copy and print now sit directly below the main instructions.
+  assert.ok(decision > 0 && checklist > decision && localChecker > checklist);
+  assert.doesNotMatch(app,/className="scan-more-details"/);
   assert.match(app, /needsConfirmation \? t\("Confirm the item before sorting"\) : analysis\.route_title/);
   assert.match(app, /AI suggestion, not a confirmed local bin rule/);
   assert.match(app, /function showLocalRules\(\) \{\s*setRulesOpenRequest\(current => current \+ 1\)/);
@@ -46,7 +46,8 @@ test("existing scanner, checklist, local rules, map, audits, and rewards stay wi
   for (const component of ["ScanStepTools", "LocalRulesGuide", "RecyclingResults", "AuditKit", "BadgeCelebration"]) {
     assert.ok(app.includes(component), component);
   }
-  assert.match(app, /onClick=\{recordObservedItem\}/);
+  assert.match(app,/view === "audit" \? <AuditKit/);
+  assert.match(app, /className="scan-feedback-inline"/);
   assert.match(app, /onClick=\{\(\) => openPage\("finder"\)\}/);
   assert.match(app, /openPage\("finder"\)/);
 });
