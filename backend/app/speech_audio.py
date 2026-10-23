@@ -77,7 +77,18 @@ def _generate(text: str, voice: str, language: str, key: str) -> bytes:
                 json=payload,
             )
         if result.status_code == 429:
-            raise HTTPException(429, "Gemini's audio quota was reached. Try again later.")
+            # Google enforces per-project rate, token and daily quotas. Do not
+            # retry in a loop (that wastes requests and cannot bypass a limit).
+            # Forward Retry-After when Google provides one; no fake reset time.
+            retry_after = result.headers.get("Retry-After", "").strip()
+            headers = {"Retry-After": retry_after} if retry_after else None
+            raise HTTPException(
+                429,
+                "Gemini's speech request limit was reached. Listen again after "
+                "the limit resets, or check this project's Gemini API rate limits "
+                "and billing in Google AI Studio.",
+                headers=headers,
+            )
         if result.status_code in (401, 403, 404):
             raise HTTPException(503, "Natural AI speech isn't available for this Gemini API key or model.")
         if result.status_code != 200:
@@ -93,7 +104,7 @@ def _generate(text: str, voice: str, language: str, key: str) -> bytes:
     except HTTPException:
         raise
     except (httpx.HTTPError, KeyError, ValueError, IndexError, StopIteration, TypeError) as exc:
-        raise HTTPException(502, "Natural speech couldn't be generated. Try again or use device voices.") from exc
+        raise HTTPException(502, "Natural speech couldn't be generated. Please try again.") from exc
 
 
 @router.post("/generate")

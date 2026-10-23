@@ -418,9 +418,5 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         </div>}
 
     </div>
-    <details className="audit-note"><summary>{t("About these numbers")}</summary>
-      <p>{t("These are human-entered observations, not proof of recycling, diversion or carbon savings. Saved audits belong to your account on this server. Drafts stay in this browser, and separate local servers do not synchronize.")}</p>
-      <p>{t("Only the audit name and counts go to Gemini when you ask.")}</p>
-    </details>
   </section>;
 }

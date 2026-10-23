@@ -37,14 +37,15 @@ test("Gemini request is user-initiated and API key stays on the backend",()=>{
   assert.match(code,/"X-WasteLens-Request":"1"/);
   assert.match(code,/voice:options\.aiVoice,language/);
   assert.doesNotMatch(code,/GEMINI_API_KEY|AIza[0-9A-Za-z_-]+/);
-  assert.match(code,/quotas or charges/);
+  // The user specifically requested removing the quota paragraph from the voice settings.
+  assert.doesNotMatch(code,/When you press Listen or Test voice, text is sent/);
 });
 
 test("Safari AI audio playback is unlocked on click and cancellable",()=>{
   const code=src("Speech.tsx");
   assert.match(code,/const ctx=new AudioContext\(\)/);
   assert.match(code,/ctx\.resume\(\)/);
-  assert.match(code,/ctx\.decodeAudioData\(bytes\)/);
+  assert.match(code,/ctx\.decodeAudioData\(bytes\.slice\(0\)\)/);
   assert.match(code,/old\.abort\.abort\(\)/);
   assert.match(code,/source\.onended=\(\)=>/);
   assert.match(code,/context\.suspend\(\)/);
