@@ -499,7 +499,6 @@ export default function App() {
             {analysis.follow_up_question && <p className="scan-clarification">
               <span><strong>{t("One thing to check")}:</strong> {analysis.follow_up_question}</span>
             </p>}
-            <p className="scan-decision-disclaimer">{t("AI suggestion, not a confirmed local bin rule.")}</p>
           </>}
           {scanCautions.length > 0 && <p className="scan-inline-caution">
             <ShieldAlert size={18}/><span>{scanCautions[0]}</span>
