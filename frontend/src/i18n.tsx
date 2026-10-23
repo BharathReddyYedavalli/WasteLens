@@ -9,6 +9,23 @@ export const LANGUAGES: { code: Language; label: string }[] = [
 ];
 
 const strings: Record<string, { es: string; hi: string }> = {
+  "Kiosk Mode": { es: "Modo quiosco", hi: "कियोस्क मोड" },
+  "Exit kiosk": { es: "Salir del quiosco", hi: "कियोस्क से बाहर निकलें" },
+  "Where does this go?": { es: "¿Dónde va esto?", hi: "यह कहाँ जाएगा?" },
+  "Show one item to the camera. Get a suggestion, then check the collection rules before using a bin.": { es: "Muestra un objeto a la cámara. Recibe una sugerencia y consulta las normas antes de usar un contenedor.", hi: "कैमरे के सामने एक वस्तु दिखाएँ। सुझाव देखें, फिर डिब्बे में डालने से पहले संग्रह के नियम जाँचें।" },
+  "Item camera": { es: "Cámara para objetos", hi: "वस्तु कैमरा" },
+  "Live camera preview": { es: "Vista previa de la cámara", hi: "कैमरा लाइव प्रीव्यू" },
+  "Your selected item photograph": { es: "Foto del objeto seleccionado", hi: "आपकी चुनी हुई वस्तु की तस्वीर" },
+  "Upload item photo": { es: "Subir foto del objeto", hi: "वस्तु की फोटो अपलोड करें" },
+  "Hold up one item or choose its photo.": { es: "Muestra un objeto o elige una foto.", hi: "एक वस्तु दिखाएँ या उसकी फोटो चुनें।" },
+  "AI scanning is unavailable. Check the backend and API key.": { es: "El escaneo con IA no está disponible. Revisa el servidor y la clave API.", hi: "AI स्कैन उपलब्ध नहीं है। सर्वर और API कुंजी जाँचें।" },
+  "Photos are sent to Google Gemini when you choose Identify. Free-tier content may be used to improve Google's products.": { es: "Las fotos se envían a Google Gemini al elegir Identificar. Google puede usar el contenido del nivel gratuito para mejorar sus productos.", hi: "पहचानने पर फोटो Google Gemini को भेजी जाती है। मुफ्त सेवा की सामग्री Google अपने उत्पाद सुधारने में उपयोग कर सकता है।" },
+  "Please check the item first": { es: "Primero confirma el objeto", hi: "पहले वस्तु की पुष्टि करें" },
+  "This kiosk does not yet have verified rules for your school or office. Confirm the correct bin with staff.": { es: "Este quiosco aún no tiene reglas verificadas para tu escuela u oficina. Confirma con el personal el contenedor correcto.", hi: "इस कियोस्क में अभी आपके स्कूल या कार्यालय के सत्यापित नियम नहीं हैं। सही डिब्बा कर्मचारियों से पूछें।" },
+  "Next item — clear screen": { es: "Siguiente objeto — borrar pantalla", hi: "अगली वस्तु — स्क्रीन साफ करें" },
+  "Use Next item when finished. This screen does not save kiosk scans to a personal account.": { es: "Al terminar, pulsa Siguiente objeto. Este quiosco no guarda escaneos en cuentas personales.", hi: "काम पूरा होने पर अगली वस्तु चुनें। यह कियोस्क स्कैन निजी खाते में नहीं सहेजता।" },
+  "Starting a shared kiosk signs you out of your account. Continue?": { es: "Al iniciar el quiosco compartido se cerrará tu sesión. ¿Continuar?", hi: "साझा कियोस्क शुरू करने पर आपका लॉग आउट हो जाएगा। आगे बढ़ें?" },
+  "Could not sign out. Try again before starting kiosk mode.": { es: "No se pudo cerrar sesión. Inténtalo de nuevo antes de iniciar el quiosco.", hi: "लॉग आउट नहीं हो सका। कियोस्क शुरू करने से पहले दोबारा कोशिश करें।" },
   "Scan an item, then check how your local program handles it.": {
     es: "Escanea un objeto y comprueba cómo lo gestiona tu servicio local.",
     hi: "किसी वस्तु को स्कैन करें, फिर देखें कि आपकी स्थानीय सेवा इसे कैसे संभालती है।"

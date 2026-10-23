@@ -70,6 +70,7 @@ async def ai_analyze(
     object_hint: str = Form(""),
     zip_code: str = Form(""),
     language: str = Form("en"),
+    kiosk_mode: bool = Form(False),
 ):
     if language not in {"en", "es", "hi"}:
         raise HTTPException(422, "Unsupported language. Choose en, es or hi.")
@@ -90,7 +91,9 @@ async def ai_analyze(
         else:
             result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint, language)
         analysis = result.model_dump()
-        user = get_user(request)
+        # Shared kiosk scans are never associated with a personal account.
+        # The photo still goes to the configured AI provider for identification.
+        user = None if kiosk_mode else get_user(request)
         scan_id = record_scan(
             user["id"], model_id, analysis, zip_code or None,
             hashlib.sha256(str(user["id"]).encode() + b":" + payload).hexdigest(),

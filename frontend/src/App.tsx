@@ -14,6 +14,7 @@ import SortPlan from "./SortPlan";
 import LocalRulesGuide from "./LocalRulesGuide";
 import AuditKit from "./AuditKit";
 import AboutWasteLens from "./AboutWasteLens";
+import KioskScreen from "./KioskScreen";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
 import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
@@ -30,6 +31,8 @@ export default function App() {
   const { language, setLanguage, t } = useLanguage();
   const [theme, setTheme] = useAppearanceTheme();
   const [navOpen, setNavOpen] = useState(false);
+  const [kioskMode, setKioskMode] = useState(false);
+  const [kioskError, setKioskError] = useState("");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { stop: stopReading } = useSpeech();
   const [status, setStatus] = useState<StatusResponse | null>(null);
@@ -62,6 +65,7 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+  const scanRequestRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -97,6 +101,7 @@ export default function App() {
   }, [camera]);
 
   useEffect(() => () => {
+    scanRequestRef.current?.abort();
     streamRef.current?.getTracks().forEach(track => track.stop());
   }, []);
 
@@ -114,6 +119,9 @@ export default function App() {
   }
 
   function reset() {
+    scanRequestRef.current?.abort();
+    scanRequestRef.current = null;
+    setBusy(false);
     stopCamera();
     clearPreview();
     setHint("");
@@ -192,10 +200,14 @@ export default function App() {
   async function analyze() {
     if (!preview || busy) return;
     setRulesOpenRequest(0);
+    const controller = new AbortController();
+    scanRequestRef.current?.abort();
+    scanRequestRef.current = controller;
     setBusy(true); setResult(null); setError(""); setCelebration(null);
     try {
       const scanForm = new FormData();
       scanForm.append("image", preview.file);
+      if (kioskMode) scanForm.append("kiosk_mode", "true");
       scanForm.append("object_hint", hint.trim());
       scanForm.append("language", language);
       if (/^\d{5}$/.test(location.trim())) {
@@ -205,6 +217,7 @@ export default function App() {
       const response = await fetch("/api/ai/analyze", {
         method: "POST",
         body: scanForm,
+        signal: controller.signal,
       });
       const responseBody = await response.json();
       if (!response.ok) {
@@ -212,6 +225,7 @@ export default function App() {
           ? responseBody.detail : "Analysis failed");
       }
 
+      if (controller.signal.aborted) return;
       const scanResult = responseBody as VisionResponse;
       setResult(scanResult);
 
@@ -226,9 +240,12 @@ export default function App() {
       setFeedbackError("");
       setFacilities(null);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Could not analyze this photograph.");
+      if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "Could not analyze this photograph.");
     } finally {
-      setBusy(false);
+      if (scanRequestRef.current === controller) {
+        scanRequestRef.current = null;
+        setBusy(false);
+      }
     }
   }
 
@@ -291,6 +308,41 @@ export default function App() {
 
   const analysis = result?.analysis;
   const needsConfirmation = Boolean(analysis && (analysis.identification !== "likely" || analysis.route === "needs_identification"));
+  async function enterKioskMode() {
+    if (user) {
+      if (!window.confirm(t("Starting a shared kiosk signs you out of your account. Continue?"))) return;
+      try {
+        await readJson<{ok:boolean}>(await fetch("/api/auth/logout",{
+          method:"POST",headers:actionHeaders,credentials:"same-origin"
+        }));
+        setUser(null);
+      } catch {
+        setKioskError(t("Could not sign out. Try again before starting kiosk mode."));
+        return;
+      }
+    }
+    setKioskError("");
+    reset();
+    stopReading();
+    setNavOpen(false);
+    setView("identifier");
+    setKioskMode(true);
+  }
+
+  function exitKioskMode() {
+    reset();
+    setLocation("");
+    stopReading();
+    setKioskMode(false);
+    setView("identifier");
+  }
+
+  function nextKioskItem() {
+    reset();
+    setLocation("");
+    stopReading();
+  }
+
   function openPage(next: typeof view) {
     stopCamera();
     setNavOpen(false);
@@ -332,17 +384,17 @@ export default function App() {
     };
   }, [navOpen]);
 
-  return <div className="site" data-theme={theme}>
+  return <div className={"site"+(kioskMode?" wl-kiosk-active":"")} data-theme={theme}>
     <a className="skip-link" href="#main-content">Skip to content</a>
-    {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
+    {celebration && !kioskMode && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <header className="topbar">
-      <button ref={menuButtonRef} type="button" className="community-menu-toggle"
+      {!kioskMode&&<button ref={menuButtonRef} type="button" className="community-menu-toggle"
         aria-label={navOpen ? t("Close menu") : t("Open menu")}
         aria-expanded={navOpen} aria-controls="wastelens-primary-navigation"
         onClick={() => setNavOpen(current => !current)}>
         {navOpen ? <X size={23}/> : <Menu size={23}/>}
-      </button>
-      <button type="button" className="brand" onClick={() => openPage("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
+      </button>}
+      <button type="button" className="brand" onClick={() => kioskMode ? nextKioskItem() : openPage("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
       <div className="topbar-actions">
         <div className="language-picker">
           <label htmlFor="wastelens-lang" className="visually-hidden">{t("Choose language")}</label>
@@ -350,14 +402,18 @@ export default function App() {
             {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
           </select>
         </div>
-        <AccountMenu user={user} theme={theme} onThemeChange={setTheme}
-          onNavigate={next => openPage(next)}/>
+        {!kioskMode&&<AccountMenu user={user} theme={theme} onThemeChange={setTheme}
+          onNavigate={next => openPage(next)}/>}
+        <button type="button" className="wl-kiosk-switch" onClick={kioskMode?exitKioskMode:()=>void enterKioskMode()}>
+          {kioskMode?<><X size={18}/>{t("Exit kiosk")}</>:<><ScanLine size={18}/>{t("Kiosk Mode")}</>}
+        </button>
       </div>
     </header>
-    {navOpen && <button type="button" className="community-nav-backdrop"
+    {!kioskMode && navOpen && <button type="button" className="community-nav-backdrop"
       aria-label={t("Close menu")} onClick={() => setNavOpen(false)}/>}
+    {kioskError && !kioskMode && <p className="wl-kiosk-entry-error" role="alert">{kioskError}</p>}
     <div className="site-layout">
-      <aside id="wastelens-primary-navigation"
+      {!kioskMode && <aside id="wastelens-primary-navigation"
         className={"side-nav community-navigation" + (navOpen ? " is-open" : "")}
         aria-label="WasteLens navigation">
         <div className="community-nav-scroll">
@@ -401,10 +457,21 @@ export default function App() {
         <button type="button" className={"nav-item community-about-nav "+(view === "about"?"active":"")}
           aria-current={view === "about"?"page":undefined}
           onClick={() => openPage("about")}><Info size={18}/>{t("About")}</button>
-      </aside>
+      </aside>}
       <div className="page-content">
-    <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
-      {view === "identifier" ? <>
+    <main id="main-content" className={kioskMode?"shell wl-kiosk-shell":view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
+      {view === "identifier" ? (kioskMode ?
+        <KioskScreen
+          videoRef={videoRef} uploadRef={uploadRef}
+          camera={camera} preview={preview} busy={busy}
+          aiReady={Boolean(status?.configured)}
+          statusError={statusError} cameraError={cameraError} error={error}
+          analysis={analysis??null} zipCode={location} onZipChange={setLocation}
+          rulesOpenRequest={rulesOpenRequest} onShowLocalRules={showLocalRules}
+          onStartCamera={()=>void startCamera()} onStopCamera={stopCamera}
+          onCapture={capture} onUpload={onUpload} onAnalyze={()=>void analyze()}
+          onNextItem={nextKioskItem}/>
+        : <>
       <div className="intro">
         <div className="intro-copy">
           <h1>{t("Before you toss it, scan it.")}</h1>
@@ -603,7 +670,7 @@ export default function App() {
           </article>}
         </div>
       </section>}
-      </> : view === "finder" ? <section className="finder-screen">
+      </>) : view === "finder" ? <section className="finder-screen">
         <h1><MapPin size={30}/> {t("Find a place")}</h1>
         
         <div className="finder-card">
@@ -628,10 +695,10 @@ export default function App() {
         <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
-      <div hidden={view !== "chat"}>
+      {!kioskMode && <div hidden={view !== "chat"}>
         <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
           onScan={() => setView("identifier")}/>
-      </div>
+      </div>}
       
     </main>
       </div>

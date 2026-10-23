@@ -408,3 +408,37 @@ ZIPs still display unverified discovery references rather than fabricated
 local acceptance. Then check the **About** and **Waste audit** pages in all
 six themes and on a mobile viewport. CI checks structural invariants and
 builds but does not replace visual or live AI tests.
+
+## Shared-screen Kiosk Mode — first incremental improvement
+
+The site now offers an optional **Kiosk Mode** from the header. It is a
+simplified shared-screen photo-identification path; the original website,
+scanner, My Activity and pre-redesign Waste Audit remain unchanged.
+Users can take or upload one photo, request AI identification, view a
+prominent **suggested** next action, open the existing ZIP-based
+collection-rule checker, listen to a scan result, then use **Next item**
+to clear the photo, result and ZIP from the screen. **Exit kiosk**
+restores the normal site. No organization-specific accepted-material
+catalog, item-name search, or automatic idle reset is implemented yet.
+
+Starting Kiosk Mode signs out any active personal account after asking
+permission. The optional `kiosk_mode=true` scan API form flag also
+prevents saving scans or awarding XP even when an authenticated cookie
+is present. Regular scans continue to save exactly as before. The
+kiosk sends images to Gemini only when the user requests identification;
+on the free tier, Google may use submitted content to improve its
+products. Do not treat the kiosk as cleared until **Next item** or
+**Exit kiosk** has been selected. No images are added to account scan
+history in Kiosk Mode, but on-screen content remains until cleared.
+
+**Crucial:** no verified school or office collection rules are currently
+configured. Kiosk results are AI suggestions, not validated physical
+bin instructions. The existing city rule checker documents selected
+residential programs only. Before a real school/office rollout, validate
+the organization's hauler rules, privacy/screen reset, hardware
+and Gemini/provider eligibility for the intended users.
+
+The new frontend tests check the optional interface, isolation,
+translations and safe labeling; backend tests check that signed-in
+kiosk requests do not create scans or XP. No real AI provider or
+physical kiosk deployment is assumed by these tests.
