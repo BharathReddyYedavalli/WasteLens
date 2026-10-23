@@ -1,0 +1,214 @@
+/* WasteLens station polish: visual refinements for the existing single website.
+   No new mode, no altered scan behavior, no hidden features or page rewrites.
+   Loads after the station visual/home styles so overrides remain isolated. */
+
+/* Stop the recycling sticker from covering the copy inside the narrow hero.
+   Keep the subtle background rings, which do not obstruct reading. */
+.site .site-layout main.shell:has(> .intro)> .intro .intro-art {
+  display:none!important;
+}
+.site .site-layout main.shell:has(> .intro)> .intro::before {
+  width:175px!important;
+  height:175px!important;
+  right:-78px!important;
+  top:-78px!important;
+  border-width:23px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .intro::after {
+  width:136px!important;
+  height:136px!important;
+  right:-50px!important;
+  bottom:-55px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .intro-copy {
+  width:100%;
+  max-width:100%!important;
+}
+.site .site-layout main.shell:has(> .intro)> .intro h1 {
+  max-width:100%!important;
+  margin-bottom:18px!important;
+  overflow-wrap:normal;
+}
+.site .site-layout main.shell:has(> .intro)> .intro p {
+  max-width:100%!important;
+  font-size:clamp(14px,1.13vw,16px)!important;
+  line-height:1.75!important;
+}
+
+/* Give the station a balanced desktop presence without increasing empty cards
+   on phones or changing the order of content in the DOM. */
+@media(min-width:1101px) {
+  .site .site-layout main.shell:has(> .intro) {
+    min-height:clamp(550px,calc(100dvh - 270px),710px);
+    grid-template-rows:minmax(320px,1fr) auto;
+    align-content:start;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro {
+    justify-content:center!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace {
+    display:flex!important;
+    flex-direction:column;
+    justify-content:flex-start;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace .camera-stage {
+    height:clamp(335px,40vh,440px)!important;
+    flex:1 0 335px;
+    max-height:440px;
+  }
+}
+/* Camera outline is crisp; result/option blocks still use their existing
+   colors and behaviors. Do not alter the live video or file input. */
+.site .site-layout main.shell:has(> .intro)> .workspace {
+  border-color:#bcdaca!important;
+  box-shadow:0 15px 39px rgba(17,63,49,.085)!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-stage {
+  box-shadow:0 5px 0 #c0e9d9;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls {
+  margin:20px 0 7px!important;
+  gap:13px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button {
+  border-radius:14px!important;
+  box-shadow:none!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button:focus-visible {
+  outline:3px solid #dbab5e!important;
+  outline-offset:3px!important;
+}
+.site .site-layout main.shell:has(> .intro)> .workspace .camera-controls .button:disabled {
+  opacity:.55;
+}
+.site .site-layout main.shell:has(> .intro)> .community-mission-path button {
+  transition:border-color .16s ease, background-color .16s ease;
+}
+
+/* Other tools: keep their exact component tree and style vocabulary, but
+   align the entry headings and surface treatment with the Scan station. */
+.site .assistant-screen,
+.site .finder-screen,
+.site .deposit-page,
+.site .league-page,
+.site .audit-kit.community-audit {
+  scroll-margin-top:calc(var(--wl-topbar-height,76px) + 18px);
+}
+.site .assistant-screen .assistant-heading,
+.site .finder-screen > h1 {
+  margin-top:0;
+}
+.site .assistant-screen .assistant-heading h1,
+.site .finder-screen > h1,
+.site .deposit-page .deposit-top h1,
+.site .audit-kit .audit-hero h1,
+.site .league-page .league-title h1 {
+  font-size:clamp(29px,3.1vw,42px)!important;
+  line-height:1.2!important;
+  letter-spacing:-.025em!important;
+}
+.site .assistant-screen .assistant-logo,
+.site .league-page .league-icon,
+.site .audit-kit .audit-icon {
+  flex-shrink:0;
+  border-radius:16px;
+}
+.site .assistant-screen .assistant-card,
+.site .finder-screen .finder-card,
+.site .account-card,
+.site .history-card,
+.site .deposit-page .deposit-form-card,
+.site .league-page .league-ranking,
+.site .audit-kit .audit-session,
+.site .audit-kit .community-chart-card {
+  border-radius:22px!important;
+  box-shadow:0 10px 30px rgba(15,55,43,.065);
+}
+.site .assistant-screen .assistant-messages {
+  line-height:1.62;
+}
+.site .assistant-screen .assistant-composer {
+  border-radius:15px;
+  padding:12px;
+}
+.site .assistant-screen .assistant-composer textarea {
+  min-height:52px;
+  font-size:15px!important;
+  line-height:1.6;
+}
+.site .assistant-screen .assistant-composer button {
+  width:48px;
+  min-width:48px;
+  height:48px;
+  border-radius:12px;
+}
+.site .assistant-screen .chat-suggestions button,
+.site .league-page .privacy-toggle button,
+.site .account-card .button {
+  min-height:49px;
+}
+.site .deposit-page .deposit-fields :is(input,select),
+.site .finder-screen .finder-form input,
+.site .account-card .auth-form input {
+  min-height:49px;
+  font-size:15px!important;
+  border-radius:12px;
+}
+.site .audit-kit .audit-option,
+.site .deposit-page .deposit-form-card,
+.site .account-card .history-card {
+  transition:border-color .16s ease;
+}
+
+/* Existing color themes own their backgrounds, borders and content contrast. */
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .site-layout main.shell:has(> .intro)> .workspace {
+  border-color:var(--wl-stroke)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.08)!important;
+}
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site :is(
+  .assistant-card,.finder-card,.account-card,.history-card,.deposit-form-card,
+  .league-ranking,.audit-session,.community-chart-card) {
+  border-color:var(--wl-stroke)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+}
+
+/* Keep small screens in the established stacked flow. */
+@media(max-width:1100px) {
+  .site .site-layout main.shell:has(> .intro)> .intro h1 {
+    max-width:calc(100% - 2px)!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .intro p {
+    max-width:680px!important;
+  }
+}
+@media(max-width:620px) {
+  .site .site-layout main.shell:has(> .intro)> .intro {
+    padding:24px 21px!important;
+  }
+  .site .site-layout main.shell:has(> .intro)> .workspace .camera-stage {
+    box-shadow:0 4px 0 #c0e9d9;
+  }
+  .site .assistant-screen .assistant-composer {
+    padding:9px;
+  }
+  .site .assistant-screen .assistant-composer textarea {
+    font-size:16px!important;
+  }
+  .site :is(.assistant-screen,.finder-screen,.deposit-page,.league-page) {
+    min-width:0;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .site .site-layout main.shell:has(> .intro)> .community-mission-path button,
+  .site .audit-kit .audit-option {
+    transition:none!important;
+  }
+}
+@media print {
+  .site .site-layout main.shell:has(> .intro) {
+    min-height:0!important;
+  }
+  .site :is(.assistant-card,.finder-card,.deposit-form-card,.audit-session) {
+    box-shadow:none!important;
+  }
+}
