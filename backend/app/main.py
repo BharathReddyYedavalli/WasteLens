@@ -18,7 +18,6 @@ from .places import router as places_router
 from .deposit_rules import router as deposit_router
 from .local_rules import router as local_rules_router
 from .program_rules import router as program_rules_router
-from .kiosk_profiles import router as kiosk_profile_router
 from .guidance_discovery import router as discovery_router
 from .vision import AIUnavailable, DEFAULT_MODEL, InvalidPhoto, MODELS, MAX_BYTES, analyze_photo, configured
 from .chat import ChatRequest, answer_chat
@@ -45,7 +44,6 @@ app.include_router(audit_router)
 app.include_router(deposit_router)
 app.include_router(local_rules_router)
 app.include_router(program_rules_router)
-app.include_router(kiosk_profile_router)
 app.include_router(discovery_router)
 
 
@@ -72,7 +70,6 @@ async def ai_analyze(
     object_hint: str = Form(""),
     zip_code: str = Form(""),
     language: str = Form("en"),
-    kiosk_mode: bool = Form(False),
 ):
     if language not in {"en", "es", "hi"}:
         raise HTTPException(422, "Unsupported language. Choose en, es or hi.")
@@ -93,9 +90,7 @@ async def ai_analyze(
         else:
             result = await run_in_threadpool(analyze_photo, payload, model_id, object_hint, language)
         analysis = result.model_dump()
-        # Shared kiosk scans are never associated with a personal account.
-        # The photo still goes to the configured AI provider for identification.
-        user = None if kiosk_mode else get_user(request)
+        user = get_user(request)
         scan_id = record_scan(
             user["id"], model_id, analysis, zip_code or None,
             hashlib.sha256(str(user["id"]).encode() + b":" + payload).hexdigest(),

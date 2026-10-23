@@ -91,14 +91,6 @@ CREATE TABLE IF NOT EXISTS quiz_awards (
     xp INTEGER NOT NULL CHECK(xp=30),
     awarded_at TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS kiosk_profile (
-    id INTEGER PRIMARY KEY CHECK (id = 1),
-    organization TEXT NOT NULL,
-    source TEXT NOT NULL,
-    bins_json TEXT NOT NULL,
-    rules_json TEXT NOT NULL,
-    reviewed_at TEXT NOT NULL
-);
 """
 
 
