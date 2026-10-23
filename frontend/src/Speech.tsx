@@ -25,7 +25,7 @@ const categoryNames:Record<SpeechCategory,string>={
 function getSaved():SpeechOptions{
   try{
     // Ignore obsolete saved "device" engine and voiceURI values.
-    // All existing users now use Gemini speech, not Safari speechSynthesis.
+    // All existing users now use Gemini speech, with no local playback path.
     const data=JSON.parse(localStorage.getItem(storageKey)||"{}") as Partial<SpeechOptions>;
     const rate=typeof data.rate==="number"&&Number.isFinite(data.rate)
       ?Math.min(1.3,Math.max(0.7,data.rate)):defaults.rate;
