@@ -46,11 +46,11 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
         <div className="level-top"><div><h2>{t("Level")} {data.me.level}</h2></div>
           <strong><Sparkles size={22}/>{data.me.xp.toLocaleString()} XP</strong>
         </div>
-        <div className="level-track" role="progressbar" aria-label="Progress to next level"
+        <div className="level-track" role="progressbar" aria-label={t("Progress to next level")}
           aria-valuenow={data.me.level_progress} aria-valuemin={0} aria-valuemax={data.me.level_goal}>
           <span style={{width: (data.me.level_progress/data.me.level_goal*100)+"%"}}/>
         </div>
-        <small className="level-next">{data.me.level_goal-data.me.level_progress} XP to level {data.me.level+1}</small>
+        <small className="level-next">{data.me.level_goal-data.me.level_progress} XP {t("to level")} {data.me.level+1}</small>
       </div>
       <div className="league-stats">
         <div><ScanLine size={21}/><strong>{data.me.scans}</strong><span>{t("Scans")}</span></div>
@@ -68,21 +68,21 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       {data?.leaders.length ? <div className="rank-list">{data.leaders.map(person=>
         <div key={person.rank} className={"rank-entry "+(person.is_you?"its-you":"")}>
           <span className="rank-number">{person.rank===1?"🏆":"#"+person.rank}</span>
-          <div className="rank-user"><strong>{person.name}{person.is_you?" (you)":""}</strong>
-          <span>{person.scans} scans · {person.actions} actions</span></div>
+          <div className="rank-user"><strong>{person.name}{person.is_you?" ("+t("you")+")":""}</strong>
+          <span>{person.scans} {t("scans")} · {person.actions} {t("actions")}</span></div>
           <strong className="rank-xp">{person.xp.toLocaleString()} XP</strong>
         </div>)}</div> : <div className="rank-empty">{t("The board is empty. You can be the first!")}</div>}
       {data?.me && <div className="privacy-toggle"><div><strong>{t("Show me on the leaderboard")}</strong>
         <p>{data.me.visible ? t("Your display name and scores are visible to visitors.") : t("Your progress is private until you join.")}</p></div>
         <button className={"button "+(data.me.visible?"outline":"primary")} type="button"
-          disabled={busy} onClick={()=>void toggle()}>{busy?"Saving…":data.me.visible?t("Leave leaderboard"):t("Join leaderboard")}</button>
+          disabled={busy} onClick={()=>void toggle()}>{busy?t("Saving…"):data.me.visible?t("Leave leaderboard"):t("Join leaderboard")}</button>
       </div>}
     </section>
     <details className="league-rules">
       <summary>{t("How XP works")}</summary>
-      <p>You earn {data?.rules.xp_per_scan ?? 20} XP for a new photo when the item is identified confidently.
-      Up to {data?.rules.daily_limit ?? 10} rewarded scans a day. Scanning the same photo again earns nothing.
-      Recycling actions are self reported. CO₂ savings cannot be measured from photos.</p>
+      <p>{t("You earn")} {data?.rules.xp_per_scan ?? 20} {t("XP for a new photo when the item is identified confidently.")}
+      {t("Up to")} {data?.rules.daily_limit ?? 10} {t("rewarded scans a day. Scanning the same photo again earns nothing.")}
+      {t("Recycling actions are self reported. CO₂ savings cannot be measured from photos.")}</p>
     </details>
     {error && <p className="inline-error" role="alert">{error}</p>}
   </section>;

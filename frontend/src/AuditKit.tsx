@@ -111,6 +111,7 @@ function saveCSV(draft:Draft){
 }
 const dayStamp=(value:string)=>new Date(value).toLocaleDateString(undefined,{month:"short",day:"numeric"});
 function DistributionChart({counts,total}:{counts:Counts;total:number}){
+  const {t}=useLanguage();
   const circumference=2*Math.PI*68;
   let offset=0;
   return <div className="community-chart-pair">
@@ -123,15 +124,15 @@ function DistributionChart({counts,total}:{counts:Counts;total:number}){
           const dash=fraction*circumference;
           const circle=<circle key={kind.id} cx="110" cy="110" r="68" fill="none"
             stroke={kind.color} strokeWidth="30" strokeDasharray={dash+" "+(circumference-dash)}
-            strokeDashoffset={-offset} transform="rotate(-90 110 110)"><title>{kind.label}: {counts[kind.id]}</title></circle>;
+            strokeDashoffset={-offset} transform="rotate(-90 110 110)"><title>{t(kind.label)}: {counts[kind.id]}</title></circle>;
           offset+=dash;return circle;
         })}
         <text x="110" y="105" textAnchor="middle" className="community-chart-center">{total}</text>
-        <text x="110" y="127" textAnchor="middle" className="community-chart-center-label">items</text>
+        <text x="110" y="127" textAnchor="middle" className="community-chart-center-label">{t("items")}</text>
       </svg>
     </div>
     <div className="community-chart-legend">{kinds.map(kind=><div className="community-legend-line" key={kind.id}>
-      <span className="community-swatch" style={{background:kind.color}}/><span>{kind.label}</span>
+      <span className="community-swatch" style={{background:kind.color}}/><span>{t(kind.label)}</span>
       <strong>{counts[kind.id]}</strong><small>{total?Math.round(counts[kind.id]/total*100):0}%</small>
     </div>)}</div>
   </div>;

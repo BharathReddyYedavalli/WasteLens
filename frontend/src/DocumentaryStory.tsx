@@ -174,7 +174,7 @@ function RealPhoto({photo,hero=false}:{photo:Photo;hero?:boolean}){
       loading={hero?"eager":"lazy"} onError={()=>setFailed(true)}/>:<div className="documentary-photo-fallback" role="img" aria-label={photo.alt[language]}>
       {language==="en"?"Photo unavailable — open original":language==="es"?"Foto no disponible — ver original":"फोटो उपलब्ध नहीं — मूल चित्र खोलें"}
     </div>}
-    <figcaption><span className="documentary-photo-credits"><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} <ExternalLink size={12}/></a>{photo.licenseUrl&&<a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer" title={photo.license+"; photograph cropped for layout"}>License</a>}</span></figcaption>
+    <figcaption><span className="documentary-photo-credits"><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} <ExternalLink size={12}/></a>{photo.licenseUrl&&<a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer" title={photo.license+"; photograph cropped for layout"}>{language==="es"?"Licencia":language==="hi"?"लाइसेंस":"License"}</a>}</span></figcaption>
   </figure>;
 }
 
@@ -285,12 +285,5 @@ export default function DocumentaryStory({onScan,onReturns}:{onScan:()=>void;onR
         <a className="documentary-quiz-link" href="#bottle-quiz">{line("One last stop: earn your Bottle Explorer badge","Una última parada: gana tu insignia Bottle Explorer","आखिरी पड़ाव: Bottle Explorer बैज पाएँ")[language]} <ArrowDown size={16}/></a>
       </div>
     </section>
-    <aside className="documentary-sources">
-      <details><summary>{line("Photo credits and research","Créditos de fotos y fuentes","फ़ोटो और शोध स्रोत")[language]}</summary>
-        <p>{line("These real photos illustrate the story, not the exact statistics. Image credits and original research appear below.","Estas fotos reales ilustran la historia, no las cifras exactas. Créditos y fuentes a continuación.","ये वास्तविक तस्वीरें कहानी समझाती हैं, सटीक आँकड़ों का प्रमाण नहीं हैं। स्रोत नीचे हैं।")[language]}</p>
-        <ul>{Object.values(photos).map(photo=><li key={photo.page}><a href={photo.page} target="_blank" rel="noopener noreferrer">{photo.credit} — {photo.caption[language]}</a>{photo.licenseUrl&&<> · <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">{photo.license}</a></>}</li>)}
-        {chapters.map(chapter=><li key={chapter.id}><a href={chapter.statSource} target="_blank" rel="noopener noreferrer">{chapter.factYear}: {chapter.statExplain[language]}</a></li>)}</ul>
-      </details>
-    </aside>
   </div>;
 }

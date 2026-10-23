@@ -57,10 +57,10 @@ export default function HabitSnapshot() {
     <div className="habit-plot-head"><h4><BarChart3 size={18}/>{t("Past 7 days")}</h4></div>
     <div className="habit-week" role="list" aria-label={t("Items scanned")}>
       {data.days.map(day => <div className="habit-day" key={day.day} role="listitem"
-        aria-label={day.day + ": " + day.scans + " scans, " + day.actions + " actions"}>
+        aria-label={day.day + ": " + day.scans + " " + t("scans") + ", " + day.actions + " " + t("actions")}>
         <div className="habit-bar-rail"><span style={{height: Math.max(day.scans ? 10 : 0, day.scans/max*100) + "%"}}/></div>
         <span>{new Date(day.day + "T12:00:00").toLocaleDateString(
-          language === "hi" ? "hi-IN" : language === "es" ? "es-US" : "en-US",
+          language === "hi" ? "hi-IN" : language === "es" ? "es-ES" : "en-US",
           {weekday:"short"})}</span>
       </div>)}
     </div>

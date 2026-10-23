@@ -42,7 +42,7 @@ export default function BadgeCelebration({ badge, onClose }: { badge: WasteLensB
         <strong>{t(badge.name)}</strong>
         <p>{badge.description}</p>
       </div>
-      <button type="button" className="badge-toast-close" onClick={onClose} aria-label="Dismiss badge celebration">
+      <button type="button" className="badge-toast-close" onClick={onClose} aria-label={t("Dismiss badge celebration")}>
         <X size={19}/>
       </button>
     </div>

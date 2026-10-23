@@ -29,9 +29,15 @@ const materials: {value:Material;name:string}[]=[
   {value:"pouch",name:"Pouch"},{value:"other",name:"Not sure"}
 ];
 const dollars=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
+const suffix=" Confirm the deposit was paid in this state.";
+function localizedDepositReason(reason:string,t:(value:string)=>string):string {
+  return reason.endsWith(suffix)
+    ? t(reason.slice(0,-suffix.length))+" "+t(suffix.trim())
+    : t(reason);
+}
 
 export default function BottleReturns() {
-  const {t} = useLanguage();
+  const {t,language} = useLanguage();
   const [state,setState] = useState<DepositStateCode>("CA");
   const [drink,setDrink] = useState<Drink>("soda");
   const [material,setMaterial] = useState<Material>("aluminum");
@@ -69,7 +75,7 @@ export default function BottleReturns() {
         <div className="deposit-fields">
           <label className="wide">{t("Where was it purchased?")}
             <select value={state} onChange={e=>setState(e.target.value as DepositStateCode)}>
-              {STATES.map(s=><option key={s.code} value={s.code}>{s.name}</option>)}
+              {STATES.map(s=><option key={s.code} value={s.code}>{t(s.name)}</option>)}
             </select>
           </label>
           <label>{t("What's inside?")}
@@ -86,7 +92,7 @@ export default function BottleReturns() {
             <select value={resin} onChange={e=>setResin(e.target.value as Resin)}>
               <option value="unknown">{t("I don't know")}</option>
               <option value="pet1">PET #1</option><option value="hdpe2">HDPE #2</option>
-              <option value="other">Something else</option>
+              <option value="other">{t("Something else")}</option>
             </select>
           </label>}
           <label>{t("Size in fluid ounces")}
@@ -105,25 +111,25 @@ export default function BottleReturns() {
           </label>
         </div>
         <details className="deposit-examples"><summary>{t("Try an example")}</summary><div>
-          <button type="button" onClick={()=>{setDrink("soda");setMaterial("aluminum");setOunces("12");setCount("12");setPaid("unsure");}}>12 soda cans</button>
-          <button type="button" onClick={()=>{setDrink("water");setMaterial("plastic");setResin("pet1");setOunces("16.9");setCount("24");setPaid("unsure");}}>24 water bottles</button>
+          <button type="button" onClick={()=>{setDrink("soda");setMaterial("aluminum");setOunces("12");setCount("12");setPaid("unsure");}}>{t("12 soda cans")}</button>
+          <button type="button" onClick={()=>{setDrink("water");setMaterial("plastic");setResin("pet1");setOunces("16.9");setCount("24");setPaid("unsure");}}>{t("24 water bottles")}</button>
         </div></details>
       </div>
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
           <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
-          <p>{result.reason}</p>
+          <p>{localizedDepositReason(result.reason,t)}</p>
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
             <Link2 size={16}/> {t("Read the official state rules")} · {result.state}
           </a>
           <details className="deposit-state-tip">
             <summary>{t("Calculation & state details")}</summary>
-            <div className="deposit-mini-math"><span>{result.count.toLocaleString()} containers</span><b>×</b><span>{result.per_container_cents}¢ each</span></div>
-            <p>{result.state_tip}</p>
+            <div className="deposit-mini-math"><span>{result.count.toLocaleString(language==="hi"?"hi-IN":language==="es"?"es-ES":"en-US")} {t("containers")}</span><b>×</b><span>{result.per_container_cents}¢ {t("each")}</span></div>
+            <p>{t(result.state_tip)}</p>
           </details>
-        </>:<><strong className="deposit-amount">?</strong><p>Choose a valid size and amount to check.</p></>}
-        <div className="deposit-result-note"><ShieldCheck size={18}/> Refund eligibility depends on where the deposit was paid and the return program.</div>
+        </>:<><strong className="deposit-amount">?</strong><p>{t("Choose a valid size and amount to check.")}</p></>}
+        <div className="deposit-result-note"><ShieldCheck size={18}/> {t("Refund eligibility depends on where the deposit was paid and the return program.")}</div>
       </div>
     </div>
     {error&&<p className="deposit-error" role="alert">{error}</p>}
