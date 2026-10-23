@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowUp, Bot, Sparkles, Trash2 } from "lucide-react";
 import type { ItemAnalysis } from "./types";
 import { useLanguage } from "./i18n";
 import { ReadAloudButton } from "./Speech";
+import { scanQuestionSuggestions } from "./scanSuggestions";
 
 type Turn = { role: "user" | "assistant"; text: string };
 type Props = {
@@ -12,11 +13,6 @@ type Props = {
   onScan: () => void;
 };
 
-const startingPrompts = [
-  "Can I recycle this with its cap or lid?",
-  "What is the easiest way to reuse this?",
-  "How should I prepare this for disposal?"
-];
 const generalPrompts = [
   "Where should old batteries go?",
   "Can pizza boxes be recycled?",
@@ -29,6 +25,10 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  // Relevant to the current identified item; general prompts only when no scan.
+  const suggestions = scan
+    ? scanQuestionSuggestions(scan,language)
+    : generalPrompts.map(prompt=>t(prompt));
 
   // Don't let a past object's conversations leak into a new scan.
   useEffect(() => {
@@ -95,9 +95,9 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
           <div className="chat-suggestions">
-            {(scan ? startingPrompts : generalPrompts).map(prompt => <button
+            {suggestions.map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}
-              disabled={busy}>{t(prompt)}</button>)}
+              disabled={busy}>{prompt}</button>)}
           </div>
         </div> : messages.map((message,index) => <div
           key={index} className={message.role === "user" ? "chat-turn from-user" : "chat-turn from-ai"}>

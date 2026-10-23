@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History, ShieldCheck,
@@ -62,6 +62,8 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+  const scanResultsRef = useRef<HTMLElement>(null);
+  const returnToScanResultRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -87,9 +89,16 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     stopReading();
-    window.scrollTo(0,0);
+    if (view === "identifier" && returnToScanResultRef.current && scanResultsRef.current) {
+      // The Scan page is already rendered here. Return to the identified item,
+      // not the last action button far down the page.
+      scanResultsRef.current.scrollIntoView({block:"start",behavior:"instant"});
+    } else {
+      window.scrollTo(0,0);
+    }
+    returnToScanResultRef.current = false;
   },[view,stopReading]);
 
   useEffect(() => {
@@ -308,6 +317,12 @@ export default function App() {
   function showNearbyOptions() {
     document.getElementById("nearby")?.scrollIntoView({ block: "start" });
   }
+  function returnToScannedItem() {
+    stopCamera();
+    setNavOpen(false);
+    returnToScanResultRef.current = Boolean(analysis);
+    setView("identifier");
+  }
   function showLocalRules() {
     setRulesOpenRequest(current => current + 1);
   }
@@ -468,7 +483,8 @@ export default function App() {
         {error && <ErrorText message={error}/>}
       </div>
 
-      {analysis && <section className="results" aria-live="polite">
+      {analysis && <section ref={scanResultsRef} id="scan-results" className="results" aria-live="polite"
+        style={{scrollMarginTop:"calc(var(--wl-topbar-height, 76px) + 18px)"}}>
         <div className="result-title">
           <div>
             <h2>{analysis.item_name}</h2>
@@ -630,7 +646,7 @@ export default function App() {
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
         <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
-          onScan={() => setView("identifier")}/>
+          onScan={returnToScannedItem}/>
       </div>
       
     </main>
