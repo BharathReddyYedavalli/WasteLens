@@ -455,7 +455,7 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Food scraps": { es: "Restos de comida", hi: "बचा हुआ खाना" },
   "Drink cup": { es: "Vaso de bebida", hi: "पेय का कप" },
   "Other item": { es: "Otro objeto", hi: "अन्य वस्तु" },
-  "I\'ve checked this location\'s sorting rules": { es: "He comprobado las normas de clasificación de este lugar.", hi: "मैंने इस स्थान के कचरा छँटाई नियम जाँच लिए हैं।" },
+  "I've checked this location's sorting rules": { es: "He comprobado las normas de clasificación de este lugar.", hi: "मैंने इस स्थान के कचरा छँटाई नियम जाँच लिए हैं।" },
   "Was the item placed in the correct bin?": { es: "¿Se colocó el objeto en el contenedor correcto?", hi: "क्या वस्तु सही डिब्बे में डाली गई?" },
   "No placement assessment": { es: "Sin evaluar la clasificación", hi: "वर्गीकरण की जाँच नहीं" },
   "Yes, correct bin": { es: "Sí, contenedor correcto", hi: "हाँ, सही डिब्बा" },
