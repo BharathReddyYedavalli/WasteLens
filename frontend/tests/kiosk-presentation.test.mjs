@@ -26,7 +26,7 @@ test("the scan result prioritizes a cautious action and opens real local rules",
   assert.ok(decision > 0 && checklist > decision && localChecker > checklist);
   assert.doesNotMatch(app,/className="scan-more-details"/);
   assert.match(app, /needsConfirmation \? t\("Confirm the item before sorting"\) : analysis\.route_title/);
-  assert.match(app, /AI suggestion, not a confirmed local bin rule/);
+  assert.doesNotMatch(app, /AI suggestion, not a confirmed local bin rule/);
   assert.doesNotMatch(app, /onClick=\{showLocalRules\}/);
   assert.match(app, /<LocalRulesGuide /);
   assert.match(rules, /id="scan-local-rules"/);
@@ -63,7 +63,6 @@ test("new text has Spanish and Hindi equivalents", () => {
     "Scan an item, then check how your local program handles it.",
     "Suggested next action",
     "Confirm the item before sorting",
-    "AI suggestion, not a confirmed local bin rule.",
     "Count where items end up at school or work. Find patterns to improve sorting.",
   ]) {
     assert.ok(lang.includes(JSON.stringify(key) + ":"), key);
