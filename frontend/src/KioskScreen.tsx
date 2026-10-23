@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { ChangeEvent, RefObject } from "react";
 import { AlertTriangle, Camera, CheckCircle2, MapPin, RotateCcw, ScanLine, ShieldAlert, Sparkles, Upload } from "lucide-react";
 import type { ItemAnalysis } from "./types";
@@ -35,6 +36,10 @@ export default function KioskScreen({
 }:Props){
   const {t}=useLanguage();
   const uncertain=Boolean(analysis&&(analysis.identification!=="likely"||analysis.route==="needs_identification"));
+  useEffect(()=>{
+    if(analysis)document.querySelector<HTMLElement>(".wl-kiosk-results")?.scrollIntoView({block:"start"});
+    else window.scrollTo(0,0);
+  },[analysis]);
   return <section className="wl-kiosk-page" aria-label={t("Kiosk Mode")}>
     <div className="wl-kiosk-heading">
       <span className="wl-kiosk-eyebrow"><ScanLine size={18}/>{t("Kiosk Mode")}</span>
