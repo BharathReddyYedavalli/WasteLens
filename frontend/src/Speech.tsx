@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Ear, Pause, Play, Square, Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "./i18n";
 import type { Language } from "./i18n";
+import { naturalVoices, voiceGroup } from "./voiceQuality";
 
 export type SpeechCategory = "scan" | "steps" | "chat" | "journey";
 type SpeechOptions = {
@@ -111,11 +112,15 @@ export function SpeechProvider({children}:{children:ReactNode}){
     if(!text)return;
     // Refresh after an explicit click. Chrome can populate voices after the first getVoices call.
     const browserVoices=window.speechSynthesis.getVoices();
-    const matching=browserVoices.filter(voice=>voice.lang.toLowerCase().startsWith(language+"-")||voice.lang.toLowerCase()===language);
+    const matching=naturalVoices(browserVoices,language);
     const preferred=matching.find(voice=>voice.voiceURI===options.voiceURI);
     const voice=preferred??matching.find(voice=>voice.lang.toLowerCase()===locales[language].toLowerCase())??matching[0];
-    if(!voice && language!=="en"){
-      stop();setErrorId(id);setError(speechError("language-unavailable",language));return;
+    if(!voice){
+      stop();setErrorId(id);
+      setError(language==="en"
+        ? "No suitable English voice is available. Download a Premium or Enhanced voice in your Mac's accessibility speech settings."
+        :speechError("language-unavailable",language));
+      return;
     }
     stop();setError("");setErrorId(null);
     const myVersion=version.current;
@@ -186,7 +191,12 @@ export function ReadAloudButton({id,text,category,className=""}:{
 export function SpeechSettingsPanel(){
   const {language,t}=useLanguage();
   const {options,update,available,voices,activeId,paused,error,speak,stop,togglePause,dismissError}=useSpeech();
-  const matching=voices.filter(voice=>voice.lang.toLowerCase().startsWith(language+"-")||voice.lang.toLowerCase()===language);
+  const matching=naturalVoices(voices,language);
+  const groups=[
+    {id:"female",label:language==="es"?"Voces femeninas":language==="hi"?"महिला आवाज़ें":"Female voices"},
+    {id:"male",label:language==="es"?"Voces masculinas":language==="hi"?"पुरुष आवाज़ें":"Male voices"},
+    {id:"other",label:language==="es"?"Otras voces naturales":language==="hi"?"अन्य स्वाभाविक आवाज़ें":"Other natural voices"}
+  ] as const;
   const testId="voice-settings-preview";
   const previewActive=useRef(false);
   previewActive.current=activeId===testId;
@@ -215,11 +225,16 @@ export function SpeechSettingsPanel(){
       <select id="wl-speech-voice" className="wl-speech-select"
         disabled={!available||matching.length===0} value={matching.some(v=>v.voiceURI===options.voiceURI)?options.voiceURI:""}
         onChange={e=>update({voiceURI:e.target.value})}>
-        <option value="">{t("Automatic voice")}</option>
-        {matching.map(voice=><option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
+        <option value="">{language==="es"?"Recomendada":language==="hi"?"सुझाई गई आवाज़":"Recommended"}{matching[0]?" — "+matching[0].name:""}</option>
+        {groups.map(group=>{
+          const choices=matching.filter(voice=>voiceGroup(voice)===group.id);
+          return choices.length>0?<optgroup key={group.id} label={group.label}>
+            {choices.map(voice=><option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
+          </optgroup>:null;
+        })}
       </select>
       <div className="wl-speech-preview">
-        <button type="button" disabled={!available}
+        <button type="button" disabled={!available||matching.length===0}
           onClick={()=>{
             if(activeId===testId){stop();return;}
             dismissError();
@@ -233,9 +248,14 @@ export function SpeechSettingsPanel(){
     </>}
     {!available && <p className="wl-speech-notice" role="status">{t("Speech is not available in this browser")}</p>}
     {available&&matching.length===0&&<p className="wl-speech-notice" role="status">
-      {language==="en"?t("Your device will try its default voice."):
-      language==="es"?"No hay una voz en español instalada. Instálala en los ajustes de voz de tu dispositivo.":
-      "इस डिवाइस पर हिंदी आवाज़ नहीं है। बोलने की सेटिंग में हिंदी आवाज़ जोड़ें।"}
+      {language==="en"?"No suitable English voices are available. Install a Premium or Enhanced voice in your Mac's accessibility settings.":
+      language==="es"?"No hay voces naturales disponibles en español. Instala una voz Premium o Enhanced en los ajustes de accesibilidad de tu Mac.":
+      "अभी हिंदी की अच्छी आवाज़ उपलब्ध नहीं है। Mac की Accessibility सेटिंग में Premium या Enhanced आवाज़ जोड़ें।"}
+    </p>}
+    {available&&<p className="wl-speech-hint">
+      {language==="en"?"For more realistic voices: Mac System Settings → Accessibility → Read & Speak → System voice. Download a Premium or Enhanced voice, then refresh WasteLens.":
+      language==="es"?"Para más voces naturales: Ajustes del Mac → Accesibilidad → Leer y hablar → Voz del sistema. Descarga una voz Premium o Enhanced y actualiza WasteLens.":
+      "बेहतर आवाज़ों के लिए Mac System Settings → Accessibility → Read & Speak → System voice में Premium या Enhanced आवाज़ डाउनलोड करें, फिर WasteLens रिफ्रेश करें।"}
     </p>}
     {error&&<p className="wl-speech-notice" role="alert">{error}</p>}
     <p className="wl-speech-hint">{t("Audio plays only when you choose Listen. Voice availability depends on your device and browser.")}</p>
