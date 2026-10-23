@@ -28,10 +28,6 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Other precautions": { es: "Otras precauciones", hi: "अन्य सावधानियाँ" },
   "Feedback and activity": { es: "Comentarios y actividad", hi: "प्रतिक्रिया और गतिविधि" },
   "Confirm the item before sorting": { es: "Identifica el objeto antes de separarlo", hi: "छँटाई से पहले वस्तु की पुष्टि करें" },
-  "AI suggestion, not a confirmed local bin rule.": {
-    es: "Es una sugerencia de IA, no una norma local confirmada.",
-    hi: "यह AI का सुझाव है, पुष्टि किया हुआ स्थानीय नियम नहीं।"
-  },
   "Count where items end up at school or work. Find patterns to improve sorting.": {
     es: "Cuenta dónde acaban los residuos en tu escuela o trabajo para mejorar la separación.",
     hi: "स्कूल या काम पर वस्तुएँ किस डिब्बे में जाती हैं, गिनें और छँटाई के रुझान पहचानें।"
@@ -305,11 +301,13 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Saving…": { es: "Guardando…", hi: "सहेजा जा रहा है…" },
   "New audit": { es: "Nueva auditoría", hi: "नया सर्वेक्षण" },
   "Start a new audit? Your unsaved counts will be cleared.": { es: "¿Empezar otra auditoría? Se perderán los conteos sin guardar.", hi: "नया सर्वेक्षण शुरू करें? बिना सहेजी गिनती मिट जाएगी।" },
-  "Audit saved to your account.": { es: "Auditoría guardada en tu cuenta.", hi: "सर्वेक्षण आपके खाते में सहेजा गया।" },
+  "Audit saved successfully!": { es: "¡Auditoría guardada correctamente!", hi: "ऑडिट सफलतापूर्वक सहेजा गया!" },
+  "This draft is linked to another account. Sign in to that account or start a new audit.": { es: "Este borrador está vinculado a otra cuenta. Inicia sesión en esa cuenta o crea una auditoría nueva.", hi: "यह ड्राफ्ट दूसरे खाते से जुड़ा है। उस खाते में साइन इन करें या नया ऑडिट शुरू करें।" },
+  "Saved, but could not refresh your saved audits.": { es: "Guardado, pero no se pudo actualizar la lista de auditorías.", hi: "सहेज लिया गया, पर ऑडिट सूची अपडेट नहीं हो सकी।" },
   "Could not load saved audits.": { es: "No se pudieron cargar las auditorías.", hi: "सहेजे गए सर्वेक्षण लोड नहीं हुए।" },
   "Could not save audit.": { es: "No se pudo guardar la auditoría.", hi: "सर्वेक्षण सहेजा नहीं जा सका।" },
   "Open a saved audit? This replaces your current draft.": { es: "¿Abrir una auditoría guardada? Reemplazará el borrador actual.", hi: "सहेजा सर्वेक्षण खोलें? वर्तमान ड्राफ्ट बदल जाएगा।" },
-  "Saved audit loaded. Changes are a new draft until saved again.": { es: "Auditoría cargada. Los cambios serán un borrador hasta guardar de nuevo.", hi: "सर्वेक्षण खुल गया। नए बदलाव दोबारा सहेजने तक ड्राफ्ट हैं।" },
+  "Saved audit opened. Your next save will update it.": { es: "Auditoría abierta. La próxima vez que guardes, se actualizará esta auditoría.", hi: "सहेजा ऑडिट खोला गया। अगली बार सहेजने पर यही ऑडिट अपडेट होगा।" },
   "Could not open this audit.": { es: "No se pudo abrir esta auditoría.", hi: "सर्वेक्षण खुल नहीं सका।" },
   "Delete this saved audit permanently?": { es: "¿Borrar esta auditoría para siempre?", hi: "क्या इस सहेजे हुए सर्वेक्षण को हमेशा के लिए मिटाएँ?" },
   "Saved audit deleted.": { es: "Auditoría eliminada.", hi: "सहेजा सर्वेक्षण मिटा दिया गया।" },
