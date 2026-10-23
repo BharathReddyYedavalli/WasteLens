@@ -6,8 +6,8 @@ const read=name=>readFileSync(new URL("../src/"+name,import.meta.url),"utf8");
 
 test("accessibility keeps eight Gemini options but removes requested warning",()=>{
   const speech=read("Speech.tsx");
-  assert.match(speech,/AI_VOICES\.filter\(v=>v\.gender==="female"\)/);
-  assert.match(speech,/AI_VOICES\.filter\(v=>v\.gender==="male"\)/);
+  assert.match(speech,/availableVoices\.filter\(v=>v\.gender==="female"\)/);
+  assert.match(speech,/availableVoices\.filter\(v=>v\.gender==="male"\)/);
   assert.doesNotMatch(speech,/When you press Listen or Test voice, text is sent/);
   assert.doesNotMatch(speech,/Solo al pulsar Escuchar o Probar voz, enviamos/);
   assert.doesNotMatch(speech,/Listen या Test voice दबाने पर ही ऑडियो/);
@@ -17,7 +17,7 @@ test("accessibility keeps eight Gemini options but removes requested warning",()
 test("repeated listening caches short clips in memory and avoids another Gemini call",()=>{
   const speech=read("Speech.tsx");
   assert.match(speech,/audioCache=useRef<Map<string,ArrayBuffer>>\(new Map\(\)\)/);
-  assert.match(speech,/const cacheKey=JSON\.stringify\(\[options\.aiVoice,language,chunk\]\)/);
+  assert.match(speech,/const cacheKey=JSON\.stringify\(\[activeVoice,language,chunk\]\)/);
   assert.match(speech,/let bytes=audioCache\.current\.get\(cacheKey\)/);
   assert.match(speech,/if\(!bytes\)\{\s*const response=await fetch\("\/api\/speech\/generate"/s);
   assert.match(speech,/cache\.set\(cacheKey,bytes\)/);

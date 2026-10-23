@@ -7,7 +7,7 @@ const src=name=>readFileSync(new URL("../src/"+name,import.meta.url),"utf8");
 const compiled=ts.transpileModule(src("aiSpeechVoices.ts"),{
   compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2020}
 }).outputText;
-const {AI_VOICES}=await import("data:text/javascript;base64,"+
+const {AI_VOICES,LANGUAGE_VOICES,selectedVoice}=await import("data:text/javascript;base64,"+
   Buffer.from(compiled).toString("base64"));
 
 test("all eight existing Gemini male/female voices remain selectable",()=>{
@@ -25,8 +25,8 @@ test("Gemini is the only speech engine and is always the default",()=>{
   assert.doesNotMatch(code,/<select id="wl-speech-engine"/);
   assert.doesNotMatch(code,/Device voices \(offline\)|System default|speechSynthesis|SpeechSynthesisUtterance|naturalVoices|\bvoiceURI\s*:/);
   assert.match(code,/<select id="wl-speech-voice"/);
-  assert.match(code,/AI_VOICES\.filter\(v=>v\.gender==="female"\)/);
-  assert.match(code,/AI_VOICES\.filter\(v=>v\.gender==="male"\)/);
+  assert.match(code,/availableVoices\.filter\(v=>v\.gender==="female"\)/);
+  assert.match(code,/availableVoices\.filter\(v=>v\.gender==="male"\)/);
 });
 
 test("Gemini request is user-initiated and API key stays on the backend",()=>{
@@ -35,7 +35,7 @@ test("Gemini request is user-initiated and API key stays on the backend",()=>{
   assert.match(code,/onClick=\{\(\)=>\{[\s\S]*?speak\(testId,/);
   assert.match(code,/fetch\("\/api\/speech\/generate"/);
   assert.match(code,/"X-WasteLens-Request":"1"/);
-  assert.match(code,/voice:options\.aiVoice,language/);
+  assert.match(code,/voice:activeVoice,language/);
   assert.doesNotMatch(code,/GEMINI_API_KEY|AIza[0-9A-Za-z_-]+/);
   // The user specifically requested removing the quota paragraph from the voice settings.
   assert.doesNotMatch(code,/When you press Listen or Test voice, text is sent/);
@@ -65,4 +65,16 @@ test("original read-aloud preferences, categories and controls remain",()=>{
   assert.match(code,/options\[category\]/);
   for(const name of ["scan","steps","chat","journey"])
     assert.ok(code.includes(name),name);
+});
+
+test("Spanish and Hindi each show one male and one female voice",()=>{
+  for(const language of ["es","hi"]){
+    assert.equal(LANGUAGE_VOICES[language].length,2);
+    assert.equal(LANGUAGE_VOICES[language].filter(v=>v.gender==="female").length,1);
+    assert.equal(LANGUAGE_VOICES[language].filter(v=>v.gender==="male").length,1);
+    assert.ok(LANGUAGE_VOICES[language].some(v=>v.id===selectedVoice(language,"Aoede")));
+  }
+  assert.equal(LANGUAGE_VOICES.en.length,8);
+  assert.equal(selectedVoice("hi","Aoede"),"Kore");
+  assert.equal(selectedVoice("es","Kore"),"Aoede");
 });

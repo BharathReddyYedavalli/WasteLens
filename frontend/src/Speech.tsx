@@ -2,7 +2,7 @@ import {createContext,useCallback,useContext,useEffect,useRef,useState} from "re
 import type {ReactNode} from "react";
 import {Ear,Pause,Play,Square,Volume2,VolumeX} from "lucide-react";
 import {useLanguage} from "./i18n";
-import {AI_VOICES,type AiVoiceName} from "./aiSpeechVoices";
+import {AI_VOICES,LANGUAGE_VOICES,selectedVoice,type AiVoiceName} from "./aiSpeechVoices";
 
 export type SpeechCategory="scan"|"steps"|"chat"|"journey";
 type SpeechOptions={
@@ -86,6 +86,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
   // Nothing is written to localStorage, indexedDB or the backend.
   const audioCache=useRef<Map<string,ArrayBuffer>>(new Map());
   const available=typeof window!=="undefined"&&"AudioContext" in window;
+  const activeVoice=selectedVoice(language,options.aiVoice);
   const update=useCallback((next:Partial<SpeechOptions>)=>setOptions(old=>({...old,...next})),[]);
 
   useEffect(()=>{
@@ -153,7 +154,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
       if(index>=chunks.length){stop();return;}
       try{
         const chunk=chunks[index++];
-        const cacheKey=JSON.stringify([options.aiVoice,language,chunk]);
+        const cacheKey=JSON.stringify([activeVoice,language,chunk]);
         let bytes=audioCache.current.get(cacheKey);
         const cacheHit=Boolean(bytes);
         if(!bytes){
@@ -162,7 +163,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
             headers:{"Content-Type":"application/json","X-WasteLens-Request":"1"},
             credentials:"same-origin",
             signal:state.abort.signal,
-            body:JSON.stringify({text:chunk,voice:options.aiVoice,language})
+            body:JSON.stringify({text:chunk,voice:activeVoice,language})
           });
           if(!response.ok){
             const body=await response.json().catch(()=>({detail:"Natural speech is not available right now."}));
@@ -200,7 +201,7 @@ export function SpeechProvider({children}:{children:ReactNode}){
       }
     };
     void next();
-  },[available,language,options.enabled,options.rate,options.aiVoice,stop]);
+  },[available,language,options.enabled,options.rate,activeVoice,stop]);
 
   const togglePause=useCallback(()=>{
     const context=cloud.current?.context;
@@ -249,6 +250,8 @@ export function SpeechSettingsPanel(){
   const {language,t}=useLanguage();
   const {options,update,available,activeId,paused,error,speak,stop,togglePause,dismissError}=useSpeech();
   const testId="voice-settings-preview";
+  const availableVoices=LANGUAGE_VOICES[language];
+  const activeVoice=selectedVoice(language,options.aiVoice);
   const previewActive=useRef(false);
   previewActive.current=activeId===testId;
   useEffect(()=>()=>{if(previewActive.current)stop();},[stop]);
@@ -276,13 +279,13 @@ export function SpeechSettingsPanel(){
         value={options.rate} onChange={e=>update({rate:Number(e.target.value)})}/>
       <label className="wl-speech-field" htmlFor="wl-speech-voice">{t("Voice")}</label>
       <select id="wl-speech-voice" className="wl-speech-select"
-        value={options.aiVoice} onChange={e=>update({aiVoice:e.target.value as AiVoiceName})}>
-        <optgroup label={language==="es"?"Voces femeninas":language==="hi"?"महिला आवाज़ें":"Female voices"}>
-          {AI_VOICES.filter(v=>v.gender==="female").map(v=>
+        value={activeVoice} onChange={e=>update({aiVoice:e.target.value as AiVoiceName})}>
+        <optgroup label={language==="es"?"Voces femeninas — español":language==="hi"?"महिला आवाज़ — हिंदी":"Female voices"}>
+          {availableVoices.filter(v=>v.gender==="female").map(v=>
             <option key={v.id} value={v.id}>{v.id} — {v.style}</option>)}
         </optgroup>
-        <optgroup label={language==="es"?"Voces masculinas":language==="hi"?"पुरुष आवाज़ें":"Male voices"}>
-          {AI_VOICES.filter(v=>v.gender==="male").map(v=>
+        <optgroup label={language==="es"?"Voces masculinas — español":language==="hi"?"पुरुष आवाज़ — हिंदी":"Male voices"}>
+          {availableVoices.filter(v=>v.gender==="male").map(v=>
             <option key={v.id} value={v.id}>{v.id} — {v.style}</option>)}
         </optgroup>
       </select>
