@@ -1,0 +1,258 @@
+/* Bottle Returns: compact, touch-ready calculator in the unified WasteLens site.
+   Presentation only. No changes to fields, state rules, math, warnings, or links.
+   The important form and live result start much closer to the top. */
+
+.site .deposit-page {
+  padding:17px 0 52px;
+  min-width:0;
+}
+
+/* Keep the original illustration, but don't let a full-screen banner
+   push the calculator out of view. */
+.site .deposit-page .deposit-top {
+  min-height:128px;
+  padding:17px clamp(20px,2.4vw,31px);
+  border-radius:21px;
+  gap:15px;
+  align-items:center;
+}
+.site .deposit-page .deposit-top::before {
+  width:145px;
+  height:145px;
+  right:-37px;
+  top:-60px;
+}
+.site .deposit-page .deposit-top-copy {
+  max-width:min(74%,650px);
+  min-width:0;
+}
+.site .deposit-page .deposit-top h1 {
+  font-size:clamp(30px,3vw,40px)!important;
+  line-height:1.17!important;
+  letter-spacing:-.025em!important;
+  margin:0!important;
+}
+.site .deposit-page .deposit-top-art {
+  flex:0 0 136px;
+  height:102px;
+  width:136px;
+  margin-right:7px;
+}
+.site .deposit-page .deposit-top-art svg {
+  width:66px;
+  height:66px;
+}
+.site .deposit-page .deposit-top-art>span:nth-child(1){
+  width:35px;height:35px;left:4px;top:11px;font-size:11px;
+}
+.site .deposit-page .deposit-top-art>span:nth-child(2){
+  width:45px;height:45px;right:2px;top:0;font-size:12px;
+}
+.site .deposit-page .deposit-top-art>span:nth-child(3){
+  width:43px;height:43px;right:0;bottom:0;font-size:12px;
+}
+
+/* One useful line of context, followed immediately by the actual tool. */
+.site .deposit-page .deposit-callout {
+  margin:11px 0 15px;
+  border-radius:13px;
+  padding:12px 15px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.site .deposit-page .deposit-callout svg {
+  width:20px;
+  height:20px;
+  margin:0;
+}
+.site .deposit-page .deposit-callout p {
+  font-size:13px;
+  line-height:1.6;
+  margin:0;
+}
+.site .deposit-page .deposit-layout {
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
+  align-items:start;
+  gap:16px;
+}
+.site .deposit-page .deposit-form-card,
+.site .deposit-page .deposit-result {
+  border-radius:20px!important;
+  padding:clamp(17px,2.1vw,25px);
+  min-width:0;
+}
+.site .deposit-page .deposit-form-card {
+  box-shadow:0 8px 25px rgba(20,68,55,.065);
+}
+.site .deposit-page .deposit-form-head {
+  margin-bottom:15px;
+}
+.site .deposit-page .deposit-form-head h2 {
+  font-size:clamp(22px,2.1vw,27px);
+  line-height:1.3;
+}
+.site .deposit-page .deposit-fields {
+  gap:12px 14px;
+}
+.site .deposit-page .deposit-fields label {
+  gap:6px;
+  min-width:0;
+  line-height:1.45!important;
+  font-size:13px!important;
+}
+.site .deposit-page .deposit-fields :is(input,select) {
+  min-height:50px;
+  height:auto;
+  padding:11px 12px;
+  width:100%;
+  border-radius:11px;
+  font-size:15px!important;
+  line-height:1.45;
+}
+.site .deposit-page .deposit-examples {
+  margin-top:14px;
+}
+.site .deposit-page .deposit-examples summary {
+  cursor:pointer;
+  padding:10px 0;
+  min-height:42px;
+  align-content:center;
+}
+.site .deposit-page .deposit-examples button {
+  min-height:42px;
+  font-size:12px;
+}
+
+/* Outcome stays beside inputs on a wide station. The explanation and official
+   source stay visible and are not replaced by a giant decorative number. */
+.site .deposit-page .deposit-result {
+  position:sticky;
+  top:calc(var(--wl-topbar-height,76px) + 16px);
+  box-shadow:0 9px 28px rgba(30,36,84,.12);
+}
+.site .deposit-page .deposit-amount {
+  font-size:clamp(48px,5vw,65px);
+  line-height:1.05;
+  margin:0 0 10px;
+}
+.site .deposit-page .deposit-result h2 {
+  font-size:clamp(18px,1.8vw,21px);
+  line-height:1.4;
+  margin:0 0 9px;
+}
+.site .deposit-page .deposit-result>p {
+  font-size:13px;
+  line-height:1.7;
+  margin:0 0 10px;
+}
+.site .deposit-page .deposit-official {
+  min-height:44px;
+  margin:9px 0 4px;
+  padding:6px 0;
+  font-size:13px;
+  line-height:1.5;
+  text-underline-offset:4px;
+}
+.site .deposit-page .deposit-state-tip {
+  margin-top:7px;
+  padding:9px 12px;
+  border-radius:11px;
+}
+.site .deposit-page .deposit-state-tip summary {
+  min-height:39px;
+  display:flex;
+  align-items:center;
+  cursor:pointer;
+  line-height:1.55;
+  font-size:13px;
+}
+.site .deposit-page .deposit-result-note {
+  margin-top:12px;
+  font-size:12px;
+  line-height:1.65;
+}
+
+/* Preserve touch access, keyboard focus and all of the explanatory text. */
+.site .deposit-page :is(input,select,button,summary,a):focus-visible {
+  outline:3px solid #e0a65a;
+  outline-offset:3px;
+}
+
+/* Tablet and phone: natural page scroll is better than squeezed form fields or
+   a sticky result covering inputs. */
+@media(max-width:980px) {
+  .site .deposit-page .deposit-layout {
+    grid-template-columns:minmax(0,1fr);
+    gap:14px;
+  }
+  .site .deposit-page .deposit-result {
+    position:static;
+  }
+  .site .deposit-page .deposit-top {
+    min-height:118px;
+    padding:18px 22px;
+  }
+}
+@media(max-width:580px) {
+  .site .deposit-page {
+    padding:13px 0 42px;
+  }
+  .site .deposit-page .deposit-top {
+    min-height:104px;
+    padding:18px 20px;
+    border-radius:18px;
+  }
+  .site .deposit-page .deposit-top h1 {
+    font-size:clamp(28px,7vw,34px)!important;
+  }
+  .site .deposit-page .deposit-top-copy {
+    max-width:100%;
+  }
+  .site .deposit-page .deposit-top-art {
+    display:none!important;
+  }
+  .site .deposit-page .deposit-callout {
+    margin:10px 0 12px;
+    padding:11px 13px;
+    align-items:flex-start;
+  }
+  .site .deposit-page .deposit-form-card,
+  .site .deposit-page .deposit-result {
+    padding:18px 15px;
+    border-radius:17px!important;
+  }
+  .site .deposit-page .deposit-fields {
+    gap:12px;
+  }
+  .site .deposit-page .deposit-fields :is(input,select) {
+    min-height:49px;
+    font-size:16px!important; /* prevent Safari focus zoom */
+  }
+  .site .deposit-page .deposit-amount {
+    font-size:55px;
+  }
+}
+@media(max-width:375px) {
+  .site .deposit-page .deposit-fields {
+    grid-template-columns:1fr;
+  }
+  .site .deposit-page .deposit-fields label.wide {
+    grid-column:1;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .site .deposit-page :is(button,input,select) {
+    transition:none!important;
+  }
+}
+@media print {
+  .site .deposit-page .deposit-result {
+    position:static;
+  }
+  .site .deposit-page .deposit-form-card,
+  .site .deposit-page .deposit-result {
+    box-shadow:none!important;
+  }
+}
