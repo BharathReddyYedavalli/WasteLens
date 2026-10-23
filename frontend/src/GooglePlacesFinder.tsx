@@ -134,11 +134,11 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
     const address=document.createElement("p");
     address.textContent=place.address;
     const warning=document.createElement("p");
-    warning.textContent="Call to confirm your item is accepted.";
+    warning.textContent=t("Call to confirm this item is accepted.");
     card.append(title,address,warning);
     infoRef.current.setContent(card);
     infoRef.current.open({map:mapRef.current,anchor:marker,shouldFocus:false});
-  },[selected,places]);
+  },[selected,places,t]);
 
   return <div className="free-map-shell google-places-shell" aria-label={t("Nearby recycling locations")}>
     <div className="map-summary">
