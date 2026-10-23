@@ -19,7 +19,7 @@ test("Scan-to-Finder remembers the item and reuses existing ZIP without extra AI
   assert.match(app, /void lookupFacilities\(location\)/);
   assert.match(app, /finderScan && <div className="finder-scan-context"/);
   assert.match(app, /not confirmed to accept this item/);
-  assert.match(app, /\/api\/facilities\?zip_code=/);
+  assert.match(app, /const endpoint = hasGoogleMapsKey \? "\/api\/facilities\/center" : "\/api\/facilities"/);
   assert.doesNotMatch(app, /verified_acceptance: true/);
 });
 test("Local rules retain critical safeguards with much smaller postal note", () => {
