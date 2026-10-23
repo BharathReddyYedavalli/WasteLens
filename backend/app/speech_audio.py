@@ -59,10 +59,17 @@ def _limit(request: Request):
 def _generate(text: str, voice: str, language: str, key: str) -> bytes:
     # Text is the transcript itself: no extra content, user information or
     # old chat history is sent. Only a user-initiated spoken chunk.
+    # Language guidance belongs in structured metadata, not the verbatim
+    # transcript. The same multilingual studio voices can read all three.
+    styles = {
+        "en": "Speak these exact words in clear, natural, conversational English.",
+        "es": "Lee exactamente estas palabras en español natural, con pronunciación clara y una voz conversacional.",
+        "hi": "इन शब्दों को स्वाभाविक हिंदी में स्पष्ट, सहज उच्चारण के साथ हूबहू बोलें।",
+    }
     payload = {
         "contents": [{"role": "user", "parts": [{
             "text": text,
-            "speech_metadata": {"style": "clear, natural, conversational; say the exact words"}
+            "speech_metadata": {"style": styles[language]}
         }]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
