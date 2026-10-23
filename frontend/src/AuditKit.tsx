@@ -10,7 +10,7 @@ type ItemType = "plastic_cutlery" | "paper_plate" | "food_container" | "drink_bo
   "drink_can" | "paper_cardboard" | "food_scraps" | "cup" | "other";
 type SortingCheck = "matches" | "mismatch";
 type Entry = {kind: Kind; at: string; item_type?: ItemType; sorting_check?: SortingCheck; rules_checked?: true};
-type Draft = {title: string; entries: Entry[]};
+type Draft = {title: string; entries: Entry[]; savedId?: number; savedFor?: number};
 type Counts = Record<Kind,number>;
 type SavedAudit = {id:number;title:string;counts:Counts;item_count:number;created_at:string};
 type AuditDetail = {id:number;title:string;entries:Entry[];created_at:string};
@@ -72,6 +72,9 @@ function readDraft(): Draft {
       entries: draft.entries
         .filter((entry): entry is Entry => validEntry(entry as Entry))
         .slice(-15000),
+      ...(Number.isSafeInteger(draft.savedId) && Number(draft.savedId)>0 &&
+          Number.isSafeInteger(draft.savedFor) && Number(draft.savedFor)>0
+        ? {savedId:draft.savedId,savedFor:draft.savedFor} : {}),
     };
   } catch {
     return initial;
@@ -233,35 +236,52 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
   async function save(){
     if(!user){onSignIn();return;}
     if(!total||busy)return;
+    // A browser-local draft must never update another account's audit.
+    if(audit.savedId && audit.savedFor!==user.id){
+      setError(t("This draft is linked to another account. Sign in to that account or start a new audit."));
+      return;
+    }
     setBusy(true);setError("");setNotice("");
     try{
       const title=audit.title.trim()||"Community audit · "+new Date().toLocaleDateString();
-      const result=await readJson<{id:number}>(await fetch("/api/audits",{
-        method:"POST",credentials:"same-origin",headers:actionHeaders,
+      const updating=Boolean(audit.savedId && audit.savedFor===user.id);
+      const endpoint=updating?"/api/audits/"+audit.savedId:"/api/audits";
+      const result=await readJson<{id:number}>(await fetch(endpoint,{
+        method:updating?"PUT":"POST",credentials:"same-origin",headers:actionHeaders,
         body:JSON.stringify({title,entries:audit.entries}),
       }));
-      await reload();
-      setNotice(t("Audit saved to your account.")+" #"+result.id);
+      // Persist the save target with the draft across browser refreshes.
+      setAudit(current=>({
+        ...current,title:current.title.trim()?current.title:title,
+        savedId:result.id,savedFor:user.id,
+      }));
+      setNotice(t("Audit saved successfully!"));
+      try{await reload();}catch{setError(t("Saved, but could not refresh your saved audits."));}
     }catch(e){setError(e instanceof Error?e.message:t("Could not save audit."));}
     finally{setBusy(false);}
   }
   async function open(id:number){
     if(openingId!==null)return;
+    if(busy)return;
     if(total>0&&!window.confirm(t("Open a saved audit? This replaces your current draft.")))return;
     setOpeningId(id);setError("");setNotice("");
     try{
       const {audit:record}=await readJson<{audit:AuditDetail}>(await fetch("/api/audits/"+id,{credentials:"same-origin"}));
-      setAudit({title:record.title,entries:record.entries});
+      setAudit({title:record.title,entries:record.entries,savedId:id,savedFor:user!.id});
       setItemType("");setRulesAcknowledged(false);setSortingCheck("");setAdvice(null);
-      setNotice(t("Saved audit loaded. Changes are a new draft until saved again."));
+      setNotice(t("Saved audit opened. Your next save will update it."));
     }catch(e){setError(e instanceof Error?e.message:t("Could not open this audit."));}
     finally{setOpeningId(null);}
   }
   async function remove(id:number){
+    if(busy)return;
     if(!window.confirm(t("Delete this saved audit permanently?")))return;
     setError("");setNotice("");
     try{
       await readJson<{ok:boolean}>(await fetch("/api/audits/"+id,{method:"DELETE",credentials:"same-origin",headers:actionHeaders}));
+      if(audit.savedId===id && audit.savedFor===user?.id){
+        setAudit(current=>({...current,savedId:undefined,savedFor:undefined}));
+      }
       await reload();setNotice(t("Saved audit deleted."));
     }catch(e){setError(e instanceof Error?e.message:t("Could not delete this audit."));}
   }
@@ -340,7 +360,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         {busy?<LoaderCircle size={17}/>:<Save size={17}/>} {busy?t("Saving…"):t("Save audit")}</button>
       <button type="button" disabled={!total} onClick={()=>{setAudit(a=>({...a,entries:a.entries.slice(0,-1)}));setAdvice(null);}}>
         <Undo2 size={17}/>{t("Undo last")}</button>
-      <button type="button" className="audit-reset" onClick={fresh} disabled={!total&&!audit.title}><FilePlus2 size={17}/>{t("New audit")}</button>
+      <button type="button" className="audit-reset" onClick={fresh} disabled={busy||(!total&&!audit.title)}><FilePlus2 size={17}/>{t("New audit")}</button>
       <details className="audit-more-actions">
         <summary>{t("Export & print")}<ChevronDown size={16}/></summary>
         <div>
@@ -411,9 +431,9 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         <p>{t("No saved audits yet. Count some items above and choose Save audit.")}</p>:<div className="community-saved-list">
           {saved.map(item=><div key={item.id} className="community-saved-item">
             <div><strong>{item.title}</strong><span>{dayStamp(item.created_at)} · {item.item_count} {t("items")}</span></div>
-            <div><button type="button" onClick={()=>void open(item.id)} disabled={openingId!==null}>
+            <div><button type="button" onClick={()=>void open(item.id)} disabled={openingId!==null||busy}>
               <ChevronDown size={17}/>{t("Open")}</button>
-              <button type="button" className="community-delete" onClick={()=>void remove(item.id)} aria-label={t("Delete")+" "+item.title}>
+              <button type="button" className="community-delete" disabled={busy} onClick={()=>void remove(item.id)} aria-label={t("Delete")+" "+item.title}>
                 <Trash2 size={17}/>{t("Delete")}</button></div>
           </div>)}
         </div>}
