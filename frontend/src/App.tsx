@@ -460,12 +460,12 @@ export default function App() {
         {error && <ErrorText message={error}/>}
       </div>
 
-            <div className="community-mission-path" aria-label={t("Quick links")}>
+      {!analysis && <div className="community-mission-path" aria-label={t("Quick links")}>
               <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
                 <strong>{t("Find a place")}</strong></button>
               <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
                 <strong>{t("Run an audit")}</strong></button>
-            </div>
+      </div>}
       {analysis && <section id="scan-results" className="results" aria-live="polite"
         style={{scrollMarginTop:"calc(var(--wl-topbar-height, 76px) + 18px)"}}>
         <div className="result-title">
