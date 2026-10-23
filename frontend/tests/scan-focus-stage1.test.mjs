@@ -9,7 +9,7 @@ const css=src("scan-focus.css");
 
 test("Scan now presents a short disposal answer before optional details",()=>{
   const begin=app.indexOf('{analysis && <section id="scan-results"');
-  const end=app.indexOf('view === "finder"',begin);
+  const end=app.indexOf('</> : view === "finder"',begin);
   assert.ok(begin>=0&&end>begin);
   const scan=app.slice(begin,end);
   const position=(s)=>scan.indexOf(s);
@@ -36,7 +36,7 @@ test("Local rules and next actions stay directly available without expanding Mor
 });
 
 test("No existing detailed Scan features are deleted",()=>{
-  const detail=app.slice(app.indexOf('className="scan-more-details"'),app.indexOf('view === "finder"'));
+  const detail=app.slice(app.indexOf('className="scan-more-details"'),app.indexOf('</> : view === "finder"'));
   for(const fragment of [
     '<SortPlan','reuse_projects.map','materials_needed.map','project.steps.map',
     'analysis.cautions.map','id="nearby"','<RecyclingResults',
