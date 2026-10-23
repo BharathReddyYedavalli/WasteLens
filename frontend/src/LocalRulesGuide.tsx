@@ -232,9 +232,9 @@ export default function LocalRulesGuide({ zipCode, onZipChange, openRequest = 0 
       </div>
       {!validZip&&<p className="local-rules-scope">{t("Enter a five-digit ZIP code to look for a covered collection program.")}</p>}
       {loading&&<p className="local-rules-scope" role="status">{t("Looking up your postal area…")}</p>}
-      {catalog&&<p className="local-rules-postal">
-        <MapPin size={15}/>{t("ZIP postal area")}: <strong>{catalog.postal_area}</strong>
-        <span>{t("A ZIP code does not prove which city or collection service covers your address.")}</span>
+      {catalog&&<p className="local-rules-postal-compact">
+        <MapPin size={15}/>
+        <span>{t("ZIP area")}: <strong>{catalog.postal_area}</strong> · {t("ZIP codes do not confirm your collection service.")}</span>
       </p>}
       {validZip&&catalog&&collectionType!=="residential"&&
         <p className="local-rules-scope" role="status">{t("School and business waste services use site-specific contracts. Ask your facility or hauler for its accepted-material list.")}</p>}
