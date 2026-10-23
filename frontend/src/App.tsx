@@ -244,7 +244,10 @@ export default function App() {
     setFacilities(null);
     setSelectedFacility(null);
     try {
-      const response = await fetch("/api/facilities?zip_code=" + encodeURIComponent(zipCode.trim()));
+      const hasGoogleMapsKey = Boolean((import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim());
+      // Resolve ZIP offline for Google; query Overpass only when we fall back.
+      const endpoint = hasGoogleMapsKey ? "/api/facilities/center" : "/api/facilities";
+      const response = await fetch(endpoint + "?zip_code=" + encodeURIComponent(zipCode.trim()));
       const searchResults = await readJson<FacilitySearchResponse>(response);
       setFacilities(searchResults);
       setSelectedFacility(searchResults.facilities[0]?.id ?? null);
