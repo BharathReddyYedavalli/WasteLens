@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Palette, UserRound, Ear, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
+import { Check, ChevronDown, Palette, UserRound, ShieldCheck, Ear, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
 import type { SessionUser } from "./types";
 import { useLanguage } from "./i18n";
 import { SpeechSettingsPanel } from "./Speech";
@@ -35,7 +35,7 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (value: AppearanceTheme) => void;
-  onNavigate: (view: "account") => void;
+  onNavigate: (view: "account" | "admin") => void;
 };
 
 export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: Props) {
@@ -73,7 +73,8 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
     };
   }, [open]);
 
-  function navigate(view: "account") {
+  function navigate(view: "account" | "admin") {
+    if (view === "admin" && user?.role !== "admin") return;
     setOpen(false);
     setShowThemes(false);
     setShowAccessibility(false);
@@ -93,6 +94,10 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
       <button ref={firstAction} type="button" className="wl-profile-action" onClick={() => navigate("account")}>
         <UserRound size={19}/>{user ? t("My account") : t("Sign in")}
       </button>
+      {user?.role === "admin" && <button type="button" className="wl-profile-action"
+        onClick={() => navigate("admin")}>
+        <ShieldCheck size={19}/>{t("Admin dashboard")}
+      </button>}
       <button type="button" className={"wl-profile-action " + (showThemes ? "selected" : "")}
         aria-expanded={showThemes} aria-controls="wl-theme-choices"
         onClick={() => { setShowThemes(previous => !previous); setShowAccessibility(false); }}>
