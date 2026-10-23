@@ -41,7 +41,8 @@ test("never invents voice options and respects selected language",()=>{
   ],"es");
   assert.deepEqual(list.map(v=>v.name),["Monica (Enhanced)","Jorge"]);
   assert.deepEqual(naturalVoices([voice("Lekha","hi_IN")],"hi").map(v=>v.name),["Lekha"]);
-  assert.deepEqual(naturalVoices([voice("Robot")],"hi"),[]);
+  // With no Hindi voice, the only installed option stays selectable rather than disappearing.
+  assert.deepEqual(naturalVoices([voice("Robot")],"hi").map(v=>v.name),["Robot"]);
 });
 
 test("excludes novelty voices even when their URI suggests enhanced",()=>{
