@@ -131,9 +131,6 @@
   color:#75562a;font-size:14px;line-height:1.55;
 }
 .site .scan-decision-unified .scan-inline-caution svg{flex-shrink:0;margin-top:2px}
-.site .scan-decision-unified .scan-decision-disclaimer{
-  color:#4f6a61;font-size:12px;line-height:1.4;margin:0;
-}
 .site .scan-decision-unified .scan-decision-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .site .scan-decision-unified .scan-decision-actions .button{min-height:43px;padding:9px 14px}
 .site .scan-decision-unified .scan-step-tools{margin-top:0}
@@ -145,7 +142,7 @@
 }
 .site .scan-decision-unified .scan-step-tools>button:hover{background:#e8f5ee!important}
 .site .scan-decision-unified.needs-confirmation{border-color:#e5d3ab}
-:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision-unified :is(.scan-clarification,.scan-inline-caution,.scan-decision-disclaimer,.scan-action-steps){
+:root[data-wl-theme]:not([data-wl-theme="light"]) .site .scan-decision-unified :is(.scan-clarification,.scan-inline-caution,.scan-action-steps){
   color:var(--wl-copy)!important;
   border-color:var(--wl-stroke)!important;
 }
