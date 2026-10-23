@@ -295,7 +295,8 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
     </div>}
     <div className="audit-session">
       <label htmlFor="audit-title">{t("Audit name")} <span>{t("Optional")}</span></label>
-      <input id="audit-title" maxLength={60} autoComplete="off" value={audit.title}
+      <input id="audit-title" name="wastelens-audit-project-title" type="text" maxLength={60}
+        autoComplete="new-password" data-1p-ignore="true" data-lpignore="true" value={audit.title}
         placeholder={t("Example: Cafeteria lunch")} onChange={e=>setAudit(a=>({...a,title:e.target.value}))}/>
     </div>
     <details className="audit-observation-entry" open={detailMode} onToggle={event=>setDetailMode(event.currentTarget.open)}>
@@ -304,7 +305,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         <label>{t("What item did you see?")}
           <select value={itemType} onChange={e=>{
             setItemType(e.target.value as ItemType|"");
-            setRulesAcknowledged(false);setSortingCheck("");
+            setSortingCheck("");
           }}>
             <option value="">{t("Choose an item")}</option>
             {itemTypes.map(item=><option key={item.id} value={item.id}>{t(item.label)}</option>)}
