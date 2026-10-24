@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const read = name => readFileSync(new URL("../src/" + name, import.meta.url), "utf8");
 const app = read("App.tsx");
 const guide = read("LocalRulesGuide.tsx");
+const institution = read("TexasDemoRules.tsx");
 const styles = read("scan-focus.css");
 const strings = read("i18n.tsx");
 
@@ -28,11 +29,11 @@ test("Local rules retain critical safeguards with much smaller postal note", () 
   assert.doesNotMatch(guide, /local-rules-postal/);
   assert.doesNotMatch(guide, /School and business waste services use site-specific contracts/);
   assert.doesNotMatch(guide, /Guidance is for this selected residential service/);
-  assert.match(guide, /selectedProgram, setSelectedProgram/);
-  assert.match(guide, /selectedItem, setSelectedItem/);
-  assert.match(guide, /confirmed, setConfirmed/);
-  assert.match(guide, /service_confirmed: "true"/);
-  assert.match(guide, /source_url/);
+  assert.match(guide, /<TexasDemoRules itemName=\{scanItemName\}/);
+  assert.doesNotMatch(guide, /local-rule-zip/);
+  assert.match(institution, /wastelens-selected-institution/);
+  assert.match(institution, /const selectedItem=correcting\?correction:inferred/);
+  assert.match(institution, /rule\?\.source_url\|\|profile\.sources\[0\]/);
   assert.match(styles, /\.scan-decision-unified/);
   assert.match(styles, /\.finder-scan-context/);
 });
