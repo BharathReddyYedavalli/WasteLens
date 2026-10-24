@@ -64,9 +64,40 @@ test("Texas demo UI preserves visible provenance, constraints and theme",()=>{
   assert.match(panel,/customer drop-off/i);
   assert.match(css,/var\(--wl-paper/);
   assert.match(css,/@media\(max-width:600px\)/);
-  for (const key of ["Texas demo recycling rules","No confirmed rule for this item",
-    "Customer drop-off program, not the business's employee bin policy.",
-    "Choose the exact collection program","Published rule examples • Not live verification"]) {
+  for (const key of ["No confirmed rule for this item",
+    "Choose your location","Where are you?","Select a location",
+    "What item is it?","My location isn't listed"]) {
     assert.ok(translated.includes(JSON.stringify(key)+":"),key);
   }
+});
+
+test("Simple Scan rules avoid demo jargon and show one primary workflow",()=>{
+  assert.doesNotMatch(panel,/Texas demo recycling rules|Published rule examples • Not live verification/);
+  assert.doesNotMatch(panel,/Choose the exact collection program/);
+  assert.match(panel,/t\("Choose your location"\)/);
+  assert.match(panel,/t\("What item is it\?"\)/);
+  assert.match(local,/t\("Where are you\?"\)/);
+  assert.match(local,/showOtherServices&&<div id="local-other-services"/);
+  assert.match(local,/!open \|\| !showOtherServices \|\| !validZip/);
+  assert.match(panel,/profileNames\[p\.id\]\|\|p\.name/);
+  assert.match(panel,/H-E-B"/);
+  assert.match(panel,/Best Buy"/);
+  assert.match(css,/\.local-location-row/);
+  assert.match(css,/align-items:start/);
+  assert.match(css,/height:52px!important/);
+});
+test("Item list is tailored to each location; source rules stay intact",()=>{
+  const count = {
+    home_frisco_tx:8,school_ut_dallas_tx:8,
+    business_heb_frisco_tx:7,business_bestbuy_frisco_tx:5,
+  };
+  for(const [id,num] of Object.entries(count)) {
+    const block=panel.split(id+":[")[1];
+    assert.ok(block,id);
+    assert.equal(block.split("]")[0].split('"').length/2|0,num,id);
+  }
+  assert.match(panel,/\.\.\.\(inferred\?\[inferred\]:\[\]\)/);
+  assert.match(panel,/highlightedItems\[profile\.id\]/);
+  assert.match(panel,/profile\.rules\[chosenKey\]/);
+  assert.equal(data.profiles.reduce((n,p)=>n+Object.keys(p.rules).length,0),45);
 });
