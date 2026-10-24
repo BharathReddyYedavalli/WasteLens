@@ -41,5 +41,6 @@ test("Google-only CSS overrides legacy fixed-height map while preserving respons
     bundled.indexOf("/* --- frontend/src/editorial.css --- */"));
   assert.match(app, /wastelens-claude-styles/);
   assert.match(app, /claude-theme\.css/);
-  assert.doesNotMatch(entry, /import "\.\/google-map-polish\.css";/);
+  assert.match(entry, /import "\.\/google-map-polish\.css";/);
+  assert.ok(entry.indexOf('import "./google-map-polish.css";') > entry.indexOf('import "./google-maps.css";'));
 });

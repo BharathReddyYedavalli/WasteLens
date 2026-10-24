@@ -25,6 +25,8 @@ import "./station-polish.css";
 import "./deposit-station.css";
 import "./scan-focus.css";
 import "./google-maps.css";
+// Google Places sizing and mobile fixes apply to both visual designs.
+import "./google-map-polish.css";
 import "./legacy-ui.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);

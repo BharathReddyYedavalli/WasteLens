@@ -154,6 +154,14 @@ const strings: Record<string, { es: string; hi: string }> = {
   },
   "My account details": { es: "Detalles de mi cuenta", hi: "मेरे खाते का विवरण" },
   "Admin dashboard": { es: "Panel de administración", hi: "व्यवस्थापक डैशबोर्ड" },
+  "Interface style": { es: "Estilo de la interfaz", hi: "इंटरफ़ेस की शैली" },
+  "Interface appearance": { es: "Apariencia de la interfaz", hi: "इंटरफ़ेस का रूप" },
+  "Current UI": { es: "Diseño actual", hi: "वर्तमान डिज़ाइन" },
+  "Legacy UI": { es: "Diseño clásico", hi: "पुराना डिज़ाइन" },
+  "Switch the visual design without changing scans, maps, features, text, or saved data.": {
+    es: "Cambia el diseño visual sin modificar los escaneos, mapas, funciones, textos ni datos guardados.",
+    hi: "स्कैन, मानचित्र, सुविधाएँ, पाठ या सहेजा हुआ डेटा बदले बिना दृश्य डिज़ाइन बदलें।"
+  },
   "Reported correct": { es: "Marcado como correcto", hi: "सही बताया गया" },
   "Reported incorrect": { es: "Marcado como incorrecto", hi: "गलत बताया गया" },
   "Scan identification feedback": { es: "Opiniones sobre la identificación", hi: "स्कैन पहचान पर प्रतिक्रिया" },

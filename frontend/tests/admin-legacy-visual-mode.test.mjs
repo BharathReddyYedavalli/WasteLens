@@ -34,6 +34,7 @@ test("original layout is a distinct presentation, not a rollback", () => {
   assert.match(legacyNav, /community-navigation/);
   assert.match(legacyCss, /\.legacy-layout/);
   assert.match(main, /import "\.\/legacy-ui\.css";/);
+  assert.match(main, /import "\.\/google-map-polish\.css";/);
   assert.match(bundled, /\.site\.is-sidebar-experiment/);
   assert.match(app, /link\.media = visualStyle === "claude" \? "all" : "not all"/);
 });
