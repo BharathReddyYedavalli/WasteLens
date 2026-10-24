@@ -25,5 +25,6 @@ import "./station-polish.css";
 import "./deposit-station.css";
 import "./scan-focus.css";
 import "./google-maps.css";
+import "./editorial.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
