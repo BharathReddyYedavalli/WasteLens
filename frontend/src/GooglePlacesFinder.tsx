@@ -130,7 +130,7 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
       const entry=entriesRef.current.get(selected);
       const list=listRef.current;
       if (entry && list) {
-        const top=entry.offsetTop-list.offsetTop;
+        const top=entry.getBoundingClientRect().top-list.getBoundingClientRect().top+list.scrollTop;
         list.scrollTo({top:Math.max(0,top-56),behavior:"smooth"});
       }
       markerSelection.current=false;
