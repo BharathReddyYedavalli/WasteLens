@@ -39,7 +39,8 @@ test("Users can still find the complete supporting information and admin control
   assert.match(account,/shownFeedback.map/);
   assert.match(account,/users.map/);
   assert.match(league,/<details className="badge-panel">/);
-  assert.match(league,/data.me.badges.map/);
+  assert.match(league,/reconcileScanBadges\(data.me.badges, data.me.scans\)/);
+  assert.match(league,/visibleBadges.map/);
   assert.match(about,/className="community-about-more"/);
   assert.match(about,/future use we are exploring, not a device already installed/);
   assert.match(about,/Confirm your actual service before choosing a bin or drop-off/);

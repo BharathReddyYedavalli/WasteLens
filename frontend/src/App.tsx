@@ -99,7 +99,7 @@ export default function App() {
       readable = document.createElement("link");
       readable.id = "wastelens-kiosk-readable";
       readable.rel = "stylesheet";
-      readable.href = "/kiosk-readability-fixes.css";
+      readable.href = "/kiosk-readability-fixes.css?v=20261024-kiosk-final";
       document.head.appendChild(readable);
     }
     readable.media = visualStyle === "claude" ? "all" : "not all";
