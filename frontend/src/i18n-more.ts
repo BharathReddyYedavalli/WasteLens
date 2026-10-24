@@ -1,5 +1,6 @@
 /* Additional translations for the existing English/Spanish/Hindi interface. */
 export const moreTranslations:Record<string,{es:string;hi:string}> = {
+  "Confirm with recycling center": { es: "Confirma con el centro de reciclaje", hi: "रीसायक्लिंग केंद्र से पुष्टि करें" },
   "The scanned name does not match a supported item. Use Change item to select the correct item.": { es: "El nombre identificado no coincide con los objetos admitidos. Usa Cambiar objeto para elegir el correcto.", hi: "पहचाना गया नाम उपलब्ध वस्तु से नहीं मिलता। सही वस्तु चुनने के लिए बदलें दबाएँ।" },
   "Try scanning": { es: "Prueba escanear", hi: "यह स्कैन करके देखें" },
   "Reuse this item": { es: "Reutiliza este objeto", hi: "इस वस्तु का पुनः उपयोग करें" },
