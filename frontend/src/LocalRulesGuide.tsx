@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, ChevronDown, ExternalLink, MapPin, ShieldAlert } from "lucide-react";
 import { useLanguage } from "./i18n";
+import TexasDemoRules from "./TexasDemoRules";
 
 type CollectionContext = "residential" | "school" | "commercial";
 
@@ -32,6 +33,9 @@ type Props = {
   zipCode: string;
   onZipChange: (value: string) => void;
   openRequest?: number;
+  scanItemName?: string;
+  scanMaterial?: string;
+  scanIdentified?: boolean;
 };
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -44,7 +48,10 @@ async function readJson<T>(response: Response): Promise<T> {
   return data as T;
 }
 
-export default function LocalRulesGuide({ zipCode, onZipChange, openRequest = 0 }: Props) {
+export default function LocalRulesGuide({
+  zipCode, onZipChange, openRequest = 0,
+  scanItemName = "", scanMaterial = "", scanIdentified = false,
+}: Props) {
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const checkerRef = useRef<HTMLDetailsElement>(null);
@@ -230,6 +237,8 @@ export default function LocalRulesGuide({ zipCode, onZipChange, openRequest = 0 
           </select>
         </label>
       </div>
+      <TexasDemoRules collectionType={collectionType} itemName={scanItemName}
+        materialGuess={scanMaterial} isIdentified={scanIdentified}/>
       {!validZip&&<p className="local-rules-scope">{t("Enter a five-digit ZIP code to look for a covered collection program.")}</p>}
       {loading&&<p className="local-rules-scope" role="status">{t("Looking up your postal area…")}</p>}
       {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length===0&&
