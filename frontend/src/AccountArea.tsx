@@ -22,7 +22,7 @@ type Props = {
 };
 
 export default function AccountArea({ user, mode, visualStyle, onVisualStyleChange, onLogin, onLogout }: Props) {
-  const { t } = useLanguage();
+  const { t,language } = useLanguage();
   const [signup, setSignup] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -30,6 +30,7 @@ export default function AccountArea({ user, mode, visualStyle, onVisualStyleChan
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [scans, setScans] = useState<SavedScan[]>([]);
+  const [showAllHistory,setShowAllHistory] = useState(false);
   const [actionSaving, setActionSaving] = useState<number | null>(null);
   const [actionError, setActionError] = useState<{id:number;message:string} | null>(null);
   const [overview, setOverview] = useState<AdminOverview | null>(null);
@@ -134,7 +135,7 @@ export default function AccountArea({ user, mode, visualStyle, onVisualStyleChan
       {error && <p className="inline-error" role="alert">{error}</p>}
       <HabitSnapshot/>
       {scans.length === 0 && <p>{t("Nothing here yet. Scan your first item to save it.")}</p>}
-      <div className="history-grid">{scans.map(scan => <article className="history-card" key={scan.id}>
+      <div className="history-grid">{scans.slice(0,showAllHistory?undefined:6).map(scan => <article className="history-card" key={scan.id}>
         <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
         <p><strong>{t("Material:")}</strong> {scan.analysis.material_guess}</p>
         <p><strong>{t("What to do:")}</strong> {scan.analysis.route_title}</p>
@@ -162,6 +163,12 @@ export default function AccountArea({ user, mode, visualStyle, onVisualStyleChan
           {actionError?.id===scan.id&&<p role="alert" className="inline-error">{actionError.message}</p>}
         </details>
       </article>)}</div>
+      {scans.length>6&&<button type="button" className="history-more-records"
+        aria-expanded={showAllHistory} onClick={()=>setShowAllHistory(current=>!current)}>
+        {language==="es"?(showAllHistory?"Mostrar menos":"Ver todos los registros"):
+         language==="hi"?(showAllHistory?"कम दिखाएँ":"सभी स्कैन देखें"):
+         showAllHistory?"Show fewer scans":"Show all scans"} ({scans.length})
+      </button>}
     </section>;
   }
 
