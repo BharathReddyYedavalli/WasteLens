@@ -15,7 +15,9 @@ test("all product features remain reachable in the new editorial navigation", ()
     assert.ok(nav.includes('label: "' + item + '"'),item);
   }
   assert.match(nav, /t\("About"\)/);
-  assert.match(nav,/user\?\.role==="admin"/);
+  assert.doesNotMatch(nav,/navigate\("admin"\)/);
+  assert.doesNotMatch(nav,/t\("Admin"\)/);
+  assert.match(menu,/onClick=\{\(\) => navigate\("admin"\)\}/);
   assert.match(nav,/onNavigate\(next\)/);
   assert.match(app, /<SidebarNav view=\{view\} user=\{user\}/);
   assert.match(app, /onNavigate=\{next => openPage\(next\)\}/);
