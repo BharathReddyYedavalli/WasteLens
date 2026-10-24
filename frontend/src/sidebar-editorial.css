@@ -1,0 +1,234 @@
+/* HYDRO visual system + original WasteLens page hierarchy.
+   The main 3D stage and real Scan flow remain governed by editorial.css. */
+:root{--fl-side-w:248px;--fl-top-h:70px}
+.site.is-sidebar-experiment{
+  --tn-h:var(--fl-top-h);
+  background:var(--e-bg)!important;
+  color:var(--e-ink);
+}
+.site.is-sidebar-experiment .fl-topbar{
+  position:fixed;left:var(--fl-side-w);right:0;top:0;height:var(--fl-top-h);
+  z-index:75;display:flex;align-items:center;justify-content:flex-end;gap:18px;
+  padding:0 clamp(18px,3vw,48px);
+  background:color-mix(in srgb,var(--e-bg) 96%,transparent);
+  border-bottom:1px solid var(--e-line);
+  backdrop-filter:blur(12px);
+}
+.site.is-sidebar-experiment .fl-top-actions{display:flex;gap:12px;align-items:center}
+.site.is-sidebar-experiment .fl-language{
+  appearance:none;min-height:44px;padding:0 16px;
+  border:1px solid var(--e-line);border-radius:999px;
+  background:var(--e-bg);color:var(--e-ink);
+  font:500 12px var(--e-mono)!important;
+  cursor:pointer;
+}
+.site.is-sidebar-experiment .fl-language option{color:#0d1210;background:#fff}
+.site.is-sidebar-experiment .fl-top-brand,
+.site.is-sidebar-experiment .fl-mobile-toggle{display:none}
+.site.is-sidebar-experiment .fl-sidebar{
+  position:fixed;inset:0 auto 0 0;z-index:80;width:var(--fl-side-w);height:100dvh;
+  display:flex;flex-direction:column;overflow:hidden;
+  padding:clamp(22px,2.4vw,35px) 14px 18px;
+  background:var(--e-bg);
+  border-right:1px solid var(--e-line);
+}
+.site.is-sidebar-experiment .fl-side-scroll{
+  min-height:0;min-width:0;overflow:auto;scrollbar-width:thin;
+  padding:46px 0 16px;display:flex;flex-direction:column;gap:22px;
+}
+.site.is-sidebar-experiment .fl-side-group{display:grid;gap:4px;margin:0}
+.site.is-sidebar-experiment .fl-side-heading{
+  font:500 10px/1.4 var(--e-mono)!important;
+  color:var(--e-mute)!important;text-transform:uppercase;
+  letter-spacing:.18em;margin:0 0 9px;padding:0 14px;
+}
+.site.is-sidebar-experiment .fl-side-link{
+  cursor:pointer;display:flex;gap:13px;align-items:center;text-align:left;
+  width:100%;min-height:49px;padding:10px 14px;
+  border:1px solid transparent;border-radius:10px;
+  background:transparent;color:var(--e-mute);
+  font:550 14px/1.25 var(--e-sans)!important;
+  letter-spacing:-.01em;transition:color .18s,background .18s,border .18s;
+}
+.site.is-sidebar-experiment .fl-side-link svg{flex:none;stroke:currentColor}
+.site.is-sidebar-experiment .fl-side-link:hover{
+  background:var(--e-surface);color:var(--e-ink)
+}
+.site.is-sidebar-experiment .fl-side-link.active{
+  background:var(--e-surface);color:var(--e-ink);
+  border-color:var(--e-line);font-weight:700!important;
+}
+.site.is-sidebar-experiment .fl-side-link.active::before{
+  content:"";position:absolute;left:0;width:3px;height:24px;
+  border-radius:4px;background:var(--e-accent);
+}
+.site.is-sidebar-experiment .fl-side-last{margin-top:0;border-top:1px solid var(--e-line);padding-top:12px}
+.site.is-sidebar-experiment .fl-side-signature{
+  flex:none;border-top:1px solid var(--e-line);margin:auto 0 0;
+  padding:14px;color:var(--e-mute);
+  display:flex;justify-content:space-between;gap:10px;
+  font:500 10px var(--e-mono)!important;letter-spacing:.1em;
+}
+.site.is-sidebar-experiment .fl-side-backdrop{display:none}
+
+/* Reserve the correct space; the original forms/cards are allowed to
+   manage their own inner grids instead of being flattened by CSS. */
+.site.is-sidebar-experiment main.shell{
+  margin:0 0 0 var(--fl-side-w)!important;
+  width:calc(100% - var(--fl-side-w))!important;
+  max-width:none!important;
+  padding:calc(var(--fl-top-h) + 30px) clamp(22px,3.5vw,58px) 70px!important;
+  min-width:0;
+  box-sizing:border-box;
+}
+.site.is-sidebar-experiment.is-stage{height:100dvh;overflow:hidden}
+.site.is-sidebar-experiment.is-stage main.shell{
+  height:100dvh!important;min-height:0!important;padding:0!important;
+}
+.site.is-sidebar-experiment .stage-wrap{height:100dvh}
+.site.is-sidebar-experiment .es-type{
+  font-size:clamp(52px,9.3vw,174px);
+  padding-top:var(--fl-top-h);
+}
+.site.is-sidebar-experiment .es-foot{padding-left:clamp(24px,3vw,58px);padding-right:clamp(24px,3vw,58px)}
+.site.is-sidebar-experiment .es-pip{right:clamp(24px,3vw,58px)}
+
+/* Old app page composition + restrained HYDRO colors/typography. */
+.site.is-classic-page main.shell{
+  padding-top:calc(var(--fl-top-h) + 34px)!important;
+  max-width:none!important;
+}
+.site.is-classic-page main.shell>section,
+.site.is-classic-page main.shell>div:not([hidden]){
+  max-width:1480px;
+  margin-left:auto;margin-right:auto;
+}
+.site.is-classic-page main :is(h1,h2,h3){font-family:var(--e-sans)!important;color:var(--e-ink)!important}
+.site.is-classic-page main h1{
+  font-size:clamp(33px,3.2vw,56px)!important;
+  line-height:1.04!important;font-weight:750!important;letter-spacing:-.042em!important;
+  margin-top:0!important;
+}
+.site.is-classic-page main h2{
+  font-size:clamp(22px,2vw,34px)!important;
+  letter-spacing:-.025em!important;line-height:1.12!important
+}
+.site.is-classic-page main h3{letter-spacing:-.018em!important}
+.site.is-classic-page main :is(p,li,span,small,label){line-height:1.5}
+.site.is-classic-page main a{color:var(--e-accent-ink)}
+.site.is-classic-page main :is(.finder-card,.assistant-card,.account-card,.history-card,
+  .deposit-form-card,.community-chart-card,.community-dashboard,.community-saved,
+  .badge-panel,.level-panel,.league-ranking,.league-guest,.journey-quiz-card,
+  .community-advice,.audit-session,.community-about-grid>article){
+  background:var(--e-surface)!important;
+  border-color:var(--e-line)!important;
+  box-shadow:none!important;
+}
+.site.is-classic-page main :is(input,select,textarea){
+  font-family:var(--e-sans)!important;
+  color:var(--e-ink);
+  background:var(--e-surface);
+  border-color:var(--e-line);
+}
+.site.is-classic-page main :is(.button.primary,button.primary){
+  background:var(--e-ink)!important;color:var(--e-on-ink)!important;
+  border:1px solid var(--e-ink)!important;box-shadow:none!important;
+}
+.site.is-classic-page main :is(.button.primary,button.primary) svg{color:inherit}
+.site.is-classic-page main :is(.button.outline,.button.secondary){
+  background:transparent!important;color:var(--e-ink)!important;border-color:var(--e-line)!important
+}
+.site.is-classic-page main :is(.assistant-heading,.deposit-top,.audit-hero,.history-head,.league-title){
+  background:transparent!important;
+}
+.site.is-classic-page main .finder-card{
+  width:100%;max-width:none;
+}
+.site.is-classic-page main .finder-screen{
+  width:100%;max-width:1480px
+}
+.site.is-classic-page main .free-map-shell{
+  background:var(--e-surface)!important;border-color:var(--e-line)!important;
+}
+.site.is-classic-page main .map-summary{
+  background:var(--e-surface)!important;
+}
+.site.is-classic-page main .map-visual{min-width:0}
+.site.is-classic-page main .location-entry{background:transparent!important}
+.site.is-classic-page main .location-card.picked{
+  border-left:3px solid var(--e-accent)!important;
+}
+.site.is-classic-page .google-places-shell .map-visual,
+.site.is-classic-page .google-places-shell .google-map-canvas{overflow:hidden}
+.site.is-classic-page .google-places-shell .google-map-footer{
+  background:var(--e-surface)!important;
+}
+.site.is-classic-page .assistant-screen,.site.is-classic-page .audit-kit,
+.site.is-classic-page .deposit-page,.site.is-classic-page .community-about{
+  max-width:none;
+}
+
+/* Scans must continue to use the approved large bottle, live camera and
+   editorial results, never the restored legacy Scan introduction. */
+.site.is-sidebar-experiment .cap{height:calc(100dvh - var(--fl-top-h) - 24px)}
+.site.is-sidebar-experiment .res-layout{max-width:1450px}
+.site.is-sidebar-experiment .res-layout>.res-photo{
+  top:calc(var(--fl-top-h) + 18px);
+}
+
+@media(max-height:850px) and (min-width:961px){
+  .site.is-sidebar-experiment .fl-side-scroll{gap:12px;padding-top:22px}
+  .site.is-sidebar-experiment .fl-side-link{min-height:44px}
+}
+@media(max-width:960px){
+  :root{--fl-side-w:0px}
+  .site.is-sidebar-experiment .fl-topbar{
+    left:0;justify-content:space-between;
+    padding:0 clamp(14px,3vw,24px);gap:10px;
+  }
+  .site.is-sidebar-experiment .fl-top-brand,
+  .site.is-sidebar-experiment .fl-mobile-toggle{display:inline-flex;align-items:center}
+  .site.is-sidebar-experiment .fl-top-brand{
+    appearance:none;border:0;background:transparent;color:var(--e-ink);
+    min-height:44px;gap:9px;cursor:pointer;font:700 17px var(--e-sans)!important;
+  }
+  .site.is-sidebar-experiment .fl-brand-dot{
+    width:15px;height:15px;border:2px solid var(--e-ink);border-radius:50%;
+    background:var(--e-accent);box-shadow:inset 0 0 0 3px var(--e-bg);
+  }
+  .site.is-sidebar-experiment .fl-mobile-toggle{
+    appearance:none;justify-content:center;border:1px solid var(--e-line);
+    background:var(--e-surface);color:var(--e-ink);border-radius:50%;
+    width:44px;height:44px;cursor:pointer;
+  }
+  .site.is-sidebar-experiment .fl-sidebar{
+    width:min(340px,88vw);z-index:120;
+    transform:translateX(-105%);transition:transform .24s ease;
+    padding-top:20px;box-shadow:20px 0 90px rgba(0,0,0,.12)!important;
+  }
+  .site.is-sidebar-experiment .fl-sidebar.is-open{transform:translateX(0)}
+  .site.is-sidebar-experiment .fl-side-backdrop{
+    display:block;position:fixed;inset:0;z-index:115;
+    border:0;background:rgba(7,13,10,.45);cursor:pointer
+  }
+  .site.is-sidebar-experiment main.shell{
+    margin-left:0!important;width:100%!important
+  }
+  .site.is-sidebar-experiment .es-type{font-size:clamp(51px,12vw,125px)}
+  .site.is-sidebar-experiment .fl-top-actions{margin-left:auto}
+}
+@media(max-width:600px){
+  .site.is-sidebar-experiment .fl-top-brand strong{display:none}
+  .site.is-sidebar-experiment .fl-language{max-width:100px;padding:0 8px;font-size:10px!important}
+  .site.is-sidebar-experiment .fl-top-actions{gap:7px}
+  .site.is-sidebar-experiment main.shell{
+    padding-left:16px!important;padding-right:16px!important
+  }
+  .site.is-sidebar-experiment.is-stage main.shell{padding:0!important}
+  .site.is-sidebar-experiment .res-layout{display:block}
+  .site.is-sidebar-experiment .cap{height:auto;min-height:calc(100dvh - var(--fl-top-h))}
+}
+@media(prefers-reduced-motion:reduce){
+  .site.is-sidebar-experiment .fl-sidebar,
+  .site.is-sidebar-experiment .fl-side-link{transition:none!important}
+}
