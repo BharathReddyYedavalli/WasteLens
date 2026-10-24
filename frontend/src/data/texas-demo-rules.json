@@ -57,6 +57,39 @@
       }
     },
     {
+      "id": "school_spears_elementary_tx",
+      "name": "Spears Elementary",
+      "context": "school",
+      "school_type": "elementary",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://schools.friscoisd.org/o/spears",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Spears Elementary participates in Frisco ISD's district environmental program, which describes recycling drives but does not confirm this campus's everyday accepted bin materials or schedule.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
       "id": "school_scoggins_middle_tx",
       "name": "Scoggins Middle School",
       "context": "school",
@@ -90,6 +123,39 @@
       }
     },
     {
+      "id": "school_maus_middle_tx",
+      "name": "Maus Middle School",
+      "context": "school",
+      "school_type": "middle",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://www.friscoisd.org/o/maus",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Maus Middle School participates in Frisco ISD's district environmental program, which describes recycling drives but does not confirm this campus's everyday accepted bin materials or schedule.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
       "id": "school_panther_creek_high_tx",
       "name": "Panther Creek High School",
       "context": "school",
@@ -104,6 +170,39 @@
         "https://www.friscoisd.org/article/2660069"
       ],
       "scope": "Panther Creek High School is part of Frisco ISD. The district describes classroom recycling and schoolwide bag-film/battery drives; this does not verify permanent bins, exact materials, or drive dates at this campus.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
+      "id": "school_wakeland_high_tx",
+      "name": "Wakeland High School",
+      "context": "school",
+      "school_type": "high",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://www.friscoisd.org/o/whs",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Wakeland High School participates in Frisco ISD's district environmental program, which describes recycling drives but does not confirm this campus's everyday accepted bin materials or schedule.",
       "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
       "rules": {
         "plastic_grocery_bag": {
