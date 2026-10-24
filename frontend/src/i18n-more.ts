@@ -1,5 +1,13 @@
 /* Additional translations for the existing English/Spanish/Hindi interface. */
 export const moreTranslations:Record<string,{es:string;hi:string}> = {
+  "For other services, check your provider's published rules.": { es: "Si tu servicio no aparece, consulta las reglas publicadas por tu proveedor.", hi: "अन्य सेवाओं के लिए प्रदाता के प्रकाशित नियम देखें।" },
+  "My location isn't listed": { es: "Mi lugar no aparece", hi: "मेरा स्थान सूची में नहीं है" },
+  "Other item": { es: "Otro objeto", hi: "अन्य वस्तु" },
+  "What item is it?": { es: "¿Qué objeto es?", hi: "यह कौन सी वस्तु है?" },
+  "Select a location": { es: "Selecciona un lugar", hi: "स्थान चुनें" },
+  "Choose your location": { es: "¿Dónde vas a reciclar?", hi: "आप कहाँ रीसायकल करेंगे?" },
+  "Rules for a selected location": { es: "Reglas del lugar seleccionado", hi: "चुने हुए स्थान के नियम" },
+  "Where are you?": { es: "¿Dónde estás?", hi: "आप कहाँ हैं?" },
   "Texas demo recycling rules": { es: "Reglas de reciclaje de ejemplo en Texas", hi: "टेक्सास रीसायक्लिंग के नमूना नियम" },
   "Published rule examples • Not live verification": { es: "Ejemplos publicados · No verificación en tiempo real", hi: "प्रकाशित नियमों के उदाहरण • वर्तमान पुष्टि नहीं" },
   "Choose the exact collection program": { es: "Elige el programa de recogida específico", hi: "सही संग्रह कार्यक्रम चुनें" },
