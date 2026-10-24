@@ -174,6 +174,7 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
   const {t,language}=useLanguage();
   const [audit,setAudit]=useState<Draft>(readDraft);
   const [saved,setSaved]=useState<SavedAudit[]>([]);
+  const [showAllSaved,setShowAllSaved]=useState(false);
   const [loadingSaved,setLoadingSaved]=useState(false);
   const [busy,setBusy]=useState(false);
   const [openingId,setOpeningId]=useState<number|null>(null);
@@ -432,13 +433,19 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
       {loadingSaved?<p>{t("Loading saved audits…")}</p>:!user?
         <p>{t("Sign in to view saved audits on this server.")}</p>:saved.length===0?
         <p>{t("No saved audits yet. Count some items above and choose Save audit.")}</p>:<div className="community-saved-list">
-          {saved.map(item=><div key={item.id} className="community-saved-item">
+          {saved.slice(0,showAllSaved?undefined:5).map(item=><div key={item.id} className="community-saved-item">
             <div><strong>{item.title}</strong><span>{dayStamp(item.created_at)} · {item.item_count} {t("items")}</span></div>
             <div><button type="button" onClick={()=>void open(item.id)} disabled={openingId!==null||busy}>
               <ChevronDown size={17}/>{t("Open")}</button>
               <button type="button" className="community-delete" disabled={busy} onClick={()=>void remove(item.id)} aria-label={t("Delete")+" "+item.title}>
                 <Trash2 size={17}/>{t("Delete")}</button></div>
           </div>)}
+          {saved.length>5&&<button type="button" className="audit-more-records"
+            aria-expanded={showAllSaved} onClick={()=>setShowAllSaved(value=>!value)}>
+            {language==="es"?(showAllSaved?"Mostrar menos":"Ver todas las auditorías"):
+             language==="hi"?(showAllSaved?"कम दिखाएँ":"सभी ऑडिट देखें"):
+             showAllSaved?"Show fewer audits":"Show all audits"} ({saved.length})
+          </button>}
         </div>}
 
     </div>

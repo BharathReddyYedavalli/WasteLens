@@ -468,3 +468,18 @@ html .site.is-classic-page main .admin-stats strong{font-size:clamp(40px,3.5vw,6
  html .site.is-classic-page main .chat-suggestions button,
  html .site.is-classic-page main .audit-option{transition:none!important;transform:none!important}
 }
+
+/* Reveal long saved-audit / Google location lists only when requested. */
+html .site.is-classic-page main .places-show-more,
+html .site.is-classic-page main .audit-more-records{
+ display:block!important;width:calc(100% - 24px)!important;
+ margin:18px 12px!important;padding:18px 22px!important;
+ min-height:68px!important;font-size:21px!important;
+ font-weight:740!important;text-align:center!important;
+ background:color-mix(in srgb,var(--k-accent) 12%,var(--k-paper))!important;
+ color:var(--k-ink)!important;
+ border:2px solid var(--k-stroke)!important;border-radius:18px!important;
+ cursor:pointer;
+}
+html .site.is-classic-page main .audit-more-records:hover,
+html .site.is-classic-page main .places-show-more:hover{border-color:var(--k-accent)!important}

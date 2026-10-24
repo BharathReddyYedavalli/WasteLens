@@ -138,11 +138,6 @@ export default function BottleReturns() {
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
-          <p className="deposit-size-used">
-            {language==="es"?`Calculado para ${result.ounces} onzas líquidas por envase.`:
-            language==="hi"?`प्रति कंटेनर ${result.ounces} फ़्लूइड औंस के लिए गणना।`:
-            `Calculated for ${result.ounces} fl oz per container.`}
-          </p>
           <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
           <p>{localizedDepositReason(result.reason,t)}</p>
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
@@ -150,6 +145,11 @@ export default function BottleReturns() {
           </a>
           <details className="deposit-state-tip">
             <summary>{t("Calculation & state details")}</summary>
+          <p className="deposit-size-used">
+            {language==="es"?`Calculado para ${result.ounces} onzas líquidas por envase.`:
+            language==="hi"?`प्रति कंटेनर ${result.ounces} फ़्लूइड औंस के लिए गणना।`:
+            `Calculated for ${result.ounces} fl oz per container.`}
+          </p>
             <div className="deposit-mini-math"><span>{result.count.toLocaleString(language==="hi"?"hi-IN":language==="es"?"es-ES":"en-US")} {t("containers")}</span><b>×</b><span>{result.per_container_cents}¢ {t("each")}</span></div>
             <p>{t(result.state_tip)}</p>
           </details>

@@ -26,7 +26,7 @@ function milesBetween(a: {lat:number;lng:number}, b: {lat:number;lng:number}) {
 
 /** Google Maps + Places only. Never display Google Places data on the OSM fallback. */
 export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
-  const {t}=useLanguage();
+  const {t,language}=useLanguage();
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map|null>(null);
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
@@ -34,6 +34,7 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
   const entriesRef = useRef<Map<string,HTMLDivElement>>(new Map());
   const markerSelection = useRef(false);
   const [places,setPlaces]=useState<GooglePlace[]>([]);
+  const [visibleCount,setVisibleCount]=useState(5);
   const [selected,setSelected]=useState<string|null>(null);
   const [loading,setLoading]=useState(true);
 
@@ -43,6 +44,7 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
     setLoading(true);
     setPlaces([]);
     setSelected(null);
+    setVisibleCount(5);
     const center = {lat:data.center.latitude,lng:data.center.longitude};
     async function start() {
       try {
@@ -95,7 +97,7 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
           const marker = new AdvancedMarkerElement({
             map,position:place.location,title:place.name,gmpClickable:true,
           });
-          marker.addListener("click",()=>{markerSelection.current=true;setSelected(place.id);});
+          marker.addListener("click",()=>{markerSelection.current=true;setVisibleCount(matched.length);setSelected(place.id);});
           markers.push(marker);
           markersRef.current.set(place.id,marker);
           visibleBounds.extend(place.location);
@@ -151,7 +153,7 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
       <div ref={listRef} className="facility-side-panel" role="region" tabIndex={0} aria-label={t("Scrollable list of mapped recycling locations")}>
         <div className="facility-side-heading"><strong>{loading?t("Finding nearby places…"):t("Places near you")}</strong><small>{!loading && <>{places.length} {t("places found")} ↕</>}</small></div>
         {loading?<div className="no-map-results"><Recycle size={24}/><p>{t("Finding nearby places…")}</p></div>:
-        places.map((place,i)=><div key={place.id} className={"location-entry"+(selected===place.id?" selected":"")} ref={el=>{if(el)entriesRef.current.set(place.id,el);else entriesRef.current.delete(place.id);}}>
+        places.slice(0,visibleCount).map((place,i)=><div key={place.id} className={"location-entry"+(selected===place.id?" selected":"")} ref={el=>{if(el)entriesRef.current.set(place.id,el);else entriesRef.current.delete(place.id);}}>
           <button type="button" className={"location-card "+(selected===place.id?"picked":"")}
             aria-pressed={selected===place.id} onClick={()=>{markerSelection.current=false;setSelected(place.id);}}>
             <span className="location-index">{i+1}</span>
@@ -165,6 +167,10 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
             {t("View on Google Maps")} <ExternalLink size={14}/>
           </a>}
         </div>)}
+        {!loading&&places.length>visibleCount&&<button type="button" className="places-show-more"
+          onClick={()=>setVisibleCount(places.length)}>
+          {language==="es"?"Ver todos los lugares":language==="hi"?"सभी स्थान देखें":"Show all locations"} ({places.length})
+        </button>}
       </div>
       <div className="map-visual">
         <div ref={container} className="embedded-map modern-map google-map-canvas"
