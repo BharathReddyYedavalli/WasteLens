@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 const read = name => readFileSync(new URL("../src/" + name, import.meta.url), "utf8");
 const app = read("App.tsx");
 const rules = read("LocalRulesGuide.tsx");
+const institution = read("TexasDemoRules.tsx");
 const styles = read("scan-focus.css");
 const result = app.slice(app.indexOf('{analysis && <section id="scan-results"'), app.indexOf('</> : view === "finder"'));
 
@@ -43,12 +44,12 @@ test("Local rules are lean without removing proof-of-service or source checks", 
     "Guidance is for this selected residential service"]) {
     assert.ok(!rules.includes(removed),removed);
   }
-  assert.match(rules,/selectedProgram/);
-  assert.match(rules,/selectedItem/);
-  assert.match(rules,/confirmed/);
-  assert.match(rules,/service_confirmed: "true"/);
-  assert.match(rules,/result\.source_url/);
-  assert.match(rules,/My collection provider isn't listed/);
+  assert.match(rules,/<TexasDemoRules/);
+  assert.doesNotMatch(rules,/local-rule-zip/);
+  assert.match(institution,/const selectedItem=correcting\?correction:inferred/);
+  assert.match(institution,/Wrong item\? Change it/);
+  assert.match(institution,/rule\?\.source_url\|\|profile\.sources\[0\]/);
+  assert.match(institution,/Other location/);
   assert.match(styles,/scan-decision-unified/);
   assert.match(styles,/data-wl-theme/);
   assert.match(styles,/@media\(max-width:620px\)/);
