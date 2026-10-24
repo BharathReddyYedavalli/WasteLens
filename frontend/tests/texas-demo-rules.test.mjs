@@ -52,7 +52,7 @@ test("Scan passes identification and material information into an optional, expl
   assert.match(panel,/collectionType==="residential"\?"home"/);
   assert.match(panel,/profile\.rules\[chosenKey\]/);
   assert.match(panel,/rule\?\.instruction\|\|profile\.default_message/);
-  assert.match(panel,/profile\.context==="business"/);
+  assert.match(panel,/business_heb_frisco_tx:"H-E-B"/);
   assert.match(panel,/!isIdentified&&itemName/);
   assert.match(panel,/if\(!n\.trim\(\)\)return ""/);
   assert.match(panel,/manualItem\|\|inferred/);
@@ -63,7 +63,7 @@ test("Texas demo UI preserves visible provenance, constraints and theme",()=>{
   assert.match(panel,/scan identification/i);
   assert.match(panel,/customer drop-off/i);
   assert.match(css,/var\(--wl-paper/);
-  assert.match(css,/@media\(max-width:600px\)/);
+  assert.match(css,/@media\(max-width:640px\)/);
   for (const key of ["No confirmed rule for this item",
     "Choose your location","Where are you?","Select a location",
     "What item is it?","My location isn't listed"]) {
