@@ -4,6 +4,19 @@ import type { LeaderboardResponse, SessionUser, WasteLensBadge } from "./types";
 import { actionHeaders, readJson } from "./AccountArea";
 import { useLanguage } from "./i18n";
 
+/**
+ * Saved-scan milestone badges share the same counter shown on this page.
+ * XP has separate anti-abuse rules; Bottle Explorer still requires its quiz.
+ * This also reconciles responses from older backend processes until restarted.
+ */
+export function reconcileScanBadges(badges: WasteLensBadge[], savedScans: number): WasteLensBadge[] {
+  return badges.map(badge => ({
+    ...badge,
+    unlocked: badge.unlocked || (badge.id !== "bottle-explorer" &&
+      badge.threshold > 0 && savedScans >= badge.threshold),
+  }));
+}
+
 function Badge({ badge }: { badge: WasteLensBadge }) {
   const { t } = useLanguage();
   return <div className={"reward-badge " + (badge.unlocked ? "unlocked" : "locked")}>
@@ -38,6 +51,9 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
     } catch(e) {setError(e instanceof Error ? e.message : "Couldn't update your setting.");}
     finally {setBusy(false);}
   }
+  const visibleBadges = data?.me
+    ? reconcileScanBadges(data.me.badges, data.me.scans)
+    : [];
   return <section className="league-page">
     <div className="league-title"><span className="league-icon"><Trophy size={29}/></span>
       <div><h1>{t("Leaderboard")}</h1></div></div>
@@ -55,10 +71,10 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
       <div className="league-stats">
         <div><ScanLine size={21}/><strong>{data.me.scans}</strong><span>{t("Scans")}</span></div>
         <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>{t("Actions logged")}</span></div>
-        <div><Award size={21}/><strong>{data.me.badges.filter(b => b.unlocked).length}</strong><span>{t("Badges")}</span></div>
+        <div><Award size={21}/><strong>{visibleBadges.filter(b => b.unlocked).length}</strong><span>{t("Badges")}</span></div>
       </div>
       <details className="badge-panel"><summary><Award size={22}/>{t("Your badges")}</summary><div className="badge-grid">
-        {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
+        {visibleBadges.map(b=><Badge key={b.id} badge={b}/>)}
       </div></details>
     </> : <div className="league-guest"><Leaf size={32}/><h2>{t("Save your progress")}</h2>
       <p>{t("Sign in to save scans and earn badges.")}</p>

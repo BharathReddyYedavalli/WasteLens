@@ -81,7 +81,7 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
         
       </div>
     </div>
-    <div className="assistant-card">
+    <div className={"assistant-card" + (messages.length === 0 ? " is-empty" : " has-conversation")}>
       {scan&&<div className="assistant-context">
         <div className="context-main">
           <Sparkles size={18}/>
@@ -94,6 +94,7 @@ export default function AskWasteLens({ scan, configured, onScan }: Props) {
       </div>}
       <div className="assistant-messages" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 ? <div className="assistant-welcome">
+          <h2 className="assistant-start-heading">{t("What would you like to know?")}</h2>
           <div className="chat-suggestions">
             {suggestions.map(prompt => <button
               key={prompt} type="button" onClick={() => setInput(prompt)}

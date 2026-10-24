@@ -138,13 +138,20 @@ export default function BottleReturns() {
       <div className={"deposit-result "+(result?.status??"empty")} aria-live="polite">
         {result ? <>
           <strong className="deposit-amount">{dollars(result.total_cents)}</strong>
-          <h2>{t(result.status==="yes"?"Possible refund for eligible returns":result.status==="check"?"Check before counting on it":"No deposit expected")}</h2>
-          <p>{localizedDepositReason(result.reason,t)}</p>
+          <h2 className="deposit-status">{language==="es"?
+            (result.status==="yes"?"Reembolso posible":result.status==="check"?"Verifica si aplica":"Sin depósito previsto"):
+            language==="hi"?
+            (result.status==="yes"?"संभावित वापसी":result.status==="check"?"पात्रता जाँचें":"जमा अपेक्षित नहीं"):
+            (result.status==="yes"?"Possible refund":result.status==="check"?"Check eligibility":"No deposit expected")}</h2>
+          <p className="deposit-reassurance">{language==="es"?"Estimación. Verifica las reglas antes de devolverlo.":
+            language==="hi"?"अनुमान है। लौटाने से पहले नियम जाँचें।":
+            "Estimate only. Check the rules before returning."}</p>
           <a href={result.source_url} target="_blank" rel="noreferrer" className="deposit-official">
             <Link2 size={16}/> {t("Read the official state rules")} · {result.state}
           </a>
           <details className="deposit-state-tip">
             <summary>{t("Calculation & state details")}</summary>
+            <p className="deposit-explanation">{localizedDepositReason(result.reason,t)}</p>
           <p className="deposit-size-used">
             {language==="es"?`Calculado para ${result.ounces} onzas líquidas por envase.`:
             language==="hi"?`प्रति कंटेनर ${result.ounces} फ़्लूइड औंस के लिए गणना।`:
