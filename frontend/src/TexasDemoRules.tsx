@@ -195,7 +195,7 @@ export default function TexasDemoRules({itemName="",materialGuess="",isIdentifie
      <p className="institution-scope">{shortScope[profile.id]||profile.scope}</p>
      {examples.length>0&&<p className="institution-examples">
        {t("Try scanning")}: {examples.map(key=>itemNames[key]||key.replace(/_/g," ")).join(" · ")}
-     </p>
+     </p>}
      <div className="institution-scanned">
        <div className="institution-scanned-row">
          <span><strong>{t("Scanned item")}:</strong> {itemName||t("Item not identified")}</span>
