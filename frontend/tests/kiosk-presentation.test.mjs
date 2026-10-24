@@ -10,12 +10,14 @@ const audit = source("AuditKit.tsx");
 const lang = source("i18n.tsx");
 const css = source("kiosk-presentation.css");
 const entry = source("main.tsx");
+const nav = source("shell/TopNav.tsx");
 
 test("homepage keeps its established heading and an actionable message", () => {
   assert.match(app, /t\("Before you toss it, scan it\."\)/);
   assert.match(app, /t\("Scan an item, then check how your local program handles it\."\)/);
   assert.match(app, /t\("Find a place"\)/);
-  assert.match(app, /t\("Run an audit"\)/);
+  assert.match(nav, /label: "Waste audit"/);
+  assert.match(nav, /label: "Find a place"/);
 });
 
 test("the scan result prioritizes a cautious action and opens real local rules", () => {
@@ -46,7 +48,7 @@ test("existing scanner, checklist, local rules, map, audits, and rewards stay wi
   }
   assert.match(app,/view === "audit" \? <AuditKit/);
   assert.match(app, /className="scan-feedback-inline"/);
-  assert.match(app, /onClick=\{\(\) => openPage\("finder"\)\}/);
+  assert.match(app, /onNavigate=\{next => openPage\(next\)\}/);
   assert.match(app, /openPage\("finder"\)/);
 });
 
