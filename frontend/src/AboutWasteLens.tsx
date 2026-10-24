@@ -11,9 +11,9 @@ export default function AboutWasteLens({onScan,onAudit,onJourney}:{
       <div className="community-about-mark"><HeartHandshake size={36}/></div>
       <h1>{tr("Better recycling starts at the bin.","Reciclar mejor empieza frente al contenedor.","बेहतर रीसायक्लिंग की शुरुआत कूड़ेदान के पास होती है।")}</h1>
       <p>{tr(
-        "WasteLens is a web prototype for the moment you decide where something goes. Scan an item, check local rules and choose your next step. A school bin-side kiosk is a future use we are exploring, not a device already installed.",
-        "WasteLens es un prototipo web para decidir dónde va cada objeto. Escanéalo, consulta las reglas locales y elige qué hacer. Un quiosco junto a los contenedores escolares es una idea futura, no un dispositivo ya instalado.",
-        "WasteLens एक वेब प्रोटोटाइप है जो किसी वस्तु को कहाँ डालना है, यह तय करने में मदद करता है। वस्तु स्कैन करें, स्थानीय नियम जाँचें और अगला कदम चुनें। स्कूल के कूड़ेदान के पास कियोस्क लगाना एक भविष्य की योजना है, अभी कोई उपकरण स्थापित नहीं है।"
+        "WasteLens helps you scan an item, check local recycling rules and decide what to do next. A school bin-side kiosk is a future use we are exploring, not a device already installed.",
+        "WasteLens te ayuda a escanear objetos, consultar las reglas locales y decidir qué hacer. Un quiosco escolar es una idea futura, no un dispositivo instalado.",
+        "WasteLens किसी वस्तु को स्कैन करने, स्थानीय नियम जाँचने और अगला कदम चुनने में मदद करता है। स्कूल का कियोस्क अभी भविष्य की योजना है; ऐसा उपकरण स्थापित नहीं किया गया है।"
       )}</p>
     </div>
     <div className="community-about-grid">
