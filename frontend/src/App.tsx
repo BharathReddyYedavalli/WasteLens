@@ -50,7 +50,6 @@ export default function App() {
   const [camera, setCamera] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const [preview, setPreview] = useState<PhotoPreview | null>(null);
-  const [hint, setHint] = useState("");
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -180,7 +179,6 @@ export default function App() {
   function reset() {
     closeCamera();
     clearPreview();
-    setHint("");
     setResult(null);
     setError("");
     setCameraError("");
@@ -268,7 +266,6 @@ export default function App() {
     try {
       const scanForm = new FormData();
       scanForm.append("image", preview.file);
-      scanForm.append("object_hint", hint.trim());
       scanForm.append("language", language);
       if (/^\d{5}$/.test(location.trim())) {
         scanForm.append("zip_code", location.trim());
@@ -450,12 +447,6 @@ export default function App() {
               </button>
             </>}
           </div>
-          {preview && <div className="hint-area">
-            <label htmlFor="hint">{t("Focus on one item")} <span>{t("Optional")}</span></label>
-            <input id="hint" maxLength={160} value={hint} disabled={busy}
-              onChange={event => {setHint(event.target.value); setResult(null);}}
-              placeholder={t("Example: The blue bottle I'm holding")}/>
-          </div>}
           {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>{t("Add your Gemini API key in the")} <code>.env</code> {t("file and restart the backend.")}</span></div>}
           {statusError && <ErrorText message={statusError}/>}
           {cameraError && <ErrorText message={cameraError}/>}
@@ -493,12 +484,6 @@ export default function App() {
             <button className="es-cta" type="button" onClick={() => void analyze()} disabled={busy || !status?.configured}>
               <span className="es-ring" aria-hidden="true"/>{busy ? t("Looking at it…") : t("Identify item")}
             </button>
-            <div className="cap-focus hint-area">
-              <label htmlFor="hint">{t("Focus on one item")} <span>{t("Optional")}</span></label>
-              <input id="hint" maxLength={160} value={hint} disabled={busy}
-                onChange={event => {setHint(event.target.value); setResult(null);}}
-                placeholder={t("Example: The blue bottle I'm holding")}/>
-            </div>
           </>}
         </div>
         <div className="cap-alerts">
