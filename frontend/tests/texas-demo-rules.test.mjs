@@ -15,13 +15,13 @@ const byId=id=>all.find(p=>p.id===id);
 
 test("Only Texas schools, campus offices and distinct businesses are shown",()=>{
   assert.equal(data.texas_only,true);
-  assert.equal(all.length,14);
+  assert.equal(all.length,16);
   assert.deepEqual([...new Set(all.map(p=>p.context))],["school","office","business"]);
   assert.ok(all.every(p=>p.location.state==="TX"));
   assert.equal(all.filter(p=>p.context==="school"&&["elementary","middle","high"].includes(p.school_type)).length,6);
   for(const level of ["elementary","middle","high"])assert.equal(all.filter(p=>p.school_type===level).length,2);
   assert.ok(all.some(p=>p.context==="office"));
-  assert.equal(all.filter(p=>p.context==="business").length,6);
+  assert.equal(all.filter(p=>p.context==="business").length,8);
   assert.ok(all.every(p=>p.sources.every(u=>u.startsWith("https://"))));
   assert.ok(all.every(p=>Object.values(p.rules).every(r=>r.item_key&&r.source_url.startsWith("https://"))));
 });
@@ -136,6 +136,18 @@ test("Item name aliases match common scans without guessing from material alone"
     ["Printer ink cartridge","printer_cartridge"],
     ["Paper plate",""],
     ["Phone case",""],
+    ["Raspberry Pi 4 Model B","raspberry_pi"],
+    ["Raspberry Pi circuit board","raspberry_pi"],
+    ["Single-board computer","raspberry_pi"],
+    ["Printed circuit board","circuit_board"],
+    ["Aluminum foil food tray","aluminum_tray"],
+    ["Aluminum baking pan","aluminum_tray"],
+    ["Foil food container","aluminum_tray"],
+    ["Aluminum pie plate","aluminum_pie_plate"],
+    ["Alkaline AA battery","alkaline_battery"],
+    ["AAA battery","alkaline_battery"],
+    ["Rechargeable lithium-ion battery","rechargeable_battery"],
+    ["Power tool battery","rechargeable_battery"],
     ["Reusable metal bottle",""],
   ]){
     assert.equal(infer(item,"unrelated plastic",id),want,item);
@@ -143,3 +155,26 @@ test("Item name aliases match common scans without guessing from material alone"
   assert.equal(infer("","plastic",id),"");
 });
 function requireVm(){return vmModule;}
+
+test("Distinct specialist programs handle harder physical demo objects",()=>{
+  const tds=byId("business_texas_disposal_systems_tx");
+  const dfw=byId("business_dfw_electronics_plano_tx");
+  const home=byId("business_home_depot_frisco_tx");
+  const staples=byId("business_staples_frisco_tx");
+  const best=byId("business_bestbuy_frisco_tx");
+  assert.equal(tds.rules.aluminum_tray.status,"recycle");
+  assert.match(tds.rules.aluminum_tray.condition,/TDS recycling/);
+  assert.equal(tds.rules.alkaline_battery.status,"not_accepted_here");
+  assert.equal(dfw.rules.cell_phone.status,"special_dropoff");
+  assert.equal(dfw.rules.raspberry_pi.status,"verify_dropoff");
+  assert.match(dfw.rules.raspberry_pi.instruction,/confirm/i);
+  assert.equal(home.rules.rechargeable_battery.status,"special_dropoff");
+  assert.equal(home.rules.alkaline_battery.status,"not_accepted_here");
+  assert.equal(staples.rules.alkaline_battery.status,"special_dropoff");
+  assert.match(staples.rules.alkaline_battery.condition,/fee|\$2\.99/i);
+  assert.equal(best.rules.standalone_battery.status,"not_accepted_here");
+  for(const p of [tds,dfw])assert.ok(p.sources.every(url=>url.startsWith("https://")));
+  assert.match(panel,/business_dfw_electronics_plano_tx:"DFW Electronics Recycling"/);
+  assert.match(panel,/business_texas_disposal_systems_tx:"Texas Disposal Systems"/);
+  assert.match(panel,/verify_dropoff:"Confirm with recycling center"/);
+});
