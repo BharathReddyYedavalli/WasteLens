@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import type { SessionUser } from "../types";
 import AccountMenu from "../AccountMenu";
-import type { AppearanceTheme } from "../AccountMenu";
+import type { AppearanceTheme, NavigationLayout } from "../AccountMenu";
 import { LANGUAGES, useLanguage } from "../i18n";
 
 export type View = "identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about";
@@ -12,11 +12,13 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (theme: AppearanceTheme) => void;
+  navigationLayout: NavigationLayout;
+  onNavigationLayoutChange: (value: NavigationLayout) => void;
   onNavigate: (view: View) => void;
 };
 
 /** Everything in the product is reachable from this one list. */
-export default function TopNav({ view, user, theme, onThemeChange, onNavigate }: Props) {
+export default function TopNav({ view, user, theme, onThemeChange, navigationLayout, onNavigationLayoutChange, onNavigate }: Props) {
   const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -77,7 +79,7 @@ export default function TopNav({ view, user, theme, onThemeChange, onNavigate }:
           onChange={event => setLanguage(event.target.value as typeof language)}>
           {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
         </select>
-        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} onNavigate={next => go(next)} />
+        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} navigationLayout={navigationLayout} onNavigationLayoutChange={onNavigationLayoutChange} onNavigate={next => go(next)} />
         <button type="button" className="tn-burger" aria-label={open ? t("Close menu") : t("Open menu")}
           aria-expanded={open} aria-controls="wastelens-primary-navigation" onClick={() => setOpen(c => !c)}>
           <span /><span />
