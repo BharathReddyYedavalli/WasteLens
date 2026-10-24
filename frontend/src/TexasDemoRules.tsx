@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, ChevronDown, ExternalLink, ShieldAlert } from "lucide-react";
+import { CheckCircle2, ExternalLink, ShieldAlert } from "lucide-react";
 import rulesData from "./data/texas-demo-rules.json";
 import { useLanguage } from "./i18n";
 
