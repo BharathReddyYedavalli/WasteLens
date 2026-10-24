@@ -875,3 +875,78 @@ html body #root .site.is-classic-page main .documentary-decision h2{
   animation:none!important;transition:none!important;
  }
 }
+
+
+/* Complete the kiosk sweep: large navigation, recent scans and learning quiz. */
+html body #root .site.is-classic-page{--fl-side-w:clamp(274px,18vw,320px)}
+html body #root .site.is-classic-page .fl-side-link{
+ font-size:clamp(19px,1.2vw,22px)!important;min-height:64px!important;line-height:1.25!important;
+}
+html body #root .site.is-classic-page .fl-side-heading{
+ font-size:14px!important;color:var(--e-mute)!important;
+}
+html body #root .site.is-classic-page .fl-language{
+ font-size:17px!important;min-height:56px!important;
+}
+html body #root .site.is-classic-page .wl-account-trigger{
+ font-size:15px!important;min-height:58px!important;
+}
+html body #root .site.is-classic-page main .history-grid{
+ display:grid!important;grid-template-columns:1fr!important;
+ gap:18px!important;max-width:1180px!important;margin-inline:auto!important;
+}
+html body #root .site.is-classic-page main .history-card{
+ padding:clamp(22px,2.5vw,34px)!important;
+ border:1px solid var(--e-line)!important;border-radius:22px!important;
+ background:var(--e-surface)!important;box-shadow:none!important;
+}
+html body #root .site.is-classic-page main .history-card .history-head h3{
+ font-size:clamp(28px,2.4vw,39px)!important;line-height:1.12!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .history-card .history-head time{
+ font-size:18px!important;color:var(--e-mute)!important;
+}
+html body #root .site.is-classic-page main .history-card>p{
+ font-size:clamp(20px,1.45vw,24px)!important;line-height:1.45!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .history-card details>summary{
+ min-height:66px!important;padding:18px 5px!important;
+ font-size:21px!important;color:var(--e-ink)!important;font-weight:730!important;
+}
+html body #root .site.is-classic-page main .history-card .action-choices button{
+ min-height:68px!important;font-size:20px!important;padding:16px 20px!important;
+}
+html body #root .site.is-classic-page main button.history-more-records{
+ width:min(100%,1180px)!important;min-height:74px!important;
+ display:block!important;margin:26px auto!important;padding:20px 24px!important;
+ border:2px solid var(--e-line)!important;border-radius:18px!important;
+ font-size:22px!important;font-weight:730!important;
+ background:var(--e-surface)!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main button.history-more-records:hover{
+ border-color:var(--e-accent)!important;
+}
+html body #root .site.is-classic-page main .journey-question legend{
+ font-size:clamp(22px,1.7vw,27px)!important;line-height:1.35!important;
+}
+html body #root .site.is-classic-page main .journey-choice{
+ min-height:82px!important;padding:18px 22px!important;border-radius:18px!important;
+}
+html body #root .site.is-classic-page main .journey-choice span{
+ font-size:clamp(20px,1.45vw,23px)!important;line-height:1.35!important;
+}
+html body #root .site.is-classic-page main .journey-quiz-intro,
+html body #root .site.is-classic-page main .journey-signin-reminder{
+ font-size:clamp(18px,1.4vw,22px)!important;line-height:1.48!important;
+}
+html body #root .site.is-classic-page main .journey-quiz-actions button{
+ min-height:76px!important;font-size:21px!important;
+}
+@media(max-width:850px){
+ html body #root .site.is-classic-page main .history-card .history-head{
+  flex-direction:column!important;align-items:flex-start!important;
+ }
+ html body #root .site.is-classic-page main .history-card .action-choices{
+  flex-wrap:wrap!important;
+ }
+}
