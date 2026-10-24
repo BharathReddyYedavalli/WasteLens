@@ -67,6 +67,7 @@ const statuses:Record<RuleStatus,string>={
 
 export function inferDemoItem(itemName:string, material:string, profileId:string):string {
   const n=itemName.toLowerCase().trim();
+  void material; // Material alone is too uncertain to identify an item.
   // Material labels alone cannot reliably establish the item.
   if(!n.trim())return "";
   if(/phone case|phone charger|phone holder/.test(n))return "";
