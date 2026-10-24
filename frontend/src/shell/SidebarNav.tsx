@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   BookOpen, ClipboardList, Coins, History, Info, MapPin, Menu,
-  MessageCircle, ScanLine, ShieldCheck, Trophy, X,
+  MessageCircle, ScanLine, Trophy, X,
 } from "lucide-react";
 import AccountMenu from "../AccountMenu";
 import type { AppearanceTheme } from "../AccountMenu";
@@ -117,11 +117,6 @@ export default function SidebarNav({view,user,theme,onThemeChange,onNavigate}: P
             aria-current={view==="about"?"page":undefined} onClick={()=>navigate("about")}>
             <Info size={19} strokeWidth={1.75}/><span>{t("About")}</span>
           </button>
-          {user?.role==="admin" && <button type="button"
-            className={"fl-side-link"+(view==="admin"?" active":"")}
-            aria-current={view==="admin"?"page":undefined} onClick={()=>navigate("admin")}>
-            <ShieldCheck size={19} strokeWidth={1.75}/><span>{t("Admin")}</span>
-          </button>}
         </section>
       </nav>
       <p className="fl-side-signature">WASTELENS <span>© 2026</span></p>

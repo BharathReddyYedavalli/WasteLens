@@ -77,7 +77,9 @@ test("Single organization selector: Schools, Offices, Businesses, then Other loc
   assert.doesNotMatch(local,/<select id="local-rule-context"/);
   assert.doesNotMatch(local,/local-discovery-item/);
   assert.match(local,/id="scan-local-rules"/);
-  assert.match(panel,/wastelens-selected-institution/);
+  assert.match(panel,/const \[locationId,setLocationId\]=useState\(""/);
+  assert.doesNotMatch(panel,/wastelens-selected-institution/);
+  assert.doesNotMatch(panel,/window\.localStorage/);
   assert.match(panel,/profile\.sources\[0\]/);
   assert.match(panel,/Rules for this location aren't available yet/);
 });

@@ -152,16 +152,11 @@ export function inferDemoItem(itemName:string, material:string, profileId:string
 
 
 type Props={ itemName?:string; materialGuess?:string; isIdentified?:boolean };
-const storageKey="wastelens-selected-institution";
-
 export default function TexasDemoRules({itemName="",materialGuess="",isIdentified=false}:Props){
  const {t,language}=useLanguage();
- const [locationId,setLocationId]=useState(()=>{
-   try{
-     const value=window.localStorage.getItem(storageKey)||"";
-     return profiles.some(p=>p.id===value)?value:"";
-   }catch{return "";}
- });
+ // Start with no organization chosen for every new scan, including shared kiosks.
+ // The browser must not restore a previous person's organization from storage.
+ const [locationId,setLocationId]=useState("");
  const [correcting,setCorrecting]=useState(false);
  const [correction,setCorrection]=useState("");
  useEffect(()=>{setCorrecting(false);setCorrection("");},[itemName,materialGuess]);
@@ -180,7 +175,6 @@ export default function TexasDemoRules({itemName="",materialGuess="",isIdentifie
    setLocationId(next);
    setCorrecting(false);
    setCorrection("");
-   try{next==="other"?window.localStorage.removeItem(storageKey):window.localStorage.setItem(storageKey,next);}catch{/* Kiosks may disable localStorage. */}
  }
  return <div className="institution-rule-flow">
    <label htmlFor="institution-selector">{t("Where are you?")}

@@ -14,7 +14,8 @@ test("the left sidebar directly exposes every original page without a More panel
     "Waste audit","My activity","Leaderboard","About"]) {
     assert.ok(side.includes('label: "'+label+'"') || side.includes('t("'+label+'")'),label);
   }
-  assert.match(side,/user\?\.role==="admin"/);
+  assert.doesNotMatch(side,/navigate\("admin"\)/);
+  assert.doesNotMatch(side,/t\("Admin"\)/);
   assert.doesNotMatch(side,/tn-more|tn-panel|More menu/);
   assert.match(app,/<SidebarNav view=\{view\}/);
   assert.doesNotMatch(app,/<TopNav/);
