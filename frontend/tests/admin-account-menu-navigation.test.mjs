@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 const read = file => readFileSync(new URL("../src/" + file, import.meta.url), "utf8");
 const app = read("App.tsx");
 const nav = read("shell/SidebarNav.tsx");
+const legacyNav = read("shell/LegacyNavigation.tsx");
 const menu = read("AccountMenu.tsx");
 const account = read("AccountArea.tsx");
 const i18n = read("i18n.tsx");
@@ -12,7 +13,8 @@ const backend = readFileSync(new URL("../../backend/app/accounts.py", import.met
 
 test("all product features remain reachable in the new editorial navigation", () => {
   for (const item of ["Scan","Ask","Find a place","Bottle returns","Waste audit","Bottle journey","My activity","Leaderboard","About"]) {
-    assert.ok(nav.includes('label: "' + item + '"'),item);
+    assert.ok(nav.includes('label: "' + item + '"') || nav.includes('t("' + item + '")'),item);
+    assert.ok(legacyNav.includes('label: "' + item + '"') || legacyNav.includes('t("' + item + '")'),"Legacy: "+item);
   }
   assert.match(nav,/user\?\.role==="admin"/);
   assert.match(nav,/onNavigate\(next\)/);
@@ -39,4 +41,14 @@ test("Admin data authorization is still enforced independently of where the link
   assert.match(backend, /@router\.get\("\/admin\/feedback"\)/);
   assert.match(i18n, /"Admin dashboard": \{ es:/);
   assert.match(nav, /<select id="wastelens-lang"/);
+});
+
+test("Admin can switch between current and legacy visuals without losing navigation", () => {
+  assert.match(account, /aria-pressed=\{visualStyle === "legacy"\}/);
+  assert.match(account, /onVisualStyleChange\("legacy"\)/);
+  assert.match(account, /onVisualStyleChange\("claude"\)/);
+  assert.match(app, /wastelens-visual-style/);
+  assert.match(app, /<LegacyNavigation view=\{view\}/);
+  assert.match(app, /<SidebarNav view=\{view\}/);
+  assert.match(app, /mode=\{view\} visualStyle=\{visualStyle\}/);
 });
