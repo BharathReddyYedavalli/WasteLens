@@ -557,3 +557,22 @@
 @media(prefers-reduced-motion:reduce){
   .site.is-classic-page main .audit-option{transition:none!important;transform:none!important}
 }
+
+/* Hindi text needs native shaping and breathing room; never apply the
+   Latin display tracking to Devanagari. Spanish can wrap naturally. */
+.site.is-classic-page[data-lang="hi"] main :is(h1,h2,h3),
+.site.is-classic-page[data-lang="hi"] main .community-about-hero h1,
+.site.is-classic-page[data-lang="hi"] main .community-about-grid h2{
+  letter-spacing:normal!important;
+  line-height:1.33!important;
+  overflow-wrap:anywhere;
+}
+.site.is-sidebar-experiment[data-lang="hi"] .fl-side-link,
+.site.is-sidebar-experiment[data-lang="hi"] .fl-side-heading{
+  letter-spacing:normal!important;
+  line-height:1.35!important;
+}
+.site.is-sidebar-experiment[data-lang="es"] .fl-side-link{
+  white-space:normal;
+  overflow-wrap:break-word;
+}
