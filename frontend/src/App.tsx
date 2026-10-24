@@ -1,9 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
-  AlertTriangle, Camera, Check, ChevronDown, Leaf, Lightbulb, History,
-  MapPin, Recycle, RotateCcw, Search, ShieldAlert, Sparkles, Upload, MessageCircle, ScanLine, Trophy, ClipboardList, Coins, BookOpen, Info, Menu, X
+  AlertTriangle, Check, ChevronDown, Lightbulb,
+  MapPin, RotateCcw, Search, ShieldAlert, Sparkles, MessageCircle, ScanLine
 } from "lucide-react";
+import { gsap } from "gsap";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
 import RecyclingResults from "./RecyclingResults";
 import AskWasteLens from "./AskWasteLens";
@@ -16,9 +17,14 @@ import AuditKit from "./AuditKit";
 import AboutWasteLens from "./AboutWasteLens";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
-import AccountMenu, { useAppearanceTheme } from "./AccountMenu";
+import { useAppearanceTheme } from "./AccountMenu";
+import TopNav from "./shell/TopNav";
+import type { View } from "./shell/TopNav";
 import { ReadAloudButton, useSpeech } from "./Speech";
-import { LANGUAGES, useLanguage } from "./i18n";
+import { useLanguage } from "./i18n";
+
+// Three.js only loads on the home screen; camera, maps and every other page never pay for it.
+const ScanStage = lazy(() => import("./scan/ScanStage"));
 
 type PhotoPreview = { file: File; src: string };
 
@@ -27,10 +33,11 @@ function ErrorText({ message }: { message: string }) {
 }
 
 export default function App() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const [theme, setTheme] = useAppearanceTheme();
-  const [navOpen, setNavOpen] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [sweeping, setSweeping] = useState(false);
+  const [cameraStarting, setCameraStarting] = useState(false);
+  const pageRef = useRef<HTMLElement>(null);
   const { stop: stopReading } = useSpeech();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [statusError, setStatusError] = useState("");
@@ -41,7 +48,7 @@ export default function App() {
   const [result, setResult] = useState<VisionResponse | null>(null);
   const [location, setLocation] = useState("");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [view, setView] = useState<"identifier" | "chat" | "finder" | "account" | "history" | "admin" | "leaderboard" | "audit" | "deposits" | "journey" | "about">("identifier");
+  const [view, setView] = useState<View>("identifier");
   const [facilities, setFacilities] = useState<FacilitySearchResponse | null>(null);
   const [facilityBusy, setFacilityBusy] = useState(false);
   const [facilityError, setFacilityError] = useState("");
@@ -106,10 +113,21 @@ export default function App() {
     streamRef.current?.getTracks().forEach(track => track.stop());
   }, []);
 
+  // The viewfinder mounts after the 3D sweep ends, so bind the stream when the element appears.
+  function attachVideo(element: HTMLVideoElement | null) {
+    videoRef.current = element;
+    if (element && streamRef.current && element.srcObject !== streamRef.current) element.srcObject = streamRef.current;
+  }
+
   function stopCamera() {
     streamRef.current?.getTracks().forEach(track => track.stop());
     streamRef.current = null;
     setCamera(false);
+  }
+
+  function closeCamera() {
+    stopCamera();
+    setSweeping(false);
   }
 
   function clearPreview() {
@@ -120,7 +138,7 @@ export default function App() {
   }
 
   function reset() {
-    stopCamera();
+    closeCamera();
     clearPreview();
     setHint("");
     setResult(null);
@@ -139,8 +157,10 @@ export default function App() {
     setCameraError(""); setError(""); setResult(null); clearPreview();
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraError("Camera access requires localhost or HTTPS. Try uploading a photo instead.");
+      setSweeping(false);
       return;
     }
+    setCameraStarting(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: "environment" } },
@@ -151,7 +171,16 @@ export default function App() {
       setCamera(true);
     } catch {
       setCameraError("Camera access is blocked or unavailable. Enable browser permission or upload a photo.");
+      setSweeping(false);
+    } finally {
+      setCameraStarting(false);
     }
+  }
+
+  // Tap on the 3D bottle's Scan button: the sweep plays while the real camera permission resolves.
+  function beginScan() {
+    setSweeping(true);
+    void startCamera();
   }
 
   function selectPhoto(file?: File) {
@@ -161,6 +190,7 @@ export default function App() {
       return;
     }
     stopCamera();
+    setSweeping(false);
     setResult(null); setError(""); setCameraError("");
     setPreview(previous => {
       if (previous) URL.revokeObjectURL(previous.src);
@@ -245,7 +275,7 @@ export default function App() {
     setSelectedFacility(null);
     try {
       const hasGoogleMapsKey = Boolean((import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim());
-      // Resolve ZIP offline for Google; query Overpass only when we fall back.
+      // Resolve ZIP offline for Google; query Overpass only for fallback.
       const endpoint = hasGoogleMapsKey ? "/api/facilities/center" : "/api/facilities";
       const response = await fetch(endpoint + "?zip_code=" + encodeURIComponent(zipCode.trim()));
       const searchResults = await readJson<FacilitySearchResponse>(response);
@@ -291,8 +321,7 @@ export default function App() {
     return !(needsConfirmation && /^the photo alone is not enough to confirm safe disposal\.?$/.test(normalized));
   }) ?? [];
   function openPage(next: typeof view, fromScan = false) {
-    stopCamera();
-    setNavOpen(false);
+    closeCamera();
     if (next === "finder") {
       setFinderScan(fromScan && analysis ? analysis.item_name : null);
       // A Scan-to-Finder transition uses the ZIP already entered in local rules.
@@ -307,167 +336,83 @@ export default function App() {
     setView(next);
   }
   function returnToScannedItem() {
-    stopCamera();
-    setNavOpen(false);
+    closeCamera();
     // Blur View scan before hiding Ask so Safari doesn't restore focus scroll.
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setView("identifier");
   }
 
-  useEffect(() => {
-    if (!navOpen) return;
-    const dismiss = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setNavOpen(false);
-        menuButtonRef.current?.focus();
-      }
-    };
-    const screenChanged = () => {
-      if (window.innerWidth > 900) setNavOpen(false);
-    };
-    window.addEventListener("keydown", dismiss);
-    window.addEventListener("resize", screenChanged);
-    document.querySelector<HTMLButtonElement>(".community-navigation .nav-item")?.focus();
-    return () => {
-      window.removeEventListener("keydown", dismiss);
-      window.removeEventListener("resize", screenChanged);
-    };
-  }, [navOpen]);
+  const showStage = (!camera && !preview) || sweeping;
+  const stageMode = view === "identifier" && showStage && !analysis;
 
-  return <div className="site" data-theme={theme}>
+  // Page-level reveal: every view, including the camera and results, settles in the same way.
+  useLayoutEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !pageRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".reveal", { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.07, clearProps: "transform,opacity" });
+    }, pageRef);
+    return () => ctx.revert();
+  }, [view, camera, Boolean(preview), Boolean(analysis), stageMode]);
+
+  return <div className={"site" + (stageMode ? " is-stage" : "")} data-theme={theme} data-lang={language}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
-    <header className="topbar">
-      <button ref={menuButtonRef} type="button" className="community-menu-toggle"
-        aria-label={navOpen ? t("Close menu") : t("Open menu")}
-        aria-expanded={navOpen} aria-controls="wastelens-primary-navigation"
-        onClick={() => setNavOpen(current => !current)}>
-        {navOpen ? <X size={23}/> : <Menu size={23}/>}
-      </button>
-      <button type="button" className="brand" onClick={() => openPage("identifier")}><span className="brand-mark"><Leaf size={24} strokeWidth={2.5}/></span><strong>WasteLens</strong></button>
-      <div className="topbar-actions">
-        <div className="language-picker">
-          <label htmlFor="wastelens-lang" className="visually-hidden">{t("Choose language")}</label>
-          <select id="wastelens-lang" aria-label={t("Choose language")} value={language} onChange={event => setLanguage(event.target.value as typeof language)}>
-            {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
-          </select>
-        </div>
-        <AccountMenu user={user} theme={theme} onThemeChange={setTheme}
-          onNavigate={next => openPage(next)}/>
-      </div>
-    </header>
-    {navOpen && <button type="button" className="community-nav-backdrop"
-      aria-label={t("Close menu")} onClick={() => setNavOpen(false)}/>}
-    <div className="site-layout">
-      <aside id="wastelens-primary-navigation"
-        className={"side-nav community-navigation" + (navOpen ? " is-open" : "")}
-        aria-label="WasteLens navigation">
-        <div className="community-nav-scroll">
-          <div className="community-nav-group" aria-label={t("Understand")}>
-            <span className="community-nav-heading">{t("UNDERSTAND")}</span>
-            <button type="button" className={view === "identifier" ? "nav-item active" : "nav-item"}
-              aria-current={view === "identifier"?"page":undefined} onClick={() => openPage("identifier")}>
-              <ScanLine size={18}/>{t("Scan")}</button>
-            <button type="button" className={view === "chat" ? "nav-item active" : "nav-item"}
-              aria-current={view === "chat"?"page":undefined} onClick={() => openPage("chat")}>
-              <MessageCircle size={18}/>{t("Ask")}</button>
-            <button type="button" className={view === "journey" ? "nav-item active" : "nav-item"}
-              aria-current={view === "journey"?"page":undefined} onClick={() => openPage("journey")}>
-              <BookOpen size={18}/>{t("Bottle journey")}</button>
-          </div>
-          <div className="community-nav-group" aria-label={t("Take action")}>
-            <span className="community-nav-heading">{t("TAKE ACTION")}</span>
-            <button type="button" className={view === "finder" ? "nav-item active" : "nav-item"}
-              aria-current={view === "finder"?"page":undefined} onClick={() => openPage("finder")}>
-              <MapPin size={18}/>{t("Find a place")}</button>
-            <button type="button" className={view === "deposits" ? "nav-item active" : "nav-item"}
-              aria-current={view === "deposits"?"page":undefined} onClick={() => openPage("deposits")}>
-              <Coins size={18}/>{t("Bottle returns")}</button>
-            <button type="button" className={view === "audit" ? "nav-item active" : "nav-item"}
-              aria-current={view === "audit"?"page":undefined} onClick={() => openPage("audit")}>
-              <ClipboardList size={18}/>{t("Waste audit")}</button>
-          </div>
-          <div className="community-nav-group" aria-label={t("Progress")}>
-            <span className="community-nav-heading">{t("PROGRESS")}</span>
-            <button type="button" className={view === "history" ? "nav-item active" : "nav-item"}
-              aria-current={view === "history"?"page":undefined} onClick={() => openPage("history")}>
-              <History size={18}/>{t("My activity")}</button>
-            <button type="button" className={view === "leaderboard" ? "nav-item active" : "nav-item"}
-              aria-current={view === "leaderboard"?"page":undefined} onClick={() => openPage("leaderboard")}>
-              <Trophy size={18}/>{t("Leaderboard")}</button>
-          </div>
-        </div>
-        <button type="button" className={"nav-item community-about-nav "+(view === "about"?"active":"")}
-          aria-current={view === "about"?"page":undefined}
-          onClick={() => openPage("about")}><Info size={18}/>{t("About")}</button>
-      </aside>
-      <div className="page-content">
-    <main id="main-content" className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
+    <TopNav view={view} user={user} theme={theme} onThemeChange={setTheme} onNavigate={next => openPage(next)} />
+    <main id="main-content" ref={pageRef} className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
       {view === "identifier" ? <>
-      <div className="intro">
-        <div className="intro-copy">
-          <h1>{t("Before you toss it, scan it.")}</h1>
-          <p>{t("Scan an item, then check how your local program handles it.")}</p>
+      <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label={t("Upload item photo")}/>
+      {stageMode ? <div className="stage-wrap">
+        <h1 className="visually-hidden">{t("Before you toss it, scan it.")}</h1>
+        <p className="visually-hidden">{t("Scan an item, then check how your local program handles it.")}</p>
+        <Suspense fallback={<div className="es-fallback" aria-busy="true"/>}>
+          <ScanStage scanning={sweeping} waiting={cameraStarting} onScan={beginScan}
+            onChoosePhoto={() => uploadRef.current?.click()} onSweepDone={() => setSweeping(false)}/>
+        </Suspense>
+        <div className="stage-status">
+          {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>{t("Add your Gemini API key in the")} <code>.env</code> {t("file and restart the backend.")}</span></div>}
+          {statusError && <ErrorText message={statusError}/>}
+          {cameraError && <ErrorText message={cameraError}/>}
+          {error && <ErrorText message={error}/>}
         </div>
-        <div className="intro-art" aria-hidden="true">
-          <span className="intro-art-circle one"></span>
-          <span className="intro-art-circle two"></span>
-          <Recycle size={58} strokeWidth={1.8}/>
+      </div> : !analysis ? <section className="cap" aria-label={t("Take a picture")}>
+        <div className="cap-view reveal">
+          {camera ? <video ref={attachVideo} autoPlay muted playsInline aria-label="Live camera preview"/> :
+            preview ? <img src={preview.src} alt="Your selected item photograph"/> : null}
+          <i className="cap-c tl"/><i className="cap-c tr"/><i className="cap-c bl"/><i className="cap-c br"/>
+          {camera && <span className="cap-reticle" aria-hidden="true"/>}
+          {busy && <div className="cap-busy" role="status"><span className="cap-line" aria-hidden="true"/><b>{t("Looking at it…")}</b></div>}
         </div>
-      </div>
-      <div className="workspace">
-        <div className="workspace-head">
-          <div className="head-with-icon">
-            <div className="round-icon"><Camera size={19}/></div>
-            <div><h2>{t("Take a picture")}</h2></div>
-          </div>
-        </div>
-        <div className="camera-stage">
-          {camera ? <video ref={videoRef} autoPlay muted playsInline aria-label="Live camera preview"/> :
-            preview ? <img src={preview.src} alt="Your selected item photograph"/> :
-            <div className="camera-empty">
-              <div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
-              <p>{t("Use your camera or choose a photo.")}</p>
-            </div>}
-        </div>
-
-        <div className="camera-controls">
-          <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label={t("Upload item photo")}/>
-          {!camera && !preview && <>
-            <button className="button primary" type="button" onClick={() => void startCamera()}><Camera size={18}/> {t("Use camera")}</button>
-            <button className="button outline" type="button" onClick={() => uploadRef.current?.click()}><Upload size={18}/> {t("Choose a photo")}</button>
-          </>}
+        <div className="cap-bar reveal">
           {camera && <>
-            <button className="button primary" type="button" onClick={capture}><Camera size={18}/> {t("Take picture")}</button>
-            <button className="button outline" type="button" onClick={stopCamera}>{t("Close camera")}</button>
+            <button className="es-ghost" type="button" onClick={closeCamera}>{t("Close camera")}</button>
+            <button className="cap-shutter" type="button" onClick={capture} aria-label={t("Take picture")}><span/></button>
+            <span className="cap-hint">{t("Frame one item")}</span>
           </>}
           {preview && <>
-            <button className="button primary" type="button" onClick={() => void analyze()} disabled={busy || !status?.configured}>
-              {busy ? t("Looking at it…") : <><Sparkles size={18}/> {t("Identify item")}</>}
+            <button className="es-ghost" type="button" onClick={reset} disabled={busy}><RotateCcw size={18}/> {t("Try another photo")}</button>
+            <button className="es-cta" type="button" onClick={() => void analyze()} disabled={busy || !status?.configured}>
+              <span className="es-ring" aria-hidden="true"/>{busy ? t("Looking at it…") : t("Identify item")}
             </button>
-            <button className="button outline" type="button" onClick={reset} disabled={busy}><RotateCcw size={18}/> {t("Try another photo")}</button>
+            <div className="cap-focus hint-area">
+              <label htmlFor="hint">{t("Focus on one item")} <span>{t("Optional")}</span></label>
+              <input id="hint" maxLength={160} value={hint} disabled={busy}
+                onChange={event => {setHint(event.target.value); setResult(null);}}
+                placeholder={t("Example: The blue bottle I'm holding")}/>
+            </div>
           </>}
         </div>
-        {preview && <div className="hint-area">
-          <label htmlFor="hint">{t("Focus on one item")} <span>{t("Optional")}</span></label>
-          <input id="hint" maxLength={160} value={hint} disabled={busy}
-            onChange={event => {setHint(event.target.value); setResult(null);}}
-            placeholder={t("Example: The blue bottle I'm holding")}/>
-        </div>}
-        {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>{t("Add your Gemini API key in the")} <code>.env</code> {t("file and restart the backend.")}</span></div>}
-        {statusError && <ErrorText message={statusError}/>}
-        {cameraError && <ErrorText message={cameraError}/>}
-        {error && <ErrorText message={error}/>}
-      </div>
-
-      {!analysis && <div className="community-mission-path" aria-label={t("Quick links")}>
-              <button type="button" onClick={() => openPage("finder")}><MapPin size={19}/>
-                <strong>{t("Find a place")}</strong></button>
-              <button type="button" onClick={() => openPage("audit")}><ClipboardList size={19}/>
-                <strong>{t("Run an audit")}</strong></button>
-      </div>}
-      {analysis && <section id="scan-results" className="results" aria-live="polite"
-        style={{scrollMarginTop:"calc(var(--wl-topbar-height, 76px) + 18px)"}}>
+        <div className="cap-alerts">
+          {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>{t("Add your Gemini API key in the")} <code>.env</code> {t("file and restart the backend.")}</span></div>}
+          {statusError && <ErrorText message={statusError}/>}
+          {cameraError && <ErrorText message={cameraError}/>}
+          {error && <ErrorText message={error}/>}
+        </div>
+      </section> : null}
+      {analysis && <section id="scan-results" className="results res-layout" aria-live="polite">
+        {preview && <aside className="res-photo reveal">
+          <img src={preview.src} alt="Your selected item photograph"/>
+          <button className="es-ghost" type="button" onClick={reset}><RotateCcw size={18}/> {t("Try another photo")}</button>
+        </aside>}
         <div className="result-title">
           <div>
             <h2>{analysis.item_name}</h2>
@@ -625,9 +570,6 @@ export default function App() {
         <AskWasteLens scan={analysis ?? null} configured={Boolean(status?.configured)}
           onScan={returnToScannedItem}/>
       </div>
-      
     </main>
-      </div>
-    </div>
   </div>;
 }
