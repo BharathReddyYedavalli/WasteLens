@@ -15,10 +15,10 @@ router = APIRouter(prefix="/api")
 
 BADGES = (
     (1, "First Find", "Scan your first item", "sprout"),
-    (5, "Getting Curious", "Earn XP from five scans", "search"),
-    (10, "Sorting Star", "Earn XP from ten scans", "star"),
-    (25, "Everyday Hero", "Earn XP from 25 scans", "leaf"),
-    (50, "Waste Wise", "Earn XP from 50 scans", "trophy"),
+    (5, "Getting Curious", "Save five scans", "search"),
+    (10, "Sorting Star", "Save ten scans", "star"),
+    (25, "Everyday Hero", "Save 25 scans", "leaf"),
+    (50, "Waste Wise", "Save 50 scans", "trophy"),
 )
 XP_PER_SCAN = 20
 DAILY_LIMIT = 10
@@ -32,14 +32,14 @@ class ActionRequest(BaseModel):
     action: str
 
 
-def _badges(rewarded: int):
+def _badges(saved_scans: int):
     return [
         {
             "id": symbol,
             "name": name,
             "description": description,
             "threshold": count,
-            "unlocked": rewarded >= count,
+            "unlocked": saved_scans >= count,
         }
         for count, name, description, symbol in BADGES
     ]
@@ -79,7 +79,7 @@ def leaderboard(request: Request):
                 "rank": rank, "name": record["name"], "xp": record["xp"],
                 "level": 1 + record["xp"] // 100,
                 "scans": stats["scans"], "actions": stats["actions"],
-                "badges": sum(b["unlocked"] for b in _badges(record["rewarded_scans"])) + stats["quiz_badges"],
+                "badges": sum(b["unlocked"] for b in _badges(stats["scans"])) + stats["quiz_badges"],
                 "is_you": bool(user and record["id"] == user["id"]),
             })
         me = None
@@ -93,7 +93,7 @@ def leaderboard(request: Request):
                 **stats, "level": 1 + xp // 100, "level_progress": xp % 100,
                 "level_goal": 100,
                 "visible": bool(setting["leaderboard_visible"]),
-                "badges": _badges(stats["rewarded_scans"]) + [{
+                "badges": _badges(stats["scans"]) + [{
                     "id": "bottle-explorer",
                     "name": "Bottle Explorer",
                     "description": "Pass the bottle journey quiz",
@@ -154,25 +154,26 @@ def xp_for_scan(scan_id: int) -> int:
 
 
 def new_badges_for_scan(scan_id: int) -> list[dict]:
-    """Only the scan which crosses an award threshold returns a new badge.
+    """Award saved-scan milestones consistently with the visible scan counter.
 
-    This derives unlocks from the saved reward row, so a repeated image,
-    uncertain scan, or a reload cannot trigger a second celebration.
+    XP still requires unique/confident photos and respects daily caps. A scan
+    milestone is based on records, not rewards, and cannot celebrate again for
+    the same scan when the page is refreshed.
     """
     with database() as db:
-        reward = db.execute(
-            "SELECT user_id FROM scan_rewards WHERE scan_id=?", (scan_id,)
+        scan = db.execute(
+            "SELECT user_id FROM scans WHERE id=?", (scan_id,)
         ).fetchone()
-        if not reward:
+        if not scan:
             return []
-        rewarded_count = db.execute(
-            """SELECT COUNT(*) FROM scan_rewards
-               WHERE user_id=? AND scan_id<=?""",
-            (reward["user_id"], scan_id),
+        saved_count = db.execute(
+            """SELECT COUNT(*) FROM scans
+               WHERE user_id=? AND id<=?""",
+            (scan["user_id"], scan_id),
         ).fetchone()[0]
     return [
-        badge for badge in _badges(rewarded_count)
-        if badge["threshold"] == rewarded_count and badge["unlocked"]
+        badge for badge in _badges(saved_count)
+        if badge["threshold"] == saved_count and badge["unlocked"]
     ]
 
 
