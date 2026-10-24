@@ -37,11 +37,11 @@ export function createScene(canvas: HTMLCanvasElement) {
   scene.environment = env;
 
   const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 50);
-  // Station framing: fit the complete bottle ABOVE the fixed Scan action dock.
-  // Camera projection is also used by the animated component callouts, so
-  // moving the camera (rather than CSS-scaling the canvas) keeps them aligned.
-  const stationCameraDistance = 10.25;
-  const stationCameraTargetY = 0.9;
+  // Restore the large, centered bottle layered over the hero lettering.
+  // Framing still leaves clearance above the slimmer bottom Scan dock.
+  // Camera-space callouts and pointer rotation keep their original alignment.
+  const stationCameraDistance = 7.9;
+  const stationCameraTargetY = 0.95;
   camera.position.set(0, stationCameraTargetY, stationCameraDistance);
   camera.lookAt(0, stationCameraTargetY, 0);
 
@@ -133,9 +133,9 @@ export function createScene(canvas: HTMLCanvasElement) {
     const { clientWidth: w, clientHeight: h } = canvas;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // Keep the cap AND base visible above the lower action panel, including
-    // shorter and portrait touchscreens. The bottle is ~2.3 world units tall.
-    const usableVerticalPixels = Math.max(245, h - 330);
+    // Leave sufficient room for the topbar and the slimmer action dock;
+    // only zoom out when the viewport is too short/narrow for the full bottle.
+    const usableVerticalPixels = Math.max(230, h - 255);
     const verticalHalfFovRadians = THREE.MathUtils.degToRad(camera.fov / 2);
     const distanceForDock = 2.3 * h / (2 * Math.tan(verticalHalfFovRadians) * usableVerticalPixels);
     camera.position.z = Math.max(
