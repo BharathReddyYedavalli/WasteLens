@@ -1,0 +1,213 @@
+/*
+ * Google Places / editorial kiosk integration.
+ * Scoped to Google results: the Leaflet fallback keeps its own layout.
+ * This file loads after editorial.css because legacy station styles still
+ * impose fixed heights and high-specificity surface rules.
+ */
+html[data-wl-theme] body .site.site .google-places-shell{
+  overflow:hidden!important;
+  width:100%;
+}
+html[data-wl-theme] body .site.site .google-places-shell .map-summary{
+  margin:0!important;
+  padding:22px clamp(18px,2.2vw,32px)!important;
+  min-height:110px;
+  gap:20px;
+}
+html[data-wl-theme] body .site.site .google-places-shell .map-summary-stats strong{
+  font-size:clamp(32px,3.4vw,52px)!important;
+  line-height:1!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .map-explorer{
+  display:grid!important;
+  grid-template-columns:minmax(300px,0.85fr) minmax(0,1.5fr)!important;
+  gap:clamp(18px,2.4vw,32px)!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  align-items:stretch!important;
+  padding:clamp(14px,1.7vw,24px) clamp(18px,2.2vw,32px)!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .facility-side-panel{
+  display:block;
+  min-width:0!important;
+  min-height:0!important;
+  height:clamp(480px,62vh,680px)!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  position:relative;
+  border:0!important;
+  border-right:1px solid var(--e-line)!important;
+  padding-right:clamp(10px,1vw,16px)!important;
+  background:transparent!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .facility-side-heading{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:var(--e-bg)!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:54px;
+  padding:10px 0!important;
+}
+.site.site .google-places-shell .facility-side-heading small{
+  font:500 11px var(--e-mono);
+  color:var(--e-mute);
+  letter-spacing:0;
+  text-transform:none;
+  white-space:nowrap;
+}
+html[data-wl-theme] body .site.site .google-places-shell .location-entry{
+  position:relative;
+  border-top:1px solid var(--e-line)!important;
+  padding:0 4px!important;
+  min-width:0!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .location-entry.selected{
+  box-shadow:inset 3px 0 0 var(--e-accent)!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .location-card{
+  width:100%;
+  min-height:0!important;
+  padding:16px 8px 8px!important;
+  border:0!important;
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+  overflow-wrap:anywhere;
+}
+html[data-wl-theme] body .site.site .google-places-shell .location-entry :is(strong,h3,h4){
+  font-size:clamp(16px,1.35vw,21px)!important;
+  line-height:1.22!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .location-info small{
+  line-height:1.45;
+  font-size:13px!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .location-meta{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell a.facility-official-link{
+  display:inline-flex;
+  max-width:calc(100% - 40px);
+  gap:6px;
+  margin:2px 0 16px 40px!important;
+  padding:0 16px!important;
+  min-height:44px!important;
+  font-size:12px!important;
+  white-space:normal;
+}
+html[data-wl-theme] body .site.site .google-places-shell .map-visual{
+  position:relative!important;
+  overflow:hidden!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:clamp(480px,62vh,680px)!important;
+  border-radius:12px!important;
+  align-self:stretch;
+}
+html[data-wl-theme] body .site.site .google-places-shell .google-map-canvas{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  overflow:hidden!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .google-map-footer{
+  position:static!important;
+  clear:both;
+  display:flex!important;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px 24px;
+  margin:0!important;
+  padding:16px clamp(18px,2.2vw,32px)!important;
+  border-top:1px solid var(--e-line);
+  background:transparent!important;
+}
+html[data-wl-theme] body .site.site .google-places-shell .google-map-caution{
+  position:static!important;
+  margin:0!important;
+  padding:0!important;
+  min-width:240px;
+  max-width:62ch;
+  flex:1;
+  color:var(--e-mute)!important;
+  font:400 13px/1.5 var(--e-sans);
+}
+html[data-wl-theme] body .site.site .google-places-shell .google-map-fallback{
+  position:static!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px!important;
+  margin:0!important;
+  padding:10px 20px!important;
+  flex-shrink:0;
+  background:transparent!important;
+  color:var(--e-ink)!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:999px!important;
+  font:500 13px var(--e-sans)!important;
+}
+.site .google-places-shell .google-map-fallback:hover{
+  border-color:var(--e-ink)!important;
+}
+.site .google-places-shell :is(.location-card,.google-map-fallback,.facility-official-link):focus-visible{
+  outline:3px solid var(--e-accent)!important;
+  outline-offset:2px;
+}
+@media(max-width:1100px){
+  html[data-wl-theme] body .site.site .google-places-shell .map-explorer{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:16px!important;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .map-visual{
+    grid-row:1;
+    height:clamp(320px,45vh,460px)!important;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .facility-side-panel{
+    grid-row:2;
+    height:360px!important;
+    border-right:0!important;
+    border-top:1px solid var(--e-line)!important;
+    padding-right:0!important;
+  }
+}
+@media(max-width:600px){
+  html[data-wl-theme] body .site.site .google-places-shell .map-summary{
+    min-height:0;
+    padding:16px!important;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .map-explorer{
+    padding:16px!important;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .map-visual{
+    height:320px!important;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .facility-side-panel{
+    height:380px!important;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .google-map-footer{
+    padding:16px!important;
+    align-items:stretch;
+  }
+  html[data-wl-theme] body .site.site .google-places-shell .google-map-caution{
+    min-width:0;
+    flex-basis:100%;
+  }
+}
