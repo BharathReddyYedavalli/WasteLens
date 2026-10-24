@@ -1,5 +1,22 @@
 /* Additional translations for the existing English/Spanish/Hindi interface. */
 export const moreTranslations:Record<string,{es:string;hi:string}> = {
+  "Frame one item": {"es":"Encuadra un solo objeto","hi":"एक वस्तु को फ़्रेम में रखें"},
+  "Before you": {"es":"Antes de","hi":"फेंकने से"},
+  "toss it.": {"es":"tirarlo.","hi":"पहले।"},
+  "Point at any item.": {"es":"Apunta a cualquier objeto.","hi":"किसी भी वस्तु की ओर कैमरा करें।"},
+  "Know exactly where it goes.": {"es":"Sabrás exactamente dónde va.","hi":"जानें कि वह कहाँ जाती है।"},
+  "Opening camera…": {"es":"Abriendo la cámara…","hi":"कैमरा खुल रहा है…"},
+  "Demo bottle · drag to turn": {"es":"Botella de muestra · arrastra para girar","hi":"नमूना बोतल · घुमाने के लिए खींचें"},
+  "Interactive 3D water bottle. Drag to rotate.": {"es":"Botella de agua 3D interactiva. Arrastra para girar.","hi":"इंटरैक्टिव 3D पानी की बोतल। घुमाने के लिए खींचें।"},
+  "Cap": {"es":"Tapa","hi":"ढक्कन"},
+  "Label": {"es":"Etiqueta","hi":"लेबल"},
+  "Body": {"es":"Cuerpo","hi":"मुख्य भाग"},
+  "Polypropylene": {"es":"Polipropileno","hi":"पॉलीप्रोपाइलीन"},
+  "Paper": {"es":"Papel","hi":"काग़ज़"},
+  "PET plastic": {"es":"Plástico PET","hi":"PET प्लास्टिक"},
+  "More": {"es":"Más","hi":"और"},
+  "Menu": {"es":"Menú","hi":"मेनू"},
+  "Explore": {"es":"Explorar","hi":"देखें"},
   "Administrator": {"es":"Administrador","hi":"व्यवस्थापक"},
   "Please wait…": {
     "es": "Espera…",
