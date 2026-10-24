@@ -10,7 +10,7 @@ const audit = source("AuditKit.tsx");
 const lang = source("i18n.tsx");
 const css = source("kiosk-presentation.css");
 const entry = source("main.tsx");
-const nav = source("shell/TopNav.tsx");
+const nav = source("shell/SidebarNav.tsx");
 
 test("homepage keeps its established heading and an actionable message", () => {
   assert.match(app, /t\("Before you toss it, scan it\."\)/);
