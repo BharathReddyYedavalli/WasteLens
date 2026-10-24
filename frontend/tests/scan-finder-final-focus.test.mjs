@@ -31,7 +31,7 @@ test("Local rules retain critical safeguards with much smaller postal note", () 
   assert.doesNotMatch(guide, /Guidance is for this selected residential service/);
   assert.match(guide, /<TexasDemoRules itemName=\{scanItemName\}/);
   assert.doesNotMatch(guide, /local-rule-zip/);
-  assert.match(institution, /wastelens-selected-institution/);
+  assert.match(institution, /const \[locationId,setLocationId\]=useState\(""/);
   assert.match(institution, /const selectedItem=correcting\?correction:inferred/);
   assert.match(institution, /rule\?\.source_url\|\|profile\.sources\[0\]/);
   assert.match(styles, /\.scan-decision-unified/);
