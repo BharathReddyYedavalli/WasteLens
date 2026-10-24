@@ -49,7 +49,7 @@ test("existing scanner, checklist, local rules, map, audits, and rewards stay wi
   assert.match(app,/view === "audit" \? <AuditKit/);
   assert.match(app, /className="scan-feedback-inline"/);
   assert.match(app, /onNavigate=\{next => openPage\(next\)\}/);
-  assert.match(app, /openPage\("finder"\)/);
+  assert.match(app, /openPage\("finder", true\)/);
 });
 
 test("presentation CSS is last, responsive, and alternate-theme aware", () => {
