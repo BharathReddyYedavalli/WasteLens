@@ -8,6 +8,15 @@ const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const SWEEP_SECONDS = 1.7;
 
+// The AQUA label is printed near the center of the cylindrical texture.
+// Enter from its back, complete one full turn plus the half-turn required
+// to finish with the printed front facing the camera.
+const LABEL_FRONT_YAW = -Math.PI;
+const BOTTLE_ENTRANCE_START = LABEL_FRONT_YAW + Math.PI;
+const BOTTLE_ENTRANCE_END = LABEL_FRONT_YAW + Math.PI * 4;
+const BOTTLE_ENTRANCE_MS = 2200;
+const EYE_TRAVEL_PX = 11;
+
 const NOTES = [
   { id: "cap", n: "01", title: "Cap", body: "Polypropylene" },
   { id: "label", n: "02", title: "Label", body: "Paper" },
@@ -52,21 +61,40 @@ export default function ScanStage({ scanning, waiting, onScan, onChoosePhoto, on
     const S = createScene(canvas);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const idleVel = reduce ? 0 : 0.32;
-    let yaw = -0.9, vel = idleVel, tilt = 0, px = 0, py = 0, sx = 0, sy = 0;
-    let dragging = false, lastX = 0, scanStart = 0, wasScanning = false, doneFired = false;
+    let yaw = reduce ? LABEL_FRONT_YAW : BOTTLE_ENTRANCE_START;
+    let vel = idleVel, tilt = 0, px = 0, py = 0, sx = 0, sy = 0;
+    let dragging = false, introInterrupted = false, lastX = 0;
+    let eyeTargetX = 0, eyeTargetY = 0, eyeX = 0, eyeY = 0;
+    let scanStart = 0, wasScanning = false, doneFired = false;
     const v = new THREE.Vector3(), q = new THREE.Vector3();
     const t0 = performance.now();
 
     const onMove = (e: PointerEvent) => {
       px = (e.clientX / innerWidth) * 2 - 1; py = (e.clientY / innerHeight) * 2 - 1;
+
+      // Only the pupil follows the pointer. The circular eye stays fixed
+      // and the pupil remains within its original 46px shell.
+      const eye = pipRef.current;
+      if (eye && e.pointerType !== "touch") {
+        const bounds = eye.getBoundingClientRect();
+        const dx = e.clientX - (bounds.left + bounds.width / 2);
+        const dy = e.clientY - (bounds.top + bounds.height / 2);
+        const distance = Math.hypot(dx, dy);
+        const travel = EYE_TRAVEL_PX * Math.min(1, distance / 125);
+        eyeTargetX = distance ? dx / distance * travel : 0;
+        eyeTargetY = distance ? dy / distance * travel : 0;
+      }
       if (dragging) { const d = e.clientX - lastX; lastX = e.clientX; yaw += d * 0.008; vel = d * 0.06; }
     };
+    const onPointerLeave = () => { eyeTargetX = 0; eyeTargetY = 0; };
     const onDown = (e: PointerEvent) => {
       if (live.current.scanning) return;
+      introInterrupted = true;
       dragging = true; lastX = e.clientX; canvas.setPointerCapture?.(e.pointerId);
     };
     const onUp = () => { dragging = false; };
     window.addEventListener("pointermove", onMove);
+    document.documentElement.addEventListener("pointerleave", onPointerLeave);
     canvas.addEventListener("pointerdown", onDown);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
@@ -83,7 +111,13 @@ export default function ScanStage({ scanning, waiting, onScan, onChoosePhoto, on
       const intro = ease(clamp01((now - t0) / 1600));
 
       sx += (px - sx) * 0.06; sy += (py - sy) * 0.06;
-      if (!dragging) { vel += (idleVel - vel) * 0.02; yaw += vel * dt; }
+      const bottleEntrance = clamp01((now - t0) / BOTTLE_ENTRANCE_MS);
+      if (!reduce && !introInterrupted && !scan && !dragging && bottleEntrance < 1) {
+        yaw = THREE.MathUtils.lerp(BOTTLE_ENTRANCE_START, BOTTLE_ENTRANCE_END, ease(bottleEntrance));
+      } else if (!dragging) {
+        vel += (idleVel - vel) * 0.02;
+        yaw += vel * dt;
+      }
       if (scan) yaw += (Math.round(yaw / (Math.PI * 2)) * Math.PI * 2 + 0.35 - yaw) * 0.04;
       tilt += (sy * 0.09 - tilt) * 0.08;
       S.group.rotation.set(tilt + 0.04, yaw + sx * 0.18, -sx * 0.025);
@@ -112,13 +146,17 @@ export default function ScanStage({ scanning, waiting, onScan, onChoosePhoto, on
         el.style.transform = `translate(${(v.x * 0.5 + 0.5) * canvas.clientWidth}px, ${(-v.y * 0.5 + 0.5) * canvas.clientHeight}px)`;
         el.style.opacity = !scan && intro > 0.9 && facing ? "1" : "0";
       }
-      pipRef.current?.style.setProperty("--px", `${sx * 3.2}px`);
-      pipRef.current?.style.setProperty("--py", `${sy * 3.2}px`);
+      eyeX += (eyeTargetX - eyeX) * 0.16;
+      eyeY += (eyeTargetY - eyeY) * 0.16;
+      pipRef.current?.style.setProperty("--px", `${eyeX.toFixed(2)}px`);
+      pipRef.current?.style.setProperty("--py", `${eyeY.toFixed(2)}px`);
     };
     raf = requestAnimationFrame(loop);
     return () => {
       cancelAnimationFrame(raf); ro.disconnect();
-      window.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", onPointerLeave);
+      canvas.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp); window.removeEventListener("pointercancel", onUp);
       S.dispose();
     };
@@ -148,9 +186,8 @@ export default function ScanStage({ scanning, waiting, onScan, onChoosePhoto, on
           </button>
           <button className="es-ghost" type="button" onClick={onChoosePhoto} disabled={scanning}>{t("Choose a photo")}</button>
         </div>
-        <p className="es-index es-rise"><span>01</span> / {t("Scan")}<small>{t("Demo bottle · drag to turn")}</small></p>
       </div>
-      <div className="es-pip" ref={pipRef} aria-hidden="true"><span /></div>
+      <div className="es-pip" ref={pipRef} aria-hidden="true" style={{ pointerEvents: "none" }}><span /></div>
     </section>
   );
 }
