@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 
 const read = file => readFileSync(new URL("../src/" + file, import.meta.url), "utf8");
 const app = read("App.tsx");
-const nav = read("shell/TopNav.tsx");
+const nav = read("shell/SidebarNav.tsx");
 const menu = read("AccountMenu.tsx");
 const account = read("AccountArea.tsx");
 const i18n = read("i18n.tsx");
@@ -14,9 +14,9 @@ test("all product features remain reachable in the new editorial navigation", ()
   for (const item of ["Scan","Ask","Find a place","Bottle returns","Waste audit","Bottle journey","My activity","Leaderboard","About"]) {
     assert.ok(nav.includes('label: "' + item + '"'),item);
   }
-  assert.match(nav,/user\?\.role === "admin"/);
+  assert.match(nav,/user\?\.role==="admin"/);
   assert.match(nav,/onNavigate\(next\)/);
-  assert.match(app, /<TopNav view=\{view\} user=\{user\}/);
+  assert.match(app, /<SidebarNav view=\{view\} user=\{user\}/);
   assert.match(app, /onNavigate=\{next => openPage\(next\)\}/);
   assert.match(app, /mode=\{view\}/);
 });
