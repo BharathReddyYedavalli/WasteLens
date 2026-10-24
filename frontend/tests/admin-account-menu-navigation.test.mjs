@@ -11,9 +11,10 @@ const i18n = read("i18n.tsx");
 const backend = readFileSync(new URL("../../backend/app/accounts.py", import.meta.url), "utf8");
 
 test("all product features remain reachable in the new editorial navigation", () => {
-  for (const item of ["Scan","Ask","Find a place","Bottle returns","Waste audit","Bottle journey","My activity","Leaderboard","About"]) {
+  for (const item of ["Scan","Ask","Find a place","Bottle returns","Waste audit","Bottle journey","My activity","Leaderboard"]) {
     assert.ok(nav.includes('label: "' + item + '"'),item);
   }
+  assert.match(nav, /t\("About"\)/);
   assert.match(nav,/user\?\.role==="admin"/);
   assert.match(nav,/onNavigate\(next\)/);
   assert.match(app, /<SidebarNav view=\{view\} user=\{user\}/);
