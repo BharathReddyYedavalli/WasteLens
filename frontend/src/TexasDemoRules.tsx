@@ -10,7 +10,7 @@ type DemoProfile = {
   id:string;name:string;context:"home"|"school"|"business";scope:string;
   default_message:string;sources:string[];rules:Record<string,DemoRule>;
 };
-const profiles:DemoProfile[]=rulesData.profiles as DemoProfile[];
+const profiles:DemoProfile[]=rulesData.profiles as unknown as DemoProfile[];
 const itemNames:Record<string,string>={
   aluminum_can:"Aluminum can",bread_bag:"Bread bag",bubble_wrap:"Bubble wrap",
   candy_wrapper:"Candy wrapper",cell_phone:"Mobile phone",clean_cardboard:"Clean cardboard",
