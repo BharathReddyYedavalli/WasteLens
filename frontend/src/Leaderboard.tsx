@@ -57,9 +57,9 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
         <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>{t("Actions logged")}</span></div>
         <div><Award size={21}/><strong>{data.me.badges.filter(b => b.unlocked).length}</strong><span>{t("Badges")}</span></div>
       </div>
-      <section className="badge-panel"><h2>{t("Your badges")}</h2><div className="badge-grid">
+      <details className="badge-panel"><summary><Award size={22}/>{t("Your badges")}</summary><div className="badge-grid">
         {data.me.badges.map(b=><Badge key={b.id} badge={b}/>)}
-      </div></section>
+      </div></details>
     </> : <div className="league-guest"><Leaf size={32}/><h2>{t("Save your progress")}</h2>
       <p>{t("Sign in to save scans and earn badges.")}</p>
       <button className="button primary" type="button" onClick={onSignIn}>{t("Sign in")}</button></div>}

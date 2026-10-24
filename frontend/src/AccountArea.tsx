@@ -187,7 +187,7 @@ export default function AccountArea({ user, mode, visualStyle, onVisualStyleChan
         <div><strong>{overview?.yes ?? "…"}</strong><span>{t("Reported correct")}</span></div>
         <div><strong>{overview?.no ?? "…"}</strong><span>{t("Reported incorrect")}</span></div>
       </div>
-      <h3>{t("Scan identification feedback")}</h3>
+      <details className="admin-kiosk-data"><summary>{t("Scan identification feedback")}</summary>
       <p className="admin-feedback-intro">{t('These answers come from "Was that right?" after a scan. Yes means the user agreed with the item name; No means they reported a mistake. They are user reports, not a measured accuracy score.')}</p>
       <div className="admin-feedback-tools">
         <p>{t("Showing the most recent 500 feedback entries.")}</p>
@@ -211,10 +211,12 @@ export default function AccountArea({ user, mode, visualStyle, onVisualStyleChan
       {shownFeedback.length===0 && <p className="admin-feedback-empty">
         {reviewOnly ? t("No reported mistakes in these feedback entries.") : t("No classification feedback has been submitted yet.")}
       </p>}
-      <h3>{t("Users")}</h3>
+      </details>
+      <details className="admin-kiosk-data"><summary>{t("Users")}</summary>
       <div className="table-wrap"><table><thead><tr><th>{t("Name")}</th><th>{t("Email")}</th><th>{t("Role")}</th><th>{t("Scans")}</th></tr></thead>
         <tbody>{users.map(member => <tr key={member.id}><td>{member.name}</td><td>{member.email}</td><td>{member.role}</td><td>{member.scan_count}</td></tr>)}</tbody>
       </table></div>
+      </details>
     </section>;
   }
 

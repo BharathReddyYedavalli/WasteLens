@@ -10,11 +10,18 @@ export default function AboutWasteLens({onScan,onAudit,onJourney}:{
     <div className="community-about-hero">
       <div className="community-about-mark"><HeartHandshake size={36}/></div>
       <h1>{tr("Better recycling starts at the bin.","Reciclar mejor empieza frente al contenedor.","बेहतर रीसायक्लिंग की शुरुआत कूड़ेदान के पास होती है।")}</h1>
-      <p>{tr(
+      <p className="community-about-punchline">{tr(
+        "Scan an item. Check local rules. Make your next move.",
+        "Escanea un objeto. Consulta las reglas locales. Elige qué hacer.",
+        "वस्तु स्कैन करें। स्थानीय नियम देखें। फिर फैसला लें।"
+      )}</p>
+      <details className="community-about-more">
+        <summary>{tr("What is WasteLens?","¿Qué es WasteLens?","WasteLens क्या है?")}</summary>
+        <p>{tr(
         "WasteLens helps you scan an item, check local recycling rules and decide what to do next. A school bin-side kiosk is a future use we are exploring, not a device already installed.",
         "WasteLens te ayuda a escanear objetos, consultar las reglas locales y decidir qué hacer. Un quiosco escolar es una idea futura, no un dispositivo instalado.",
         "WasteLens किसी वस्तु को स्कैन करने, स्थानीय नियम जाँचने और अगला कदम चुनने में मदद करता है। स्कूल का कियोस्क अभी भविष्य की योजना है; ऐसा उपकरण स्थापित नहीं किया गया है।"
-      )}</p>
+      )}</p></details>
     </div>
     <div className="community-about-grid">
       <article><Leaf size={24}/><h2>{tr("Identify the item","Identifica el objeto","वस्तु पहचानें")}</h2>

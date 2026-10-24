@@ -313,14 +313,24 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
       </div>
       {onBackToScan&&<button type="button" onClick={onBackToScan}>{t("Back to scan")}</button>}
     </div>}
+    <div className="audit-count-row">
+      <div><span>{t("Items counted")}</span><strong>{total}</strong></div>
+    </div>
+    <div className="audit-options">{kinds.map(kind=><button type="button" key={kind.id} onClick={()=>log(kind.id)}
+      className={"audit-option audit-"+kind.id} style={{["--audit-accent" as string]:kind.color}}>
+      <span className="audit-option-emoji" aria-hidden="true">{kind.emoji}</span>
+      <strong>{t(kind.label)}</strong><span className="audit-option-count">{counts[kind.id]}</span>
+    </button>)}</div>
+    <details className="audit-kiosk-options" open={detailMode}
+      onToggle={event=>setDetailMode(event.currentTarget.open)}>
+      <summary>{t("Item details")} <span>{t("Optional")}</span><ChevronDown size={17}/></summary>
     <div className="audit-session">
       <label htmlFor="audit-title">{t("Audit name")} <span>{t("Optional")}</span></label>
       <input id="audit-title" name="wastelens-audit-project-title" type="text" maxLength={60}
         autoComplete="new-password" data-1p-ignore="true" data-lpignore="true" value={audit.title}
         placeholder={t("Example: Cafeteria lunch")} onChange={e=>setAudit(a=>({...a,title:e.target.value}))}/>
     </div>
-    <details className="audit-observation-entry" open={detailMode} onToggle={event=>setDetailMode(event.currentTarget.open)}>
-      <summary>{t("Item details")} <span>{t("Optional")}</span><ChevronDown size={17}/></summary>
+    <div className="audit-observation-entry">
       <div className="audit-observation-fields">
         <label>{t("What item did you see?")}
           <select value={itemType} onChange={e=>{
@@ -345,15 +355,8 @@ export default function AuditKit({user,onSignIn,scannedItem,onBackToScan}:{
         </label>}
         <p>{t("Select the item, then tap the bin where you saw it go.")}</p>
       </div>
-    </details>
-    <div className="audit-count-row">
-      <div><span>{t("Items counted")}</span><strong>{total}</strong></div>
     </div>
-    <div className="audit-options">{kinds.map(kind=><button type="button" key={kind.id} onClick={()=>log(kind.id)}
-      className={"audit-option audit-"+kind.id} style={{["--audit-accent" as string]:kind.color}}>
-      <span className="audit-option-emoji" aria-hidden="true">{kind.emoji}</span>
-      <strong>{t(kind.label)}</strong><span className="audit-option-count">{counts[kind.id]}</span>
-    </button>)}</div>
+    </details>
 
     <div className="audit-actions community-audit-toolbar">
       <button type="button" onClick={save} disabled={!total||busy}>

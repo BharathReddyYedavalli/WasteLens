@@ -83,6 +83,16 @@ export default function App() {
       document.head.appendChild(link);
     }
     link.media = visualStyle === "claude" ? "all" : "not all";
+    // Layer the kiosk experiment after the existing Claude theme without touching ScanStage.
+    let kiosk = document.getElementById("wastelens-kiosk-experiment") as HTMLLinkElement | null;
+    if (!kiosk) {
+      kiosk = document.createElement("link");
+      kiosk.id = "wastelens-kiosk-experiment";
+      kiosk.rel = "stylesheet";
+      kiosk.href = "/kiosk-experiment.css";
+      document.head.appendChild(kiosk);
+    }
+    kiosk.media = visualStyle === "claude" ? "all" : "not all";
     try { window.localStorage.setItem("wastelens-visual-style", visualStyle); } catch { /* private mode */ }
   }, [visualStyle]);
 
