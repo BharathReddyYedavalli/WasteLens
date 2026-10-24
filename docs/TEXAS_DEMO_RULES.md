@@ -54,6 +54,29 @@ https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainabi
 
 The rules checker matches common AI names such as **plastic bottle or jug**, **soda can**, **cell phone**, **pizza box**, and **reusable travel cup** to standardized source-backed item keys. The current selected location shows three simple items to try under the selector. A missing synonym is labeled *unmatched scanned item* rather than treated as evidence that the organization rejects the item. The **Wrong item? Change it** control remains available; ambiguous material labels alone do not establish the item.
 
+## Advanced physical demo: less obvious objects
+
+The pilot also has two specialist service profiles:
+
+- **Texas Disposal Systems (Central Texas commercial/residential program)** — its [published material table](https://www.texasdisposal.com/whats-accepted/) explicitly lists **aluminum baking trays and pie plates** in the recycling stream. It excludes both household and rechargeable batteries from its ordinary recycling stream. Selecting this service does not establish that a particular home, school or office has a TDS contract. Only use the recycling instruction if the actual site is served by the relevant TDS program.
+- **DFW Electronics Recycling (Plano drop-off)** — its [material list](https://dfwelectronicsrecycling.com/services) explicitly includes **cell phones, cabling, computers, and computer components/parts**, with a [published Plano drop-off](https://dfwelectronicsrecycling.com/locations). A Raspberry Pi is a type of single-board computer, but **Raspberry Pi boards are not named verbatim**. The result says **Confirm with recycling center**, not guaranteed acceptance.
+
+Useful contrasts for live demos:
+
+| Item | Select a program | Result | Practical consideration |
+| --- | --- | --- | --- |
+| Clean empty aluminum food tray | Texas Disposal Systems | Recycle, if using its recycling stream | Do not infer acceptance for other cities/services |
+| Alkaline AA battery | Home Depot | Not accepted in its rechargeable-battery bin | Staples lists single-use batteries for a fee |
+| Rechargeable tool battery | Home Depot | Special collection; only eligible intact batteries | Avoid using swollen/damaged batteries as demo props |
+| Old personal phone | Best Buy, Staples or DFW Electronics Recycling | Special electronics drop-off, conditions apply | Wipe personal information before recycling |
+| Raspberry Pi board | DFW Electronics Recycling | Confirm with recycling center | The site's published category is computer components, not the exact product name |
+| Loose circuit board | DFW Electronics Recycling | Confirm with recycling center | Never put a board into ordinary mixed recycling |
+| Old ink cartridge | Staples | Dedicated cartridge take-back | Physical prop is safer than batteries |
+
+The matcher now recognizes **aluminum foil baking pan, aluminum food tray, disposable foil container, alkaline AA or AAA battery, rechargeable Li-ion battery, Raspberry Pi, single-board computer and PCB** as distinct object types. Names should be exact enough to avoid inventing acceptance from a material label.
+
+Bring a clean empty aluminum tray, old smartphone with data removed, an unused/broken Raspberry Pi **without a connected battery**, an ink cartridge, and cardboard/pizza box. For batteries, consider a picture rather than handing loose batteries around at a public kiosk. Distinguish **recycling**, **not accepted here**, and **verify with recycler** as three different results.
+
 ## Interpretation
 
 - A **check local recycling rules** result is educational packaging guidance, not permission to recycle at a particular Frisco facility.
