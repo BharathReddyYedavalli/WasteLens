@@ -1,0 +1,33 @@
+/* Verified-source sample Texas collection profiles. Never imply ZIP = service enrollment. */
+.site .texas-demo-rules{
+  display:grid;gap:12px;margin:15px 0 18px;padding:clamp(14px,2.2vw,23px);
+  border:1.5px solid var(--wl-stroke,#b7d9c9);border-radius:17px;
+  background:var(--wl-paper,#f7fcf9);color:var(--wl-copy,#26483c);
+}
+.site .texas-demo-header{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.site .texas-demo-header strong{font-size:17px;font-weight:820;color:inherit}
+.site .texas-demo-header span{font-size:11px;color:var(--wl-copy,#446c5d);opacity:.85}
+.site .texas-demo-rules label{display:grid;gap:7px;font-size:13px;font-weight:750;color:inherit}
+.site .texas-demo-rules select{
+  width:100%;min-height:42px;border:1px solid var(--wl-stroke,#a9c9bb);
+  border-radius:10px;padding:8px 12px;background:var(--wl-paper,#fff);
+  color:var(--wl-copy,#23493c);font:inherit;font-weight:600;
+}
+.site .texas-demo-scope,.site .texas-demo-caption,.site .texas-demo-caution{
+  margin:0;line-height:1.55;font-size:12px;color:var(--wl-copy,#456858);
+}
+.site .texas-demo-caution{padding-top:9px;border-top:1px solid var(--wl-stroke,#d6e5dd);font-weight:650}
+.site .texas-demo-result{
+  border:1px solid var(--wl-stroke,#b8d2c5);border-radius:12px;
+  padding:14px;background:var(--wl-paper,#fff);display:grid;gap:8px;
+}
+.site .texas-demo-recycle{border-color:#5caa8a}
+.site .texas-demo-result-title{display:flex;gap:9px;align-items:center}
+.site .texas-demo-result-title strong{font-size:15px}
+.site .texas-demo-result p{margin:0;font-size:13px;line-height:1.65;color:inherit}
+.site .texas-demo-result a{display:inline-flex;align-items:center;gap:6px;
+  text-underline-offset:3px;font-weight:700;font-size:13px;
+  color:var(--wl-accent,#166c55);width:fit-content}
+.site .texas-demo-rules select:focus-visible,.site .texas-demo-result a:focus-visible{
+  outline:3px solid #da944a;outline-offset:2px}
+@media(max-width:600px){.site .texas-demo-rules{padding:13px}.site .texas-demo-header{display:grid}}

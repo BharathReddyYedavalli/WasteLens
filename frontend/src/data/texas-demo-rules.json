@@ -1,0 +1,404 @@
+{
+  "schema": "wastelens_demo_rule_profiles_v1",
+  "verified_on": "2026-10-24",
+  "demo_only": true,
+  "design_notes": [
+    "All four example locations are physically in Texas; profile matches must be chosen explicitly.",
+    "AI recognizes the item; an exact item_key matches a documented rule for the chosen collection program.",
+    "An unknown item must return default_message, not an AI-generated guess about this program.",
+    "Home profile applies only to City of Frisco residential service subscribers, not everyone with a Frisco ZIP.",
+    "UT Dallas policies refer to designated campus bins and collection streams. Compost is available only where explicitly marked.",
+    "H-E-B and Best Buy examples are publicly documented CUSTOMER drop-off programs, NOT verified employee trash/recycling contracts.",
+    "For a not_accepted_here rule, never translate that status to trash; it only means the specified drop-off program does not accept the item.",
+    "Check each official policy periodically; these are source-backed snapshots, not live guarantees of opening hours, eligibility, or operational status."
+  ],
+  "status_values": {
+    "recycle": "Designated normal recycling bin",
+    "trash": "Ordinary trash/landfill",
+    "compost": "Designated compost collection (if available)",
+    "special_dropoff": "Dedicated collection program or drop-off, not curbside bin",
+    "not_accepted_here": "This designated drop-off program rejects this item; alternate disposal not determined"
+  },
+  "profiles": [
+    {
+      "id": "home_frisco_tx",
+      "name": "City of Frisco, TX — Residential curbside recycling",
+      "context": "home",
+      "scope": "Only households actually served by the City of Frisco residential recycling program; postal ZIP alone does not establish eligibility.",
+      "sources": [
+        "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+        "https://www.friscotexas.gov/557/Residential-Trash-Service"
+      ],
+      "default_message": "No confirmed rule for this item in the selected home collection program. Check official rules or the waste hauler.",
+      "rules": {
+        "plastic_bottle": {
+          "status": "recycle",
+          "instruction": "Empty, clean and dry: put in the blue curbside recycling cart.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "plastic_bottle"
+        },
+        "glass_bottle": {
+          "status": "recycle",
+          "instruction": "Empty, clean and dry: put bottles and jars in the blue recycling cart.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "glass_bottle"
+        },
+        "aluminum_can": {
+          "status": "recycle",
+          "instruction": "Empty, clean and dry: use the blue recycling cart.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "aluminum_can"
+        },
+        "clean_cardboard": {
+          "status": "recycle",
+          "instruction": "Flatten and place cardboard in the blue recycling cart.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "clean_cardboard"
+        },
+        "paper_coffee_cup": {
+          "status": "trash",
+          "instruction": "Put this paper coffee cup in the black trash cart, not the blue recycling cart.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "paper_coffee_cup"
+        },
+        "plastic_clamshell": {
+          "status": "trash",
+          "instruction": "Put this clamshell food container in trash, not the blue recycling cart.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "plastic_clamshell"
+        },
+        "food_scraps": {
+          "status": "trash",
+          "instruction": "Do not put food scraps in the blue recycling cart. Use ordinary trash, or an independently verified food-compost program if one is available.",
+          "source_url": "https://www.friscotexas.gov/557/Residential-Trash-Service",
+          "item_key": "food_scraps"
+        },
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Do not put flexible plastic bags in curbside recycling. Take eligible clean plastic film to the Frisco Environmental Collection Center.",
+          "condition": "Facility accepts specified clean film types only; check facility list.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "plastic_grocery_bag"
+        },
+        "foam_packaging": {
+          "status": "special_dropoff",
+          "instruction": "Do not put Styrofoam packaging in curbside recycling. Check accepted foam type at Frisco Environmental Collection Center.",
+          "condition": "Only appropriate foam types are accepted; special drop-off, not curbside.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "foam_packaging"
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Do not put batteries in the normal recycling or trash cart. Check the city Environmental Collection Center collection instructions.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "household_battery"
+        },
+        "cell_phone": {
+          "status": "special_dropoff",
+          "instruction": "Use the City of Frisco household chemical and electronics center only if your device qualifies; verify the item and show required proof of eligible residency.",
+          "condition": "City of Frisco residents only with valid water bill and matching identification; program hours/limits vary.",
+          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
+          "item_key": "cell_phone"
+        }
+      },
+      "location": {
+        "city": "Frisco",
+        "state": "TX",
+        "postal_hint": "75033 / 75034",
+        "type": "municipal service area"
+      },
+      "policy_type": "residential_curbside"
+    },
+    {
+      "id": "school_ut_dallas_tx",
+      "name": "The University of Texas at Dallas — campus collection programs",
+      "context": "school",
+      "school_type": "public university",
+      "location": {
+        "city": "Richardson",
+        "state": "TX",
+        "address": "800 W Campbell Road, Richardson, TX 75080"
+      },
+      "policy_type": "campus_sorting",
+      "scope": "University of Texas at Dallas campus sorting and specialty collection; only use a specific compost or special collection station where campus provides it. This is NOT a policy for all Texas schools.",
+      "sources": [
+        "https://sustainability.utdallas.edu/about/faq/",
+        "https://sustainability.utdallas.edu/operations/waste/",
+        "https://facilities.utdallas.edu/facilities/plant/",
+        "https://sustainability.utdallas.edu/campus/sustainablelabs/",
+        "https://news.utdallas.edu/campus-community/recycling-gets-simpler-as-university-gears-up-for/"
+      ],
+      "default_message": "UT Dallas has no verified sorting rule here for this item. Check the bin label or contact campus recycling at recycling@utdallas.edu.",
+      "rules": {
+        "plastic_bottle": {
+          "status": "recycle",
+          "instruction": "Empty the bottle and use a designated campus single-stream recycling bin.",
+          "source_url": "https://news.utdallas.edu/campus-community/recycling-gets-simpler-as-university-gears-up-for/",
+          "item_key": "plastic_bottle"
+        },
+        "glass_bottle": {
+          "status": "recycle",
+          "instruction": "Put empty, unbroken glass bottles in the campus recycling stream.",
+          "source_url": "https://sustainability.utdallas.edu/about/faq/",
+          "item_key": "glass_bottle",
+          "condition": "Unbroken glass only; follow the bin sign."
+        },
+        "aluminum_can": {
+          "status": "recycle",
+          "instruction": "Rinse and place the can in a campus recycling bin.",
+          "source_url": "https://sustainability.utdallas.edu/about/faq/",
+          "item_key": "aluminum_can"
+        },
+        "metal_can": {
+          "status": "recycle",
+          "instruction": "Rinse the metal food can and use campus recycling.",
+          "source_url": "https://sustainability.utdallas.edu/about/faq/",
+          "item_key": "metal_can"
+        },
+        "clean_cardboard": {
+          "status": "recycle",
+          "instruction": "Flatten clean cardboard and place it in an appropriate campus recycling container.",
+          "source_url": "https://facilities.utdallas.edu/facilities/plant/",
+          "item_key": "clean_cardboard"
+        },
+        "paper": {
+          "status": "recycle",
+          "instruction": "Use a campus single-stream recycling bin for clean paper.",
+          "source_url": "https://sustainability.utdallas.edu/about/faq/",
+          "item_key": "paper"
+        },
+        "newspaper": {
+          "status": "recycle",
+          "instruction": "Recycle newspapers and magazines in a campus recycling bin.",
+          "source_url": "https://sustainability.utdallas.edu/about/faq/",
+          "item_key": "newspaper"
+        },
+        "food_scraps": {
+          "status": "compost",
+          "instruction": "Use a marked campus compost collection point where it is provided; do not put food in single-stream recycling.",
+          "source_url": "https://sustainability.utdallas.edu/operations/waste/",
+          "item_key": "food_scraps",
+          "condition": "Compost collection is only available at designated sites, not every UT Dallas bin."
+        },
+        "food_wrapper": {
+          "status": "trash",
+          "instruction": "Put ordinary food wrappers in trash rather than the campus blue recycling bin.",
+          "source_url": "https://news.utdallas.edu/campus-community/recycling-gets-simpler-as-university-gears-up-for/",
+          "item_key": "food_wrapper",
+          "condition": "For clean recyclable specialty film, check the campus specialty collection program first."
+        },
+        "foam_takeout_tray": {
+          "status": "trash",
+          "instruction": "Place used Styrofoam food containers in trash, not normal campus single-stream recycling.",
+          "source_url": "https://news.utdallas.edu/campus-community/recycling-gets-simpler-as-university-gears-up-for/",
+          "item_key": "foam_takeout_tray",
+          "condition": "Special clean foam recycling, if any, is a separate stream."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Use UT Dallas designated battery recycling collection, not an ordinary bin.",
+          "source_url": "https://sustainability.utdallas.edu/campus/sustainablelabs/",
+          "item_key": "household_battery",
+          "condition": "Follow campus battery safety instructions and collection-site eligibility."
+        },
+        "cell_phone": {
+          "status": "special_dropoff",
+          "instruction": "Ask the campus electronics-recycling program about an appropriate collection point.",
+          "source_url": "https://sustainability.utdallas.edu/operations/waste/",
+          "item_key": "cell_phone",
+          "condition": "Campus specialty electronic-waste collection only; check availability and eligibility."
+        },
+        "plastic_wrap": {
+          "status": "special_dropoff",
+          "instruction": "Check UT Dallas specialty plastic-wrap recycling locations, not the normal blue bin.",
+          "source_url": "https://sustainability.utdallas.edu/campus/sustainablelabs/",
+          "item_key": "plastic_wrap",
+          "condition": "Only eligible film and designated campus collection points."
+        }
+      }
+    },
+    {
+      "id": "business_heb_frisco_tx",
+      "name": "H-E-B Main Street, Frisco — customer plastic-film collection",
+      "context": "business",
+      "business_type": "grocery store",
+      "location": {
+        "city": "Frisco",
+        "state": "TX",
+        "address": "4800 Main Street, Frisco, TX 75033"
+      },
+      "policy_type": "customer_dropoff_plastic_film",
+      "scope": "H-E-B Main Street storefront CUSTOMER recycling bins for clean, dry plastic bags and eligible flexible film. Not the grocery store’s employee waste bins or rigid plastic recycling.",
+      "sources": [
+        "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+        "https://www.heb.com/heb-store/US/tx/frisco/h-e-b-frisco-789"
+      ],
+      "default_message": "No documented acceptance for this item in H-E-B’s customer plastic-film bin. Do not place it there unless the official accepted-material list covers it.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Bring clean, dry plastic shopping bags to the H-E-B front-of-store plastic-film bin.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Clean, dry; any retailer."
+        },
+        "produce_bag": {
+          "status": "special_dropoff",
+          "instruction": "Bring clean, dry produce bags to the H-E-B plastic-film bin.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "produce_bag",
+          "condition": "Remove food and moisture."
+        },
+        "bread_bag": {
+          "status": "special_dropoff",
+          "instruction": "Bring clean, dry bread bags to the H-E-B plastic-film bin.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "bread_bag",
+          "condition": "Remove crumbs and food contamination."
+        },
+        "soft_plastic_overwrap": {
+          "status": "special_dropoff",
+          "instruction": "Bring clean, dry flexible overwrap from water or paper-product multipacks.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "soft_plastic_overwrap",
+          "condition": "Film or flexible wrap, not rigid plastic packaging."
+        },
+        "bubble_wrap": {
+          "status": "special_dropoff",
+          "instruction": "Bring clean, dry bubble wrap or plastic air pillows to the H-E-B plastic-film bin.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "bubble_wrap",
+          "condition": "No paper padding or food residue."
+        },
+        "shipping_envelope_plastic": {
+          "status": "special_dropoff",
+          "instruction": "Bring clean, dry plastic delivery envelopes, including bubble-lined plastic mailers.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "shipping_envelope_plastic",
+          "condition": "Remove paper labels where practical; confirm the mailer is plastic film."
+        },
+        "newspaper_bag": {
+          "status": "special_dropoff",
+          "instruction": "Use the H-E-B store plastic-film collection bin for clean, dry newspaper bags.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "newspaper_bag"
+        },
+        "plastic_food_storage_bag": {
+          "status": "special_dropoff",
+          "instruction": "Use H-E-B film drop-off for clean, dry food storage and zipper bags.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "plastic_food_storage_bag",
+          "condition": "Must be free of food residue."
+        },
+        "plastic_bottle": {
+          "status": "not_accepted_here",
+          "instruction": "Rigid plastic bottles are not part of H-E-B’s plastic-film drop-off. Check your residential or local bottle recycling service.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "plastic_bottle"
+        },
+        "milk_jug": {
+          "status": "not_accepted_here",
+          "instruction": "H-E-B explicitly excludes milk jugs and bottles from its plastic-film bins.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "milk_jug"
+        },
+        "candy_wrapper": {
+          "status": "not_accepted_here",
+          "instruction": "Candy wrappers are excluded from H-E-B’s plastic-film collection.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "candy_wrapper"
+        },
+        "compostable_bag": {
+          "status": "not_accepted_here",
+          "instruction": "Compostable/biodegradable bags are not accepted in H-E-B’s plastic-film recycling bins.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "compostable_bag"
+        },
+        "frozen_food_bag": {
+          "status": "not_accepted_here",
+          "instruction": "Frozen-vegetable and similar frozen-food bags are excluded.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "frozen_food_bag"
+        },
+        "pet_food_bag": {
+          "status": "not_accepted_here",
+          "instruction": "Pet food bags are excluded from H-E-B’s film recycling program.",
+          "source_url": "https://www.heb.com/static-page/article-template/The-Recycling-Process",
+          "item_key": "pet_food_bag"
+        }
+      }
+    },
+    {
+      "id": "business_bestbuy_frisco_tx",
+      "name": "Best Buy Frisco — consumer electronics drop-off",
+      "context": "business",
+      "business_type": "electronics retail and take-back service",
+      "scope": "Consumer electronics CUSTOMER take-back program at Best Buy Frisco, a regular retail location. Personal household items only (no company/organization e-waste). Limits, fees and product exclusions apply; does not describe the store’s employee bin sorting.",
+      "sources": [
+        "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+        "https://www.bestbuy.com/site/recycling/recycle-faqs/pcmcat174700050009.c?id=pcmcat174700050009%2F",
+        "https://stores.bestbuy.com/tx/frisco/3333-preston-rd-180.html"
+      ],
+      "default_message": "This product is not confirmed for Best Buy Frisco consumer electronics recycling. Check Best Buy’s state-specific product list before visiting.",
+      "rules": {
+        "cell_phone": {
+          "status": "special_dropoff",
+          "instruction": "Eligible consumer mobile phones can be brought for Best Buy in-store electronics recycling.",
+          "condition": "Residents only; check store eligibility and item limits; erase personal data before handoff.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "cell_phone"
+        },
+        "laptop": {
+          "status": "special_dropoff",
+          "instruction": "Eligible consumer laptops can be brought for Best Buy in-store electronics recycling.",
+          "condition": "Residents only; verify limits and store-specific rules; erase personal data first.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "laptop"
+        },
+        "computer_keyboard": {
+          "status": "special_dropoff",
+          "instruction": "Computer keyboards are listed among devices accepted for Best Buy in-store recycling.",
+          "condition": "Consumer items only; confirm store/program limits.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "computer_keyboard"
+        },
+        "computer_mouse": {
+          "status": "special_dropoff",
+          "instruction": "Computer mice are listed among devices accepted for Best Buy in-store recycling.",
+          "condition": "Consumer items only; confirm store/program limits.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "computer_mouse"
+        },
+        "electrical_cable": {
+          "status": "special_dropoff",
+          "instruction": "Cables and connectors are among the accepted in-store consumer electronics.",
+          "condition": "Consumer items only; confirm store/program limits.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "electrical_cable"
+        },
+        "printer_cartridge": {
+          "status": "special_dropoff",
+          "instruction": "Ink/toner cartridges are listed among products accepted in Best Buy stores.",
+          "condition": "Consumer items only; check store-specific limits.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "printer_cartridge"
+        },
+        "standalone_battery": {
+          "status": "not_accepted_here",
+          "instruction": "Best Buy generally lists stand-alone batteries as not accepted in its standard in-store program.",
+          "condition": "A limited small-rechargeable-battery exception is listed for California and New York; verify the exact state and product before drop-off.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "item_key": "standalone_battery"
+        }
+      },
+      "location": {
+        "city": "Frisco",
+        "state": "TX",
+        "address": "3333 Preston Rd, Ste 200, Frisco, TX 75034"
+      },
+      "policy_type": "customer_dropoff_electronics"
+    }
+  ],
+  "texas_only": true,
+  "region": "North Texas (Frisco and Richardson)"
+}

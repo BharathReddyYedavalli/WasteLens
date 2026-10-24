@@ -458,7 +458,9 @@ export default function App() {
         </div>
         <div className="scan-essential">
           <LocalRulesGuide key={result?.scan_id ?? preview?.src ?? "local-rules"}
-            zipCode={location} onZipChange={setLocation}/>
+            zipCode={location} onZipChange={setLocation}
+            scanItemName={analysis.item_name} scanMaterial={analysis.material_guess}
+            scanIdentified={analysis.identification==="likely"}/>
           <nav className="scan-next-actions" aria-label={t("Next steps")}>
             <button type="button" onClick={() => openPage("finder", true)}>
               <MapPin size={18}/>{t("Find nearby options")}
