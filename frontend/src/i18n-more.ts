@@ -1,5 +1,9 @@
 /* Additional translations for the existing English/Spanish/Hindi interface. */
 export const moreTranslations:Record<string,{es:string;hi:string}> = {
+  "The scanned name does not match a supported item. Use Change item to select the correct item.": { es: "El nombre identificado no coincide con los objetos admitidos. Usa Cambiar objeto para elegir el correcto.", hi: "पहचाना गया नाम उपलब्ध वस्तु से नहीं मिलता। सही वस्तु चुनने के लिए बदलें दबाएँ।" },
+  "Try scanning": { es: "Prueba escanear", hi: "यह स्कैन करके देखें" },
+  "Reuse this item": { es: "Reutiliza este objeto", hi: "इस वस्तु का पुनः उपयोग करें" },
+  "Check local recycling rules": { es: "Consulta las reglas de reciclaje locales", hi: "स्थानीय रीसायक्लिंग नियम जाँचें" },
   "View official rules": { es: "Ver reglas oficiales", hi: "आधिकारिक नियम देखें" },
   "Official rules are written in English; check the source for exact requirements.": { es: "Las reglas oficiales están en inglés; consulta la fuente para ver los requisitos precisos.", hi: "आधिकारिक नियम अंग्रेज़ी में हैं; सटीक आवश्यकताएँ स्रोत में देखें।" },
   "The scan was uncertain. Use Change item to confirm what you scanned.": { es: "El escaneo no fue concluyente. Corrige el objeto antes de seguir.", hi: "स्कैन अनिश्चित था। आगे बढ़ने से पहले वस्तु बदलकर पुष्टि करें।" },
