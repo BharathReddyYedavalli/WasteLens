@@ -40,8 +40,24 @@ https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainabi
 - Home Depot North Frisco — customer bag/film, intact CFLs, eligible rechargeable batteries: https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513
 - Staples Frisco — customer tech, ink/toner, supplies, some fee-based recycling: https://www.staples.com/stores/recycling
 
+### Food chains (brand consumer guidance, not verified store bins)
+
+- **Domino's Pizza — Frisco Preston Road**: their official pizza-box recycling program advises emptying corrugated pizza boxes and checking local collection acceptance. Small grease marks do not automatically prevent technical recyclability. This does **not** establish that a Frisco store has a recycling bin or that every Texas collection service accepts pizza boxes.
+  - https://www.recycling.dominos.com/
+  - https://media.dominos.com/stories/recycling-pizza-boxes/
+  - https://pizza.dominos.com/texas/frisco/2930-preston-road-suite-170
+- **Starbucks — Frisco**: customers can avoid disposable-cup waste by bringing a clean reusable personal cup to company-operated or participating licensed Starbucks stores. Official guidance also describes their plastic cold cups as widely recyclable nationally, but local bin acceptance remains unverified.
+  - https://about.starbucks.com/press/2024/starbucks-becomes-first-national-coffee-retailer-to-accept-reusable-cups-for-drive-thru-and-mobile-orders/
+  - https://about.starbucks.com/a-better-cup-for-all/
+
+### Reliable Scan matching and suggested demo props
+
+The rules checker matches common AI names such as **plastic bottle or jug**, **soda can**, **cell phone**, **pizza box**, and **reusable travel cup** to standardized source-backed item keys. The current selected location shows three simple items to try under the selector. A missing synonym is labeled *unmatched scanned item* rather than treated as evidence that the organization rejects the item. The **Wrong item? Change it** control remains available; ambiguous material labels alone do not establish the item.
+
 ## Interpretation
 
+- A **check local recycling rules** result is educational packaging guidance, not permission to recycle at a particular Frisco facility.
+- A **reuse** result prevents waste; it is not an instruction to place a reusable cup in a recycling bin.
 - A rule for **special drop-off** must not be displayed as permission to put an object in a regular blue bin.
 - **Not accepted here** does not mean the object belongs in ordinary trash.
 - If a recognized object has no matching item rule, display **No confirmed rule for this item**.
