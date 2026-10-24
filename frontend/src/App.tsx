@@ -379,8 +379,8 @@ export default function App() {
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <div className={visualStyle === "legacy" ? "site-layout legacy-layout" : "modern-layout"}>
       {visualStyle === "legacy"
-        ? <LegacyNavigation view={view} user={user} theme={theme} onThemeChange={setTheme} onNavigate={next => openPage(next)}/>
-        : <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme} onNavigate={next => openPage(next)}/>}
+        ? <LegacyNavigation view={view} user={user} theme={theme} onThemeChange={setTheme} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle} onNavigate={next => openPage(next)}/>
+        : <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle} onNavigate={next => openPage(next)}/>}
       <div className={visualStyle === "legacy" ? "page-content legacy-page-content" : "modern-page-content"}>
     <main id="main-content" ref={pageRef} className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
       {view === "identifier" ? <>

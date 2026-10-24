@@ -35,10 +35,12 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (value: AppearanceTheme) => void;
+  visualStyle?: "claude" | "legacy";
+  onVisualStyleChange?: (value: "claude" | "legacy") => void;
   onNavigate: (view: "account" | "admin") => void;
 };
 
-export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: Props) {
+export default function AccountMenu({ user, theme, onThemeChange, visualStyle, onVisualStyleChange, onNavigate }: Props) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [showThemes, setShowThemes] = useState(false);
@@ -97,6 +99,16 @@ export default function AccountMenu({ user, theme, onThemeChange, onNavigate }: 
       {user?.role === "admin" && <button type="button" className="wl-profile-action"
         onClick={() => navigate("admin")}>
         <ShieldCheck size={19}/>{t("Admin dashboard")}
+      </button>}
+      {user?.role === "admin" && visualStyle && onVisualStyleChange && <button type="button"
+        className="wl-profile-action" aria-pressed={visualStyle === "legacy"}
+        onClick={() => {
+          onVisualStyleChange(visualStyle === "legacy" ? "claude" : "legacy");
+          setOpen(false);
+          setShowThemes(false);
+          setShowAccessibility(false);
+        }}>
+        <Palette size={19}/>{t(visualStyle === "legacy" ? "Current UI" : "Legacy UI")}
       </button>}
       <button type="button" className={"wl-profile-action " + (showThemes ? "selected" : "")}
         aria-expanded={showThemes} aria-controls="wl-theme-choices"

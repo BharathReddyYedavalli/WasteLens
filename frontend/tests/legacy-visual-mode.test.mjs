@@ -2,13 +2,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 const read = p=>readFileSync(new URL("../src/"+p,import.meta.url),"utf8");
-const app=read("App.tsx"), account=read("AccountArea.tsx"), nav=read("shell/LegacyNavigation.tsx"), entry=read("main.tsx");
+const app=read("App.tsx"), account=read("AccountArea.tsx"), menu=read("AccountMenu.tsx"), nav=read("shell/LegacyNavigation.tsx"), entry=read("main.tsx");
 const theme=readFileSync(new URL("../public/claude-theme.css",import.meta.url),"utf8");
 test("Admin dashboard offers Current UI and Legacy UI without affecting saved data",()=>{
  assert.ok(account.includes('user.role !== "admin"'));
  assert.ok(account.includes('onVisualStyleChange("legacy")'));
  assert.ok(account.includes('onVisualStyleChange("claude")'));
  assert.ok(app.includes("wastelens-visual-style"));
+ assert.ok(menu.includes('user?.role === "admin" && visualStyle && onVisualStyleChange'));
+ assert.ok(menu.includes('onVisualStyleChange(visualStyle === "legacy" ? "claude" : "legacy")'));
  assert.ok(app.includes('link.media = visualStyle === "claude"'));
 });
 test("Both visual modes use the same newest application logic",()=>{
