@@ -63,8 +63,8 @@ test("styling does not hide pages, replace interactions or force kiosk-only beha
 });
 
 test("whole bottle stays in view with responsive 3D camera rather than CSS canvas scaling",()=>{
-  assert.match(bottleScene,/stationCameraDistance = 10\.25/);
-  assert.match(bottleScene,/stationCameraTargetY = 0\.9/);
+  assert.match(bottleScene,/stationCameraDistance = 7\.9/);
+  assert.match(bottleScene,/stationCameraTargetY = 0\.95/);
   assert.match(bottleScene,/distanceForDock/);
   assert.match(bottleScene,/camera\.position\.z = Math\.max\(/);
   assert.match(bottleScene,/camera\.updateProjectionMatrix\(\)/);
@@ -76,11 +76,51 @@ test("whole bottle stays in view with responsive 3D camera rather than CSS canva
   // The cap and base should not sit under the fixed bottom dock at the
   // reviewer's Safari-sized kiosk viewport.
   const height=868, width=1294, halfFov=Math.PI*24/360;
-  const zoom=Math.max(10.25,10.25*(0.9/(width/height)),
-    2.3*height/(2*Math.tan(halfFov)*Math.max(245,height-330)));
+  const zoom=Math.max(7.9,7.9*(0.9/(width/height)),
+    2.3*height/(2*Math.tan(halfFov)*Math.max(230,height-255)));
   const viewHeight=2*zoom*Math.tan(halfFov);
-  const top=height/2-(2.22-0.9)*height/viewHeight;
-  const bottom=height/2+(0.9-0)*height/viewHeight;
+  const top=height/2-(2.22-0.95)*height/viewHeight;
+  const bottom=height/2+(0.95+0.05)*height/viewHeight;
   assert.ok(top>80,`cap clears the station topbar: ${top}`);
-  assert.ok(bottom<height-190,`base clears the Scan action panel: ${bottom}`);
+  assert.ok(bottom<height-145,`base clears the slimmer Scan action panel: ${bottom}`);
+  assert.ok((bottom-top)>520,`bottle should fill the hero, height: ${bottom-top}`);
+});
+
+test("large centered hero stays behind the real 3D bottle with accessible Scan dock",()=>{
+  assert.match(css,/Restore the large, centered bottle/i);
+  assert.match(css,/\.site\.is-sidebar-experiment\.is-stage \.es-type\{/);
+  assert.match(css,/justify-items:center!important/);
+  assert.match(css,/text-align:center!important/);
+  assert.match(css,/font-size:clamp\(75px,10\.3vw,174px\)!important/);
+  assert.match(css,/\.site\.is-sidebar-experiment\.is-stage \.es-canvas\{/);
+  assert.match(css,/z-index:2/);
+  assert.match(css,/\.site\.is-sidebar-experiment\.is-stage \.es-foot\{/);
+  assert.match(css,/min-height:72px!important/);
+  assert.match(stage,/className="es-type"/);
+  assert.match(stage,/className="es-canvas"/);
+});
+test("sidebar distributes larger navigation affordances into available vertical space",()=>{
+  assert.match(css,/\.fl-side-scroll\{[\s\S]*?justify-content:space-between/);
+  assert.match(css,/min-height:clamp\(57px,6\.55vh,69px\)!important/);
+  assert.match(css,/font-size:17px!important/);
+  assert.match(css,/height:23px!important/);
+  assert.match(css,/@media\(max-height:760px\)/);
+  assert.match(nav,/aria-current=\{view===id\?"page":undefined\}/);
+});
+test("Ask user message alignment is fixed without changing assistant message behavior",()=>{
+  assert.match(css,/\.assistant-messages \.chat-turn\.from-user\{/);
+  assert.match(css,/align-self:flex-end/);
+  assert.match(css,/width:max-content/);
+  assert.match(css,/max-width:min\(88%,780px\)!important/);
+  assert.match(css,/\.chat-turn\.from-user \.chat-turn-content/);
+  assert.match(css,/overflow-wrap:break-word!important/);
+  assert.match(css,/word-break:normal!important/);
+});
+test("only the account-menu voice picker has normalized typography for three languages",()=>{
+  assert.match(css,/#wl-speech-voice\.wl-speech-select/);
+  assert.match(css,/font-size:14px!important/);
+  assert.match(css,/:is\(option,optgroup\)/);
+  assert.match(css,/"Noto Sans Devanagari"/);
+  assert.match(css,/text-overflow:ellipsis/);
+  assert.doesNotMatch(css,/\.site :is\(select,option\)/);
 });
