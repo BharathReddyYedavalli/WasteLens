@@ -47,7 +47,7 @@ test("Scan passes identification and material information into an optional, expl
   assert.match(app,/scanMaterial=\{analysis\.material_guess\}/);
   assert.match(app,/scanIdentified=\{analysis\.identification==="likely"\}/);
   assert.match(local,/<TexasDemoRules collectionType=\{collectionType\}/);
-  assert.match(local,/scanItemName=\s*""/);
+  assert.match(local,/scanItemName\s*=\s*""/);
   assert.match(panel,/const \[profileId,setProfileId\] = useState\(""/);
   assert.match(panel,/collectionType==="residential"\?"home"/);
   assert.match(panel,/profile\.rules\[chosenKey\]/);
