@@ -98,6 +98,9 @@ export default function SidebarNav({view,user,theme,onThemeChange,onNavigate}: P
     <aside ref={panelRef} id="wastelens-primary-navigation"
       className={"fl-sidebar"+(open?" is-open":"")}
       aria-label="WasteLens navigation">
+      <button type="button" className="fl-side-brand" onClick={()=>navigate("identifier")} aria-label="WasteLens — Scan">
+        <span className="fl-brand-dot" aria-hidden="true"/><strong>WasteLens</strong>
+      </button>
       <nav className="fl-side-scroll" aria-label="WasteLens pages">
         {groups.map(group=><section key={group.label} className="fl-side-group"
           aria-label={t(group.label)}>
