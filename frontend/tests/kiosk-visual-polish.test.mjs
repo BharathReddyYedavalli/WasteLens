@@ -4,14 +4,14 @@ import { readFileSync } from "node:fs";
 
 const read = name => readFileSync(new URL("../src/"+name,import.meta.url),"utf8");
 const css = read("kiosk-visual-polish.css");
-const entry = read("main.tsx");
+const entry = readFileSync(new URL("../public/claude-theme.css",import.meta.url),"utf8");
 const app = read("App.tsx");
 
 test("high-priority polish loads after the original-page and Google Finder fixes",()=>{
-  assert.ok(entry.indexOf('import "./kiosk-visual-polish.css";') >
-    entry.indexOf('import "./sidebar-editorial.css";'));
-  assert.ok(entry.indexOf('import "./kiosk-visual-polish.css";') >
-    entry.indexOf('import "./google-map-polish.css";'));
+  assert.ok(entry.indexOf('/* --- frontend/src/kiosk-visual-polish.css --- */') >
+    entry.indexOf('/* --- frontend/src/sidebar-editorial.css --- */'));
+  assert.ok(entry.indexOf('/* --- frontend/src/kiosk-visual-polish.css --- */') >
+    entry.indexOf('/* --- frontend/src/google-map-polish.css --- */'));
 });
 test("solid dark cards receive independently legible headings, body, and links",()=>{
   assert.match(css,/\.deposit-result h2\s*\{/);

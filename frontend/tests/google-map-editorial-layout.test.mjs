@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 const src = path => readFileSync(new URL("../src/" + path, import.meta.url), "utf8");
 const finder = src("GooglePlacesFinder.tsx");
 const css = src("google-map-polish.css");
-const entry = src("main.tsx");
+const entry = readFileSync(new URL("../public/claude-theme.css",import.meta.url),"utf8");
 
 test("Google finder selection uses the results list, not obscuring map popups", () => {
   assert.match(finder, /marker\.addListener\("click"/);
@@ -35,6 +35,6 @@ test("Google-only CSS overrides legacy fixed-height map while preserving respons
   assert.match(css, /position:static!important/);
   assert.match(css, /@media\(max-width:1100px\)/);
   assert.match(css, /@media\(max-width:600px\)/);
-  assert.ok(entry.indexOf('import "./google-map-polish.css";') >
-    entry.indexOf('import "./editorial.css";'));
+  assert.ok(entry.indexOf('/* --- frontend/src/google-map-polish.css --- */') >
+    entry.indexOf('/* --- frontend/src/editorial.css --- */'));
 });
