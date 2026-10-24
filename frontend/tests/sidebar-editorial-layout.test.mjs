@@ -8,6 +8,7 @@ const side = file("shell/SidebarNav.tsx");
 const css = file("sidebar-editorial.css");
 const editorial = file("editorial.css");
 const entry = file("main.tsx");
+const modern = readFileSync(new URL("../public/claude-theme.css", import.meta.url),"utf8");
 
 test("the left sidebar directly exposes every original page without a More panel",()=>{
   for(const label of ["Scan","Ask","Bottle journey","Find a place","Bottle returns",
@@ -36,6 +37,8 @@ test("sidebar scales down to a mobile drawer and keeps page grids untouched",()=
   assert.match(css,/\.is-classic-page/);
   assert.match(css,/\.google-places-shell/);
   assert.match(css,/prefers-reduced-motion/);
-  assert.ok(entry.indexOf('import "./sidebar-editorial.css";')>
-    entry.indexOf('import "./google-map-polish.css";'));
+  assert.ok(modern.indexOf("/* --- frontend/src/sidebar-editorial.css --- */") >
+    modern.indexOf("/* --- frontend/src/google-map-polish.css --- */"));
+  assert.match(app, /link\.media = visualStyle === "claude"/);
+  assert.doesNotMatch(entry, /import "\.\/sidebar-editorial\.css";/);
 });
