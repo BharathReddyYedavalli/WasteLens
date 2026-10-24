@@ -13,14 +13,17 @@
     "Check each official policy periodically; these are source-backed snapshots, not live guarantees of opening hours, eligibility, or operational status.",
     "Home profiles are out of the institution selector; ZIP is used only in Find a Place.",
     "Frisco ISD examples describe district activities, not verified per-campus daily bin rules; never claim permanent bag/battery acceptance.",
-    "Customer store collection programs must not be presented as employee or office sorting policies."
+    "Customer store collection programs must not be presented as employee or office sorting policies.",
+    "Food-chain examples are brand-specific post-consumer packaging/reuse guidance, NOT confirmed local-bin acceptance at named Frisco stores."
   ],
   "status_values": {
     "recycle": "Designated normal recycling bin",
     "trash": "Ordinary trash/landfill",
     "compost": "Designated compost collection (if available)",
     "special_dropoff": "Dedicated collection program or drop-off, not curbside bin",
-    "not_accepted_here": "This designated drop-off program rejects this item; alternate disposal not determined"
+    "not_accepted_here": "This designated drop-off program rejects this item; alternate disposal not determined",
+    "reuse": "A published waste-prevention/reuse action, not a recycling-bin placement",
+    "check_local_recycling": "Recyclability/brand packaging guidance exists but local collection acceptance is not verified"
   },
   "profiles": [
     {
@@ -680,6 +683,73 @@
           "source_url": "https://www.staples.com/stores/recycling",
           "item_key": "rechargeable_battery",
           "condition": "Published price: $2.99 per visit in states where the fee applies, including Texas; verify current price."
+        }
+      }
+    },
+    {
+      "id": "business_dominos_frisco_tx",
+      "name": "Domino's Pizza (Frisco Preston Rd)",
+      "context": "business",
+      "business_type": "pizza restaurant",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "policy_type": "consumer packaging instructions; local collection not verified",
+      "scope": "Domino's published guidance for its corrugated pizza boxes. This is advice for the customer after eating, NOT proof the Frisco store has a customer recycling bin or that every local hauler accepts pizza boxes.",
+      "sources": [
+        "https://www.recycling.dominos.com/",
+        "https://media.dominos.com/stories/recycling-pizza-boxes/",
+        "https://pizza.dominos.com/texas/frisco/2930-preston-road-suite-170"
+      ],
+      "default_message": "Domino's has not published a specific disposal rule for this scanned item in the guidance reviewed. Check local collection policies.",
+      "rules": {
+        "pizza_box": {
+          "item_key": "pizza_box",
+          "status": "check_local_recycling",
+          "instruction": "Empty Domino's corrugated pizza box and check whether your local paper/cardboard recycling program accepts pizza boxes. Typical grease marks do not automatically make the cardboard unrecyclable.",
+          "source_url": "https://www.recycling.dominos.com/",
+          "condition": "Remove leftover food; local programs differ. Do not assume the restaurant has a take-back bin."
+        }
+      }
+    },
+    {
+      "id": "business_starbucks_frisco_tx",
+      "name": "Starbucks (Frisco)",
+      "context": "business",
+      "business_type": "coffee shop",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "policy_type": "customer reusable-cup policy; customer bin policy not verified",
+      "scope": "Starbucks' official US reusable-cup ordering policy applies to company-operated and participating licensed stores. This is an option to PREVENT disposable cup waste, not permission to put a cup in a particular store bin.",
+      "sources": [
+        "https://about.starbucks.com/press/2024/starbucks-becomes-first-national-coffee-retailer-to-accept-reusable-cups-for-drive-thru-and-mobile-orders/",
+        "https://about.starbucks.com/a-better-cup-for-all/"
+      ],
+      "default_message": "Starbucks' published reusable-cup guidance does not establish a local bin destination for this item. Check store signs and the applicable waste service.",
+      "rules": {
+        "reusable_cup": {
+          "item_key": "reusable_cup",
+          "status": "reuse",
+          "instruction": "Bring a clean personal reusable cup when buying a drink to avoid a single-use cup. Tell the barista or select Personal Cup when placing a supported order.",
+          "source_url": "https://about.starbucks.com/press/2024/starbucks-becomes-first-national-coffee-retailer-to-accept-reusable-cups-for-drive-thru-and-mobile-orders/",
+          "condition": "Participating location and ordering rules apply; dirty cups are not accepted."
+        },
+        "reusable_mug": {
+          "item_key": "reusable_mug",
+          "status": "reuse",
+          "instruction": "Use a clean travel mug or personal reusable tumbler for a new beverage order at a participating Starbucks store.",
+          "source_url": "https://about.starbucks.com/press/2024/starbucks-becomes-first-national-coffee-retailer-to-accept-reusable-cups-for-drive-thru-and-mobile-orders/",
+          "condition": "Personal cups must be clean; participating licensed stores can vary."
+        },
+        "plastic_cold_cup": {
+          "item_key": "plastic_cold_cup",
+          "status": "check_local_recycling",
+          "instruction": "Starbucks says its US plastic cold cups have a widely recyclable label, but whether your particular collection program accepts this cup must be checked separately.",
+          "source_url": "https://about.starbucks.com/a-better-cup-for-all/",
+          "condition": "Do not assume the café's bin or your home bin accepts this type of cup."
         }
       }
     }

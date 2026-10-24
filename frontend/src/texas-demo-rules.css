@@ -55,3 +55,8 @@
   .site .institution-scanned-row{align-items:flex-start}
   .site .institution-scanned{padding:12px}
 }
+
+.site .institution-examples{
+  margin:0;color:var(--wl-subcopy,#4b6d65);
+  font-size:12px;line-height:1.5;
+}

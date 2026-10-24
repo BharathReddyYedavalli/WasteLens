@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import * as vmModule from "node:vm";
 
 const read=file=>readFileSync(new URL("../src/"+file,import.meta.url),"utf8");
 const data=JSON.parse(read("data/texas-demo-rules.json"));
@@ -14,13 +15,13 @@ const byId=id=>all.find(p=>p.id===id);
 
 test("Only Texas schools, campus offices and distinct businesses are shown",()=>{
   assert.equal(data.texas_only,true);
-  assert.equal(all.length,12);
+  assert.equal(all.length,14);
   assert.deepEqual([...new Set(all.map(p=>p.context))],["school","office","business"]);
   assert.ok(all.every(p=>p.location.state==="TX"));
   assert.equal(all.filter(p=>p.context==="school"&&["elementary","middle","high"].includes(p.school_type)).length,6);
   for(const level of ["elementary","middle","high"])assert.equal(all.filter(p=>p.school_type===level).length,2);
   assert.ok(all.some(p=>p.context==="office"));
-  assert.equal(all.filter(p=>p.context==="business").length,4);
+  assert.equal(all.filter(p=>p.context==="business").length,6);
   assert.ok(all.every(p=>p.sources.every(u=>u.startsWith("https://"))));
   assert.ok(all.every(p=>Object.values(p.rules).every(r=>r.item_key&&r.source_url.startsWith("https://"))));
 });
@@ -90,3 +91,55 @@ test("Controls are readable on narrow screens and translated",()=>{
     assert.ok(translations.includes(JSON.stringify(key)+":"),key);
   }
 });
+
+test("Two Texas food chains offer supported, appropriately qualified consumer guidance",()=>{
+  const dominos=byId("business_dominos_frisco_tx");
+  const starbucks=byId("business_starbucks_frisco_tx");
+  assert.equal(dominos.context,"business");
+  assert.equal(starbucks.context,"business");
+  assert.equal(dominos.rules.pizza_box.status,"check_local_recycling");
+  assert.match(dominos.rules.pizza_box.condition,/local programs differ/i);
+  assert.match(dominos.scope,/not proof/i);
+  assert.equal(starbucks.rules.reusable_cup.status,"reuse");
+  assert.equal(starbucks.rules.reusable_mug.status,"reuse");
+  assert.equal(starbucks.rules.plastic_cold_cup.status,"check_local_recycling");
+  assert.match(starbucks.rules.plastic_cold_cup.condition,/not assume/i);
+  assert.match(panel,/business_dominos_frisco_tx:"Domino’s Pizza"/);
+  assert.match(panel,/business_starbucks_frisco_tx:"Starbucks"/);
+});
+
+test("Item name aliases match common scans without guessing from material alone",()=>{
+  // Exercise the real TypeScript matcher through Node VM without running React.
+  const vm = requireVm();
+  const match=panel.match(/export function inferDemoItem\(itemName:string, material:string, profileId:string\):string \{[\s\S]*?\n\}/);
+  assert.ok(match,"inferDemoItem function available");
+  const javascript=match[0].replace(
+    "export function inferDemoItem(itemName:string, material:string, profileId:string):string",
+    "function inferDemoItem(itemName, material, profileId)"
+  );
+  const infer=vm.runInNewContext(javascript+"\ninferDemoItem");
+  const id="school_ut_dallas_tx";
+  for(const [item,want] of [
+    ["Plastic bottle or jug","plastic_bottle"],
+    ["Plastic water bottle","plastic_bottle"],
+    ["Clear PET beverage bottle","plastic_bottle"],
+    ["Soda can","aluminum_can"],
+    ["Aluminum beverage can","aluminum_can"],
+    ["Corrugated pizza box","pizza_box"],
+    ["Greasy pizza cardboard box","pizza_box"],
+    ["Reusable travel cup","reusable_cup"],
+    ["Ceramic coffee mug","reusable_mug"],
+    ["Plastic cold cup","plastic_cold_cup"],
+    ["Cardboard shipping box","clean_cardboard"],
+    ["Empty glass bottle","glass_bottle"],
+    ["Old smartphone","cell_phone"],
+    ["Printer ink cartridge","printer_cartridge"],
+    ["Paper plate",""],
+    ["Phone case",""],
+    ["Reusable metal bottle",""],
+  ]){
+    assert.equal(infer(item,"unrelated plastic",id),want,item);
+  }
+  assert.equal(infer("","plastic",id),"");
+});
+function requireVm(){return vmModule;}
