@@ -87,7 +87,7 @@ test("whole bottle stays in view with responsive 3D camera rather than CSS canva
 });
 
 test("large centered hero stays behind the real 3D bottle with accessible Scan dock",()=>{
-  assert.match(css,/Restore the large, centered bottle/i);
+  assert.match(css,/Safari review: centered hero and large foreground bottle/i);
   assert.match(css,/\.site\.is-sidebar-experiment\.is-stage \.es-type\{/);
   assert.match(css,/justify-items:center!important/);
   assert.match(css,/text-align:center!important/);
