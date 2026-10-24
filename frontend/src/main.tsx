@@ -28,5 +28,6 @@ import "./google-maps.css";
 import "./editorial.css";
 import "./google-map-polish.css";
 import "./sidebar-editorial.css";
+import "./kiosk-visual-polish.css";
 
 createRoot(document.getElementById("root")!).render(<React.StrictMode><LanguageProvider><SpeechProvider><App /></SpeechProvider></LanguageProvider></React.StrictMode>);
