@@ -12,8 +12,11 @@ type Profile = {
 const profiles = rulesData.profiles as unknown as Profile[];
 const labelById:Record<string,string>={
   school_purefoy_elementary_tx:"Purefoy Elementary",
+  school_spears_elementary_tx:"Spears Elementary",
   school_scoggins_middle_tx:"Scoggins Middle School",
+  school_maus_middle_tx:"Maus Middle School",
   school_panther_creek_high_tx:"Panther Creek High School",
+  school_wakeland_high_tx:"Wakeland High School",
   school_ut_dallas_tx:"UT Dallas (University)",
   office_ut_dallas_tx:"UT Dallas Campus Offices",
   business_heb_frisco_tx:"H-E-B",
@@ -23,8 +26,11 @@ const labelById:Record<string,string>={
 };
 const shortScope:Record<string,string>={
   school_purefoy_elementary_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
+  school_spears_elementary_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
   school_scoggins_middle_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
+  school_maus_middle_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
   school_panther_creek_high_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
+  school_wakeland_high_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
   school_ut_dallas_tx:"University campus recycling and designated special-collection sites.",
   office_ut_dallas_tx:"UT Dallas campus office bins and designated special-collection sites only.",
   business_heb_frisco_tx:"Customer plastic-film drop-off, not employee sorting bins.",
@@ -48,8 +54,11 @@ const itemNames:Record<string,string>={
 };
 const popular:Record<string,string[]>={
  school_purefoy_elementary_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
+ school_spears_elementary_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
  school_scoggins_middle_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_wrapper"],
+ school_maus_middle_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_wrapper"],
  school_panther_creek_high_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
+ school_wakeland_high_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
  school_ut_dallas_tx:["plastic_bottle","aluminum_can","clean_cardboard","plastic_wrap","household_battery","cell_phone"],
  office_ut_dallas_tx:["paper","clean_cardboard","plastic_bottle","printer_cartridge","household_battery"],
  business_heb_frisco_tx:["plastic_grocery_bag","bread_bag","bubble_wrap","plastic_bottle","compostable_bag"],
