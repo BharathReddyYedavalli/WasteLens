@@ -15,11 +15,13 @@ export async function readJson<T>(response: Response): Promise<T> {
 type Props = {
   user: SessionUser | null;
   mode: "account" | "history" | "admin";
+  visualStyle: "claude" | "legacy";
+  onVisualStyleChange: (style: "claude" | "legacy") => void;
   onLogin: (user: SessionUser) => void;
   onLogout: () => void;
 };
 
-export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
+export default function AccountArea({ user, mode, visualStyle, onVisualStyleChange, onLogin, onLogout }: Props) {
   const { t } = useLanguage();
   const [signup, setSignup] = useState(false);
   const [name, setName] = useState("");
@@ -169,6 +171,16 @@ export default function AccountArea({ user, mode, onLogin, onLogout }: Props) {
       <div className="head-with-icon"><div className="round-icon"><ShieldCheck/></div>
         <div><h2>{t("Admin dashboard")}</h2></div></div>
       {error && <p className="inline-error" role="alert">{error}</p>}
+      <section className="admin-ui-settings" aria-label={t("Interface style")}>
+        <h3>{t("Interface appearance")}</h3>
+        <p>{t("Switch the visual design without changing scans, maps, features, text, or saved data.")}</p>
+        <div className="admin-ui-choices" role="group" aria-label={t("Interface style")}>
+          <button type="button" className={visualStyle === "claude" ? "admin-ui-choice is-selected" : "admin-ui-choice"}
+            aria-pressed={visualStyle === "claude"} onClick={() => onVisualStyleChange("claude")}>{t("Current UI")}</button>
+          <button type="button" className={visualStyle === "legacy" ? "admin-ui-choice is-selected" : "admin-ui-choice"}
+            aria-pressed={visualStyle === "legacy"} onClick={() => onVisualStyleChange("legacy")}>{t("Legacy UI")}</button>
+        </div>
+      </section>
       <div className="admin-stats">
         <div><strong>{overview?.users ?? "…"}</strong><span>{t("Accounts")}</span></div>
         <div><strong>{overview?.scans ?? "…"}</strong><span>{t("Saved scans")}</span></div>
