@@ -17,7 +17,8 @@ import AuditKit from "./AuditKit";
 import AboutWasteLens from "./AboutWasteLens";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
-import { useAppearanceTheme } from "./AccountMenu";
+import { useAppearanceTheme, useNavigationLayout } from "./AccountMenu";
+import HorizontalNav from "./shell/HorizontalNav";
 import SidebarNav from "./shell/SidebarNav";
 import LegacyNavigation from "./shell/LegacyNavigation";
 import type { View } from "./shell/TopNav";
@@ -37,6 +38,7 @@ function ErrorText({ message }: { message: string }) {
 export default function App() {
   const { language, t } = useLanguage();
   const [theme, setTheme] = useAppearanceTheme();
+  const [navigationLayout, setNavigationLayout] = useNavigationLayout();
   const [visualStyle, setVisualStyle] = useState<VisualStyle>(() => {
     try { return window.localStorage.getItem("wastelens-visual-style") === "legacy" ? "legacy" : "claude"; }
     catch { return "claude"; }
@@ -102,6 +104,15 @@ export default function App() {
       document.head.appendChild(readable);
     }
     readable.media = visualStyle === "claude" ? "all" : "not all";
+    // This stylesheet loads after both modern CSS layers and supports Legacy too.
+    let navSheet = document.getElementById("wastelens-navigation-css") as HTMLLinkElement | null;
+    if (!navSheet) {
+      navSheet = document.createElement("link");
+      navSheet.id = "wastelens-navigation-css";
+      navSheet.rel = "stylesheet";
+      navSheet.href = "/navigation-layout.css?v=20261024";
+      document.head.appendChild(navSheet);
+    }
     try { window.localStorage.setItem("wastelens-visual-style", visualStyle); } catch { /* private mode */ }
   }, [visualStyle]);
 
@@ -391,13 +402,25 @@ export default function App() {
     return () => ctx.revert();
   }, [view, camera, Boolean(preview), Boolean(analysis), stageMode]);
 
-  return <div className={"site " + (visualStyle === "legacy" ? "is-legacy-ui" : "is-sidebar-experiment") + (stageMode ? " is-stage" : "") + (view !== "identifier" && visualStyle === "claude" ? " is-classic-page" : "")} data-theme={theme} data-lang={language} data-visual-style={visualStyle}>
+  return <div className={"site " + (visualStyle === "legacy" ? "is-legacy-ui" : "is-sidebar-experiment") + (stageMode ? " is-stage" : "") + (view !== "identifier" && visualStyle === "claude" ? " is-classic-page" : "")} data-theme={theme} data-lang={language} data-visual-style={visualStyle} data-navigation-layout={navigationLayout}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
     <div className={visualStyle === "legacy" ? "site-layout legacy-layout" : "modern-layout"}>
-      {visualStyle === "legacy"
-        ? <LegacyNavigation view={view} user={user} theme={theme} onThemeChange={setTheme} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle} onNavigate={next => openPage(next)}/>
-        : <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle} onNavigate={next => openPage(next)}/>}
+      {navigationLayout === "top"
+        ? <HorizontalNav view={view} user={user} theme={theme} onThemeChange={setTheme}
+            visualStyle={visualStyle} onVisualStyleChange={setVisualStyle}
+            navigationLayout={navigationLayout} onNavigationLayoutChange={setNavigationLayout}
+            onNavigate={next => openPage(next)}/>
+        : visualStyle === "legacy"
+          ? <LegacyNavigation view={view} user={user} theme={theme} onThemeChange={setTheme}
+              visualStyle={visualStyle} onVisualStyleChange={setVisualStyle}
+              navigationLayout={navigationLayout} onNavigationLayoutChange={setNavigationLayout}
+              onNavigate={next => openPage(next)}/>
+          : <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme}
+              visualStyle={visualStyle} onVisualStyleChange={setVisualStyle}
+              navigationLayout={navigationLayout} onNavigationLayoutChange={setNavigationLayout}
+              onNavigate={next => openPage(next)}/>}
+
       <div className={visualStyle === "legacy" ? "page-content legacy-page-content" : "modern-page-content"}>
     <main id="main-content" ref={pageRef} className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
       {view === "identifier" ? <>

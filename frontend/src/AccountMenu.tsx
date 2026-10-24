@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Palette, UserRound, ShieldCheck, Ear, Sun, Moon, Waves, Palmtree, Trees, CloudSun } from "lucide-react";
+import { Check, ChevronDown, Palette, UserRound, ShieldCheck, Ear, Sun, Moon, Waves, Palmtree, Trees, CloudSun, PanelLeft, PanelTop } from "lucide-react";
 import type { SessionUser } from "./types";
 import { useLanguage } from "./i18n";
 import { SpeechSettingsPanel } from "./Speech";
 
 export type AppearanceTheme = "light" | "dark" | "ocean" | "beach" | "forest" | "sunset";
+export type NavigationLayout = "left" | "top";
 
 const choices = [
   { id: "light", name: "Light", icon: Sun },
@@ -31,16 +32,31 @@ export function useAppearanceTheme(): [AppearanceTheme, (theme: AppearanceTheme)
   return [theme, setTheme];
 }
 
+/** Kiosk navigation is a browser preference and is independent of theme or login. */
+export function useNavigationLayout(): [NavigationLayout, (layout: NavigationLayout) => void] {
+  const [layout,setLayout] = useState<NavigationLayout>(() => {
+    try { return window.localStorage.getItem("wastelens-navigation-layout") === "top" ? "top" : "left"; }
+    catch { return "left"; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem("wastelens-navigation-layout",layout); }
+    catch { /* private mode may disable storage */ }
+  },[layout]);
+  return [layout,setLayout];
+}
+
 type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (value: AppearanceTheme) => void;
+  navigationLayout: NavigationLayout;
+  onNavigationLayoutChange: (value: NavigationLayout) => void;
   visualStyle?: "claude" | "legacy";
   onVisualStyleChange?: (value: "claude" | "legacy") => void;
   onNavigate: (view: "account" | "admin") => void;
 };
 
-export default function AccountMenu({ user, theme, onThemeChange, visualStyle, onVisualStyleChange, onNavigate }: Props) {
+export default function AccountMenu({ user, theme, onThemeChange, navigationLayout, onNavigationLayoutChange, visualStyle, onVisualStyleChange, onNavigate }: Props) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [showThemes, setShowThemes] = useState(false);
@@ -128,6 +144,21 @@ export default function AccountMenu({ user, theme, onThemeChange, visualStyle, o
             {theme === choice.id && <Check className="wl-theme-check" size={17} aria-hidden="true"/>}
           </button>;
         })}
+        <div className="wl-navigation-preference" role="group" aria-label={t("Navigation layout")}>
+          <p className="wl-navigation-preference-title">{t("Navigation layout")}</p>
+          <div className="wl-navigation-preference-choices">
+            <button type="button" className={"wl-navigation-choice"+(navigationLayout==="left"?" active":"")}
+              aria-pressed={navigationLayout==="left"} onClick={() => onNavigationLayoutChange("left")}>
+              <PanelLeft size={20} aria-hidden="true"/><span>{t("Left sidebar")}</span>
+              {navigationLayout==="left"&&<Check size={17} aria-hidden="true"/>}
+            </button>
+            <button type="button" className={"wl-navigation-choice"+(navigationLayout==="top"?" active":"")}
+              aria-pressed={navigationLayout==="top"} onClick={() => onNavigationLayoutChange("top")}>
+              <PanelTop size={20} aria-hidden="true"/><span>{t("Top bar")}</span>
+              {navigationLayout==="top"&&<Check size={17} aria-hidden="true"/>}
+            </button>
+          </div>
+        </div>
       </div>}
       <button type="button" className={"wl-profile-action "+(showAccessibility?"selected":"")}
         aria-expanded={showAccessibility} aria-controls="wl-accessibility-options"

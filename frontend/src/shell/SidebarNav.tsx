@@ -4,7 +4,7 @@ import {
   MessageCircle, ScanLine, Trophy, X,
 } from "lucide-react";
 import AccountMenu from "../AccountMenu";
-import type { AppearanceTheme } from "../AccountMenu";
+import type { AppearanceTheme, NavigationLayout } from "../AccountMenu";
 import { LANGUAGES, useLanguage } from "../i18n";
 import type { SessionUser } from "../types";
 import type { View } from "./TopNav";
@@ -14,6 +14,8 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (theme: AppearanceTheme) => void;
+  navigationLayout: NavigationLayout;
+  onNavigationLayoutChange: (layout: NavigationLayout) => void;
   visualStyle: "claude" | "legacy";
   onVisualStyleChange: (value: "claude" | "legacy") => void;
   onNavigate: (view: View) => void;
@@ -46,7 +48,7 @@ const groups = [
 ] as const;
 
 /** Restores the original grouped navigation without sacrificing the 3D shell. */
-export default function SidebarNav({view,user,theme,onThemeChange,visualStyle,onVisualStyleChange,onNavigate}: Props) {
+export default function SidebarNav({view,user,theme,onThemeChange,visualStyle,onVisualStyleChange,navigationLayout,onNavigationLayoutChange,onNavigate}: Props) {
   const {language,setLanguage,t} = useLanguage();
   const [open,setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -89,7 +91,7 @@ export default function SidebarNav({view,user,theme,onThemeChange,visualStyle,on
           value={language} onChange={event=>setLanguage(event.target.value as typeof language)}>
           {LANGUAGES.map(option=><option key={option.code} value={option.code}>{option.label}</option>)}
         </select>
-        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} visualStyle={visualStyle} onVisualStyleChange={onVisualStyleChange}
+        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} navigationLayout={navigationLayout} onNavigationLayoutChange={onNavigationLayoutChange} visualStyle={visualStyle} onVisualStyleChange={onVisualStyleChange}
           onNavigate={next=>navigate(next)}/>
       </div>
     </header>

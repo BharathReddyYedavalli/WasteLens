@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BookOpen, ClipboardList, Coins, History, Info, Leaf, MapPin, Menu, MessageCircle, ScanLine, Trophy, X } from "lucide-react";
 import AccountMenu from "../AccountMenu";
-import type { AppearanceTheme } from "../AccountMenu";
+import type { AppearanceTheme, NavigationLayout } from "../AccountMenu";
 import { LANGUAGES, useLanguage } from "../i18n";
 import type { SessionUser } from "../types";
 import type { View } from "./TopNav";
@@ -11,6 +11,8 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (theme: AppearanceTheme) => void;
+  navigationLayout: NavigationLayout;
+  onNavigationLayoutChange: (layout: NavigationLayout) => void;
   visualStyle: "claude" | "legacy";
   onVisualStyleChange: (value: "claude" | "legacy") => void;
   onNavigate: (view: View) => void;
@@ -34,7 +36,7 @@ const groups = [
 ] as const;
 
 /** Original WasteLens header/sidebar connected to the current application state. */
-export default function LegacyNavigation({ view, user, theme, onThemeChange, visualStyle, onVisualStyleChange, onNavigate }: Props) {
+export default function LegacyNavigation({ view, user, theme, onThemeChange, visualStyle, onVisualStyleChange, navigationLayout, onNavigationLayoutChange, onNavigate }: Props) {
   const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLButtonElement>(null);
@@ -71,7 +73,7 @@ export default function LegacyNavigation({ view, user, theme, onThemeChange, vis
             {LANGUAGES.map(option => <option key={option.code} value={option.code}>{option.label}</option>)}
           </select>
         </div>
-        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} visualStyle={visualStyle} onVisualStyleChange={onVisualStyleChange}
+        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} navigationLayout={navigationLayout} onNavigationLayoutChange={onNavigationLayoutChange} visualStyle={visualStyle} onVisualStyleChange={onVisualStyleChange}
           onNavigate={next => navigate(next)}/>
       </div>
     </header>
