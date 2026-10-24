@@ -14,7 +14,9 @@
     "Home profiles are out of the institution selector; ZIP is used only in Find a Place.",
     "Frisco ISD examples describe district activities, not verified per-campus daily bin rules; never claim permanent bag/battery acceptance.",
     "Customer store collection programs must not be presented as employee or office sorting policies.",
-    "Food-chain examples are brand-specific post-consumer packaging/reuse guidance, NOT confirmed local-bin acceptance at named Frisco stores."
+    "Food-chain examples are brand-specific post-consumer packaging/reuse guidance, NOT confirmed local-bin acceptance at named Frisco stores.",
+    "Aluminum trays have a verified positive entry only for TDS (exact named item); do not propagate to other institution profiles.",
+    "Raspberry Pi acceptance is not listed verbatim by local electronics recyclers, so show Confirm with recycling center status instead of a guaranteed drop-off."
   ],
   "status_values": {
     "recycle": "Designated normal recycling bin",
@@ -23,7 +25,8 @@
     "special_dropoff": "Dedicated collection program or drop-off, not curbside bin",
     "not_accepted_here": "This designated drop-off program rejects this item; alternate disposal not determined",
     "reuse": "A published waste-prevention/reuse action, not a recycling-bin placement",
-    "check_local_recycling": "Recyclability/brand packaging guidance exists but local collection acceptance is not verified"
+    "check_local_recycling": "Recyclability/brand packaging guidance exists but local collection acceptance is not verified",
+    "verify_dropoff": "Documented broad electronics category; exact board requires facility confirmation"
   },
   "profiles": [
     {
@@ -329,6 +332,13 @@
           "source_url": "https://sustainability.utdallas.edu/campus/sustainablelabs/",
           "item_key": "plastic_wrap",
           "condition": "Only eligible film and designated campus collection points."
+        },
+        "raspberry_pi": {
+          "item_key": "raspberry_pi",
+          "status": "verify_dropoff",
+          "instruction": "UT Dallas provides specialty collection for electronics. Ask the campus recycling team whether it accepts a bare Raspberry Pi board before using a designated electronics collection location.",
+          "source_url": "https://sustainability.utdallas.edu/news/2023/newsletter_20230111.html",
+          "condition": "Campus-specific and equipment ownership rules apply."
         }
       }
     },
@@ -395,6 +405,13 @@
           "instruction": "Use a designated plastic film specialty recycling location only if the type is accepted.",
           "source_url": "https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainability_Guide.pdf",
           "item_key": "plastic_wrap"
+        },
+        "raspberry_pi": {
+          "item_key": "raspberry_pi",
+          "status": "verify_dropoff",
+          "instruction": "UT Dallas provides designated campus electronics collection. Office equipment and bare Raspberry Pi boards need the campus responsible team's approval before drop-off.",
+          "source_url": "https://sustainability.utdallas.edu/news/2023/newsletter_20230111.html",
+          "condition": "Campus-owned equipment and data-security requirements may apply."
         }
       }
     },
@@ -570,6 +587,13 @@
           "condition": "A limited small-rechargeable-battery exception is listed for California and New York; verify the exact state and product before drop-off.",
           "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
           "item_key": "standalone_battery"
+        },
+        "raspberry_pi": {
+          "item_key": "raspberry_pi",
+          "status": "verify_dropoff",
+          "instruction": "Best Buy recycles many consumer computing devices but does not explicitly list loose Raspberry Pi boards. Contact the store to check this board before visiting.",
+          "source_url": "https://www.bestbuy.com/site/services/recycling/pcmcat149900050025.c?id=pcmcat149900050025%2F",
+          "condition": "No claim of guaranteed bare-board acceptance."
         }
       },
       "location": {
@@ -620,6 +644,13 @@
           "source_url": "https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513",
           "item_key": "rechargeable_battery",
           "condition": "Damaged, swollen or leaking batteries need specialist guidance."
+        },
+        "alkaline_battery": {
+          "item_key": "alkaline_battery",
+          "status": "not_accepted_here",
+          "instruction": "Home Depot says ordinary non-rechargeable alkaline AA/AAA batteries are not accepted in its rechargeable-battery collection bins.",
+          "source_url": "https://www.homedepot.com/c/ab/how-to-dispose-of-batteries/9ba683603be9fa5395fab90124a115f1",
+          "condition": "Use a suitable local household-battery collection program."
         }
       }
     },
@@ -683,6 +714,20 @@
           "source_url": "https://www.staples.com/stores/recycling",
           "item_key": "rechargeable_battery",
           "condition": "Published price: $2.99 per visit in states where the fee applies, including Texas; verify current price."
+        },
+        "alkaline_battery": {
+          "item_key": "alkaline_battery",
+          "status": "special_dropoff",
+          "instruction": "Staples lists household single-use batteries in its paid recycling category. Ask a staff member about the eligible battery type and fee.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "condition": "Published fee is $2.99 per visit in Texas; damaged or leaking cells may need specialist handling."
+        },
+        "raspberry_pi": {
+          "item_key": "raspberry_pi",
+          "status": "verify_dropoff",
+          "instruction": "Staples lists computers and small servers, but not bare Raspberry Pi circuit boards. Ask the store to confirm whether this board fits an accepted category.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "condition": "Do not put bare electronics in ordinary recycling."
         }
       }
     },
@@ -750,6 +795,128 @@
           "instruction": "Starbucks says its US plastic cold cups have a widely recyclable label, but whether your particular collection program accepts this cup must be checked separately.",
           "source_url": "https://about.starbucks.com/a-better-cup-for-all/",
           "condition": "Do not assume the café's bin or your home bin accepts this type of cup."
+        }
+      }
+    },
+    {
+      "id": "business_texas_disposal_systems_tx",
+      "name": "Texas Disposal Systems",
+      "context": "business",
+      "business_type": "commercial waste and recycling service",
+      "policy_type": "published recycling stream acceptance; customer enrollment not established",
+      "location": {
+        "city": "Austin",
+        "state": "TX"
+      },
+      "sources": [
+        "https://www.texasdisposal.com/whats-accepted/",
+        "https://www.texasdisposal.com/your-business/"
+      ],
+      "scope": "Texas Disposal Systems publishes item-specific instructions for its recycling and trash services. The listed materials are NOT proof that a specific Texas workplace subscribes to TDS recycling service; follow that site's actual bins and contract.",
+      "default_message": "TDS does not provide a documented sorting answer for this item in the items included in our pilot. Check its published Waste Wizard.",
+      "rules": {
+        "aluminum_tray": {
+          "item_key": "aluminum_tray",
+          "status": "recycle",
+          "instruction": "Texas Disposal Systems lists aluminum baking trays as accepted in its recycling stream. Empty the tray and check that your location uses a TDS recycling cart.",
+          "source_url": "https://www.texasdisposal.com/whats-accepted/",
+          "condition": "Only at sites with a participating TDS recycling service; remove remaining food. Not an instruction for a non-TDS office."
+        },
+        "aluminum_pie_plate": {
+          "item_key": "aluminum_pie_plate",
+          "status": "recycle",
+          "instruction": "TDS accepts disposable aluminum pie plates in its recycling stream. Remove food first.",
+          "source_url": "https://www.texasdisposal.com/whats-accepted/",
+          "condition": "Only at sites served by an applicable TDS recycling program."
+        },
+        "aluminum_can": {
+          "item_key": "aluminum_can",
+          "status": "recycle",
+          "instruction": "TDS lists aluminum cans as accepted in its recycling stream.",
+          "source_url": "https://www.texasdisposal.com/whats-accepted/",
+          "condition": "Only at locations with TDS recycling pickup."
+        },
+        "alkaline_battery": {
+          "item_key": "alkaline_battery",
+          "status": "not_accepted_here",
+          "instruction": "TDS says household batteries are not accepted in its ordinary recycling or trash carts. Use a designated household hazardous waste collection service.",
+          "source_url": "https://www.texasdisposal.com/whats-accepted/",
+          "condition": "Never put loose household batteries in the recycling cart."
+        },
+        "rechargeable_battery": {
+          "item_key": "rechargeable_battery",
+          "status": "not_accepted_here",
+          "instruction": "TDS does not accept rechargeable batteries in normal recycling. Use a designated battery drop-off.",
+          "source_url": "https://www.texasdisposal.com/whats-accepted/",
+          "condition": "Check battery condition and facility-specific safe packaging requirements."
+        },
+        "cell_phone": {
+          "item_key": "cell_phone",
+          "status": "not_accepted_here",
+          "instruction": "This program's regular mixed-material recycling cart is not an electronic-waste collection point. Seek an electronics recycler or special collection event.",
+          "source_url": "https://www.texasdisposal.com/whats-accepted/",
+          "condition": "Verify a facility specifically handles devices."
+        }
+      }
+    },
+    {
+      "id": "business_dfw_electronics_plano_tx",
+      "name": "DFW Electronics Recycling (Plano)",
+      "context": "business",
+      "business_type": "electronics recycling service",
+      "policy_type": "professional electronic-waste drop-off; specific board type must be checked",
+      "location": {
+        "city": "Plano",
+        "state": "TX"
+      },
+      "sources": [
+        "https://dfwelectronicsrecycling.com/services",
+        "https://dfwelectronicsrecycling.com/locations"
+      ],
+      "scope": "DFW Electronics Recycling advertises a Plano electronics drop-off and lists computer components, computer peripherals, phones and cabling. It does not specifically name Raspberry Pi boards or accept loose batteries under the published list.",
+      "default_message": "The DFW Electronics Recycling published list doesn't specify this item. Call the recycler before bringing an unsupported or hazardous item.",
+      "rules": {
+        "raspberry_pi": {
+          "item_key": "raspberry_pi",
+          "status": "verify_dropoff",
+          "instruction": "A Raspberry Pi is a single-board computer; DFW Electronics Recycling lists computer components and parts. Contact the Plano site to confirm it accepts this exact bare board before drop-off.",
+          "source_url": "https://dfwelectronicsrecycling.com/services",
+          "condition": "Remove any separate battery and memory containing sensitive data as appropriate. Do not put the board in an ordinary recycling bin."
+        },
+        "circuit_board": {
+          "item_key": "circuit_board",
+          "status": "verify_dropoff",
+          "instruction": "The recycler lists computer components and parts. Ask whether your particular bare circuit board or PCB is eligible for electronics drop-off.",
+          "source_url": "https://dfwelectronicsrecycling.com/services",
+          "condition": "Electronic boards are not accepted in mixed recycling."
+        },
+        "cell_phone": {
+          "item_key": "cell_phone",
+          "status": "special_dropoff",
+          "instruction": "DFW Electronics Recycling specifically lists cell phones for recycling. Use its electronics collection procedure and clear personal data first.",
+          "source_url": "https://dfwelectronicsrecycling.com/services",
+          "condition": "Confirm location hours and any drop-off limits before visiting."
+        },
+        "laptop": {
+          "item_key": "laptop",
+          "status": "special_dropoff",
+          "instruction": "DFW Electronics Recycling lists computers and computer equipment. Ask about laptop acceptance at its Plano drop-off, and erase personal data.",
+          "source_url": "https://dfwelectronicsrecycling.com/services",
+          "condition": "Small load limit applies at the Plano drop-off."
+        },
+        "electrical_cable": {
+          "item_key": "electrical_cable",
+          "status": "special_dropoff",
+          "instruction": "DFW Electronics Recycling lists wire and cabling for electronics recycling.",
+          "source_url": "https://dfwelectronicsrecycling.com/services",
+          "condition": "Bring to an electronics collection location, not mixed recycling."
+        },
+        "computer_keyboard": {
+          "item_key": "computer_keyboard",
+          "status": "special_dropoff",
+          "instruction": "DFW Electronics Recycling lists computer peripherals for recycling.",
+          "source_url": "https://dfwelectronicsrecycling.com/services",
+          "condition": "Verify it is a household/electronic peripheral, not hazardous waste."
         }
       }
     }

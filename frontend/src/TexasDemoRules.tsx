@@ -3,7 +3,7 @@ import { CheckCircle2, ExternalLink, ShieldAlert } from "lucide-react";
 import rulesData from "./data/texas-demo-rules.json";
 import { useLanguage } from "./i18n";
 
-type RuleStatus = "recycle" | "trash" | "compost" | "special_dropoff" | "not_accepted_here" | "check_local_recycling" | "reuse";
+type RuleStatus = "recycle" | "trash" | "compost" | "special_dropoff" | "not_accepted_here" | "check_local_recycling" | "reuse" | "verify_dropoff";
 type Rule = {status:RuleStatus;instruction:string;source_url:string;item_key:string;condition?:string};
 type Profile = {
  id:string;name:string;context:"school"|"office"|"business";scope:string;
@@ -25,6 +25,8 @@ const labelById:Record<string,string>={
   business_staples_frisco_tx:"Staples",
   business_dominos_frisco_tx:"Domino’s Pizza",
   business_starbucks_frisco_tx:"Starbucks",
+  business_texas_disposal_systems_tx:"Texas Disposal Systems",
+  business_dfw_electronics_plano_tx:"DFW Electronics Recycling",
 };
 const shortScope:Record<string,string>={
   school_purefoy_elementary_tx:"Frisco ISD school. District recycling drives are documented; exact campus bin rules are not.",
@@ -41,6 +43,8 @@ const shortScope:Record<string,string>={
   business_staples_frisco_tx:"Customer electronics and office-supplies drop-off, not employee bins.",
   business_dominos_frisco_tx:"Pizza-box recycling guidance; local bin acceptance must be checked.",
   business_starbucks_frisco_tx:"Bring-your-own-cup program; not a verified disposable-cup bin policy.",
+  business_texas_disposal_systems_tx:"Published materials accepted by TDS. Only applies where TDS provides the collection service.",
+  business_dfw_electronics_plano_tx:"Plano electronics drop-off; confirm bare board acceptance before visiting.",
 };
 const itemNames:Record<string,string>={
  plastic_bottle:"Plastic bottle",aluminum_can:"Aluminum can",glass_bottle:"Glass bottle",
@@ -55,6 +59,8 @@ const itemNames:Record<string,string>={
  standalone_battery:"Loose battery",pen_marker:"Pen or marker",binder:"Binder",
  compostable_bag:"Compostable bag",candy_wrapper:"Candy wrapper",
  metal_can:"Food can",newspaper:"Newspaper",
+ aluminum_tray:"Aluminum food tray",aluminum_pie_plate:"Aluminum pie plate",
+ raspberry_pi:"Raspberry Pi board",circuit_board:"Circuit board",alkaline_battery:"Alkaline AA/AAA battery",
  pizza_box:"Pizza box",reusable_cup:"Reusable travel cup",reusable_mug:"Reusable mug",
  plastic_cold_cup:"Plastic cold-drink cup",
 };
@@ -68,11 +74,13 @@ const popular:Record<string,string[]>={
  school_ut_dallas_tx:["plastic_bottle","aluminum_can","clean_cardboard","plastic_wrap","household_battery","cell_phone"],
  office_ut_dallas_tx:["paper","clean_cardboard","plastic_bottle","printer_cartridge","household_battery"],
  business_heb_frisco_tx:["plastic_grocery_bag","bread_bag","bubble_wrap","plastic_bottle","compostable_bag"],
- business_bestbuy_frisco_tx:["cell_phone","laptop","computer_keyboard","standalone_battery"],
- business_home_depot_frisco_tx:["plastic_grocery_bag","plastic_wrap","cfl_bulb","rechargeable_battery","household_battery"],
- business_staples_frisco_tx:["printer_cartridge","cell_phone","laptop","pen_marker","rechargeable_battery"],
+ business_bestbuy_frisco_tx:["cell_phone","raspberry_pi","standalone_battery","laptop"],
+ business_home_depot_frisco_tx:["rechargeable_battery","alkaline_battery","cfl_bulb","plastic_grocery_bag","plastic_wrap"],
+ business_staples_frisco_tx:["alkaline_battery","printer_cartridge","cell_phone","rechargeable_battery","raspberry_pi"],
  business_dominos_frisco_tx:["pizza_box"],
  business_starbucks_frisco_tx:["reusable_cup","reusable_mug","plastic_cold_cup"],
+ business_texas_disposal_systems_tx:["aluminum_tray","alkaline_battery","cell_phone","aluminum_pie_plate"],
+ business_dfw_electronics_plano_tx:["raspberry_pi","cell_phone","circuit_board","electrical_cable"],
 };
 const statuses:Record<RuleStatus,string>={
  recycle:"Use recycling",
@@ -82,6 +90,7 @@ const statuses:Record<RuleStatus,string>={
  not_accepted_here:"Not accepted by this program",
  check_local_recycling:"Check local recycling rules",
  reuse:"Reuse this item",
+ verify_dropoff:"Confirm with recycling center",
 };
 
 export function inferDemoItem(itemName:string, material:string, profileId:string):string {
@@ -93,6 +102,10 @@ export function inferDemoItem(itemName:string, material:string, profileId:string
 
   // A precise item type takes precedence over broad words such as cardboard or cup.
   if(/pizza[\s-]*(box|carton)|pizza cardboard box/.test(n))return "pizza_box";
+  if(/raspberry\s*-?\s*pi|raspberrypi|single[- ]board computer|\bsbc\s+(board|computer)|pi [345] (model|board)/.test(n))return "raspberry_pi";
+  if(/bare circuit board|printed circuit board|electronics circuit board|\bpcb\b|motherboard/.test(n))return "circuit_board";
+  if(/alumini?um foil (food |baking |takeout |meal )?(tray|pan)|alumini?um (food |baking |takeout |meal )?(tray|pan|container)|foil (food |baking |takeout |meal )?(tray|pan|container)|disposable (aluminum|aluminium) tray/.test(n))return "aluminum_tray";
+  if(/alumini?um (pie plate|pie tin)|foil pie plate/.test(n))return "aluminum_pie_plate";
   if(/ceramic mug|coffee mug|reusable mug|glass mug/.test(n))return "reusable_mug";
   if(/reusable (coffee |drink |travel |water )?(cup|tumbler|mug)|personal (coffee )?cup|travel mug|travel cup|thermos|stainless steel tumbler/.test(n))return "reusable_cup";
   if(/(plastic|clear|disposable) (cold|iced|takeaway|to-go) (drink |coffee )?cup|plastic cold cup|iced coffee cup/.test(n))return "plastic_cold_cup";
@@ -123,7 +136,8 @@ export function inferDemoItem(itemName:string, material:string, profileId:string
   if(/cardboard|shipping box|corrugated box/.test(n))return "clean_cardboard";
   if(/newspaper/.test(n))return "newspaper";
   if(/food scraps|leftover food|food waste/.test(n))return "food_scraps";
-  if(/rechargeable battery|lithium[\s-]?ion battery|power tool battery/.test(n))return "rechargeable_battery";
+  if(/rechargeable battery|lithium[\s-]?ion battery|power tool battery|rechargeable aa battery|rechargeable aaa battery/.test(n))return "rechargeable_battery";
+  if(/alkaline|single[- ]use battery|disposable battery|non[- ]rechargeable battery|\baa battery\b|\baaa battery\b|\baa\/aaa battery/.test(n))return "alkaline_battery";
   if(/battery|batteries/.test(n))return profileId==="business_bestbuy_frisco_tx"?"standalone_battery":"household_battery";
   if(/glass bottle|glass jar/.test(n))return "glass_bottle";
   if(/milk jug|milk container/.test(n))return "milk_jug";
