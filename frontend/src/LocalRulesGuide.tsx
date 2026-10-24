@@ -70,6 +70,7 @@ export default function LocalRulesGuide({
   const [discovering, setDiscovering] = useState(false);
   const pendingDiscovery = useRef<AbortController | null>(null);
   const [collectionType, setCollectionType] = useState<CollectionContext>("residential");
+  const [showOtherServices, setShowOtherServices] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [result, setResult] = useState<RuleResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -144,7 +145,7 @@ export default function LocalRulesGuide({
     setDiscovering(false);
     setConfirmed(false);
     setError("");
-    if (!open || !validZip) {
+    if (!open || !showOtherServices || !validZip) {
       setLoading(false);
       return;
     }
@@ -157,7 +158,7 @@ export default function LocalRulesGuide({
       .catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "Local rules are unavailable."); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
-  }, [open, zipCode, validZip]);
+  }, [open, showOtherServices, zipCode, validZip]);
 
   const matchingPrograms = useMemo(
     () => catalog?.programs.filter(program => program.postal_area_match) ?? [],
@@ -222,13 +223,13 @@ export default function LocalRulesGuide({
     <summary><MapPin size={19}/>{t("Check local recycling rules")}
       <ChevronDown size={17} className="local-rules-chevron"/></summary>
     <div className="local-rules-body">
-      <div className="local-rules-controls">
+      <div className="local-rules-controls local-location-row">
         <label htmlFor="local-rule-zip">{t("Your ZIP code")}
           <input id="local-rule-zip" inputMode="numeric" autoComplete="postal-code"
             maxLength={5} pattern="[0-9]{5}" placeholder="e.g. 75070 or 94103"
             value={zipCode} onChange={event => updateZipCode(event.target.value)}/>
         </label>
-        <label htmlFor="local-rule-context">{t("Where is the waste collected?")}
+        <label htmlFor="local-rule-context">{t("Where are you?")}
           <select id="local-rule-context" value={collectionType}
             onChange={event => updateCollectionType(event.target.value as CollectionContext)}>
             <option value="residential">{t("At home (residential)")}</option>
@@ -239,6 +240,13 @@ export default function LocalRulesGuide({
       </div>
       <TexasDemoRules collectionType={collectionType} itemName={scanItemName}
         materialGuess={scanMaterial} isIdentified={scanIdentified}/>
+      <button type="button" className="local-other-toggle"
+        aria-expanded={showOtherServices} aria-controls="local-other-services"
+        onClick={()=>setShowOtherServices(current=>!current)}>
+        {t("My location isn't listed")} <ChevronDown size={17} aria-hidden="true"/>
+      </button>
+      {showOtherServices&&<div id="local-other-services" className="local-other-services">
+        <p className="local-rules-scope">{t("For other services, check your provider's published rules.")}</p>
       {!validZip&&<p className="local-rules-scope">{t("Enter a five-digit ZIP code to look for a covered collection program.")}</p>}
       {loading&&<p className="local-rules-scope" role="status">{t("Looking up your postal area…")}</p>}
       {validZip&&catalog&&collectionType==="residential"&&matchingPrograms.length===0&&
@@ -318,6 +326,8 @@ export default function LocalRulesGuide({
         <a href={result.source_url} target="_blank" rel="noopener noreferrer">
           {t("View the official collection guidance")} <ExternalLink size={15}/>
         </a>
+      </div>}
+
       </div>}
     </div>
   </details>;

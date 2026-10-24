@@ -26,8 +26,38 @@ const itemNames:Record<string,string>={
   produce_bag:"Plastic produce bag",shipping_envelope_plastic:"Plastic shipping envelope",
   soft_plastic_overwrap:"Multipack plastic overwrap",standalone_battery:"Loose battery",
 };
-const items=Array.from(new Set(profiles.flatMap(p=>Object.keys(p.rules)))).sort((a,b)=>
-  (itemNames[a]||a).localeCompare(itemNames[b]||b));
+// Keep the demonstration focused: a short list of meaningful examples for each location.
+// The full source-backed rule data remains available, and a scanned item is added
+// to this list when the recognizer identifies one outside the common examples.
+const highlightedItems:Record<string,string[]>={
+  home_frisco_tx:[
+    "plastic_bottle","aluminum_can","glass_bottle","clean_cardboard",
+    "plastic_clamshell","paper_coffee_cup","plastic_grocery_bag","household_battery",
+  ],
+  school_ut_dallas_tx:[
+    "plastic_bottle","aluminum_can","clean_cardboard","food_scraps",
+    "food_wrapper","plastic_wrap","household_battery","cell_phone",
+  ],
+  business_heb_frisco_tx:[
+    "plastic_grocery_bag","bread_bag","produce_bag","bubble_wrap",
+    "plastic_bottle","candy_wrapper","compostable_bag",
+  ],
+  business_bestbuy_frisco_tx:[
+    "cell_phone","laptop","computer_keyboard","electrical_cable","standalone_battery",
+  ],
+};
+const profileNames:Record<string,string>={
+  home_frisco_tx:"City of Frisco",
+  school_ut_dallas_tx:"UT Dallas",
+  business_heb_frisco_tx:"H-E-B",
+  business_bestbuy_frisco_tx:"Best Buy",
+};
+const profileNotes:Record<string,string>={
+  home_frisco_tx:"For homes served by Frisco's city recycling service only.",
+  school_ut_dallas_tx:"For designated collection bins and drop-offs at UT Dallas.",
+  business_heb_frisco_tx:"H-E-B Frisco customer drop-off for eligible plastic bags and film only.",
+  business_bestbuy_frisco_tx:"Best Buy Frisco consumer electronics drop-off only. Store and item restrictions apply.",
+};
 const statuses:Record<RuleStatus,string>={
   recycle:"Use designated recycling",
   trash:"Use ordinary trash",
@@ -95,30 +125,32 @@ export default function TexasDemoRules({
   const profile=eligible.find(p=>p.id===profileId);
   const inferred=profile&&isIdentified?inferDemoItem(itemName,materialGuess,profile.id):"";
   const chosenKey=manualItem||inferred;
+  const visibleItems=profile?[
+    ...new Set([
+      ...(inferred?[inferred]:[]),
+      ...(highlightedItems[profile.id]||Object.keys(profile.rules).slice(0,8)),
+    ]),
+  ]:[];
   const rule=profile&&chosenKey?profile.rules[chosenKey]:undefined;
   const status=rule?.status;
-  return <section className="texas-demo-rules" aria-label={t("Texas demo recycling rules")}>
-    <div className="texas-demo-header">
-      <strong>{t("Texas demo recycling rules")}</strong>
-      <span>{t("Published rule examples • Not live verification")}</span>
-    </div>
+  return <section className="texas-demo-rules" aria-label={t("Rules for a selected location")}>
     <label htmlFor="texas-demo-profile">
-      {t("Choose the exact collection program")}
+      {t("Choose your location")}
       <select id="texas-demo-profile" value={profileId}
         onChange={e=>{setProfileId(e.target.value);setManualItem("");}}>
-        <option value="">{t("Choose a Texas demo location")}</option>
-        {eligible.map(p=><option value={p.id} key={p.id}>{p.name}</option>)}
+        <option value="">{t("Select a location")}</option>
+        {eligible.map(p=><option value={p.id} key={p.id}>{profileNames[p.id]||p.name}</option>)}
       </select>
     </label>
     {profile&&<>
-      <p className="texas-demo-scope">{profile.scope}</p>
+      <p className="texas-demo-scope">{profileNotes[profile.id]||profile.scope}</p>
       <label htmlFor="texas-demo-item">
-        {t("Item to check")}
+        {t("What item is it?")}
         <select id="texas-demo-item" value={manualItem||inferred}
           onChange={e=>setManualItem(e.target.value)}>
           <option value="">{t("Choose an item")}</option>
-          {items.map(key=><option value={key} key={key}>{itemNames[key]||key.replace(/_/g," ")}</option>)}
-          <option value="__other__">{t("Other or unidentified item")}</option>
+          {visibleItems.map(key=><option value={key} key={key}>{itemNames[key]||key.replace(/_/g," ")}</option>)}
+          <option value="__other__">{t("Other item")}</option>
         </select>
       </label>
       {inferred&&!manualItem&&<p className="texas-demo-caption">
@@ -144,9 +176,7 @@ export default function TexasDemoRules({
       {!chosenKey&&<p className="texas-demo-caption">
         {t("Choose an item to see what this program says.")}
       </p>}
-      {profile.context==="business"&&<p className="texas-demo-caution">
-        {t("Customer drop-off program, not the business's employee bin policy.")}
-      </p>}
+
     </>}
   </section>;
 }

@@ -1,22 +1,33 @@
-/* Verified-source sample Texas collection profiles. Never imply ZIP = service enrollment. */
+/* Focused local rules UI. One primary location -> item -> rule flow. */
+.site .local-rules-body .local-location-row{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;align-items:start;
+}
+.site .local-rules-body .local-location-row>label{
+  display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+  min-width:0;gap:8px;margin:0;flex:none;
+  font-size:14px;line-height:1.35;
+}
+.site .local-rules-body .local-location-row :is(#local-rule-zip,#local-rule-context){
+  display:block;width:100%;height:52px!important;min-height:52px!important;max-height:52px;
+  margin:0!important;box-sizing:border-box;padding:10px 14px!important;
+  font-size:16px!important;line-height:1.25;border-radius:11px;
+}
 .site .texas-demo-rules{
-  display:grid;gap:12px;margin:15px 0 18px;padding:clamp(14px,2.2vw,23px);
-  border:1.5px solid var(--wl-stroke,#b7d9c9);border-radius:17px;
-  background:var(--wl-paper,#f7fcf9);color:var(--wl-copy,#26483c);
+  display:grid;gap:12px;margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;color:var(--wl-copy,#26483c);
 }
-.site .texas-demo-header{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.site .texas-demo-header strong{font-size:17px;font-weight:820;color:inherit}
-.site .texas-demo-header span{font-size:11px;color:var(--wl-copy,#446c5d);opacity:.85}
-.site .texas-demo-rules label{display:grid;gap:7px;font-size:13px;font-weight:750;color:inherit}
+.site .texas-demo-rules label{
+  display:grid;gap:8px;font-size:14px;line-height:1.35;font-weight:750;color:inherit;
+}
 .site .texas-demo-rules select{
-  width:100%;min-height:42px;border:1px solid var(--wl-stroke,#a9c9bb);
-  border-radius:10px;padding:8px 12px;background:var(--wl-paper,#fff);
-  color:var(--wl-copy,#23493c);font:inherit;font-weight:600;
+  width:100%;min-height:48px;border:1px solid var(--wl-stroke,#a9c9bb);
+  border-radius:10px;padding:9px 12px;background:var(--wl-paper,#fff);
+  color:var(--wl-copy,#23493c);font:inherit;font-size:15px;font-weight:650;
 }
-.site .texas-demo-scope,.site .texas-demo-caption,.site .texas-demo-caution{
-  margin:0;line-height:1.55;font-size:12px;color:var(--wl-copy,#456858);
+.site .texas-demo-scope,.site .texas-demo-caption{
+  margin:0;line-height:1.45;font-size:13px;color:var(--wl-subcopy,#456858);
 }
-.site .texas-demo-caution{padding-top:9px;border-top:1px solid var(--wl-stroke,#d6e5dd);font-weight:650}
 .site .texas-demo-result{
   border:1px solid var(--wl-stroke,#b8d2c5);border-radius:12px;
   padding:14px;background:var(--wl-paper,#fff);display:grid;gap:8px;
@@ -24,10 +35,24 @@
 .site .texas-demo-recycle{border-color:#5caa8a}
 .site .texas-demo-result-title{display:flex;gap:9px;align-items:center}
 .site .texas-demo-result-title strong{font-size:15px}
-.site .texas-demo-result p{margin:0;font-size:13px;line-height:1.65;color:inherit}
+.site .texas-demo-result p{margin:0;font-size:13px;line-height:1.6;color:inherit}
 .site .texas-demo-result a{display:inline-flex;align-items:center;gap:6px;
   text-underline-offset:3px;font-weight:700;font-size:13px;
   color:var(--wl-accent,#166c55);width:fit-content}
-.site .texas-demo-rules select:focus-visible,.site .texas-demo-result a:focus-visible{
+.site .local-other-toggle{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;border:0;border-top:1px solid var(--wl-stroke,#cbded4);
+  border-radius:0;padding:15px 2px 6px;margin:0;background:transparent;
+  font:inherit;font-size:13px;font-weight:750;
+  color:var(--wl-accent,#176e5c);cursor:pointer;text-align:left;
+}
+.site .local-other-toggle svg{transition:transform .18s ease}
+.site .local-other-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.site .local-other-services{display:grid;gap:14px;padding:10px 0 0}
+.site .texas-demo-rules select:focus-visible,.site .texas-demo-result a:focus-visible,
+.site .local-other-toggle:focus-visible{
   outline:3px solid #da944a;outline-offset:2px}
-@media(max-width:600px){.site .texas-demo-rules{padding:13px}.site .texas-demo-header{display:grid}}
+@media(max-width:640px){
+  .site .local-rules-body .local-location-row{grid-template-columns:minmax(0,1fr);gap:13px}
+  .site .texas-demo-rules{gap:11px}
+}
