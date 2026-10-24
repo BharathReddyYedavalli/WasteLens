@@ -7,10 +7,11 @@ const guide = read("LocalRulesGuide.tsx");
 const styles = read("scan-focus.css");
 const strings = read("i18n.tsx");
 
-test("Scan prioritizes camera and hides unrelated quick links after a result", () => {
-  assert.ok(app.indexOf('<div className="workspace">') < app.indexOf('{!analysis && <div className="community-mission-path"'));
-  assert.ok(app.indexOf('{!analysis && <div className="community-mission-path"') < app.indexOf('{analysis && <section id="scan-results"'));
-  assert.match(app, /<h1>\{t\("Before you toss it, scan it\."\)\}<\/h1>/);
+test("Scan prioritizes camera and the 3D start screen, and shows no quick links around a result", () => {
+  assert.ok(app.indexOf("<ScanStage") < app.indexOf('<section className="cap"'));
+  assert.ok(app.indexOf('<section className="cap"') < app.indexOf('{analysis && <section id="scan-results"'));
+  assert.doesNotMatch(app, /community-mission-path/);
+  assert.match(app, /<h1 className="visually-hidden">\{t\("Before you toss it, scan it\."\)\}<\/h1>/);
 });
 test("Scan-to-Finder remembers the item and reuses existing ZIP without extra AI requests", () => {
   assert.match(app, /openPage\("finder", true\)/);
