@@ -37,8 +37,13 @@ export function createScene(canvas: HTMLCanvasElement) {
   scene.environment = env;
 
   const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 50);
-  camera.position.set(0, 1.05, 6.6);
-  camera.lookAt(0, 1.05, 0);
+  // Station framing: fit the complete bottle ABOVE the fixed Scan action dock.
+  // Camera projection is also used by the animated component callouts, so
+  // moving the camera (rather than CSS-scaling the canvas) keeps them aligned.
+  const stationCameraDistance = 10.25;
+  const stationCameraTargetY = 0.9;
+  camera.position.set(0, stationCameraTargetY, stationCameraDistance);
+  camera.lookAt(0, stationCameraTargetY, 0);
 
   // key + rim lights give the plastic its edge highlights
   const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(3, 4, 4); scene.add(key);
@@ -128,8 +133,16 @@ export function createScene(canvas: HTMLCanvasElement) {
     const { clientWidth: w, clientHeight: h } = canvas;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // keep the whole bottle in frame on narrow / portrait screens
-    camera.position.z = Math.max(6.6, 6.6 * (0.9 / camera.aspect));
+    // Keep the cap AND base visible above the lower action panel, including
+    // shorter and portrait touchscreens. The bottle is ~2.3 world units tall.
+    const usableVerticalPixels = Math.max(245, h - 330);
+    const verticalHalfFovRadians = THREE.MathUtils.degToRad(camera.fov / 2);
+    const distanceForDock = 2.3 * h / (2 * Math.tan(verticalHalfFovRadians) * usableVerticalPixels);
+    camera.position.z = Math.max(
+      stationCameraDistance,
+      stationCameraDistance * (0.9 / camera.aspect),
+      distanceForDock
+    );
     camera.updateProjectionMatrix();
   }
 
