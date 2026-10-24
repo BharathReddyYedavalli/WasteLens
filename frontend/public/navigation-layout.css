@@ -346,3 +346,18 @@
     transition:none!important;
   }
 }
+
+/* The navigation selector spans both columns of the six-theme grid. */
+.site .wl-theme-options .wl-navigation-preference{
+  grid-column:1/-1!important;width:100%!important;box-sizing:border-box!important;
+}
+.site .wl-profile-dropdown{
+  max-height:min(80dvh,750px)!important;overflow-y:auto!important;
+  overscroll-behavior:contain;
+}
+.site[data-navigation-layout="top"] .wl-profile-dropdown{
+  right:0!important;top:calc(100% + 10px)!important;
+}
+.site[data-navigation-layout="top"] .wl-horizontal-brand:focus-visible{
+  outline-color:var(--e-accent,#219867)!important;
+}

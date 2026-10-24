@@ -50,8 +50,8 @@ export default function HorizontalNav({
     const current = links.current?.querySelector<HTMLElement>('[aria-current="page"]');
     if (!current || !links.current) return;
     const rail = links.current;
-    const to = current.offsetLeft + current.offsetWidth / 2 - rail.clientWidth / 2;
-    rail.scrollTo({left: Math.max(0,to), behavior:"instant"});
+    const to = current.offsetLeft - rail.offsetLeft + current.offsetWidth / 2 - rail.clientWidth / 2;
+    rail.scrollTo({left: Math.max(0,to), behavior:"auto"});
   },[view]);
 
   return <header className="wl-horizontal-shell">
