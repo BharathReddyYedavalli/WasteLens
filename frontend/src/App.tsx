@@ -93,6 +93,16 @@ export default function App() {
       document.head.appendChild(kiosk);
     }
     kiosk.media = visualStyle === "claude" ? "all" : "not all";
+    // Last, semantic theme/contrast repairs for all non-Scan pages.
+    let readable = document.getElementById("wastelens-kiosk-readable") as HTMLLinkElement | null;
+    if (!readable) {
+      readable = document.createElement("link");
+      readable.id = "wastelens-kiosk-readable";
+      readable.rel = "stylesheet";
+      readable.href = "/kiosk-readability-fixes.css";
+      document.head.appendChild(readable);
+    }
+    readable.media = visualStyle === "claude" ? "all" : "not all";
     try { window.localStorage.setItem("wastelens-visual-style", visualStyle); } catch { /* private mode */ }
   }, [visualStyle]);
 
