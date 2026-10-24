@@ -2,102 +2,91 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 
-const read = file => readFileSync(new URL("../src/"+file,import.meta.url),"utf8");
-const data = JSON.parse(read("data/texas-demo-rules.json"));
+const read=file=>readFileSync(new URL("../src/"+file,import.meta.url),"utf8");
+const data=JSON.parse(read("data/texas-demo-rules.json"));
 const panel=read("TexasDemoRules.tsx");
 const local=read("LocalRulesGuide.tsx");
 const app=read("App.tsx");
-const translated=read("i18n-more.ts");
+const translations=read("i18n-more.ts");
 const css=read("texas-demo-rules.css");
+const all=data.profiles;
+const byId=id=>all.find(p=>p.id===id);
 
-test("Exactly four Texas programs with public source links and specific statuses",()=>{
+test("Only Texas schools, campus offices and distinct businesses are shown",()=>{
   assert.equal(data.texas_only,true);
-  assert.equal(data.profiles.length,4);
-  assert.deepEqual(data.profiles.map(p=>p.context),["home","school","business","business"]);
-  assert.equal(data.profiles.reduce((n,p)=>n+Object.keys(p.rules).length,0),45);
-  for (const profile of data.profiles) {
-    assert.equal(profile.location.state,"TX");
-    assert.ok(profile.scope.length>40);
-    assert.ok(profile.sources.every(url=>url.startsWith("https://")));
-    for (const [key,rule] of Object.entries(profile.rules)) {
-      assert.equal(key,rule.item_key);
-      assert.ok(["recycle","trash","compost","special_dropoff","not_accepted_here"].includes(rule.status));
-      assert.ok(rule.source_url.startsWith("https://"));
-      assert.ok(rule.instruction.length>=20);
+  assert.equal(all.length,12);
+  assert.deepEqual([...new Set(all.map(p=>p.context))],["school","office","business"]);
+  assert.ok(all.every(p=>p.location.state==="TX"));
+  assert.equal(all.filter(p=>p.context==="school"&&["elementary","middle","high"].includes(p.school_type)).length,6);
+  for(const level of ["elementary","middle","high"])assert.equal(all.filter(p=>p.school_type===level).length,2);
+  assert.ok(all.some(p=>p.context==="office"));
+  assert.equal(all.filter(p=>p.context==="business").length,4);
+  assert.ok(all.every(p=>p.sources.every(u=>u.startsWith("https://"))));
+  assert.ok(all.every(p=>Object.values(p.rules).every(r=>r.item_key&&r.source_url.startsWith("https://"))));
+});
+
+test("District school collection drives are explicitly conditional, not everyday campus bin rules",()=>{
+  for(const school of all.filter(p=>["elementary","middle","high"].includes(p.school_type))){
+    assert.match(school.scope,/does not confirm|does not verify/i);
+    for(const type of ["household_battery","plastic_grocery_bag"]){
+      const r=school.rules[type];
+      assert.equal(r.status,"special_dropoff");
+      assert.match(r.condition,/Only at an announced/i);
     }
-  }
-});
-test("The same material can lead to different choices, without inventing general bin rules",()=>{
-  const home=data.profiles.find(p=>p.id==="home_frisco_tx");
-  const heb=data.profiles.find(p=>p.id==="business_heb_frisco_tx");
-  const bestbuy=data.profiles.find(p=>p.id==="business_bestbuy_frisco_tx");
-  const utd=data.profiles.find(p=>p.id==="school_ut_dallas_tx");
-  assert.equal(home.rules.plastic_bottle.status,"recycle");
-  assert.equal(home.rules.plastic_grocery_bag.status,"special_dropoff");
-  assert.equal(heb.rules.plastic_grocery_bag.status,"special_dropoff");
-  assert.equal(heb.rules.plastic_bottle.status,"not_accepted_here");
-  assert.equal(bestbuy.rules.cell_phone.status,"special_dropoff");
-  assert.equal(bestbuy.rules.standalone_battery.status,"not_accepted_here");
-  assert.equal(utd.rules.household_battery.status,"special_dropoff");
-  for (const profile of [heb,bestbuy]) assert.match(profile.scope,/CUSTOMER|Consumer/);
-  assert.doesNotMatch(panel,/not_accepted_here:\s*"Use ordinary trash"/);
-});
-test("Scan passes identification and material information into an optional, explicit profile selector",()=>{
-  assert.match(app,/scanItemName=\{analysis\.item_name\}/);
-  assert.match(app,/scanMaterial=\{analysis\.material_guess\}/);
-  assert.match(app,/scanIdentified=\{analysis\.identification==="likely"\}/);
-  assert.match(local,/<TexasDemoRules collectionType=\{collectionType\}/);
-  assert.match(local,/scanItemName\s*=\s*""/);
-  assert.match(panel,/const \[profileId,setProfileId\]\s*=\s*useState\(""/);
-  assert.match(panel,/collectionType==="residential"\?"home"/);
-  assert.match(panel,/profile\.rules\[chosenKey\]/);
-  assert.match(panel,/rule\?\.instruction\|\|profile\.default_message/);
-  assert.match(panel,/business_heb_frisco_tx:"H-E-B"/);
-  assert.match(panel,/!isIdentified&&itemName/);
-  assert.match(panel,/if\(!n\.trim\(\)\)return ""/);
-  assert.match(panel,/manualItem\|\|inferred/);
-});
-test("Texas demo UI preserves visible provenance, constraints and theme",()=>{
-  assert.match(panel,/href=\{rule\?\.source_url\|\|profile\.sources\[0\]\}/);
-  assert.match(panel,/rule\?\.condition/);
-  assert.match(panel,/scan identification/i);
-  assert.match(panel,/customer drop-off/i);
-  assert.match(css,/var\(--wl-paper/);
-  assert.match(css,/@media\(max-width:640px\)/);
-  for (const key of ["No confirmed rule for this item",
-    "Choose your location","Where are you?","Select a location",
-    "What item is it?","My location isn't listed"]) {
-    assert.ok(translated.includes(JSON.stringify(key)+":"),key);
+    assert.equal(school.rules.plastic_bottle,undefined);
   }
 });
 
-test("Simple Scan rules avoid demo jargon and show one primary workflow",()=>{
-  assert.doesNotMatch(panel,/Texas demo recycling rules|Published rule examples • Not live verification/);
-  assert.doesNotMatch(panel,/Choose the exact collection program/);
-  assert.match(panel,/t\("Choose your location"\)/);
-  assert.match(panel,/t\("What item is it\?"\)/);
-  assert.match(local,/t\("Where are you\?"\)/);
-  assert.match(local,/showOtherServices&&<div id="local-other-services"/);
-  assert.match(local,/!open \|\| !showOtherServices \|\| !validZip/);
-  assert.match(panel,/profileNames\[p\.id\]\|\|p\.name/);
-  assert.match(panel,/H-E-B"/);
-  assert.match(panel,/Best Buy"/);
-  assert.match(css,/\.local-location-row/);
-  assert.match(css,/align-items:start/);
-  assert.match(css,/height:52px!important/);
+test("Campus office and varied retailer programs are grounded in exact scopes",()=>{
+  const office=byId("office_ut_dallas_tx");
+  assert.equal(office.context,"office");
+  assert.equal(office.rules.paper.status,"recycle");
+  assert.equal(office.rules.household_battery.status,"special_dropoff");
+  assert.match(byId("business_heb_frisco_tx").scope,/CUSTOMER/);
+  assert.match(byId("business_bestbuy_frisco_tx").scope,/consumer/i);
+  assert.equal(byId("business_home_depot_frisco_tx").rules.cfl_bulb.status,"special_dropoff");
+  assert.equal(byId("business_staples_frisco_tx").rules.printer_cartridge.status,"special_dropoff");
+  assert.equal(byId("business_staples_frisco_tx").rules.rechargeable_battery.status,"special_dropoff");
+  assert.match(byId("business_staples_frisco_tx").rules.rechargeable_battery.condition,/fee/i);
+  assert.equal(byId("business_heb_frisco_tx").rules.plastic_bottle.status,"not_accepted_here");
 });
-test("Item list is tailored to each location; source rules stay intact",()=>{
-  const count = {
-    home_frisco_tx:8,school_ut_dallas_tx:8,
-    business_heb_frisco_tx:7,business_bestbuy_frisco_tx:5,
-  };
-  for(const [id,num] of Object.entries(count)) {
-    const block=panel.split(id+":[")[1];
-    assert.ok(block,id);
-    assert.equal(block.split("]")[0].split('"').length/2|0,num,id);
+
+test("Scanned item is the automatic input, optional correction is separate",()=>{
+  assert.match(app,/scanItemName=\{analysis\.item_name\}/);
+  assert.match(app,/scanIdentified=\{analysis\.identification==="likely"\}/);
+  assert.match(local,/<TexasDemoRules itemName=\{scanItemName\}/);
+  assert.match(panel,/const inferred=profile&&isIdentified\?inferDemoItem\(itemName,materialGuess,profile\.id\):""/);
+  assert.match(panel,/const selectedItem=correcting\?correction:inferred/);
+  assert.match(panel,/!correcting&&<button/);
+  assert.match(panel,/Wrong item\? Change it/);
+  assert.match(panel,/correcting&&<label/);
+  assert.match(panel,/profile\.rules\[selectedItem\]/);
+  assert.match(panel,/no confirmed rule/i);
+  assert.match(panel,/void material/);
+  assert.match(panel,/!isIdentified&&!correcting/);
+});
+
+test("Single organization selector: Schools, Offices, Businesses, then Other location",()=>{
+  assert.match(panel,/<optgroup label=\{t\("Schools"\)\}/);
+  assert.match(panel,/<optgroup label=\{t\("Offices"\)\}/);
+  assert.match(panel,/<optgroup label=\{t\("Businesses"\)\}/);
+  assert.match(panel,/<option value="other">/);
+  assert.doesNotMatch(panel,/context==="home"/);
+  assert.doesNotMatch(local,/<input id="local-rule-zip"/);
+  assert.doesNotMatch(local,/<select id="local-rule-context"/);
+  assert.doesNotMatch(local,/local-discovery-item/);
+  assert.match(local,/id="scan-local-rules"/);
+  assert.match(panel,/wastelens-selected-institution/);
+  assert.match(panel,/profile\.sources\[0\]/);
+  assert.match(panel,/Rules for this location aren't available yet/);
+});
+
+test("Controls are readable on narrow screens and translated",()=>{
+  assert.match(css,/\.institution-rule-flow/);
+  assert.match(css,/@media\(max-width:640px\)/);
+  for(const key of ["Select your school, office or business","Wrong item? Change it",
+    "Other location","Schools","Offices","Businesses","View official rules",
+    "Confirm the scanned item first"]){
+    assert.ok(translations.includes(JSON.stringify(key)+":"),key);
   }
-  assert.match(panel,/\.\.\.\(inferred\?\[inferred\]:\[\]\)/);
-  assert.match(panel,/highlightedItems\[profile\.id\]/);
-  assert.match(panel,/profile\.rules\[chosenKey\]/);
-  assert.equal(data.profiles.reduce((n,p)=>n+Object.keys(p.rules).length,0),45);
 });

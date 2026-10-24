@@ -1,5 +1,5 @@
 {
-  "schema": "wastelens_demo_rule_profiles_v1",
+  "schema": "wastelens_institution_rule_profiles_v2",
   "verified_on": "2026-10-24",
   "demo_only": true,
   "design_notes": [
@@ -10,7 +10,10 @@
     "UT Dallas policies refer to designated campus bins and collection streams. Compost is available only where explicitly marked.",
     "H-E-B and Best Buy examples are publicly documented CUSTOMER drop-off programs, NOT verified employee trash/recycling contracts.",
     "For a not_accepted_here rule, never translate that status to trash; it only means the specified drop-off program does not accept the item.",
-    "Check each official policy periodically; these are source-backed snapshots, not live guarantees of opening hours, eligibility, or operational status."
+    "Check each official policy periodically; these are source-backed snapshots, not live guarantees of opening hours, eligibility, or operational status.",
+    "Home profiles are out of the institution selector; ZIP is used only in Find a Place.",
+    "Frisco ISD examples describe district activities, not verified per-campus daily bin rules; never claim permanent bag/battery acceptance.",
+    "Customer store collection programs must not be presented as employee or office sorting policies."
   ],
   "status_values": {
     "recycle": "Designated normal recycling bin",
@@ -21,93 +24,202 @@
   },
   "profiles": [
     {
-      "id": "home_frisco_tx",
-      "name": "City of Frisco, TX — Residential curbside recycling",
-      "context": "home",
-      "scope": "Only households actually served by the City of Frisco residential recycling program; postal ZIP alone does not establish eligibility.",
+      "id": "school_purefoy_elementary_tx",
+      "name": "Purefoy Elementary",
+      "context": "school",
+      "school_type": "elementary",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
       "sources": [
-        "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-        "https://www.friscotexas.gov/557/Residential-Trash-Service"
+        "https://schools.friscoisd.org/o/purefoy",
+        "https://www.friscoisd.org/article/2660069"
       ],
-      "default_message": "No confirmed rule for this item in the selected home collection program. Check official rules or the waste hauler.",
+      "scope": "Purefoy Elementary is part of Frisco ISD. The district describes classroom recycling and schoolwide bag-film/battery drives; this does not verify permanent bins, exact materials, or drive dates at this campus.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
       "rules": {
-        "plastic_bottle": {
-          "status": "recycle",
-          "instruction": "Empty, clean and dry: put in the blue curbside recycling cart.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "plastic_bottle"
-        },
-        "glass_bottle": {
-          "status": "recycle",
-          "instruction": "Empty, clean and dry: put bottles and jars in the blue recycling cart.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "glass_bottle"
-        },
-        "aluminum_can": {
-          "status": "recycle",
-          "instruction": "Empty, clean and dry: use the blue recycling cart.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "aluminum_can"
-        },
-        "clean_cardboard": {
-          "status": "recycle",
-          "instruction": "Flatten and place cardboard in the blue recycling cart.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "clean_cardboard"
-        },
-        "paper_coffee_cup": {
-          "status": "trash",
-          "instruction": "Put this paper coffee cup in the black trash cart, not the blue recycling cart.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "paper_coffee_cup"
-        },
-        "plastic_clamshell": {
-          "status": "trash",
-          "instruction": "Put this clamshell food container in trash, not the blue recycling cart.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "plastic_clamshell"
-        },
-        "food_scraps": {
-          "status": "trash",
-          "instruction": "Do not put food scraps in the blue recycling cart. Use ordinary trash, or an independently verified food-compost program if one is available.",
-          "source_url": "https://www.friscotexas.gov/557/Residential-Trash-Service",
-          "item_key": "food_scraps"
-        },
         "plastic_grocery_bag": {
           "status": "special_dropoff",
-          "instruction": "Do not put flexible plastic bags in curbside recycling. Take eligible clean plastic film to the Frisco Environmental Collection Center.",
-          "condition": "Facility accepts specified clean film types only; check facility list.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "plastic_grocery_bag"
-        },
-        "foam_packaging": {
-          "status": "special_dropoff",
-          "instruction": "Do not put Styrofoam packaging in curbside recycling. Check accepted foam type at Frisco Environmental Collection Center.",
-          "condition": "Only appropriate foam types are accepted; special drop-off, not curbside.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "foam_packaging"
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
         },
         "household_battery": {
           "status": "special_dropoff",
-          "instruction": "Do not put batteries in the normal recycling or trash cart. Check the city Environmental Collection Center collection instructions.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "household_battery"
-        },
-        "cell_phone": {
-          "status": "special_dropoff",
-          "instruction": "Use the City of Frisco household chemical and electronics center only if your device qualifies; verify the item and show required proof of eligible residency.",
-          "condition": "City of Frisco residents only with valid water bill and matching identification; program hours/limits vary.",
-          "source_url": "https://www.friscotexas.gov/556/Residential-Recycling-Services",
-          "item_key": "cell_phone"
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
         }
-      },
+      }
+    },
+    {
+      "id": "school_spears_elementary_tx",
+      "name": "Spears Elementary",
+      "context": "school",
+      "school_type": "elementary",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
       "location": {
         "city": "Frisco",
-        "state": "TX",
-        "postal_hint": "75033 / 75034",
-        "type": "municipal service area"
+        "state": "TX"
       },
-      "policy_type": "residential_curbside"
+      "sources": [
+        "https://schools.friscoisd.org/o/spears",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Spears Elementary participates in Frisco ISD's district environmental program, which describes recycling drives but does not confirm this campus's everyday accepted bin materials or schedule.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
+      "id": "school_scoggins_middle_tx",
+      "name": "Scoggins Middle School",
+      "context": "school",
+      "school_type": "middle",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://schools.friscoisd.org/o/scoggins/live-feed?page_no=1",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Scoggins Middle School is part of Frisco ISD. The district describes classroom recycling and schoolwide bag-film/battery drives; this does not verify permanent bins, exact materials, or drive dates at this campus.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
+      "id": "school_maus_middle_tx",
+      "name": "Maus Middle School",
+      "context": "school",
+      "school_type": "middle",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://www.friscoisd.org/o/maus",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Maus Middle School participates in Frisco ISD's district environmental program, which describes recycling drives but does not confirm this campus's everyday accepted bin materials or schedule.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
+      "id": "school_panther_creek_high_tx",
+      "name": "Panther Creek High School",
+      "context": "school",
+      "school_type": "high",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://www.friscoisd.org/o/PCHS",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Panther Creek High School is part of Frisco ISD. The district describes classroom recycling and schoolwide bag-film/battery drives; this does not verify permanent bins, exact materials, or drive dates at this campus.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
+    },
+    {
+      "id": "school_wakeland_high_tx",
+      "name": "Wakeland High School",
+      "context": "school",
+      "school_type": "high",
+      "policy_type": "district-published collections; exact campus bin policy unverified",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "sources": [
+        "https://www.friscoisd.org/o/whs",
+        "https://www.friscoisd.org/article/2660069"
+      ],
+      "scope": "Wakeland High School participates in Frisco ISD's district environmental program, which describes recycling drives but does not confirm this campus's everyday accepted bin materials or schedule.",
+      "default_message": "Frisco ISD has not published an item-specific bin rule for this campus in the sources reviewed. Ask the Green Team coordinator or custodial staff before using a bin.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD runs plastic bag/film recycling drives. Ask campus staff whether a drive is currently accepting clean eligible bags; do not assume a regular school recycling bin accepts film.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "plastic_grocery_bag",
+          "condition": "Only at an announced active campus collection drive."
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes battery recycling drives. Ask the school which battery types can be safely brought and when the event is running; never place batteries in regular recycling.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "household_battery",
+          "condition": "Only at an announced drive and if the battery type is accepted."
+        }
+      }
     },
     {
       "id": "school_ut_dallas_tx",
@@ -214,6 +326,72 @@
           "source_url": "https://sustainability.utdallas.edu/campus/sustainablelabs/",
           "item_key": "plastic_wrap",
           "condition": "Only eligible film and designated campus collection points."
+        }
+      }
+    },
+    {
+      "id": "office_ut_dallas_tx",
+      "name": "UT Dallas Campus Offices",
+      "context": "office",
+      "location": {
+        "city": "Richardson",
+        "state": "TX"
+      },
+      "policy_type": "university campus office single-stream and special collection",
+      "scope": "Applies only to offices on UT Dallas's Richardson campus that use the university's designated recycling and specialty-collection services. Not a rule for unrelated offices.",
+      "sources": [
+        "https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf",
+        "https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainability_Guide.pdf"
+      ],
+      "default_message": "UT Dallas has not published a specific rule for this item in the reviewed campus office guidance. Check the campus recycling guide or Facilities.",
+      "rules": {
+        "plastic_bottle": {
+          "status": "recycle",
+          "instruction": "Empty the plastic bottle and use a designated UT Dallas campus single-stream recycling bin.",
+          "source_url": "https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf",
+          "item_key": "plastic_bottle"
+        },
+        "aluminum_can": {
+          "status": "recycle",
+          "instruction": "Empty the can and use a campus single-stream recycling bin.",
+          "source_url": "https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf",
+          "item_key": "aluminum_can"
+        },
+        "clean_cardboard": {
+          "status": "recycle",
+          "instruction": "Flatten clean, dry cardboard and use campus recycling.",
+          "source_url": "https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf",
+          "item_key": "clean_cardboard"
+        },
+        "paper": {
+          "status": "recycle",
+          "instruction": "Place clean office paper in campus single-stream recycling; confidential documents may require separate secure shredding.",
+          "source_url": "https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf",
+          "item_key": "paper"
+        },
+        "glass_bottle": {
+          "status": "recycle",
+          "instruction": "Empty an intact glass bottle and use designated campus single-stream recycling.",
+          "source_url": "https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf",
+          "item_key": "glass_bottle"
+        },
+        "household_battery": {
+          "status": "special_dropoff",
+          "instruction": "Use a designated UT Dallas battery collection point; do not put batteries in the mixed recycling bin.",
+          "source_url": "https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainability_Guide.pdf",
+          "item_key": "household_battery"
+        },
+        "printer_cartridge": {
+          "status": "special_dropoff",
+          "instruction": "Use a designated UT Dallas toner/printer cartridge collection location.",
+          "source_url": "https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainability_Guide.pdf",
+          "item_key": "printer_cartridge"
+        },
+        "plastic_wrap": {
+          "status": "special_dropoff",
+          "instruction": "Use a designated plastic film specialty recycling location only if the type is accepted.",
+          "source_url": "https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainability_Guide.pdf",
+          "item_key": "plastic_wrap"
         }
       }
     },
@@ -397,6 +575,113 @@
         "address": "3333 Preston Rd, Ste 200, Frisco, TX 75034"
       },
       "policy_type": "customer_dropoff_electronics"
+    },
+    {
+      "id": "business_home_depot_frisco_tx",
+      "name": "Home Depot (North Frisco)",
+      "context": "business",
+      "business_type": "hardware",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "policy_type": "store customer collection",
+      "scope": "North Frisco Home Depot customer drop-off program for selected plastic film, intact CFL bulbs and undamaged rechargeable batteries. Not employee waste-bin policy.",
+      "sources": [
+        "https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513"
+      ],
+      "default_message": "This Home Depot collection listing does not document accepting the scanned item. Do not put it in a store collection bin without confirming.",
+      "rules": {
+        "plastic_grocery_bag": {
+          "status": "special_dropoff",
+          "instruction": "Use the store's plastic-bag recycling collection for clean, eligible shopping bags.",
+          "source_url": "https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513",
+          "item_key": "plastic_grocery_bag"
+        },
+        "plastic_wrap": {
+          "status": "special_dropoff",
+          "instruction": "Use the store's customer film-plastic bin if the wrap is clean and accepted.",
+          "source_url": "https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513",
+          "item_key": "plastic_wrap"
+        },
+        "cfl_bulb": {
+          "status": "special_dropoff",
+          "instruction": "Bring an unbroken compact fluorescent bulb to the dedicated CFL collection point; do not handle broken bulbs as normal recycling.",
+          "source_url": "https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513",
+          "item_key": "cfl_bulb",
+          "condition": "Only unbroken CFL bulbs."
+        },
+        "rechargeable_battery": {
+          "status": "special_dropoff",
+          "instruction": "Use the designated rechargeable battery collection for undamaged eligible batteries, following in-store safety instructions.",
+          "source_url": "https://www.homedepot.com/l/North-Frisco/TX/Frisco/75033/6513",
+          "item_key": "rechargeable_battery",
+          "condition": "Damaged, swollen or leaking batteries need specialist guidance."
+        }
+      }
+    },
+    {
+      "id": "business_staples_frisco_tx",
+      "name": "Staples (Frisco)",
+      "context": "business",
+      "business_type": "office supplies",
+      "location": {
+        "city": "Frisco",
+        "state": "TX"
+      },
+      "policy_type": "customer office-supplies and electronics recycling",
+      "scope": "Staples Frisco customer recycling program for specific electronics, cartridges, supplies and certain paid categories. Not the store's employee-bin policy.",
+      "sources": [
+        "https://www.staples.com/stores/recycling",
+        "https://stores.staples.com/tx/frisco/3333-preston-road"
+      ],
+      "default_message": "Staples' published customer recycling list does not confirm acceptance of this item. Ask the store before drop-off.",
+      "rules": {
+        "printer_cartridge": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists eligible ink and toner cartridges for customer recycling.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "printer_cartridge"
+        },
+        "cell_phone": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists mobile phones among eligible customer tech-recycling items; remove personal data first.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "cell_phone"
+        },
+        "laptop": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists laptops among recyclable customer technology; erase personal information before drop-off.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "laptop"
+        },
+        "computer_keyboard": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists computer keyboards and mice as eligible technology for customer recycling.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "computer_keyboard"
+        },
+        "pen_marker": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists pens, markers and highlighters in its customer school-supplies recycling categories.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "pen_marker"
+        },
+        "binder": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists empty binders for its customer school-supplies recycling program.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "binder",
+          "condition": "Empty binder before collection."
+        },
+        "rechargeable_battery": {
+          "status": "special_dropoff",
+          "instruction": "Staples lists rechargeable batteries as a paid recycling category. Confirm eligibility and fee at the store.",
+          "source_url": "https://www.staples.com/stores/recycling",
+          "item_key": "rechargeable_battery",
+          "condition": "Published price: $2.99 per visit in states where the fee applies, including Texas; verify current price."
+        }
+      }
     }
   ],
   "texas_only": true,
