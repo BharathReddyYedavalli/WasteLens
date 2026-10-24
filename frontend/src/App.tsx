@@ -18,7 +18,7 @@ import AboutWasteLens from "./AboutWasteLens";
 import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
 import { useAppearanceTheme } from "./AccountMenu";
-import TopNav from "./shell/TopNav";
+import SidebarNav from "./shell/SidebarNav";
 import type { View } from "./shell/TopNav";
 import { ReadAloudButton, useSpeech } from "./Speech";
 import { useLanguage } from "./i18n";
@@ -354,10 +354,10 @@ export default function App() {
     return () => ctx.revert();
   }, [view, camera, Boolean(preview), Boolean(analysis), stageMode]);
 
-  return <div className={"site" + (stageMode ? " is-stage" : "")} data-theme={theme} data-lang={language}>
+  return <div className={"site is-sidebar-experiment" + (stageMode ? " is-stage" : "") + (view !== "identifier" ? " is-classic-page" : "")} data-theme={theme} data-lang={language}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
-    <TopNav view={view} user={user} theme={theme} onThemeChange={setTheme} onNavigate={next => openPage(next)} />
+    <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme} onNavigate={next => openPage(next)} />
     <main id="main-content" ref={pageRef} className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
       {view === "identifier" ? <>
       <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label={t("Upload item photo")}/>
