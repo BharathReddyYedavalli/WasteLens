@@ -32,6 +32,16 @@
   background:var(--e-bg);
   border-right:1px solid var(--e-line);
 }
+.site.is-sidebar-experiment .fl-side-brand{
+  flex:none;appearance:none;display:inline-flex;align-items:center;gap:10px;
+  align-self:flex-start;min-height:44px;margin-left:10px;padding:0 4px;
+  background:none;border:0;color:var(--e-ink);cursor:pointer;
+  font:750 18px var(--e-sans)!important;letter-spacing:-.025em;
+}
+.site.is-sidebar-experiment .fl-brand-dot{
+  width:16px;height:16px;border:2px solid var(--e-ink);border-radius:50%;
+  background:var(--e-accent);box-shadow:inset 0 0 0 3px var(--e-bg);
+}
 .site.is-sidebar-experiment .fl-side-scroll{
   min-height:0;min-width:0;overflow:auto;scrollbar-width:thin;
   padding:46px 0 16px;display:flex;flex-direction:column;gap:22px;
@@ -43,7 +53,7 @@
   letter-spacing:.18em;margin:0 0 9px;padding:0 14px;
 }
 .site.is-sidebar-experiment .fl-side-link{
-  cursor:pointer;display:flex;gap:13px;align-items:center;text-align:left;
+  position:relative;cursor:pointer;display:flex;gap:13px;align-items:center;text-align:left;
   width:100%;min-height:49px;padding:10px 14px;
   border:1px solid transparent;border-radius:10px;
   background:transparent;color:var(--e-mute);
