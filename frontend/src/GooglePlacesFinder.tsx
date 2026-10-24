@@ -30,7 +30,9 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map|null>(null);
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
-  const infoRef = useRef<google.maps.InfoWindow|null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const entriesRef = useRef<Map<string,HTMLDivElement>>(new Map());
+  const markerSelection = useRef(false);
   const [places,setPlaces]=useState<GooglePlace[]>([]);
   const [selected,setSelected]=useState<string|null>(null);
   const [loading,setLoading]=useState(true);
@@ -45,7 +47,7 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
     async function start() {
       try {
         await loadGoogleMaps(apiKey);
-        const [{Map:GoogleMap,InfoWindow},{AdvancedMarkerElement},{Place}]=await Promise.all([
+        const [{Map:GoogleMap},{AdvancedMarkerElement},{Place}]=await Promise.all([
           google.maps.importLibrary("maps") as Promise<google.maps.MapsLibrary>,
           google.maps.importLibrary("marker") as Promise<google.maps.MarkerLibrary>,
           google.maps.importLibrary("places") as Promise<google.maps.PlacesLibrary>,
@@ -87,15 +89,13 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
           clickableIcons:false,
         });
         mapRef.current=map;
-        const info=new InfoWindow();
-        infoRef.current=info;
         const visibleBounds=new google.maps.LatLngBounds();
         visibleBounds.extend(center);
         for (const place of matched) {
           const marker = new AdvancedMarkerElement({
             map,position:place.location,title:place.name,gmpClickable:true,
           });
-          marker.addListener("click",()=>setSelected(place.id));
+          marker.addListener("click",()=>{markerSelection.current=true;setSelected(place.id);});
           markers.push(marker);
           markersRef.current.set(place.id,marker);
           visibleBounds.extend(place.location);
@@ -115,30 +115,27 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
       markers.forEach(marker=>{marker.map=null;google.maps.event.clearInstanceListeners(marker);});
       markersRef.current.clear();
       if(mapRef.current)google.maps.event.clearInstanceListeners(mapRef.current);
-      infoRef.current?.close();
-      infoRef.current=null;
       mapRef.current=null;
     };
   },[apiKey,data.zip_code,data.center.latitude,data.center.longitude,data.radius_miles,onFallback]);
 
+  // The result list is the single source of location details. Keeping the
+  // selection in the list avoids duplicate Google popups obscuring the map.
   useEffect(()=>{
-    if(!selected || !mapRef.current || !infoRef.current)return;
+    if (!selected || !mapRef.current) return;
     const place=places.find(item=>item.id===selected);
-    const marker=markersRef.current.get(selected);
-    if(!place||!marker)return;
+    if (!place) return;
     mapRef.current.panTo(place.location);
-    const card=document.createElement("div");
-    card.className="google-place-popup";
-    const title=document.createElement("strong");
-    title.textContent=place.name;
-    const address=document.createElement("p");
-    address.textContent=place.address;
-    const warning=document.createElement("p");
-    warning.textContent=t("Call to confirm this item is accepted.");
-    card.append(title,address,warning);
-    infoRef.current.setContent(card);
-    infoRef.current.open({map:mapRef.current,anchor:marker,shouldFocus:false});
-  },[selected,places,t]);
+    if (markerSelection.current) {
+      const entry=entriesRef.current.get(selected);
+      const list=listRef.current;
+      if (entry && list) {
+        const top=entry.offsetTop-list.offsetTop;
+        list.scrollTo({top:Math.max(0,top-56),behavior:"smooth"});
+      }
+      markerSelection.current=false;
+    }
+  },[selected,places]);
 
   return <div className="free-map-shell google-places-shell" aria-label={t("Nearby recycling locations")}>
     <div className="map-summary">
@@ -151,12 +148,12 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
         <span>{t("places found")}</span></div>
     </div>
     <div className="map-explorer">
-      <div className="facility-side-panel" aria-label={t("Scrollable list of mapped recycling locations")}>
-        <div className="facility-side-heading"><strong>{loading?t("Finding nearby places…"):t("Places near you")}</strong></div>
+      <div ref={listRef} className="facility-side-panel" role="region" tabIndex={0} aria-label={t("Scrollable list of mapped recycling locations")}>
+        <div className="facility-side-heading"><strong>{loading?t("Finding nearby places…"):t("Places near you")}</strong><small>{!loading && <>{places.length} {t("places found")} ↕</>}</small></div>
         {loading?<div className="no-map-results"><Recycle size={24}/><p>{t("Finding nearby places…")}</p></div>:
-        places.map((place,i)=><div key={place.id} className="location-entry">
+        places.map((place,i)=><div key={place.id} className={"location-entry"+(selected===place.id?" selected":"")} ref={el=>{if(el)entriesRef.current.set(place.id,el);else entriesRef.current.delete(place.id);}}>
           <button type="button" className={"location-card "+(selected===place.id?"picked":"")}
-            aria-pressed={selected===place.id} onClick={()=>setSelected(place.id)}>
+            aria-pressed={selected===place.id} onClick={()=>{markerSelection.current=false;setSelected(place.id);}}>
             <span className="location-index">{i+1}</span>
             <span className="location-info">
               <strong>{place.name}</strong><small>{place.address}</small>
@@ -174,9 +171,11 @@ export default function GooglePlacesFinder({data, apiKey, onFallback}: Props) {
           role="region" aria-label={t("Interactive recycling finder map near")+" "+data.location_label}/>
       </div>
     </div>
-    <p className="google-map-caution">{t("These places may not accept your specific item. Check with each location before visiting.")}</p>
-    <button type="button" className="google-map-fallback" onClick={onFallback}>
-      {t("Use community map instead")}
-    </button>
+    <div className="google-map-footer">
+      <p className="google-map-caution">{t("These places may not accept your specific item. Check with each location before visiting.")}</p>
+      <button type="button" className="google-map-fallback" onClick={onFallback}>
+        {t("Use community map instead")}
+      </button>
+    </div>
   </div>;
 }
