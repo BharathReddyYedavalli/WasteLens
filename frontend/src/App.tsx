@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "re
 import type { ChangeEvent } from "react";
 import {
   AlertTriangle, Check, ChevronDown, Lightbulb,
-  MapPin, RotateCcw, Search, ShieldAlert, Sparkles, MessageCircle, ScanLine
+  Camera, Recycle, Upload, MapPin, RotateCcw, Search, ShieldAlert, Sparkles, MessageCircle, ScanLine
 } from "lucide-react";
 import { gsap } from "gsap";
 import type { StatusResponse, VisionResponse, SessionUser, FacilitySearchResponse, WasteLensBadge } from "./types";
@@ -19,6 +19,7 @@ import BottleReturns from "./BottleReturns";
 import BottleJourney from "./BottleJourney";
 import { useAppearanceTheme } from "./AccountMenu";
 import SidebarNav from "./shell/SidebarNav";
+import LegacyNavigation from "./shell/LegacyNavigation";
 import type { View } from "./shell/TopNav";
 import { ReadAloudButton, useSpeech } from "./Speech";
 import { useLanguage } from "./i18n";
@@ -26,6 +27,7 @@ import { useLanguage } from "./i18n";
 // Three.js only loads on the home screen; camera, maps and every other page never pay for it.
 const ScanStage = lazy(() => import("./scan/ScanStage"));
 
+type VisualStyle = "claude" | "legacy";
 type PhotoPreview = { file: File; src: string };
 
 function ErrorText({ message }: { message: string }) {
@@ -35,6 +37,10 @@ function ErrorText({ message }: { message: string }) {
 export default function App() {
   const { language, t } = useLanguage();
   const [theme, setTheme] = useAppearanceTheme();
+  const [visualStyle, setVisualStyle] = useState<VisualStyle>(() => {
+    try { return window.localStorage.getItem("wastelens-visual-style") === "legacy" ? "legacy" : "claude"; }
+    catch { return "claude"; }
+  });
   const [sweeping, setSweeping] = useState(false);
   const [cameraStarting, setCameraStarting] = useState(false);
   const pageRef = useRef<HTMLElement>(null);
@@ -65,6 +71,20 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+
+  // Visual appearance only: keep the same current handlers, routes, text and data.
+  useEffect(() => {
+    let link = document.getElementById("wastelens-claude-styles") as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.id = "wastelens-claude-styles";
+      link.rel = "stylesheet";
+      link.href = "/claude-theme.css";
+      document.head.appendChild(link);
+    }
+    link.media = visualStyle === "claude" ? "all" : "not all";
+    try { window.localStorage.setItem("wastelens-visual-style", visualStyle); } catch { /* private mode */ }
+  }, [visualStyle]);
 
   useEffect(() => {
     let active = true;
@@ -343,7 +363,7 @@ export default function App() {
   }
 
   const showStage = (!camera && !preview) || sweeping;
-  const stageMode = view === "identifier" && showStage && !analysis;
+  const stageMode = visualStyle === "claude" && view === "identifier" && showStage && !analysis;
 
   // Page-level reveal: every view, including the camera and results, settles in the same way.
   useLayoutEffect(() => {
@@ -354,14 +374,74 @@ export default function App() {
     return () => ctx.revert();
   }, [view, camera, Boolean(preview), Boolean(analysis), stageMode]);
 
-  return <div className={"site is-sidebar-experiment" + (stageMode ? " is-stage" : "") + (view !== "identifier" ? " is-classic-page" : "")} data-theme={theme} data-lang={language}>
+  return <div className={"site " + (visualStyle === "legacy" ? "is-legacy-ui" : "is-sidebar-experiment") + (stageMode ? " is-stage" : "") + (view !== "identifier" && visualStyle === "claude" ? " is-classic-page" : "")} data-theme={theme} data-lang={language} data-visual-style={visualStyle}>
     <a className="skip-link" href="#main-content">Skip to content</a>
     {celebration && <BadgeCelebration key={celebration.scan} badge={celebration.badge} onClose={() => setCelebration(null)} />}
-    <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme} onNavigate={next => openPage(next)} />
+    <div className={visualStyle === "legacy" ? "site-layout legacy-layout" : "modern-layout"}>
+      {visualStyle === "legacy"
+        ? <LegacyNavigation view={view} user={user} theme={theme} onThemeChange={setTheme} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle} onNavigate={next => openPage(next)}/>
+        : <SidebarNav view={view} user={user} theme={theme} onThemeChange={setTheme} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle} onNavigate={next => openPage(next)}/>}
+      <div className={visualStyle === "legacy" ? "page-content legacy-page-content" : "modern-page-content"}>
     <main id="main-content" ref={pageRef} className={view === "journey" ? "shell story-shell" : "shell"} tabIndex={-1}>
       {view === "identifier" ? <>
       <input ref={uploadRef} hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={onUpload} aria-label={t("Upload item photo")}/>
-      {stageMode ? <div className="stage-wrap">
+      {visualStyle === "legacy" ? <div className="legacy-scan">
+        <div className="intro">
+          <div className="intro-copy">
+            <h1>{t("Before you toss it, scan it.")}</h1>
+            <p>{t("Scan an item, then check how your local program handles it.")}</p>
+          </div>
+          <div className="intro-art" aria-hidden="true">
+            <span className="intro-art-circle one"/><span className="intro-art-circle two"/>
+            <Recycle size={58} strokeWidth={1.8}/>
+          </div>
+        </div>
+        <div className="workspace">
+          <div className="workspace-head"><div className="head-with-icon">
+            <div className="round-icon"><Camera size={19}/></div>
+            <h2>{t("Take a picture")}</h2>
+          </div></div>
+          <div className="camera-stage">
+            {camera ? <video ref={attachVideo} autoPlay muted playsInline aria-label="Live camera preview"/> :
+             preview ? <img src={preview.src} alt="Your selected item photograph"/> :
+             <div className="camera-empty"><div className="empty-camera"><Camera size={44} strokeWidth={1.4}/></div>
+               <p>{t("Use your camera or choose a photo.")}</p>
+             </div>}
+          </div>
+          <div className="camera-controls">
+            {!camera && !preview && <>
+              <button className="button primary" type="button" onClick={() => void startCamera()} disabled={cameraStarting}>
+                <Camera size={18}/>{cameraStarting ? t("Opening camera…") : t("Scan an item")}
+              </button>
+              <button className="button outline" type="button" onClick={() => uploadRef.current?.click()}>
+                <Upload size={18}/>{t("Choose a photo")}
+              </button>
+            </>}
+            {camera && <>
+              <button className="button primary" type="button" onClick={capture}><Camera size={18}/>{t("Take picture")}</button>
+              <button className="button outline" type="button" onClick={closeCamera}>{t("Close camera")}</button>
+            </>}
+            {preview && <>
+              <button className="button primary" type="button" onClick={() => void analyze()} disabled={busy || !status?.configured}>
+                <Sparkles size={18}/>{busy ? t("Looking at it…") : t("Identify item")}
+              </button>
+              <button className="button outline" type="button" onClick={reset} disabled={busy}>
+                <RotateCcw size={18}/>{t("Try another photo")}
+              </button>
+            </>}
+          </div>
+          {preview && <div className="hint-area">
+            <label htmlFor="hint">{t("Focus on one item")} <span>{t("Optional")}</span></label>
+            <input id="hint" maxLength={160} value={hint} disabled={busy}
+              onChange={event => {setHint(event.target.value); setResult(null);}}
+              placeholder={t("Example: The blue bottle I'm holding")}/>
+          </div>}
+          {status && !status.configured && <div className="notice"><AlertTriangle size={17}/><span>{t("Add your Gemini API key in the")} <code>.env</code> {t("file and restart the backend.")}</span></div>}
+          {statusError && <ErrorText message={statusError}/>}
+          {cameraError && <ErrorText message={cameraError}/>}
+          {error && <ErrorText message={error}/>}
+        </div>
+      </div> : stageMode ? <div className="stage-wrap">
         <h1 className="visually-hidden">{t("Before you toss it, scan it.")}</h1>
         <p className="visually-hidden">{t("Scan an item, then check how your local program handles it.")}</p>
         <Suspense fallback={<div className="es-fallback" aria-busy="true"/>}>
@@ -408,8 +488,8 @@ export default function App() {
           {error && <ErrorText message={error}/>}
         </div>
       </section> : null}
-      {analysis && <section id="scan-results" className="results res-layout" aria-live="polite">
-        {preview && <aside className="res-photo reveal">
+      {analysis && <section id="scan-results" className={visualStyle === "legacy" ? "results legacy-results" : "results res-layout"} aria-live="polite">
+        {preview && <aside className={visualStyle === "legacy" ? "legacy-result-photo" : "res-photo reveal"}>
           <img src={preview.src} alt="Your selected item photograph"/>
           <button className="es-ghost" type="button" onClick={reset}><RotateCcw size={18}/> {t("Try another photo")}</button>
         </aside>}
@@ -565,7 +645,7 @@ export default function App() {
           onScan={() => setView("identifier")}
           onReturns={() => setView("deposits")}/> : view === "audit" ? <AuditKit user={user} onSignIn={() => openPage("account")}
           scannedItem={null} onBackToScan={() => openPage("identifier")}/> : view === "leaderboard" ? <Leaderboard user={user} onSignIn={() => setView("account")}/> : view === "about" ?
-        <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view}
+        <AboutWasteLens onScan={()=>setView("identifier")} onAudit={()=>setView("audit")} onJourney={()=>setView("journey")}/> : view === "chat" ? null : <AccountArea user={user} mode={view} visualStyle={visualStyle} onVisualStyleChange={setVisualStyle}
         onLogin={account => { setUser(account); if (view === "account") setView("identifier"); }}
         onLogout={() => { setUser(null); setView("identifier"); }}/>}
       <div hidden={view !== "chat"}>
@@ -573,5 +653,7 @@ export default function App() {
           onScan={returnToScannedItem}/>
       </div>
     </main>
+      </div>
+    </div>
   </div>;
 }

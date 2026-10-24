@@ -1,5 +1,13 @@
 /* Additional translations for the existing English/Spanish/Hindi interface. */
 export const moreTranslations:Record<string,{es:string;hi:string}> = {
+  "Legacy UI": { es: "Interfaz clásica", hi: "पुराना इंटरफ़ेस" },
+  "Current UI": { es: "Interfaz actual", hi: "वर्तमान इंटरफ़ेस" },
+  "Interface style": { es: "Estilo de interfaz", hi: "इंटरफ़ेस शैली" },
+  "Interface appearance": { es: "Apariencia de la interfaz", hi: "इंटरफ़ेस का रूप" },
+  "Switch the visual design without changing scans, maps, features, text, or saved data.": {
+    es: "Cambia el aspecto sin modificar escaneos, mapas, funciones, textos ni datos guardados.",
+    hi: "स्कैन, नक्शे, सुविधाएँ, पाठ या सहेजे गए डेटा बदले बिना दृश्य डिज़ाइन बदलें।"
+  },
   "Confirm with recycling center": { es: "Confirma con el centro de reciclaje", hi: "रीसायक्लिंग केंद्र से पुष्टि करें" },
   "The scanned name does not match a supported item. Use Change item to select the correct item.": { es: "El nombre identificado no coincide con los objetos admitidos. Usa Cambiar objeto para elegir el correcto.", hi: "पहचाना गया नाम उपलब्ध वस्तु से नहीं मिलता। सही वस्तु चुनने के लिए बदलें दबाएँ।" },
   "Try scanning": { es: "Prueba escanear", hi: "यह स्कैन करके देखें" },

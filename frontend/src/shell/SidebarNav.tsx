@@ -14,6 +14,8 @@ type Props = {
   user: SessionUser | null;
   theme: AppearanceTheme;
   onThemeChange: (theme: AppearanceTheme) => void;
+  visualStyle: "claude" | "legacy";
+  onVisualStyleChange: (value: "claude" | "legacy") => void;
   onNavigate: (view: View) => void;
 };
 
@@ -44,7 +46,7 @@ const groups = [
 ] as const;
 
 /** Restores the original grouped navigation without sacrificing the 3D shell. */
-export default function SidebarNav({view,user,theme,onThemeChange,onNavigate}: Props) {
+export default function SidebarNav({view,user,theme,onThemeChange,visualStyle,onVisualStyleChange,onNavigate}: Props) {
   const {language,setLanguage,t} = useLanguage();
   const [open,setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -87,7 +89,7 @@ export default function SidebarNav({view,user,theme,onThemeChange,onNavigate}: P
           value={language} onChange={event=>setLanguage(event.target.value as typeof language)}>
           {LANGUAGES.map(option=><option key={option.code} value={option.code}>{option.label}</option>)}
         </select>
-        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange}
+        <AccountMenu user={user} theme={theme} onThemeChange={onThemeChange} visualStyle={visualStyle} onVisualStyleChange={onVisualStyleChange}
           onNavigate={next=>navigate(next)}/>
       </div>
     </header>

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 
 const read=path=>readFileSync(new URL("../src/"+path,import.meta.url),"utf8");
-const entry=read("main.tsx");
+const entry = readFileSync(new URL("../public/claude-theme.css",import.meta.url),"utf8");
 const css=read("kiosk-first-refresh.css");
 const app=read("App.tsx");
 const stage=read("scan/ScanStage.tsx");
@@ -12,11 +12,11 @@ const nav=read("shell/SidebarNav.tsx");
 const menu=read("AccountMenu.tsx");
 
 test("kiosk presentation stylesheet is loaded after existing visual layers",()=>{
-  assert.ok(entry.includes('import "./kiosk-first-refresh.css";'));
-  assert.ok(entry.indexOf('import "./kiosk-first-refresh.css";') >
-    entry.indexOf('import "./kiosk-visual-polish.css";'));
-  assert.ok(entry.indexOf('import "./kiosk-first-refresh.css";') >
-    entry.indexOf('import "./texas-demo-rules.css";'));
+  assert.ok(entry.includes('/* --- frontend/src/kiosk-first-refresh.css --- */'));
+  assert.ok(entry.indexOf('/* --- frontend/src/kiosk-first-refresh.css --- */') >
+    entry.indexOf('/* --- frontend/src/kiosk-visual-polish.css --- */'));
+  assert.ok(entry.indexOf('/* --- frontend/src/kiosk-first-refresh.css --- */') >
+    entry.indexOf('/* --- frontend/src/texas-demo-rules.css --- */'));
 });
 
 test("all existing pages, scan actions and account/admin entry points remain in source",()=>{
