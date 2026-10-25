@@ -48,6 +48,8 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Admin": { es: "Administración", hi: "व्यवस्थापक" },
   "Choose language": { es: "Elegir idioma", hi: "भाषा चुनें" },
   "Personalization": { es: "Personalización", hi: "पसंदीदा रूप" },
+  "Your action": { es: "Tu acción", hi: "आपकी कार्रवाई" },
+  "Saved scan": { es: "Escaneo guardado", hi: "सहेजा गया स्कैन" },
   "Navigation layout": { es: "Posición de navegación", hi: "नेविगेशन की जगह" },
   "Left sidebar": { es: "Barra lateral", hi: "बाईं तरफ़" },
   "Top bar": { es: "Barra superior", hi: "ऊपर की पट्टी" },

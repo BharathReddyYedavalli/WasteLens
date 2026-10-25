@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AlertTriangle, Check, History, LockKeyhole, ShieldCheck, UserPlus } from "lucide-react";
+import { AlertTriangle, CalendarDays, Check, ChevronDown, CircleHelp, History, Leaf, LockKeyhole, MapPin, Recycle, ShieldCheck, Sprout, Trash2, UserPlus } from "lucide-react";
 import type { SessionUser, SavedScan, AdminOverview, AdminUser, AdminFeedback } from "./types";
 import { useLanguage } from "./i18n";
 import HabitSnapshot from "./HabitSnapshot";
@@ -10,6 +10,18 @@ export async function readJson<T>(response: Response): Promise<T> {
   const data = await response.json();
   if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Request failed.");
   return data as T;
+}
+
+/** Visual tag only: item routing and all saved actions still come from the server. */
+function activityRoute(scan: SavedScan) {
+  switch (scan.analysis.route) {
+    case "reuse_first": return { Icon: Leaf, tone: "reuse" };
+    case "check_recycling": return { Icon: Recycle, tone: "recycle" };
+    case "check_compost": return { Icon: Sprout, tone: "compost" };
+    case "general_trash_check": return { Icon: Trash2, tone: "trash" };
+    case "special_dropoff": return { Icon: MapPin, tone: "dropoff" };
+    default: return { Icon: CircleHelp, tone: "review" };
+  }
 }
 
 type Props = {
@@ -135,34 +147,79 @@ export default function AccountArea({ user, mode, visualStyle, onVisualStyleChan
       {error && <p className="inline-error" role="alert">{error}</p>}
       <HabitSnapshot/>
       {scans.length === 0 && <p>{t("Nothing here yet. Scan your first item to save it.")}</p>}
-      <div className="history-grid">{scans.slice(0,showAllHistory?undefined:6).map(scan => <article className="history-card" key={scan.id}>
-        <div className="history-head"><h3>{scan.item_name}</h3><time>{new Date(scan.created_at).toLocaleString()}</time></div>
-        <p><strong>{t("Material:")}</strong> {scan.analysis.material_guess}</p>
-        <p><strong>{t("What to do:")}</strong> {scan.analysis.route_title}</p>
-        
-        {scan.feedback && <p><strong>{t("Your feedback:")}</strong> {t(scan.feedback === "yes" ? "Correct" : "Needs correction")}</p>}
-        {scan.correction && <p><strong>{t("Correction:")}</strong> {scan.correction}</p>}
-        <details><summary>{t("See the tips for this item")}</summary>
-          <h4>{t("Disposal")}</h4><ul>{scan.analysis.disposal_steps.map((text, i) => <li key={i}>{text}</li>)}</ul>
-          <h4>{t("Reuse")}</h4><ul>{scan.analysis.reuse_ideas.map((text, i) => <li key={i}>{text}</li>)}</ul>
-        </details>
-        <details className="history-action-log">
-          <summary>{t("What did you do with it?")}</summary>
-          <div className="action-choices">
-            {(["recycled","reused","composted","donated"] as const).map(choice=>
-              <button key={choice} type="button"
-                className={"button "+(scan.action===choice?"primary":"outline")}
-                disabled={actionSaving!==null}
-                aria-pressed={scan.action===choice}
-                onClick={()=>void logAction(scan.id,choice)}>
-                {t(choice[0].toUpperCase()+choice.slice(1))}
-              </button>
-            )}
+      <div className="history-grid">{scans.slice(0,showAllHistory?undefined:6).map(scan => {
+        const route=activityRoute(scan);
+        const RouteIcon=route.Icon;
+        return <article className={"history-card history-card-"+route.tone} key={scan.id}>
+          <div className="history-card-top">
+            <div className="history-card-identity">
+              <span className={"history-route-icon history-tone-"+route.tone} aria-hidden="true">
+                <RouteIcon size={27} strokeWidth={2.1}/>
+              </span>
+              <div className="history-card-heading">
+                <span className="history-eyebrow">{t("Saved scan")}</span>
+                <h3>{scan.item_name}</h3>
+              </div>
+            </div>
+            <time dateTime={scan.created_at} className="history-card-date">
+              <CalendarDays size={18} aria-hidden="true"/>
+              {new Date(scan.created_at).toLocaleDateString(language==="es"?"es-ES":language==="hi"?"hi-IN":undefined,
+                {month:"short",day:"numeric",year:"numeric"})}
+            </time>
           </div>
-          {scan.action&&<p className="action-confirmed">{t("Saved as")} {t(scan.action[0].toUpperCase()+scan.action.slice(1))}.</p>}
-          {actionError?.id===scan.id&&<p role="alert" className="inline-error">{actionError.message}</p>}
-        </details>
-      </article>)}</div>
+          <div className="history-outcome">
+            <span className="history-outcome-label">{t("What to do:")}</span>
+            <strong>{scan.analysis.route_title}</strong>
+          </div>
+          <div className="history-facts">
+            <div className="history-fact">
+              <span>{t("Material:")}</span>
+              <strong>{scan.analysis.material_guess}</strong>
+            </div>
+            {scan.feedback&&<div className="history-fact">
+              <span>{t("Your feedback:")}</span>
+              <strong>{t(scan.feedback==="yes"?"Correct":"Needs correction")}</strong>
+            </div>}
+            {scan.correction&&<div className="history-fact">
+              <span>{t("Correction:")}</span>
+              <strong>{scan.correction}</strong>
+            </div>}
+            {scan.action&&<div className="history-fact">
+              <span>{t("Your action")}</span>
+              <strong>{t(scan.action[0].toUpperCase()+scan.action.slice(1))}</strong>
+            </div>}
+          </div>
+          <div className="history-details">
+            <details className="history-tip-details">
+              <summary>{t("See the tips for this item")}<ChevronDown size={20} aria-hidden="true"/></summary>
+              <div className="history-detail-body">
+                <h4>{t("Disposal")}</h4>
+                <ul>{scan.analysis.disposal_steps.map((step,i)=><li key={i}>{step}</li>)}</ul>
+                <h4>{t("Reuse")}</h4>
+                <ul>{scan.analysis.reuse_ideas.map((idea,i)=><li key={i}>{idea}</li>)}</ul>
+              </div>
+            </details>
+            <details className="history-action-log">
+              <summary>{t("What did you do with it?")}<ChevronDown size={20} aria-hidden="true"/></summary>
+              <div className="history-detail-body">
+                <div className="action-choices">
+                  {(["recycled","reused","composted","donated"] as const).map(choice=>
+                    <button key={choice} type="button"
+                      className={"button "+(scan.action===choice?"primary":"outline")}
+                      disabled={actionSaving!==null}
+                      aria-pressed={scan.action===choice}
+                      onClick={()=>void logAction(scan.id,choice)}>
+                      {t(choice[0].toUpperCase()+choice.slice(1))}
+                    </button>
+                  )}
+                </div>
+                {scan.action&&<p className="action-confirmed">{t("Saved as")} {t(scan.action[0].toUpperCase()+scan.action.slice(1))}.</p>}
+                {actionError?.id===scan.id&&<p role="alert" className="inline-error">{actionError.message}</p>}
+              </div>
+            </details>
+          </div>
+        </article>;
+      })}</div>
       {scans.length>6&&<button type="button" className="history-more-records"
         aria-expanded={showAllHistory} onClick={()=>setShowAllHistory(current=>!current)}>
         {language==="es"?(showAllHistory?"Mostrar menos":"Ver todos los registros"):
