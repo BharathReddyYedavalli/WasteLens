@@ -73,9 +73,14 @@ export default function Leaderboard({ user, onSignIn }: {user: SessionUser | nul
         <div><CheckCircle2 size={21}/><strong>{data.me.actions}</strong><span>{t("Actions logged")}</span></div>
         <div><Award size={21}/><strong>{visibleBadges.filter(b => b.unlocked).length}</strong><span>{t("Badges")}</span></div>
       </div>
-      <details className="badge-panel"><summary><Award size={22}/>{t("Your badges")}</summary><div className="badge-grid">
-        {visibleBadges.map(b=><Badge key={b.id} badge={b}/>)}
-      </div></details>
+      <section className="badge-panel" aria-labelledby="leaderboard-badges-heading">
+        <h2 id="leaderboard-badges-heading" className="badge-panel-heading">
+          <Award size={24} aria-hidden="true"/>{t("Your badges")}
+        </h2>
+        <div className="badge-grid">
+          {visibleBadges.map(b=><Badge key={b.id} badge={b}/>)}
+        </div>
+      </section>
     </> : <div className="league-guest"><Leaf size={32}/><h2>{t("Save your progress")}</h2>
       <p>{t("Sign in to save scans and earn badges.")}</p>
       <button className="button primary" type="button" onClick={onSignIn}>{t("Sign in")}</button></div>}

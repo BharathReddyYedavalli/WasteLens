@@ -724,3 +724,21 @@ html body #root .site main.shell .journey-page .journey-quiz :is(
     font-size:clamp(21px,4.5vw,25px)!important;
   }
 }
+
+/* The leaderboard badge collection is always visible: the heading is
+   informational, never an accordion. */
+html body #root .site main.shell .badge-panel .badge-panel-heading{
+  display:flex!important;align-items:center!important;gap:13px!important;
+  margin:0!important;
+  font-size:clamp(24px,1.9vw,32px)!important;
+  font-weight:780!important;line-height:1.25!important;
+  color:var(--wl-kiosk-text)!important;
+  -webkit-text-fill-color:var(--wl-kiosk-text)!important;
+}
+html body #root .site main.shell .badge-panel .badge-panel-heading svg{
+  flex:none;width:27px!important;height:27px!important;
+  color:var(--e-accent,var(--wl-kiosk-text))!important;
+}
+html body #root .site main.shell .badge-panel .badge-grid{
+  display:grid!important;margin-top:22px!important;
+}
