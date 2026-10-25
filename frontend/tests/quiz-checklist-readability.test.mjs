@@ -45,7 +45,7 @@ test("Warm quiz surfaces have matching accessible text and background in all the
   assert.match(styles,/\.journey-question \.journey-question-text \{/);
   assert.match(styles,/\.journey-choice>span \{/);
   assert.match(styles,/\.journey-choice input\[type="radio"\]/);
-  assert.match(app,/kiosk-type-system\.css\?v=20261024-2/);
+  assert.match(app,/kiosk-type-system\.css\?v=20261024-\d+/);
 });
 test("Immersive scene and quiz functionality stay present",()=>{
   const scan=src("scan/ScanStage.tsx");

@@ -38,7 +38,8 @@ test("Users can still find the complete supporting information and admin control
   assert.match(account,/onVisualStyleChange\("claude"\)/);
   assert.match(account,/shownFeedback.map/);
   assert.match(account,/users.map/);
-  assert.match(league,/<details className="badge-panel">/);
+  assert.match(league,/<section className="badge-panel" aria-labelledby="leaderboard-badges-heading">/);
+  assert.doesNotMatch(league,/<details className="badge-panel"/);
   assert.match(league,/reconcileScanBadges\(data.me.badges, data.me.scans\)/);
   assert.match(league,/visibleBadges.map/);
   assert.match(about,/className="community-about-more"/);
