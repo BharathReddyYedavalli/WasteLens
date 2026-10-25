@@ -113,6 +113,15 @@ export default function App() {
       navSheet.href = "/navigation-layout.css?v=20261024";
       document.head.appendChild(navSheet);
     }
+    // Unified typography must load last, after both theme and navigation modes.
+    let typeSheet = document.getElementById("wastelens-kiosk-type-system") as HTMLLinkElement | null;
+    if (!typeSheet) {
+      typeSheet = document.createElement("link");
+      typeSheet.id = "wastelens-kiosk-type-system";
+      typeSheet.rel = "stylesheet";
+      typeSheet.href = "/kiosk-type-system.css?v=20261024-1";
+      document.head.appendChild(typeSheet);
+    }
     try { window.localStorage.setItem("wastelens-visual-style", visualStyle); } catch { /* private mode */ }
   }, [visualStyle]);
 
