@@ -488,3 +488,239 @@ html body #root .site main.shell .history-more-records{
     transition:none!important;
   }
 }
+
+
+/* October 24: checklist and Bottle Explorer quiz / all six themes.
+ * The photographed documentary remains untouched. These two educational
+ * surfaces deliberately own foreground and background together, preventing
+ * global dark-theme h2/fieldset/legend overrides from mismatching them. */
+
+/* Center the check control vertically with each checklist item, including
+   translated text and the naturally wrapping third item. */
+html body #root .site main.shell .documentary-final .documentary-actions {
+  display:grid!important;gap:clamp(15px,1.7vw,25px)!important;
+  margin:25px 0 34px!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action {
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:clamp(16px,1.5vw,24px)!important;
+  min-height:64px!important;
+  padding:9px 0!important;
+  font-size:clamp(20px,1.55vw,26px)!important;
+  line-height:1.42!important;
+  color:#f2fff9!important;
+  -webkit-text-fill-color:#f2fff9!important;
+  cursor:pointer;
+}
+html body #root .site main.shell .documentary-final .documentary-action>span {
+  min-width:0;color:#f2fff9!important;
+  -webkit-text-fill-color:#f2fff9!important;
+  line-height:1.42!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"] {
+  appearance:none!important;-webkit-appearance:none!important;
+  display:grid!important;place-items:center!important;
+  width:34px!important;height:34px!important;
+  min-width:34px!important;min-height:34px!important;
+  justify-self:center!important;align-self:center!important;
+  margin:0!important;padding:0!important;
+  box-sizing:border-box!important;flex:none!important;
+  border:2.5px solid #c7e9da!important;border-radius:10px!important;
+  background:#effff7!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  accent-color:#b6f6dc!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"]:checked {
+  background:#b6f6dc!important;border-color:#b6f6dc!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"]:checked::after {
+  content:"";display:block;width:9px;height:16px;
+  border-right:3px solid #103b31;border-bottom:3px solid #103b31;
+  transform:translateY(-2px) rotate(45deg);
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"]:focus-visible {
+  outline:3px solid #ffe39e!important;outline-offset:5px!important;
+}
+html body #root .site main.shell .documentary-final .documentary-quiz-link {
+  display:inline-flex!important;align-items:center!important;
+  width:fit-content!important;gap:15px!important;
+  min-height:64px!important;padding:13px 0!important;
+  margin-top:25px!important;
+  font-size:clamp(20px,1.55vw,25px)!important;
+  font-weight:750!important;
+  line-height:1.4!important;
+  color:#ffe3a2!important;-webkit-text-fill-color:#ffe3a2!important;
+  text-decoration:underline!important;text-underline-offset:7px!important;
+  overflow-wrap:anywhere;
+}
+html body #root .site main.shell .documentary-final .documentary-quiz-link svg{
+  width:25px!important;height:25px!important;flex:none;
+  stroke:currentColor!important;
+}
+html body #root .site main.shell .documentary-final .documentary-quiz-link:focus-visible {
+  outline:3px solid #ffe3a2!important;outline-offset:5px!important;
+}
+
+/* An intentional warm parchment quiz in every visual/theme mode. It should
+   never use a dark themed card on a light-yellow background. */
+html body #root .site main.shell .journey-page .journey-quiz {
+  color-scheme:light!important;
+  background:radial-gradient(circle at 50% 0,#ffdf99 0%,transparent 42%),#fff0cc!important;
+  color:#173c32!important;-webkit-text-fill-color:#173c32!important;
+  padding-bottom:clamp(65px,6vw,95px)!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz>h2 {
+  font-size:clamp(42px,4.6vw,68px)!important;
+  line-height:1.12!important;
+  font-weight:850!important;letter-spacing:-.04em!important;
+  color:#173e34!important;-webkit-text-fill-color:#173e34!important;
+  text-shadow:none!important;opacity:1!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz :is(
+  .journey-quiz-intro,.journey-signin-reminder
+) {
+  color:#435c4f!important;-webkit-text-fill-color:#435c4f!important;
+  font-size:clamp(19px,1.48vw,23px)!important;line-height:1.5!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz-card {
+  width:min(100%,1060px)!important;max-width:1060px!important;
+  padding:clamp(24px,3.6vw,55px)!important;
+  margin:0 auto!important;
+  background:#fffdf7!important;
+  color:#183d33!important;-webkit-text-fill-color:#183d33!important;
+  border:2px solid #ead9b9!important;
+  border-radius:28px!important;
+  box-shadow:0 10px 0 #eedfbc!important;
+}
+html body #root .site main.shell .journey-page .journey-question {
+  display:block!important;width:100%!important;
+  border:0!important;border-bottom:2px solid #e4e5d9!important;
+  margin:0!important;padding:26px 0 35px!important;
+  min-width:0!important;color:#183d33!important;
+  -webkit-text-fill-color:#183d33!important;
+}
+html body #root .site main.shell .journey-page .journey-question:first-child {
+  padding-top:0!important;
+}
+html body #root .site main.shell .journey-page .journey-question legend {
+  display:block!important;float:none!important;
+  width:100%!important;max-width:100%!important;
+  margin:0!important;padding:0 0 22px!important;
+  color:#173d33!important;-webkit-text-fill-color:#173d33!important;
+  font-size:clamp(22px,1.75vw,29px)!important;
+  font-weight:820!important;line-height:1.34!important;
+  text-shadow:none!important;
+}
+html body #root .site main.shell .journey-page .journey-question legend > .journey-question-prompt {
+  display:grid!important;
+  grid-template-columns:58px minmax(0,1fr)!important;
+  align-items:start!important;gap:19px!important;
+  width:100%!important;min-width:0!important;
+  height:auto!important;min-height:0!important;
+  padding:0!important;border:0!important;
+  background:transparent!important;color:#173d33!important;
+  -webkit-text-fill-color:#173d33!important;
+  border-radius:0!important;
+}
+html body #root .site main.shell .journey-page .journey-question .journey-question-number {
+  display:grid!important;place-items:center!important;
+  width:54px!important;height:54px!important;
+  min-width:54px!important;min-height:54px!important;
+  padding:0!important;margin:0!important;
+  aspect-ratio:1!important;border-radius:50%!important;
+  border:2px solid #ba8039!important;
+  background:#ffdfaa!important;
+  color:#6b3c13!important;-webkit-text-fill-color:#6b3c13!important;
+  font-size:clamp(19px,1.35vw,23px)!important;
+  font-weight:850!important;letter-spacing:0!important;
+  line-height:1!important;box-sizing:border-box!important;
+  text-align:center!important;white-space:nowrap!important;
+}
+html body #root .site main.shell .journey-page .journey-question .journey-question-text {
+  display:block!important;width:auto!important;min-width:0!important;
+  padding:7px 0 0!important;margin:0!important;
+  background:transparent!important;
+  color:#173d33!important;-webkit-text-fill-color:#173d33!important;
+  font-size:clamp(23px,1.75vw,29px)!important;
+  font-weight:820!important;line-height:1.34!important;
+  overflow-wrap:break-word!important;
+}
+html body #root .site main.shell .journey-page .journey-choices {
+  display:grid!important;gap:13px!important;
+}
+html body #root .site main.shell .journey-page .journey-choice {
+  display:flex!important;align-items:center!important;
+  gap:18px!important;min-height:82px!important;
+  padding:20px 24px!important;
+  background:#f4faf6!important;border:2px solid #d1e2d9!important;
+  border-radius:18px!important;color:#22483b!important;
+  -webkit-text-fill-color:#22483b!important;
+  cursor:pointer!important;
+}
+html body #root .site main.shell .journey-page .journey-choice.picked {
+  border-color:#187a62!important;
+  background:#dcf2e6!important;
+}
+html body #root .site main.shell .journey-page .journey-choice:hover{
+  background:#e9f7ef!important;border-color:#57a28b!important;
+}
+html body #root .site main.shell .journey-page .journey-choice>span {
+  color:#22483b!important;-webkit-text-fill-color:#22483b!important;
+  font-size:clamp(20px,1.45vw,24px)!important;
+  line-height:1.42!important;font-weight:700!important;
+}
+html body #root .site main.shell .journey-page .journey-choice input[type="radio"] {
+  width:25px!important;height:25px!important;
+  min-width:25px!important;min-height:25px!important;
+  flex:none!important;margin:0!important;
+  accent-color:#177761!important;
+  color-scheme:light!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz :is(
+  .journey-submit,.journey-retry,.journey-login
+) {
+  min-height:64px!important;padding:16px 26px!important;
+  font-size:clamp(19px,1.35vw,23px)!important;line-height:1.3!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-submit {
+  background:#146a55!important;color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-retry {
+  background:#fffdf7!important;color:#205747!important;
+  -webkit-text-fill-color:#205747!important;
+  border:2px solid #95bfb0!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-quiz-outcome {
+  font-size:var(--wl-kiosk-body)!important;
+  color:#5c3519!important;-webkit-text-fill-color:#5c3519!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-quiz-outcome.passed{
+  color:#144e3b!important;-webkit-text-fill-color:#144e3b!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz :is(
+  .journey-quiz-error,.journey-badge-earned
+) {
+  font-size:var(--wl-kiosk-body)!important;
+}
+@media(max-width:650px) {
+  html body #root .site main.shell .documentary-final .documentary-action {
+    grid-template-columns:36px minmax(0,1fr)!important;gap:15px!important;
+  }
+  html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"] {
+    width:30px!important;height:30px!important;
+    min-width:30px!important;min-height:30px!important;
+  }
+  html body #root .site main.shell .journey-page .journey-question legend>.journey-question-prompt {
+    grid-template-columns:48px minmax(0,1fr)!important;gap:12px!important;
+  }
+  html body #root .site main.shell .journey-page .journey-question .journey-question-number {
+    width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;
+  }
+  html body #root .site main.shell .journey-page .journey-question .journey-question-text {
+    font-size:clamp(21px,4.5vw,25px)!important;
+  }
+}

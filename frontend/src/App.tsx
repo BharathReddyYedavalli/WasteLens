@@ -119,7 +119,7 @@ export default function App() {
       typeSheet = document.createElement("link");
       typeSheet.id = "wastelens-kiosk-type-system";
       typeSheet.rel = "stylesheet";
-      typeSheet.href = "/kiosk-type-system.css?v=20261024-1";
+      typeSheet.href = "/kiosk-type-system.css?v=20261024-2";
       document.head.appendChild(typeSheet);
     }
     try { window.localStorage.setItem("wastelens-visual-style", visualStyle); } catch { /* private mode */ }
