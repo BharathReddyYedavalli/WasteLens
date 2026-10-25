@@ -50,5 +50,5 @@ test("No 3D bottle or pinned Scan hero choreography is changed",()=>{
  assert.ok(scan.includes('className="es-canvas"'));
  const cleaned=css.replace(/\/\*[\s\S]*?\*\//g,"");
  assert.doesNotMatch(cleaned,/\.es-canvas\{|\.es-type\{|\.es-pip\{|\.es-note\{|\.stage-wrap\{/);
- assert.match(audit,/className="audit-option audit-"/);
+ assert.ok(audit.includes('className={"audit-option audit-"+kind.id}'));
 });
