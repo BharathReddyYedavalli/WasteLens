@@ -151,15 +151,15 @@ Keep this terminal running. The backend health check is available at [http://127
 
 ### 4. Start the frontend
 
-Open **another terminal**:
+Open **another terminal** at the repository root (the `WasteLens` folder):
 
 ```bash
-cd WasteLens/frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-If your terminal is already at the repository root, use `cd frontend` instead.
+If opening a terminal in a different folder, first navigate to your local `WasteLens` repository.
 
 Open the local URL printed by Vite—normally **[http://localhost:5173](http://localhost:5173)**.
 
