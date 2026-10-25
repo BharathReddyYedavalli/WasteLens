@@ -167,3 +167,23 @@ def test_existing_user_database_migrates_without_data_loss(tmp_path, monkeypatch
         assert "scan_rewards" in {
             row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
         }
+
+
+def test_scan_milestone_uses_saved_scans_while_xp_remains_anti_abuse(client):
+    """A user seeing 27 saved scans must have the 25-scan badge."""
+    user = signup(client, "Badge Reader", "badge-reader@example.org")
+    from app.gamification import new_badges_for_scan
+    milestones = []
+    for index in range(27):
+        # No digest: these are stored scans but never earn XP.
+        scan_id = record_scan(user["id"], "model", prediction("uncertain").model_dump())
+        milestones.extend(b["threshold"] for b in new_badges_for_scan(scan_id))
+    assert milestones == [1, 5, 10, 25]
+    state = client.get("/api/leaderboard").json()["me"]
+    assert state["scans"] == 27
+    assert state["rewarded_scans"] == 0
+    assert state["xp"] == 0
+    assert state["badges"][3]["name"] == "Everyday Hero"
+    assert state["badges"][3]["unlocked"] is True
+    assert state["badges"][4]["unlocked"] is False
+    assert new_badges_for_scan(scan_id) == []  # No repeat celebration.

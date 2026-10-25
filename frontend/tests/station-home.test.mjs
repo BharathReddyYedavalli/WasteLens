@@ -24,8 +24,8 @@ test("desktop hero and camera share the first row; existing links remain visible
 });
 
 test("full original site still owns scan and every other working tool",()=>{
-  for(const source of ["<div className=\"intro\">","<div className=\"community-mission-path\"","<div className=\"workspace\">",
-    "onClick={() => void startCamera()}","onClick={() => uploadRef.current?.click()}",
+  for(const source of ["<ScanStage","<section className=\"cap\"",
+    "onScan={beginScan}","void startCamera()","onChoosePhoto={() => uploadRef.current?.click()}",
     "onClick={() => void analyze()}","<AuditKit","<AccountArea","<BottleJourney",
     "<BottleReturns","<Leaderboard","<RecyclingResults","<ScanStepTools","<LocalRulesGuide"]) {
     assert.ok(app.includes(source),source);

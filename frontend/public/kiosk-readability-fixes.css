@@ -1,0 +1,952 @@
+/*
+ * Kiosk legibility and theme repair — October 24, 2026
+ * Scope: CURRENT UI secondary screens. Deliberately excludes .is-stage,
+ * .stage-wrap, ScanStage, 3D bottle and the Claude hero.
+ * All five alternate palettes are drawn from the existing --e-* theme tokens.
+ * Important warnings and attribution are preserved, never hidden.
+ */
+.site.is-classic-page{
+ --k-paper:var(--e-surface);
+ --k-ink:var(--e-ink);
+ --k-muted:var(--e-mute);
+ --k-stroke:var(--e-line);
+ --k-accent:var(--e-accent);
+}
+html .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about,.account-card){
+ color:var(--k-ink)!important;
+}
+html .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about,.account-card) :is(p,label,li,span,small){
+ line-height:1.48;
+}
+html .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about,.account-card) :is(label,.map-summary-loc p,.deposit-result-note,.privacy-toggle p){
+ color:var(--k-ink)!important;
+}
+html .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about,.account-card) :is(button,summary,select,input,textarea){
+ touch-action:manipulation;
+}
+html .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about,.account-card) button:focus-visible,
+html .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about,.account-card) summary:focus-visible{
+ outline:3px solid var(--k-accent)!important;
+ outline-offset:3px!important;
+}
+html .site.is-classic-page main .fl-language,
+html .site.is-classic-page .fl-side-link{
+ font-size:clamp(17px,1.2vw,20px)!important;
+}
+html .site.is-classic-page .fl-side-heading{
+ font-size:13px!important;
+ letter-spacing:.08em!important;
+ color:var(--k-muted)!important;
+}
+html .site.is-classic-page .fl-side-signature{font-size:12px!important}
+html .site.is-classic-page .fl-side-link{min-height:62px!important}
+html .site.is-classic-page .fl-language{min-height:55px!important}
+
+/* ASK: reduce empty room and make the first action feel like a touch kiosk. */
+html .site.is-classic-page main .assistant-card{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;box-shadow:none!important;
+}
+html .site.is-classic-page main .assistant-card:has(.assistant-welcome) .assistant-messages{
+ min-height:235px!important;max-height:390px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+}
+html .site.is-classic-page main .assistant-welcome{
+ width:100%!important;min-height:0!important;
+ padding:clamp(18px,2vw,32px)!important;
+ background:transparent!important;box-shadow:none!important;border:0!important;
+}
+html .site.is-classic-page main .chat-suggestions{gap:16px!important}
+html .site.is-classic-page main .chat-suggestions button{
+ color:var(--k-ink)!important;
+ background:color-mix(in srgb,var(--k-accent) 10%,var(--k-paper))!important;
+ border:1.5px solid color-mix(in srgb,var(--k-accent) 36%,var(--k-stroke))!important;
+ min-height:110px!important;font-size:clamp(20px,1.5vw,25px)!important;
+ line-height:1.28!important;padding:22px!important;
+ border-radius:22px!important;box-shadow:none!important;
+}
+html .site.is-classic-page main .chat-suggestions button:hover,
+html .site.is-classic-page main .chat-suggestions button:focus-visible{
+ background:color-mix(in srgb,var(--k-accent) 20%,var(--k-paper))!important;
+ border-color:var(--k-accent)!important;
+}
+html .site.is-classic-page main .assistant-composer{
+ background:var(--e-bg)!important;color:var(--k-ink)!important;
+ border:2px solid var(--k-stroke)!important;box-shadow:none!important;
+}
+html .site.is-classic-page main .assistant-composer textarea{
+ background:transparent!important;color:var(--k-ink)!important;
+ font-size:21px!important;
+}
+html .site.is-classic-page main .assistant-composer textarea::placeholder{
+ color:var(--k-muted)!important;opacity:1!important;
+}
+html .site.is-classic-page main .assistant-composer button{
+ background:var(--k-accent)!important;color:var(--e-on-ink)!important;
+ border:1px solid var(--k-stroke)!important;opacity:1;
+ min-width:68px!important;min-height:68px!important;
+}
+html .site.is-classic-page main .assistant-composer button:disabled{
+ background:color-mix(in srgb,var(--k-ink) 30%,var(--k-paper))!important;
+ color:var(--k-paper)!important;opacity:1!important;
+}
+html .site.is-classic-page main .assistant-context{
+ background:var(--e-bg)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;
+}
+html .site.is-classic-page main .chat-bubble{
+ font-size:clamp(20px,1.6vw,25px)!important;line-height:1.55!important;
+}
+html .site.is-classic-page main .assistant-heading{color:var(--k-ink)!important}
+html .site.is-classic-page main .assistant-messages{background:transparent!important}
+@media(max-width:1020px){
+ html .site.is-classic-page main .chat-suggestions{grid-template-columns:1fr!important}
+ html .site.is-classic-page main .chat-suggestions button{min-height:72px!important}
+ html .site.is-classic-page main .assistant-card:has(.assistant-welcome) .assistant-messages{max-height:none!important}
+}
+
+/* BOTTLE JOURNEY: dark photographic panels ALWAYS have white headings.
+   Light decision/interlude panels use their intentional dark type. */
+html .site.is-classic-page main .documentary-opening{
+ isolation:isolate;background:#0a1c24!important;
+}
+html .site.is-classic-page main .documentary-opening-shade{
+ background:linear-gradient(90deg,#05141bee 0%,#071820c9 55%,#07182049 100%),
+            linear-gradient(0deg,#071820b5,transparent 46%)!important;
+}
+html .site.is-classic-page main .documentary-opening h1,
+html .site.is-classic-page main .documentary-opening .documentary-opening-sub,
+html .site.is-classic-page main .documentary-chapter h2,
+html .site.is-classic-page main .documentary-chapter .documentary-chapter-copy,
+html .site.is-classic-page main .documentary-final h2{
+ color:#f7faf8!important;opacity:1!important;
+ -webkit-text-fill-color:#f7faf8!important;
+ text-shadow:0 2px 20px #0008;
+}
+html .site.is-classic-page main .documentary-chapter{
+ background:#0c242d!important;color:#f7faf8!important;
+}
+html .site.is-classic-page main .documentary-chapter:nth-child(even){
+ background:#142f39!important;
+}
+html .site.is-classic-page main .documentary-stat-value{color:#bbf2d7!important;-webkit-text-fill-color:#bbf2d7!important}
+html .site.is-classic-page main .documentary-stat-text :is(strong,p),
+html .site.is-classic-page main .documentary-chapter-footer>a,
+html .site.is-classic-page main .documentary-fate-key{color:#e6f4f2!important}
+html .site.is-classic-page main .documentary-interlude h3,
+html .site.is-classic-page main .documentary-interlude :is(p,span),
+html .site.is-classic-page main .documentary-decision h2,
+html .site.is-classic-page main .documentary-decision>p{
+ color:#183e35!important;-webkit-text-fill-color:#183e35!important;text-shadow:none!important;
+}
+html .site.is-classic-page main .documentary-decision-options button{
+ color:#194a3f!important;background:#fafff9!important;
+ border:2px solid #aacbbb!important;font-size:20px!important;
+ min-height:90px!important;padding:20px 24px!important;
+}
+html .site.is-classic-page main .documentary-chapter-copy{font-size:clamp(20px,1.55vw,25px)!important}
+html .site.is-classic-page main .documentary-stat-text strong{font-size:21px!important}
+html .site.is-classic-page main .documentary-stat-text p{font-size:17px!important}
+html .site.is-classic-page main .documentary-fact-details>summary,
+html .site.is-classic-page main .documentary-chapter-footer>a{font-size:17px!important;min-height:50px!important}
+html .site.is-classic-page main .documentary-minimap a{width:50px!important;height:50px!important;font-size:16px!important}
+html .site.is-classic-page main .documentary-opening-credit,
+html .site.is-classic-page main .documentary-photo-credits{font-size:14px!important}
+html .site.is-classic-page main .documentary-explore{font-size:20px!important;min-height:66px!important}
+html .site.is-classic-page main .documentary-final-content :is(p,label){color:#ebfbf6!important}
+html .site.is-classic-page main .documentary-final-buttons button{min-height:70px!important}
+
+/* BOTTLE RETURNS: no washed-out mint-on-mint or white text on light panels. */
+html .site.is-classic-page main .deposit-result{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:2px solid color-mix(in srgb,var(--k-accent) 42%,var(--k-stroke))!important;
+ box-shadow:none!important;
+}
+html .site.is-classic-page main .deposit-result :is(h2,p,strong,span,summary,a,div,small){
+ color:var(--k-ink)!important;opacity:1!important;
+ -webkit-text-fill-color:currentColor!important;
+ text-shadow:none!important;
+}
+html .site.is-classic-page main .deposit-result .deposit-amount{
+ color:var(--k-ink)!important;
+ -webkit-text-fill-color:var(--k-ink)!important;
+ font-size:clamp(78px,8.5vw,130px)!important;
+ font-weight:830!important;line-height:1.05!important;
+}
+html .site.is-classic-page main .deposit-result h2{
+ font-size:clamp(27px,2.5vw,38px)!important;line-height:1.15!important;
+}
+html .site.is-classic-page main .deposit-result>p{
+ font-size:clamp(20px,1.45vw,24px)!important;line-height:1.45!important;
+}
+html .site.is-classic-page main .deposit-result .deposit-size-used{
+ font-size:18px!important;color:var(--k-muted)!important;
+}
+html .site.is-classic-page main .deposit-official{
+ color:var(--e-accent-ink)!important;
+ background:color-mix(in srgb,var(--k-accent) 12%,var(--k-paper))!important;
+ border:1px solid var(--k-stroke)!important;border-radius:16px!important;
+ padding:15px 22px!important;min-height:66px!important;
+ font-size:19px!important;text-decoration:none!important;
+}
+html .site.is-classic-page main .deposit-official :is(span,svg){color:inherit!important}
+html .site.is-classic-page main .deposit-result-note{
+ color:var(--k-ink)!important;
+ border-top:1px solid var(--k-stroke)!important;
+ padding:18px 0 0!important;font-size:18px!important;
+}
+html .site.is-classic-page main .deposit-state-tip{
+ color:var(--k-ink)!important;background:transparent!important;
+}
+html .site.is-classic-page main .deposit-state-tip>summary{
+ background:var(--e-bg)!important;color:var(--k-ink)!important;font-size:19px!important;
+ border:1px solid var(--k-stroke)!important;border-radius:14px!important;
+}
+html .site.is-classic-page main .deposit-callout{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;
+}
+html .site.is-classic-page main .deposit-callout :is(p,svg){color:var(--k-ink)!important;font-size:19px!important}
+html .site.is-classic-page main .deposit-fields label{font-size:20px!important;color:var(--k-ink)!important}
+html .site.is-classic-page main .deposit-fields :is(input,select){
+ font-size:21px!important;min-height:67px!important;
+ background:var(--e-bg)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;
+}
+html .site.is-classic-page main .deposit-size-hint{font-size:17px!important;color:var(--k-muted)!important}
+html .site.is-classic-page main .deposit-form-card{background:var(--k-paper)!important;color:var(--k-ink)!important}
+html .site.is-classic-page main .deposit-top-art{opacity:.9}
+
+/* FINDER: large, readable listing names, addresses and travel distances. */
+html .site.is-classic-page main .facility-side-panel{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;
+ padding:12px!important;
+}
+html .site.is-classic-page main .facility-side-heading{
+ color:var(--k-ink)!important;font-size:22px!important;
+ padding:19px!important;background:var(--k-paper)!important;
+}
+html .site.is-classic-page main .facility-side-heading strong{font-size:22px!important;color:var(--k-ink)!important}
+html .site.is-classic-page main .facility-side-heading small{font-size:18px!important;color:var(--k-muted)!important}
+html .site.is-classic-page main .location-entry{
+ border-bottom:1px solid var(--k-stroke)!important;background:transparent!important;
+}
+html .site.is-classic-page main .location-card{
+ min-height:145px!important;padding:24px 18px!important;
+ display:flex!important;align-items:flex-start!important;gap:18px!important;
+ border-radius:16px!important;border:1px solid transparent!important;
+ box-shadow:none!important;background:transparent!important;
+}
+html .site.is-classic-page main .location-card.picked{
+ background:color-mix(in srgb,var(--k-accent) 16%,var(--k-paper))!important;
+ border-color:var(--k-accent)!important;
+}
+html .site.is-classic-page main .location-info strong{
+ font-size:clamp(24px,2vw,33px)!important;
+ line-height:1.17!important;color:var(--k-ink)!important;
+}
+html .site.is-classic-page main .location-info small{
+ display:block;font-size:clamp(19px,1.4vw,23px)!important;
+ color:var(--k-ink)!important;line-height:1.38!important;
+ padding:8px 0!important;
+}
+html .site.is-classic-page main .location-meta{
+ display:flex!important;align-items:center!important;gap:7px!important;
+ font-size:clamp(18px,1.3vw,22px)!important;
+ color:var(--k-muted)!important;line-height:1.35!important;
+}
+html .site.is-classic-page main .location-index{
+ min-width:42px!important;min-height:42px!important;
+ display:grid!important;place-items:center!important;
+ font-size:19px!important;color:var(--k-ink)!important;
+ background:color-mix(in srgb,var(--k-accent) 14%,var(--k-paper))!important;
+ border-radius:50%!important;
+}
+html .site.is-classic-page main .facility-official-link{
+ display:inline-flex!important;align-items:center!important;
+ margin:0 0 20px 72px!important;padding:17px 22px!important;
+ font-size:19px!important;font-weight:750!important;
+ min-height:62px!important;
+ color:var(--e-accent-ink)!important;
+ border:1px solid var(--k-stroke)!important;
+ background:var(--k-paper)!important;border-radius:15px!important;
+}
+html .site.is-classic-page main .map-summary-loc h4{
+ color:var(--k-ink)!important;font-size:clamp(27px,2.4vw,37px)!important;
+}
+html .site.is-classic-page main .map-summary-loc :is(p,span){
+ color:var(--k-muted)!important;font-size:clamp(19px,1.35vw,23px)!important;
+}
+html .site.is-classic-page main .map-summary-stats strong{
+ color:var(--k-ink)!important;font-size:clamp(58px,5vw,82px)!important;
+}
+html .site.is-classic-page main .map-summary-stats span{font-size:19px!important;color:var(--k-muted)!important}
+html .site.is-classic-page main .google-map-footer{
+ display:flex!important;align-items:center!important;gap:22px!important;
+ padding:20px 16px!important;
+}
+html .site.is-classic-page main .google-map-footer .google-map-caution{
+ color:var(--k-ink)!important;font-size:18px!important;
+}
+html .site.is-classic-page main .google-map-fallback{
+ min-height:62px!important;font-size:18px!important;
+ color:var(--k-ink)!important;background:var(--k-paper)!important;
+ border:1px solid var(--k-stroke)!important;
+}
+html .site.is-classic-page main .location-phone,
+html .site.is-classic-page main .location-caution,
+html .site.is-classic-page main .location-tags{
+ font-size:18px!important;color:var(--k-ink)!important;
+}
+html .site.is-classic-page main .finder-form input{font-size:23px!important}
+
+/* AUDIT: stats and tap cards should be readable from arm's length. */
+html .site.is-classic-page main .audit-hero .audit-purpose{
+ color:var(--k-ink)!important;font-size:clamp(21px,1.6vw,26px)!important;
+}
+html .site.is-classic-page main .audit-count-row{
+ padding:clamp(24px,3vw,40px)!important;
+ background:var(--k-paper)!important;
+ border:1px solid var(--k-stroke)!important;
+ min-height:185px!important;
+}
+html .site.is-classic-page main .audit-count-row>div span{
+ font-size:clamp(24px,2.1vw,34px)!important;
+ color:var(--k-ink)!important;font-weight:700!important;
+}
+html .site.is-classic-page main .audit-count-row>div strong{
+ display:block!important;font-size:clamp(96px,10vw,150px)!important;
+ line-height:.95!important;color:var(--k-ink)!important;
+ font-variant-numeric:tabular-nums;
+}
+html .site.is-classic-page main .audit-option{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:1.5px solid var(--k-stroke)!important;
+}
+html .site.is-classic-page main .audit-option strong{
+ color:var(--k-ink)!important;font-size:clamp(22px,1.8vw,30px)!important;
+}
+html .site.is-classic-page main .audit-option-count{
+ color:var(--k-ink)!important;font-size:clamp(26px,2.2vw,35px)!important;
+}
+html .site.is-classic-page main .audit-option-emoji{
+ font-size:clamp(42px,3.2vw,55px)!important;
+}
+html .site.is-classic-page main .audit-kiosk-options>summary,
+html .site.is-classic-page main .audit-kiosk-options :is(label,p){
+ color:var(--k-ink)!important;font-size:21px!important;
+}
+html .site.is-classic-page main .community-dashboard-heading h2,
+html .site.is-classic-page main .community-saved-heading h2{
+ color:var(--k-ink)!important;font-size:clamp(34px,3vw,49px)!important;
+}
+html .site.is-classic-page main .community-saved-item{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;
+ padding:20px 24px!important;min-height:122px!important;
+ border-radius:18px!important;gap:18px!important;
+}
+html .site.is-classic-page main .community-saved-item strong{
+ font-size:clamp(22px,1.8vw,30px)!important;
+ color:var(--k-ink)!important;
+}
+html .site.is-classic-page main .community-saved-item span{
+ font-size:18px!important;color:var(--k-muted)!important;
+}
+html .site.is-classic-page main .community-saved-item button{
+ min-height:65px!important;padding:14px 22px!important;
+ font-size:19px!important;
+}
+html .site.is-classic-page main .community-saved-item .community-delete{
+ background:var(--k-paper)!important;
+ color:#aa3e2c!important;border:1.5px solid #b95d4e!important;
+}
+html .site.is-classic-page main .community-stats :is(strong,span),
+html .site.is-classic-page main .community-chart-legend,
+html .site.is-classic-page main .community-day strong{
+ color:var(--k-ink)!important;font-size:clamp(19px,1.4vw,25px)!important;
+}
+html .site.is-classic-page main .community-chart-card :is(h3,span,p){
+ color:var(--k-ink)!important;font-size:clamp(19px,1.4vw,25px)!important;
+}
+html .site.is-classic-page main .community-advice,
+html .site.is-classic-page main .community-saved{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+}
+
+/* ABOUT: the screenshot's almost invisible white-on-pale text. */
+html .site.is-classic-page main .community-about-hero{
+ background:linear-gradient(120deg,#0c362f 0%,#14584b 70%,#1b6557 100%)!important;
+ color:#fff!important;border:0!important;box-shadow:none!important;
+}
+html .site.is-classic-page main .community-about-hero :is(h1,p,summary,span){
+ color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;
+ text-shadow:none!important;
+}
+html .site.is-classic-page main .community-about-hero h1{
+ font-size:clamp(50px,5.8vw,93px)!important;line-height:1.04!important;
+ max-width:15ch!important;
+}
+html .site.is-classic-page main .community-about-punchline{
+ color:#e8fcf3!important;-webkit-text-fill-color:#e8fcf3!important;
+ font-size:clamp(23px,1.9vw,31px)!important;
+}
+html .site.is-classic-page main .community-about-more{
+ border-top:1px solid #ffffff66!important;
+}
+html .site.is-classic-page main .community-about-grid>article{
+ color:var(--k-ink)!important;background:var(--k-paper)!important;
+ border:1px solid var(--k-stroke)!important;
+ box-shadow:none!important;
+}
+html .site.is-classic-page main .community-about-grid>article h2{
+ color:var(--k-ink)!important;font-size:clamp(29px,2.5vw,40px)!important;
+}
+html .site.is-classic-page main .community-about-grid>article p{
+ color:var(--k-ink)!important;font-size:clamp(20px,1.5vw,24px)!important;
+}
+html .site.is-classic-page main .community-about-links button{
+ font-size:20px!important;min-height:70px!important;
+ color:var(--k-ink)!important;background:var(--k-paper)!important;
+ border:1px solid var(--k-stroke)!important;
+}
+
+/* LEADERBOARD / HISTORY: clean, contrasting cards and meaningful numbers. */
+html .site.is-classic-page main .level-panel,
+html .site.is-classic-page main .league-ranking,
+html .site.is-classic-page main .league-stats>div,
+html .site.is-classic-page main .account-card,
+html .site.is-classic-page main .history-card,
+html .site.is-classic-page main .rank-entry{
+ background:var(--k-paper)!important;color:var(--k-ink)!important;
+ border:1px solid var(--k-stroke)!important;box-shadow:none!important;
+}
+html .site.is-classic-page main .level-panel :is(h2,strong),
+html .site.is-classic-page main .league-stats :is(strong,span),
+html .site.is-classic-page main .league-ranking :is(h2,strong,span),
+html .site.is-classic-page main .history-card :is(h3,p,strong,span,summary){
+ color:var(--k-ink)!important;
+}
+html .site.is-classic-page main .level-panel h2{font-size:clamp(37px,3.5vw,55px)!important}
+html .site.is-classic-page main .league-stats strong{font-size:clamp(55px,5vw,86px)!important}
+html .site.is-classic-page main .league-stats span{font-size:20px!important}
+html .site.is-classic-page main .rank-user strong{font-size:clamp(23px,1.9vw,29px)!important}
+html .site.is-classic-page main .rank-user>span{font-size:18px!important}
+html .site.is-classic-page main .rank-xp{font-size:clamp(30px,2.5vw,41px)!important}
+html .site.is-classic-page main .league-ranking-heading h2{font-size:clamp(35px,3vw,48px)!important}
+html .site.is-classic-page main .badge-panel>summary{
+ color:var(--k-ink)!important;font-size:23px!important;
+}
+html .site.is-classic-page main .history-card .history-head time{font-size:17px!important}
+html .site.is-classic-page main .history-card>p{font-size:20px!important}
+html .site.is-classic-page main .history-action-log>summary{font-size:20px!important}
+html .site.is-classic-page main .account-card :is(input,label){font-size:19px!important}
+html .site.is-classic-page main .admin-kiosk-data>summary{color:var(--k-ink)!important}
+html .site.is-classic-page main .admin-stats :is(strong,span){color:var(--k-ink)!important}
+html .site.is-classic-page main .admin-stats strong{font-size:clamp(40px,3.5vw,62px)!important}
+
+/* Avoid squashed map / card columns and preserve 44+ px targets on tablets. */
+@media(max-width:1100px){
+ html .site.is-classic-page main .location-card{min-height:130px!important}
+ html .site.is-classic-page main .google-map-footer{flex-wrap:wrap!important}
+ html .site.is-classic-page main .facility-official-link{margin-left:16px!important}
+}
+@media(max-width:730px){
+ html .site.is-classic-page main .assistant-card:has(.assistant-welcome) .assistant-messages{min-height:280px!important}
+ html .site.is-classic-page main .deposit-result .deposit-amount{font-size:clamp(64px,13vw,100px)!important}
+ html .site.is-classic-page main .audit-count-row>div strong{font-size:96px!important}
+ html .site.is-classic-page main .location-info strong{font-size:24px!important}
+ html .site.is-classic-page main .location-info small{font-size:19px!important}
+ html .site.is-classic-page main .location-meta{font-size:18px!important}
+ html .site.is-classic-page main .community-saved-item{flex-wrap:wrap!important}
+ html .site.is-classic-page main .community-saved-item button{min-width:110px!important}
+ html .site.is-classic-page main .documentary-opening h1{font-size:clamp(43px,8.5vw,65px)!important}
+ html .site.is-classic-page main .documentary-decision-options{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html .site.is-classic-page main .chat-suggestions button,
+ html .site.is-classic-page main .audit-option{transition:none!important;transform:none!important}
+}
+
+/* Reveal long saved-audit / Google location lists only when requested. */
+html .site.is-classic-page main .places-show-more,
+html .site.is-classic-page main .audit-more-records{
+ display:block!important;width:calc(100% - 24px)!important;
+ margin:18px 12px!important;padding:18px 22px!important;
+ min-height:68px!important;font-size:21px!important;
+ font-weight:740!important;text-align:center!important;
+ background:color-mix(in srgb,var(--k-accent) 12%,var(--k-paper))!important;
+ color:var(--k-ink)!important;
+ border:2px solid var(--k-stroke)!important;border-radius:18px!important;
+ cursor:pointer;
+}
+html .site.is-classic-page main .audit-more-records:hover,
+html .site.is-classic-page main .places-show-more:hover{border-color:var(--k-accent)!important}
+
+
+/* ===============================================================
+   REAL KIOSK RESOLUTION PASS — high-specificity component ownership
+   The current UI uses older, conflicting !important theme declarations.
+   This block owns the named secondary pages instead of guessing at them.
+   It NEVER selects the animated Scan-stage, bottle canvas or text.
+   =============================================================== */
+
+/* Eliminate page-sized dark boxes; the individual task surface is enough. */
+html body #root .site.is-classic-page main.shell :is(
+ .assistant-screen,.finder-screen,.deposit-page,.community-audit,.league-page,.community-about
+){
+ background:transparent!important;
+ background-image:none!important;
+ border:0!important;outline:0!important;
+ box-shadow:none!important;
+}
+html body #root .site.is-classic-page main.shell :is(
+ .assistant-screen,.finder-screen,.deposit-page,.community-audit,.league-page,.community-about
+)::before,
+html body #root .site.is-classic-page main.shell :is(
+ .assistant-screen,.finder-screen,.deposit-page,.community-audit,.league-page,.community-about
+)::after{
+ box-shadow:none!important;
+}
+/* Neutralize inherited theme shadows without obliterating keyboard outlines. */
+html body #root .site.is-classic-page main :is(.assistant-card,.deposit-form-card,.deposit-result,
+ .finder-card,.facility-side-panel,.league-ranking,.level-panel,.account-card,.community-about-grid>article){
+ box-shadow:none!important;
+}
+
+/* ASK — one visual container at most, not black rectangle inside black rectangle. */
+html body #root .site.is-classic-page main .assistant-screen{
+ max-width:1200px!important;width:100%!important;
+ padding:0!important;
+}
+html body #root .site.is-classic-page main .assistant-heading{margin:0 0 26px!important}
+html body #root .site.is-classic-page main .assistant-heading h1{
+ font-size:clamp(46px,5.2vw,82px)!important;line-height:1.02!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .assistant-card{
+ border-radius:24px!important;
+ padding:clamp(24px,3vw,42px)!important;
+}
+html body #root .site.is-classic-page main .assistant-card.is-empty .assistant-messages{
+ min-height:0!important;max-height:none!important;height:auto!important;
+ display:block!important;overflow:visible!important;
+ padding:8px 0 32px!important;margin:0!important;
+}
+html body #root .site.is-classic-page main .assistant-welcome{
+ display:block!important;min-height:0!important;padding:0!important;
+ margin:0!important;background:transparent!important;
+}
+html body #root .site.is-classic-page main .assistant-start-heading{
+ font-size:clamp(24px,2.3vw,36px)!important;
+ line-height:1.15!important;margin:4px 0 22px!important;
+ color:var(--e-ink)!important;text-align:left!important;font-weight:760!important;
+}
+html body #root .site.is-classic-page main .chat-suggestions{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:16px!important;
+}
+html body #root .site.is-classic-page main .chat-suggestions button{
+ min-width:0!important;width:100%!important;
+ min-height:112px!important;border-radius:20px!important;
+ padding:22px!important;
+ background:var(--e-surface)!important;
+ color:var(--e-ink)!important;
+ border:2px solid var(--e-line)!important;
+ box-shadow:none!important;
+ font-size:clamp(20px,1.55vw,25px)!important;
+ font-weight:700!important;line-height:1.25!important;
+ text-align:left!important;
+}
+html body #root .site.is-classic-page main .chat-suggestions button:hover{
+ border-color:var(--e-accent)!important;
+ background:color-mix(in srgb,var(--e-accent) 12%,var(--e-surface))!important;
+}
+html body #root .site.is-classic-page main .assistant-composer{
+ margin:0!important;padding:10px!important;min-height:100px!important;
+ background:var(--e-surface)!important;
+ border:2px solid var(--e-line)!important;
+ border-radius:23px!important;
+ box-shadow:none!important;
+ display:flex!important;gap:12px!important;
+ align-items:stretch!important;
+}
+html body #root .site.is-classic-page main .assistant-composer textarea{
+ background:transparent!important;color:var(--e-ink)!important;
+ -webkit-text-fill-color:var(--e-ink)!important;
+ border:0!important;box-shadow:none!important;
+ font-size:clamp(20px,1.4vw,23px)!important;
+ min-height:76px!important;line-height:1.4!important;
+ padding:17px!important;resize:vertical;
+}
+html body #root .site.is-classic-page main .assistant-composer textarea::placeholder{
+ color:var(--e-mute)!important;
+ -webkit-text-fill-color:var(--e-mute)!important;opacity:1!important;
+}
+html body #root .site.is-classic-page main .assistant-composer button{
+ flex:0 0 72px!important;min-height:72px!important;
+ align-self:end!important;
+ border-radius:18px!important;
+ background:var(--e-ink)!important;color:var(--e-on-ink)!important;
+ -webkit-text-fill-color:var(--e-on-ink)!important;
+ border:1px solid var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .assistant-composer button:disabled{
+ opacity:.6!important;cursor:not-allowed!important;
+}
+html body #root .site.is-classic-page main .assistant-messages{
+ background:transparent!important;box-shadow:none!important;
+}
+html body #root .site.is-classic-page main .chat-bubble{
+ font-size:clamp(19px,1.45vw,23px)!important;
+ padding:22px 24px!important;line-height:1.5!important;
+}
+html body #root .site.is-classic-page main .assistant-context{
+ background:var(--e-surface)!important;border:1px solid var(--e-line)!important;
+ color:var(--e-ink)!important;min-height:70px!important;
+}
+
+/* In dark and other alternative palettes, remove the second surround. */
+html:not([data-wl-theme="light"]) body #root .site.is-classic-page main .assistant-card{
+ background:transparent!important;background-image:none!important;
+ border:0!important;outline:0!important;box-shadow:none!important;
+ padding:0!important;border-radius:0!important;
+}
+html:not([data-wl-theme="light"]) body #root .site.is-classic-page main .assistant-screen{
+ background:transparent!important;border:0!important;
+}
+html:not([data-wl-theme="light"]) body #root .site.is-classic-page main .chat-suggestions button{
+ background:color-mix(in srgb,var(--e-accent) 8%,var(--e-surface))!important;
+ color:var(--e-ink)!important;-webkit-text-fill-color:var(--e-ink)!important;
+ border-color:color-mix(in srgb,var(--e-accent) 28%,var(--e-line))!important;
+}
+html:not([data-wl-theme="light"]) body #root .site.is-classic-page main .assistant-composer{
+ background:var(--e-surface)!important;
+}
+html:not([data-wl-theme="light"]) body #root .site.is-classic-page main .assistant-messages{
+ background:transparent!important;border:0!important;
+}
+
+/* RETURNS — actual semantic contrast, not mint-on-mint or white-on-paper.
+   The official source and calculation detail are readable in EVERY theme. */
+html body #root .site.is-classic-page main .deposit-page .deposit-result{
+ color:var(--e-ink)!important;background:var(--e-surface)!important;
+ border:2px solid var(--e-line)!important;
+ border-radius:26px!important;
+ padding:clamp(28px,3vw,44px)!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-amount{
+ color:var(--e-ink)!important;-webkit-text-fill-color:var(--e-ink)!important;
+ font-size:clamp(68px,6.5vw,108px)!important;line-height:1.05!important;
+ font-weight:820!important;letter-spacing:-.055em!important;
+ margin:0 0 20px!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result h2.deposit-status{
+ color:var(--e-ink)!important;-webkit-text-fill-color:var(--e-ink)!important;
+ font-size:clamp(29px,2.6vw,39px)!important;line-height:1.13!important;
+ margin:16px 0!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result p.deposit-reassurance,
+html body #root .site.is-classic-page main .deposit-page .deposit-result p.deposit-explanation{
+ color:var(--e-ink)!important;-webkit-text-fill-color:var(--e-ink)!important;
+ font-size:clamp(20px,1.55vw,24px)!important;
+ line-height:1.43!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result a.deposit-official{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:14px!important;min-height:76px!important;
+ width:100%!important;max-width:100%!important;
+ background:#124e42!important;color:#fff!important;
+ -webkit-text-fill-color:#fff!important;
+ border:2px solid #124e42!important;border-radius:18px!important;
+ padding:20px 22px!important;
+ font-size:clamp(20px,1.5vw,24px)!important;
+ font-weight:760!important;text-align:center!important;
+ text-decoration:none!important;opacity:1!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result a.deposit-official svg{
+ color:#fff!important;stroke:#fff!important;
+ width:24px!important;height:24px!important;flex:none!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result a.deposit-official:hover{
+ background:#0c382f!important;border-color:#0c382f!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-state-tip{
+ background:transparent!important;border:0!important;
+ padding:0!important;margin-top:18px!important;
+ box-shadow:none!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-state-tip>summary{
+ display:flex!important;align-items:center!important;
+ min-height:72px!important;padding:20px 24px!important;
+ color:var(--e-ink)!important;-webkit-text-fill-color:var(--e-ink)!important;
+ background:color-mix(in srgb,var(--e-ink) 8%,var(--e-surface))!important;
+ border:2px solid var(--e-line)!important;border-radius:16px!important;
+ font-size:clamp(20px,1.45vw,23px)!important;font-weight:730!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-state-tip[open]{
+ border:0!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-state-tip :is(p,div,span){
+ color:var(--e-ink)!important;-webkit-text-fill-color:var(--e-ink)!important;
+ font-size:clamp(19px,1.4vw,22px)!important;
+ line-height:1.5!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-result-note{
+ color:var(--e-mute)!important;
+ -webkit-text-fill-color:var(--e-mute)!important;
+ font-size:19px!important;line-height:1.45!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-form-card{
+ background:var(--e-surface)!important;
+ border:1px solid var(--e-line)!important;
+ border-radius:26px!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-form-head h2{
+ font-size:clamp(27px,2.4vw,38px)!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-fields label{
+ font-size:clamp(19px,1.5vw,24px)!important;font-weight:710!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-fields :is(input,select){
+ min-height:72px!important;font-size:22px!important;
+ border-radius:17px!important;
+ background:var(--e-bg)!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-size-hint{
+ font-size:18px!important;
+}
+html body #root .site.is-classic-page main .deposit-page .deposit-callout{
+ border:0!important;background:transparent!important;
+ padding:12px 0!important;box-shadow:none!important;
+}
+
+/* FINDER — walk-up choices before tiny cartographic details. */
+html body #root .site.is-classic-page main .location-card{
+ min-height:150px!important;padding:23px!important;
+ border:0!important;background:transparent!important;
+}
+html body #root .site.is-classic-page main .location-info strong{
+ font-size:clamp(25px,2.2vw,35px)!important;line-height:1.13!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .location-info small{
+ font-size:clamp(20px,1.55vw,25px)!important;color:var(--e-ink)!important;
+ line-height:1.42!important;
+}
+html body #root .site.is-classic-page main .location-meta{
+ font-size:clamp(18px,1.4vw,23px)!important;color:var(--e-mute)!important;
+ line-height:1.4!important;
+}
+html body #root .site.is-classic-page main .facility-side-panel{
+ background:var(--e-surface)!important;border:1px solid var(--e-line)!important;
+}
+html body #root .site.is-classic-page main .facility-official-link{
+ color:#fff!important;background:#124e42!important;
+ min-height:68px!important;font-size:20px!important;
+ padding:19px 22px!important;border:0!important;border-radius:16px!important;
+}
+html body #root .site.is-classic-page main .facility-official-link svg{
+ color:#fff!important;stroke:#fff!important;
+}
+html body #root .site.is-classic-page main .map-summary h4{
+ font-size:clamp(29px,2.5vw,39px)!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .google-map-footer{
+ background:transparent!important;border:0!important;
+}
+html body #root .site.is-classic-page main .google-map-caution{
+ font-size:18px!important;color:var(--e-mute)!important;
+}
+
+/* AUDIT — huge counter, large category actions, no tiny metadata. */
+html body #root .site.is-classic-page main .audit-count-row{
+ background:var(--e-surface)!important;border:1px solid var(--e-line)!important;
+ padding:clamp(25px,3vw,45px)!important;min-height:180px!important;
+}
+html body #root .site.is-classic-page main .audit-count-row>div strong{
+ font-size:clamp(94px,9vw,150px)!important;
+ line-height:1!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .audit-count-row>div span{
+ font-size:clamp(24px,2.1vw,34px)!important;
+ font-weight:740!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .audit-option{
+ min-height:190px!important;background:var(--e-surface)!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .audit-option strong{
+ font-size:clamp(23px,1.85vw,30px)!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .audit-option-count{
+ font-size:clamp(27px,2.25vw,36px)!important;
+}
+html body #root .site.is-classic-page main .community-saved-item strong{
+ font-size:clamp(22px,1.7vw,30px)!important;
+}
+html body #root .site.is-classic-page main .community-saved-item span{
+ font-size:19px!important;
+}
+html body #root .site.is-classic-page main .community-saved-item button{
+ min-height:70px!important;font-size:20px!important;
+}
+
+/* About, progress, saved reports and actions: readable, no double frame. */
+html body #root .site.is-classic-page main .community-about-hero{
+ background:linear-gradient(125deg,#10483c,#0c302a)!important;
+ color:#fff!important;border:0!important;
+}
+html body #root .site.is-classic-page main .community-about-hero h1{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ text-shadow:none!important;line-height:1.06!important;
+}
+html body #root .site.is-classic-page main .community-about-hero :is(p,summary,span){
+ color:#f3fff8!important;-webkit-text-fill-color:#f3fff8!important;
+ opacity:1!important;font-size:clamp(20px,1.6vw,26px)!important;
+}
+html body #root .site.is-classic-page main .community-about-grid>article p{
+ font-size:clamp(19px,1.5vw,24px)!important;line-height:1.45!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .league-page{
+ background:transparent!important;border:0!important;
+}
+html body #root .site.is-classic-page main .league-stats strong{
+ font-size:clamp(58px,5.5vw,89px)!important;
+ color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .league-stats span,
+html body #root .site.is-classic-page main .level-next{
+ font-size:clamp(19px,1.4vw,23px)!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .rank-user strong{
+ font-size:clamp(23px,1.85vw,31px)!important;
+}
+html body #root .site.is-classic-page main .rank-user>span{
+ font-size:18px!important;
+}
+
+/* Journey contains intentionally dark photographic frames in every theme. */
+html body #root .site.is-classic-page main .documentary-opening h1,
+html body #root .site.is-classic-page main .documentary-chapter h2,
+html body #root .site.is-classic-page main .documentary-final h2{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ text-shadow:0 2px 18px rgba(0,0,0,.45)!important;
+}
+html body #root .site.is-classic-page main .documentary-opening-sub{
+ color:#f1fcf6!important;-webkit-text-fill-color:#f1fcf6!important;
+ font-size:clamp(20px,1.7vw,27px)!important;
+}
+html body #root .site.is-classic-page main .documentary-chapter-copy{
+ color:#eff8f3!important;-webkit-text-fill-color:#eff8f3!important;
+ font-size:clamp(20px,1.5vw,25px)!important;
+}
+html body #root .site.is-classic-page main .documentary-decision h2{
+ color:#163e35!important;-webkit-text-fill-color:#163e35!important;
+ text-shadow:none!important;
+}
+
+/* Touch targets and small screens. */
+@media(max-width:1100px){
+ html body #root .site.is-classic-page main .chat-suggestions{
+  grid-template-columns:1fr!important;
+ }
+ html body #root .site.is-classic-page main .chat-suggestions button{min-height:78px!important}
+}
+@media(max-width:720px){
+ html body #root .site.is-classic-page main .assistant-heading h1{font-size:clamp(40px,9vw,62px)!important}
+ html body #root .site.is-classic-page main .assistant-card{padding:16px!important}
+ html body #root .site.is-classic-page main .assistant-start-heading{font-size:26px!important}
+ html body #root .site.is-classic-page main .assistant-composer{min-height:80px!important}
+ html body #root .site.is-classic-page main .assistant-composer button{flex-basis:62px!important;min-height:62px!important}
+ html body #root .site.is-classic-page main .deposit-page .deposit-result .deposit-amount{
+  font-size:clamp(61px,12vw,94px)!important;
+ }
+ html body #root .site.is-classic-page main .audit-option{min-height:155px!important}
+ html body #root .site.is-classic-page main .location-card{min-height:135px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html body #root .site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.community-audit,.league-page,.community-about){
+  animation:none!important;transition:none!important;
+ }
+}
+
+
+/* Complete the kiosk sweep: large navigation, recent scans and learning quiz. */
+html body #root .site.is-classic-page{--fl-side-w:clamp(274px,18vw,320px)}
+html body #root .site.is-classic-page .fl-side-link{
+ font-size:clamp(19px,1.2vw,22px)!important;min-height:64px!important;line-height:1.25!important;
+}
+html body #root .site.is-classic-page .fl-side-heading{
+ font-size:14px!important;color:var(--e-mute)!important;
+}
+html body #root .site.is-classic-page .fl-language{
+ font-size:17px!important;min-height:56px!important;
+}
+html body #root .site.is-classic-page .wl-account-trigger{
+ font-size:15px!important;min-height:58px!important;
+}
+html body #root .site.is-classic-page main .history-grid{
+ display:grid!important;grid-template-columns:1fr!important;
+ gap:18px!important;max-width:1180px!important;margin-inline:auto!important;
+}
+html body #root .site.is-classic-page main .history-card{
+ padding:clamp(22px,2.5vw,34px)!important;
+ border:1px solid var(--e-line)!important;border-radius:22px!important;
+ background:var(--e-surface)!important;box-shadow:none!important;
+}
+html body #root .site.is-classic-page main .history-card .history-head h3{
+ font-size:clamp(28px,2.4vw,39px)!important;line-height:1.12!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .history-card .history-head time{
+ font-size:18px!important;color:var(--e-mute)!important;
+}
+html body #root .site.is-classic-page main .history-card>p{
+ font-size:clamp(20px,1.45vw,24px)!important;line-height:1.45!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main .history-card details>summary{
+ min-height:66px!important;padding:18px 5px!important;
+ font-size:21px!important;color:var(--e-ink)!important;font-weight:730!important;
+}
+html body #root .site.is-classic-page main .history-card .action-choices button{
+ min-height:68px!important;font-size:20px!important;padding:16px 20px!important;
+}
+html body #root .site.is-classic-page main button.history-more-records{
+ width:min(100%,1180px)!important;min-height:74px!important;
+ display:block!important;margin:26px auto!important;padding:20px 24px!important;
+ border:2px solid var(--e-line)!important;border-radius:18px!important;
+ font-size:22px!important;font-weight:730!important;
+ background:var(--e-surface)!important;color:var(--e-ink)!important;
+}
+html body #root .site.is-classic-page main button.history-more-records:hover{
+ border-color:var(--e-accent)!important;
+}
+html body #root .site.is-classic-page main .journey-question legend{
+ font-size:clamp(22px,1.7vw,27px)!important;line-height:1.35!important;
+}
+html body #root .site.is-classic-page main .journey-choice{
+ min-height:82px!important;padding:18px 22px!important;border-radius:18px!important;
+}
+html body #root .site.is-classic-page main .journey-choice span{
+ font-size:clamp(20px,1.45vw,23px)!important;line-height:1.35!important;
+}
+html body #root .site.is-classic-page main .journey-quiz-intro,
+html body #root .site.is-classic-page main .journey-signin-reminder{
+ font-size:clamp(18px,1.4vw,22px)!important;line-height:1.48!important;
+}
+html body #root .site.is-classic-page main .journey-quiz-actions button{
+ min-height:76px!important;font-size:21px!important;
+}
+@media(max-width:850px){
+ html body #root .site.is-classic-page main .history-card .history-head{
+  flex-direction:column!important;align-items:flex-start!important;
+ }
+ html body #root .site.is-classic-page main .history-card .action-choices{
+  flex-wrap:wrap!important;
+ }
+}

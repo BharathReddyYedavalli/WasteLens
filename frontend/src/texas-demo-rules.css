@@ -1,0 +1,62 @@
+/* Institution-specific Scan advice: one location, scanned item, one answer. */
+.site .institution-rule-flow{display:grid;gap:14px;color:var(--wl-copy,#26483c)}
+.site .institution-rule-flow>label,
+.site .institution-scanned label{
+  display:grid;gap:8px;min-width:0;font-weight:760;font-size:14px;
+}
+.site .institution-rule-flow select{
+  display:block;width:100%;min-height:48px;box-sizing:border-box;
+  padding:9px 12px;border:1px solid var(--wl-stroke,#bad1c7);
+  border-radius:11px;background:var(--wl-paper,#fff);
+  color:var(--wl-copy,#26483c);font:inherit;font-size:15px;
+}
+.site .institution-scope{
+  margin:0;color:var(--wl-subcopy,#4b6d65);font-size:12px;line-height:1.5;
+}
+.site .institution-scanned{
+  border:1px solid var(--wl-stroke,#b6d5c6);
+  border-radius:12px;padding:13px 15px;
+  background:var(--wl-paper,#f8fcf9);display:grid;gap:12px;
+}
+.site .institution-scanned-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;line-height:1.5;font-size:14px;
+}
+.site .institution-scanned-row strong{font-weight:790}
+.site .institution-change,.site .institution-cancel{
+  width:fit-content;min-height:36px;cursor:pointer;border:0;
+  background:transparent;padding:5px 2px;color:var(--wl-accent,#166c55);
+  font:inherit;font-weight:760;font-size:13px;text-decoration:underline;
+  text-underline-offset:3px;
+}
+.site .institution-cancel{font-size:12px}
+.site .texas-demo-result,.site .institution-other{
+  display:grid;gap:10px;padding:14px 16px;
+  background:var(--wl-paper,#fff);
+  border:1px solid var(--wl-stroke,#b8d2c5);border-radius:12px;
+}
+.site .texas-demo-recycle{border-color:#51a080}
+.site .texas-demo-result-title{display:flex;align-items:center;gap:10px}
+.site .texas-demo-result-title strong{font-size:15px}
+.site .texas-demo-result :is(p,strong),.site .institution-other p{
+  margin:0;font-size:13px;line-height:1.6;color:inherit;
+}
+.site .texas-demo-result a,.site .institution-other a{
+  display:inline-flex;align-items:center;gap:6px;width:fit-content;
+  color:var(--wl-accent,#166c55);font-size:13px;
+  font-weight:720;text-underline-offset:3px;
+}
+.site .texas-demo-caption{color:var(--wl-subcopy,#4b6d65)!important;font-size:12px!important}
+.site .institution-rule-flow :is(select,button,a):focus-visible{
+  outline:3px solid #dd974d;outline-offset:2px;
+}
+@media(max-width:640px){
+  .site .institution-rule-flow{gap:12px}
+  .site .institution-scanned-row{align-items:flex-start}
+  .site .institution-scanned{padding:12px}
+}
+
+.site .institution-examples{
+  margin:0;color:var(--wl-subcopy,#4b6d65);
+  font-size:12px;line-height:1.5;
+}

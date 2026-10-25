@@ -10,6 +10,13 @@ export const LANGUAGES: { code: Language; label: string }[] = [
 ];
 
 const strings: Record<string, { es: string; hi: string }> = {
+  "Loading community locations…": { es: "Cargando centros del mapa comunitario…", hi: "समुदाय के केंद्र लोड हो रहे हैं…" },
+  "Google Maps nearby recycling locations": { es: "Centros de reciclaje cercanos en Google Maps", hi: "Google Maps पर आस-पास के रीसायक्लिंग केंद्र" },
+  "Finding nearby places…": { es: "Buscando lugares cercanos…", hi: "आस-पास के स्थान खोज रहे हैं…" },
+  "View on Google Maps": { es: "Ver en Google Maps", hi: "Google Maps पर देखें" },
+  "These places may not accept your specific item. Check with each location before visiting.": { es: "Es posible que estos lugares no acepten este objeto. Confírmalo con cada centro antes de ir.", hi: "ये स्थान आपकी वस्तु स्वीकार न भी करें। जाने से पहले प्रत्येक केंद्र से पुष्टि करें।" },
+  "Use community map instead": { es: "Usar el mapa comunitario", hi: "समुदाय वाला नक्शा दिखाएँ" },
+  "Google Maps unavailable. Showing community map instead.": { es: "Google Maps no está disponible. Se muestra el mapa comunitario.", hi: "Google Maps उपलब्ध नहीं है। इसके बजाय समुदाय वाला नक्शा दिख रहा है।" },
   "ZIP area": { es: "Zona postal", hi: "डाक क्षेत्र" },
   "ZIP codes do not confirm your collection service.": {
     es: "El código postal no confirma tu servicio de recogida.",
@@ -41,6 +48,12 @@ const strings: Record<string, { es: string; hi: string }> = {
   "Admin": { es: "Administración", hi: "व्यवस्थापक" },
   "Choose language": { es: "Elegir idioma", hi: "भाषा चुनें" },
   "Personalization": { es: "Personalización", hi: "पसंदीदा रूप" },
+  "Your action": { es: "Tu acción", hi: "आपकी कार्रवाई" },
+  "Saved scan": { es: "Escaneo guardado", hi: "सहेजा गया स्कैन" },
+  "Navigation layout": { es: "Posición de navegación", hi: "नेविगेशन की जगह" },
+  "Left sidebar": { es: "Barra lateral", hi: "बाईं तरफ़" },
+  "Top bar": { es: "Barra superior", hi: "ऊपर की पट्टी" },
+  "WasteLens pages": { es: "Páginas de WasteLens", hi: "WasteLens के पेज" },
   "Choose a theme": { es: "Elegir tema", hi: "थीम चुनें" },
   "Account and appearance": { es: "Cuenta y apariencia", hi: "खाता और रूप" },
   "Welcome to WasteLens": { es: "Bienvenido a WasteLens", hi: "WasteLens में स्वागत है" },

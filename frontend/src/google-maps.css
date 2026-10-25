@@ -1,0 +1,30 @@
+/* Google Maps/Places discovery; OSM remains the fallback provider. */
+.site .google-places-shell .google-map-canvas{
+  min-height:430px; height:100%; width:100%;
+  border-radius:15px; overflow:hidden;
+}
+.site .google-places-shell .map-summary{margin-bottom:14px}
+.site .google-places-shell .location-entry .facility-official-link{
+  display:inline-flex;align-items:center;gap:6px;
+  margin:6px 10px 10px;font-size:13px;
+}
+.site .google-map-caution{
+  margin:12px 0 6px; padding:10px 13px;
+  color:var(--wl-copy,#405a50);
+  font-size:13px;line-height:1.5;
+}
+.site .google-map-fallback{
+  cursor:pointer; border:1px solid var(--wl-stroke,#cbdcd3);
+  color:var(--wl-copy,#30584d);
+  border-radius:10px; padding:8px 13px;
+  background:var(--wl-paper,#f6faf7);
+  font-size:13px;font-weight:700;
+}
+.site .google-map-fallback:hover{filter:brightness(.96)}
+.site .google-map-fallback:focus-visible{outline:3px solid #d79e4c;outline-offset:2px}
+.google-place-popup{min-width:150px;max-width:260px;font-size:13px;line-height:1.55}
+.google-place-popup strong{display:block;font-weight:800}
+.google-place-popup p{margin:5px 0}
+@media(max-width:700px){
+  .site .google-places-shell .google-map-canvas{min-height:320px}
+}

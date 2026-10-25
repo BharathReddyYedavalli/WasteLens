@@ -5,7 +5,7 @@ const read = name => readFileSync(new URL("../src/"+name, import.meta.url),"utf8
 const audit = read("AuditKit.tsx");
 const scan = read("App.tsx");
 const strings = read("i18n.tsx");
-const rules = read("LocalRulesGuide.tsx");
+const rules = read("TexasDemoRules.tsx");
 const frontendCss=read("scan-focus.css");
 const api = readFileSync(new URL("../../backend/app/community_audits.py", import.meta.url),"utf8");
 
@@ -49,6 +49,7 @@ test("Redundant generic Scan disclaimer removed while important safeguards remai
   assert.match(scan,/Confirm the item before sorting/);
   assert.match(scan,/scanCautions\[0\]/);
   assert.match(scan,/not confirmed to accept this item/);
-  assert.match(rules,/Local acceptance not confirmed/);
-  assert.match(rules,/service_confirmed: "true"/);
+  assert.match(rules,/No confirmed rule for this item/);
+  assert.match(rules,/profile\.sources\[0\]/);
+  assert.match(rules,/Rules for this location aren\x27t available yet/);
 });

@@ -4,13 +4,15 @@ import { readFileSync } from "node:fs";
 const read = name => readFileSync(new URL("../src/" + name, import.meta.url), "utf8");
 const app = read("App.tsx");
 const guide = read("LocalRulesGuide.tsx");
+const institution = read("TexasDemoRules.tsx");
 const styles = read("scan-focus.css");
 const strings = read("i18n.tsx");
 
-test("Scan prioritizes camera and hides unrelated quick links after a result", () => {
-  assert.ok(app.indexOf('<div className="workspace">') < app.indexOf('{!analysis && <div className="community-mission-path"'));
-  assert.ok(app.indexOf('{!analysis && <div className="community-mission-path"') < app.indexOf('{analysis && <section id="scan-results"'));
-  assert.match(app, /<h1>\{t\("Before you toss it, scan it\."\)\}<\/h1>/);
+test("Scan prioritizes camera and the 3D start screen, and shows no quick links around a result", () => {
+  assert.ok(app.indexOf("<ScanStage") < app.indexOf('<section className="cap"'));
+  assert.ok(app.indexOf('<section className="cap"') < app.indexOf('{analysis && <section id="scan-results"'));
+  assert.doesNotMatch(app, /community-mission-path/);
+  assert.match(app, /<h1 className="visually-hidden">\{t\("Before you toss it, scan it\."\)\}<\/h1>/);
 });
 test("Scan-to-Finder remembers the item and reuses existing ZIP without extra AI requests", () => {
   assert.match(app, /openPage\("finder", true\)/);
@@ -19,7 +21,7 @@ test("Scan-to-Finder remembers the item and reuses existing ZIP without extra AI
   assert.match(app, /void lookupFacilities\(location\)/);
   assert.match(app, /finderScan && <div className="finder-scan-context"/);
   assert.match(app, /not confirmed to accept this item/);
-  assert.match(app, /\/api\/facilities\?zip_code=/);
+  assert.match(app, /const endpoint = hasGoogleMapsKey \? "\/api\/facilities\/center" : "\/api\/facilities"/);
   assert.doesNotMatch(app, /verified_acceptance: true/);
 });
 test("Local rules retain critical safeguards with much smaller postal note", () => {
@@ -27,11 +29,11 @@ test("Local rules retain critical safeguards with much smaller postal note", () 
   assert.doesNotMatch(guide, /local-rules-postal/);
   assert.doesNotMatch(guide, /School and business waste services use site-specific contracts/);
   assert.doesNotMatch(guide, /Guidance is for this selected residential service/);
-  assert.match(guide, /selectedProgram, setSelectedProgram/);
-  assert.match(guide, /selectedItem, setSelectedItem/);
-  assert.match(guide, /confirmed, setConfirmed/);
-  assert.match(guide, /service_confirmed: "true"/);
-  assert.match(guide, /source_url/);
+  assert.match(guide, /<TexasDemoRules itemName=\{scanItemName\}/);
+  assert.doesNotMatch(guide, /local-rule-zip/);
+  assert.match(institution, /const \[locationId,setLocationId\]=useState\(""/);
+  assert.match(institution, /const selectedItem=correcting\?correction:inferred/);
+  assert.match(institution, /rule\?\.source_url\|\|profile\.sources\[0\]/);
   assert.match(styles, /\.scan-decision-unified/);
   assert.match(styles, /\.finder-scan-context/);
 });

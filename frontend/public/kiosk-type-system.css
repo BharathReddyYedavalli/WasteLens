@@ -1,0 +1,744 @@
+/*
+ * WasteLens universal kiosk reading scale — October 2026
+ *
+ * One hierarchy across Current/Legacy, left/top navigation and six themes.
+ * Derived from the larger Waste Audit text: strong title > section title >
+ * 20px body/control > 17px supporting metadata. Deliberately excludes
+ * the animated .es Scan hero, 3D bottle, theme chooser and browser Google map.
+ */
+.site{
+  --wl-kiosk-title:clamp(42px,3.7vw,64px);
+  --wl-kiosk-section:clamp(30px,2.4vw,40px);
+  --wl-kiosk-subhead:clamp(24px,1.9vw,31px);
+  --wl-kiosk-body:clamp(19px,1.35vw,22px);
+  --wl-kiosk-control:clamp(19px,1.35vw,22px);
+  --wl-kiosk-meta:clamp(17px,1.1vw,19px);
+  --wl-kiosk-panel:var(--e-surface,var(--wl-paper,#fff));
+  --wl-kiosk-text:var(--e-ink,var(--wl-copy,#152d23));
+  --wl-kiosk-dim:var(--e-mute,var(--wl-subcopy,#536a60));
+  --wl-kiosk-stroke:var(--e-line,var(--wl-stroke,#c6d8cf));
+}
+
+/* Titles belong above controls; no select may be visually louder than its label. */
+html body #root .site main.shell :is(.result-title,.assistant-heading,.finder-screen,.audit-hero,.deposit-top,.league-title,.community-about,.account-card,.story-shell)
+ :is(h1):not(.documentary-opening h1){
+  font-size:var(--wl-kiosk-title)!important;
+  line-height:1.09!important;
+}
+html body #root .site main.shell :is(.account-card,.deposit-form-card,.community-saved,.community-dashboard,.community-advice,
+ .league-ranking,.finder-screen,.local-rules-checker,.audit-session) h2{
+  font-size:var(--wl-kiosk-section)!important;line-height:1.16!important;
+}
+html body #root .site main.shell :is(.result-card,.community-chart-card,.community-comparison,.audit-session,.finder-card,
+ .community-about-grid>article,.level-panel,.league-ranking,.account-card) h3{
+  font-size:var(--wl-kiosk-subhead)!important;line-height:1.22!important;
+}
+
+/* Reading standard across all secondary pages (not the immersive Scan hero).
+   Previous CSS contains 9-13px !important text in older subsystems. */
+html body #root .site main.shell :is(
+  .res-layout,.account-card,.assistant-screen,.finder-screen,.deposit-page,
+  .audit-kit,.community-audit,.league-page,.community-about,
+  .community-comparison,.community-page-framing
+) :is(p,li):not(.documentary-opening-credit):not(.documentary-photo figcaption){
+  font-size:var(--wl-kiosk-body)!important;
+  line-height:1.52!important;
+}
+html body #root .site main.shell :is(
+  .res-layout,.account-card,.assistant-screen,.finder-screen,.deposit-page,
+  .audit-kit,.community-audit,.league-page,.community-about
+) :is(label,summary,button):not(.documentary-minimap a):not(.wl-speech-button){
+  font-size:var(--wl-kiosk-control)!important;
+  line-height:1.32!important;
+}
+html body #root .site main.shell :is(.res-layout,.account-card,.assistant-screen,.finder-screen,.deposit-page,
+ .audit-kit,.community-audit,.league-page,.community-about)
+ :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+  min-height:65px!important;font-size:var(--wl-kiosk-control)!important;
+  padding:14px 18px!important;line-height:1.28!important;
+  border-radius:15px!important;
+}
+html body #root .site main.shell :is(.res-layout,.account-card,.assistant-screen,.finder-screen,
+ .deposit-page,.audit-kit,.community-audit,.league-page,.community-about)
+ :is(button,summary,a,select):focus-visible{
+  outline:3px solid var(--e-accent,var(--wl-accent,#1c9970))!important;
+  outline-offset:3px!important;
+}
+html body #root .site main.shell :is(.res-layout,.account-card,.assistant-screen,.finder-screen,
+ .deposit-page,.audit-kit,.community-audit,.league-page,.community-about)
+ :is(small,time,.hint-text,.small-print){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.42!important;
+}
+/* Secondary text remains quieter by weight/color, not by making it microscopic. */
+html body #root .site main.shell :is(
+  .result-meta-line,.finder-note,.google-map-caution,.map-visit-info,.deposit-size-hint,
+  .privacy-line,.audit-review-caveat,.community-private-note,.community-dashboard-heading p,
+  .community-advice-heading p,.community-saved-heading p,.level-next,
+  .community-about-disclaimer,.assistant-context small,.chat-footer
+){
+  font-size:var(--wl-kiosk-meta)!important;
+  line-height:1.45!important;
+  color:var(--wl-kiosk-dim)!important;
+}
+
+/* Local recycling rules, including school and business selection. */
+html body #root .site main.shell #scan-local-rules{
+  color:var(--wl-kiosk-text)!important;
+}
+html body #root .site main.shell #scan-local-rules>summary{
+  min-height:76px!important;
+  font-size:clamp(23px,1.85vw,29px)!important;
+  font-weight:790!important;padding:20px 26px!important;
+  color:var(--wl-kiosk-text)!important;
+}
+html body #root .site main.shell #scan-local-rules .local-rules-body{
+  padding:clamp(22px,2.25vw,36px)!important;
+}
+html body #root .site main.shell .institution-rule-flow{
+  gap:22px!important;color:var(--wl-kiosk-text)!important;
+  font-size:var(--wl-kiosk-body)!important;
+}
+html body #root .site main.shell .institution-rule-flow>label,
+html body #root .site main.shell .institution-scanned label{
+  display:grid!important;gap:13px!important;
+  color:var(--wl-kiosk-text)!important;
+  font-size:clamp(21px,1.6vw,26px)!important;
+  font-weight:780!important;line-height:1.26!important;
+}
+html body #root .site main.shell .institution-rule-flow select{
+  min-height:74px!important;width:100%!important;
+  padding:16px 20px!important;
+  background:var(--wl-kiosk-panel)!important;
+  color:var(--wl-kiosk-text)!important;
+  -webkit-text-fill-color:var(--wl-kiosk-text)!important;
+  font-size:clamp(20px,1.35vw,23px)!important;
+  font-weight:600!important;line-height:1.28!important;
+  border:2px solid var(--wl-kiosk-stroke)!important;
+  border-radius:17px!important;
+  text-overflow:ellipsis;
+}
+html body #root .site main.shell .institution-rule-flow select:focus-visible{
+  border-color:var(--e-accent,var(--wl-accent,#168a6a))!important;
+}
+html body #root .site main.shell .institution-scope,
+html body #root .site main.shell .institution-examples{
+  margin:0!important;color:var(--wl-kiosk-dim)!important;
+  font-size:clamp(19px,1.35vw,23px)!important;line-height:1.5!important;
+}
+html body #root .site main.shell .institution-scanned{
+  padding:clamp(24px,2.6vw,40px)!important;
+  gap:22px!important;
+  border-radius:22px!important;border:1.5px solid var(--wl-kiosk-stroke)!important;
+  background:var(--wl-kiosk-panel)!important;
+}
+html body #root .site main.shell .institution-scanned-row{
+  font-size:clamp(20px,1.45vw,24px)!important;line-height:1.45!important;
+}
+html body #root .site main.shell .institution-scanned-row strong{
+  font-size:inherit!important;font-weight:800!important;
+}
+html body #root .site main.shell .institution-change,
+html body #root .site main.shell .institution-cancel{
+  font-size:clamp(19px,1.35vw,23px)!important;
+  font-weight:750!important;min-height:58px!important;
+  padding:12px 8px!important;text-underline-offset:5px;
+  color:var(--e-accent-ink,var(--wl-kiosk-text))!important;
+}
+html body #root .site main.shell .texas-demo-result,
+html body #root .site main.shell .institution-other{
+  border-radius:22px!important;
+  padding:clamp(22px,2.3vw,36px)!important;gap:16px!important;
+  color:var(--wl-kiosk-text)!important;
+  background:var(--wl-kiosk-panel)!important;
+  border:1.5px solid var(--wl-kiosk-stroke)!important;
+}
+html body #root .site main.shell .texas-demo-result-title strong{
+  font-size:clamp(25px,2vw,33px)!important;line-height:1.16!important;
+}
+html body #root .site main.shell .texas-demo-result :is(p,strong),
+html body #root .site main.shell .institution-other p{
+  font-size:var(--wl-kiosk-body)!important;line-height:1.52!important;
+}
+html body #root .site main.shell .texas-demo-result :is(a,.texas-demo-caption),
+html body #root .site main.shell .institution-other a{
+  font-size:var(--wl-kiosk-meta)!important;
+  line-height:1.45!important;
+}
+html body #root .site main.shell .texas-demo-result a{
+  min-height:60px!important;align-items:center;
+  color:var(--e-accent-ink,var(--wl-kiosk-text))!important;
+}
+html body #root .site main.shell .institution-rule-flow svg{
+  width:clamp(20px,1.5vw,27px)!important;
+  height:clamp(20px,1.5vw,27px)!important;
+}
+
+/* Scan result content also uses the same body scale as Waste Audit. */
+html body #root .site main.shell .res-layout :is(.result-card,.scan-decision-unified,.institution-rule-flow)
+ :is(p,li,span:not(.step-number)){
+  font-size:var(--wl-kiosk-body)!important;line-height:1.54!important;
+}
+html body #root .site main.shell .res-layout :is(.result-title p,.result-meta-line,.material-line,
+ .question,.uncertain,.scan-action-steps li,.scan-decision-copy){
+  font-size:var(--wl-kiosk-body)!important;line-height:1.48!important;
+}
+html body #root .site main.shell .scan-step-tools button{
+  font-size:var(--wl-kiosk-control)!important;min-height:62px!important;
+  padding:14px 22px!important;
+}
+/* Keep the camera/Upload controls prominent, not little links. */
+html body #root .site main.shell :is(.cap-bar,.camera-controls) button{
+  min-height:70px!important;font-size:var(--wl-kiosk-control)!important;
+  padding:15px 25px!important;
+}
+
+/* Audit remains the design reference; fix the remaining fine print. */
+html body #root .site main.shell .audit-kit :is(.community-chart-legend,.community-day,
+ .community-legend-line,.community-stat,.community-comparison-row,.community-insight,
+ .community-advice-result,.audit-kiosk-options,.community-advice-buttons){
+  font-size:var(--wl-kiosk-body)!important;line-height:1.42!important;
+}
+html body #root .site main.shell .audit-kit :is(.community-chart-note,.community-day time,
+ .community-legend-line>span,.community-recommendation-source,.community-advice-result p){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.4!important;
+}
+html body #root .site main.shell .audit-kit :is(.community-chart-card h3,.community-comparison h3){
+  font-size:var(--wl-kiosk-subhead)!important;
+}
+html body #root .site main.shell .audit-kit .community-legend-line{
+  grid-template-columns:18px minmax(0,1fr) auto auto!important;
+  gap:12px!important;
+}
+html body #root .site main.shell .audit-kit .community-legend-line .community-swatch{
+  width:15px!important;height:15px!important;
+}
+html body #root .site main.shell .audit-kit :is(.community-advice-buttons select,.audit-observation-fields select){
+  min-height:66px!important;font-size:var(--wl-kiosk-control)!important;
+}
+
+/* Map and search: locations must read like choices on an ordering kiosk. */
+html body #root .site main.shell .finder-screen :is(.map-summary p,.map-summary-stats span,
+ .map-summary-loc span,.facility-side-heading small,.location-info small,.location-meta,
+ .location-phone,.location-tags,.location-caution,.google-map-caution,.map-visit-info p,
+ .map-popup-content p,.map-popup-content small,.map-filter,.map-zip,.map-alert){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.42!important;
+}
+html body #root .site main.shell .finder-screen :is(.location-info strong,.facility-side-heading strong){
+  font-size:var(--wl-kiosk-subhead)!important;line-height:1.2!important;
+}
+html body #root .site main.shell .finder-screen .map-summary h4{
+  font-size:var(--wl-kiosk-subhead)!important;
+}
+html body #root .site main.shell .finder-screen .facility-official-link,
+html body #root .site main.shell .finder-screen .google-map-fallback{
+  min-height:65px!important;font-size:var(--wl-kiosk-control)!important;
+  padding:15px 22px!important;
+}
+html body #root .site main.shell .finder-screen .location-index{
+  min-width:46px!important;min-height:46px!important;
+  font-size:20px!important;
+}
+
+/* Returns, About, leaderboard, and Ask retain their existing functional UI
+   but no longer render micro-copy inside the controls or footers. */
+html body #root .site main.shell .deposit-page :is(.deposit-size-hint,.deposit-state-tip,.deposit-callout,
+ .deposit-result-note,.deposit-mini-math,.deposit-official,.deposit-examples summary){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.46!important;
+}
+html body #root .site main.shell .deposit-page .deposit-fields label{
+  font-size:var(--wl-kiosk-body)!important;
+}
+html body #root .site main.shell .assistant-screen :is(.chat-footer,.chat-wait,.assistant-context,
+ .context-main small,.context-action,.chat-error){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.4!important;
+}
+html body #root .site main.shell .assistant-screen .chat-bubble{
+  font-size:var(--wl-kiosk-body)!important;line-height:1.52!important;
+}
+html body #root .site main.shell .league-page :is(.level-next,.rank-user>span,
+ .rank-empty,.reward-badge p,.league-rules,.privacy-toggle){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.44!important;
+}
+html body #root .site main.shell .community-about :is(.community-about-punchline,
+ .community-about-more p,.community-about-footer,.community-about-links){
+  font-size:var(--wl-kiosk-body)!important;line-height:1.5!important;
+}
+html body #root .site main.shell .account-card :is(.auth-form label,.account-privacy,
+ .admin-feedback-intro,.admin-feedback-tools,.admin-stats span,.table-wrap table,
+ .admin-ui-settings p,.history-more-records){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.45!important;
+}
+/* Important for an actual kiosk: admin/user tables should not require squinting. */
+html body #root .site main.shell .account-card .table-wrap{
+  overflow-x:auto!important;-webkit-overflow-scrolling:touch;
+}
+html body #root .site main.shell .account-card .table-wrap table{
+  font-size:var(--wl-kiosk-meta)!important;
+}
+html body #root .site main.shell .account-card .table-wrap :is(th,td){
+  padding:17px 15px!important;line-height:1.4!important;
+}
+html body #root .site main.shell .account-card .table-wrap th{
+  font-weight:790!important;
+}
+
+/* Bottle Journey: photo captions can stay subordinate, not unreadably tiny. */
+html body #root .site main.shell .documentary :is(.documentary-stat-text strong,
+ .documentary-stat-text p,.documentary-chapter-copy,.documentary-fact-details,
+ .documentary-chapter-footer>a,.documentary-interlude p,.documentary-decision>p,
+ .documentary-fate-key,.documentary-bridge,.documentary-sources p){
+  font-size:var(--wl-kiosk-body)!important;line-height:1.48!important;
+}
+html body #root .site main.shell .documentary :is(.documentary-reading-note,
+ .documentary-opening-credit,.documentary-photo figcaption,.documentary-chapter-number,
+ .documentary-minimap-heading,.documentary-eyebrow){
+  font-size:var(--wl-kiosk-meta)!important;line-height:1.35!important;
+}
+html body #root .site main.shell .documentary .documentary-chapter h2{
+  font-size:clamp(36px,3.2vw,54px)!important;
+}
+html body #root .site main.shell .documentary .documentary-minimap a{
+  min-width:52px!important;min-height:52px!important;font-size:17px!important;
+}
+
+/* My Activity — event cards, not long identical dark paragraphs. */
+html body #root .site main.shell .account-card:has(.history-grid){
+  max-width:1680px!important;
+}
+html body #root .site main.shell .history-grid{
+  display:grid!important;grid-template-columns:1fr!important;
+  gap:24px!important;max-width:1420px!important;
+  margin:25px auto 0!important;
+  align-items:start!important;
+}
+html body #root .site main.shell .history-card{
+  display:flex!important;flex-direction:column!important;gap:0!important;
+  padding:0!important;margin:0!important;
+  overflow:hidden!important;border-radius:24px!important;
+  border:1.5px solid var(--wl-kiosk-stroke)!important;
+  background:var(--wl-kiosk-panel)!important;
+  box-shadow:none!important;
+  color:var(--wl-kiosk-text)!important;
+}
+html body #root .site main.shell .history-card-top{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+  padding:30px clamp(22px,2.35vw,38px) 21px!important;
+}
+html body #root .site main.shell .history-card-identity{
+  display:flex;align-items:center;gap:19px;min-width:0;
+}
+html body #root .site main.shell .history-route-icon{
+  flex:none;display:grid;place-items:center;width:72px;height:72px;
+  border-radius:20px;color:var(--wl-kiosk-text);
+  background:color-mix(in srgb,var(--e-accent,#269d77) 13%,var(--wl-kiosk-panel));
+  border:1px solid var(--wl-kiosk-stroke);
+}
+html body #root .site main.shell .history-tone-recycle{color:#178263!important;background:#dff7e9!important}
+html body #root .site main.shell .history-tone-reuse{color:#755320!important;background:#ffefd2!important}
+html body #root .site main.shell .history-tone-compost{color:#547d2f!important;background:#e5f3d3!important}
+html body #root .site main.shell .history-tone-trash{color:#815d42!important;background:#f7e5dd!important}
+html body #root .site main.shell .history-tone-dropoff{color:#2a6488!important;background:#ddecf8!important}
+html body #root .site main.shell .history-card-heading{min-width:0}
+html body #root .site main.shell .history-eyebrow{
+  display:block;font-size:var(--wl-kiosk-meta)!important;
+  line-height:1.25!important;color:var(--wl-kiosk-dim)!important;
+  font-weight:720!important;margin:0 0 8px;
+}
+html body #root .site main.shell .history-card-heading h3{
+  font-size:clamp(30px,2.6vw,42px)!important;line-height:1.15!important;
+  letter-spacing:-.025em!important;color:var(--wl-kiosk-text)!important;
+  margin:0!important;overflow-wrap:anywhere;
+}
+html body #root .site main.shell .history-card-date{
+  display:inline-flex;align-items:center;gap:8px;flex:none;
+  margin-top:5px;padding:9px 13px;border-radius:12px;
+  border:1px solid var(--wl-kiosk-stroke);
+  color:var(--wl-kiosk-dim)!important;font-size:var(--wl-kiosk-meta)!important;
+  font-weight:610!important;line-height:1.25!important;
+}
+html body #root .site main.shell .history-outcome{
+  display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+  margin:0 clamp(22px,2.35vw,38px) 20px!important;
+  border-radius:17px;
+  background:color-mix(in srgb,var(--e-accent,#269d77) 9%,var(--wl-kiosk-panel));
+  border:1px solid var(--wl-kiosk-stroke);
+  padding:19px 23px;
+}
+html body #root .site main.shell .history-outcome-label{
+  color:var(--wl-kiosk-dim)!important;font-size:var(--wl-kiosk-meta)!important;
+  font-weight:710!important;line-height:1.22!important;
+}
+html body #root .site main.shell .history-outcome strong{
+  color:var(--wl-kiosk-text)!important;font-size:clamp(24px,1.9vw,31px)!important;
+  line-height:1.24!important;font-weight:780!important;
+}
+html body #root .site main.shell .history-facts{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;
+  padding:0 clamp(22px,2.35vw,38px) 26px!important;
+}
+html body #root .site main.shell .history-fact{
+  min-width:0;display:flex;flex-direction:column;gap:5px;
+}
+html body #root .site main.shell .history-fact>span{
+  color:var(--wl-kiosk-dim)!important;font-size:var(--wl-kiosk-meta)!important;
+  font-weight:700!important;line-height:1.25!important;
+}
+html body #root .site main.shell .history-fact strong{
+  color:var(--wl-kiosk-text)!important;
+  font-size:var(--wl-kiosk-body)!important;
+  font-weight:650!important;line-height:1.38!important;
+}
+html body #root .site main.shell .history-details{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0;border-top:1px solid var(--wl-kiosk-stroke);
+  margin-top:auto;
+}
+html body #root .site main.shell .history-details details{
+  min-width:0;margin:0!important;padding:0!important;
+}
+html body #root .site main.shell .history-details details+details{
+  border-left:1px solid var(--wl-kiosk-stroke);
+}
+html body #root .site main.shell .history-details summary{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:12px!important;padding:24px clamp(17px,2vw,29px)!important;
+  min-height:79px!important;border-radius:0!important;
+  font-size:var(--wl-kiosk-control)!important;
+  font-weight:760!important;line-height:1.28!important;
+  color:var(--wl-kiosk-text)!important;
+  background:transparent!important;cursor:pointer;list-style:none!important;
+}
+html body #root .site main.shell .history-details summary::marker{content:""}
+html body #root .site main.shell .history-details summary::-webkit-details-marker{display:none}
+html body #root .site main.shell .history-details summary svg{
+  flex:none;transition:transform .2s ease;
+}
+html body #root .site main.shell .history-details details[open] summary{
+  background:color-mix(in srgb,var(--e-accent,#269d77) 8%,var(--wl-kiosk-panel))!important;
+}
+html body #root .site main.shell .history-details details[open] summary svg{
+  transform:rotate(180deg);
+}
+html body #root .site main.shell .history-detail-body{
+  border-top:1px solid var(--wl-kiosk-stroke);
+  padding:19px 25px 27px;
+  min-width:0;
+}
+html body #root .site main.shell .history-detail-body h4{
+  font-size:var(--wl-kiosk-subhead)!important;margin:14px 0 8px!important;
+  color:var(--wl-kiosk-text)!important;
+}
+html body #root .site main.shell .history-detail-body li,
+html body #root .site main.shell .history-detail-body p{
+  font-size:var(--wl-kiosk-body)!important;line-height:1.54!important;
+}
+html body #root .site main.shell .history-detail-body ul{
+  padding-left:26px!important;margin:10px 0 16px!important;
+}
+html body #root .site main.shell .history-detail-body .action-choices{
+  display:flex;flex-wrap:wrap;gap:12px!important;
+}
+html body #root .site main.shell .history-detail-body .action-choices button{
+  font-size:var(--wl-kiosk-control)!important;
+  padding:15px 21px!important;min-height:64px!important;
+  border-radius:15px!important;
+}
+html body #root .site main.shell .history-more-records{
+  font-size:var(--wl-kiosk-control)!important;
+  min-height:72px!important;
+}
+@media(min-width:1360px){
+  html body #root .site main.shell .history-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:720px){
+  html body #root .site main.shell .history-card-top{
+    flex-direction:column;padding:23px 20px 18px!important;
+  }
+  html body #root .site main.shell .history-card-identity{gap:13px}
+  html body #root .site main.shell .history-route-icon{
+    width:58px;height:58px;border-radius:15px;
+  }
+  html body #root .site main.shell .history-card-heading h3{
+    font-size:clamp(27px,6vw,34px)!important;
+  }
+  html body #root .site main.shell .history-facts{
+    grid-template-columns:1fr!important;gap:16px;padding:0 20px 23px!important;
+  }
+  html body #root .site main.shell .history-outcome{
+    margin:0 20px 20px!important;padding:17px;
+  }
+  html body #root .site main.shell .history-details{
+    grid-template-columns:1fr!important;
+  }
+  html body #root .site main.shell .history-details details+details{
+    border-left:0;border-top:1px solid var(--wl-kiosk-stroke);
+  }
+}
+/* Layout modes remain available. Larger text can wrap without overlapping. */
+@media(max-width:1000px){
+  html body #root .site main.shell .audit-kit .community-chart-pair,
+  html body #root .site main.shell .finder-screen .map-explorer{
+    min-width:0!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html body #root .site main.shell .history-details summary svg{
+    transition:none!important;
+  }
+}
+
+
+/* October 24: checklist and Bottle Explorer quiz / all six themes.
+ * The photographed documentary remains untouched. These two educational
+ * surfaces deliberately own foreground and background together, preventing
+ * global dark-theme h2/fieldset/legend overrides from mismatching them. */
+
+/* Center the check control vertically with each checklist item, including
+   translated text and the naturally wrapping third item. */
+html body #root .site main.shell .documentary-final .documentary-actions {
+  display:grid!important;gap:clamp(15px,1.7vw,25px)!important;
+  margin:25px 0 34px!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action {
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:clamp(16px,1.5vw,24px)!important;
+  min-height:64px!important;
+  padding:9px 0!important;
+  font-size:clamp(20px,1.55vw,26px)!important;
+  line-height:1.42!important;
+  color:#f2fff9!important;
+  -webkit-text-fill-color:#f2fff9!important;
+  cursor:pointer;
+}
+html body #root .site main.shell .documentary-final .documentary-action>span {
+  min-width:0;color:#f2fff9!important;
+  -webkit-text-fill-color:#f2fff9!important;
+  line-height:1.42!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"] {
+  appearance:none!important;-webkit-appearance:none!important;
+  display:grid!important;place-items:center!important;
+  width:34px!important;height:34px!important;
+  min-width:34px!important;min-height:34px!important;
+  justify-self:center!important;align-self:center!important;
+  margin:0!important;padding:0!important;
+  box-sizing:border-box!important;flex:none!important;
+  border:2.5px solid #c7e9da!important;border-radius:10px!important;
+  background:#effff7!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  accent-color:#b6f6dc!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"]:checked {
+  background:#b6f6dc!important;border-color:#b6f6dc!important;
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"]:checked::after {
+  content:"";display:block;width:9px;height:16px;
+  border-right:3px solid #103b31;border-bottom:3px solid #103b31;
+  transform:translateY(-2px) rotate(45deg);
+}
+html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"]:focus-visible {
+  outline:3px solid #ffe39e!important;outline-offset:5px!important;
+}
+html body #root .site main.shell .documentary-final .documentary-quiz-link {
+  display:inline-flex!important;align-items:center!important;
+  width:fit-content!important;gap:15px!important;
+  min-height:64px!important;padding:13px 0!important;
+  margin-top:25px!important;
+  font-size:clamp(20px,1.55vw,25px)!important;
+  font-weight:750!important;
+  line-height:1.4!important;
+  color:#ffe3a2!important;-webkit-text-fill-color:#ffe3a2!important;
+  text-decoration:underline!important;text-underline-offset:7px!important;
+  overflow-wrap:anywhere;
+}
+html body #root .site main.shell .documentary-final .documentary-quiz-link svg{
+  width:25px!important;height:25px!important;flex:none;
+  stroke:currentColor!important;
+}
+html body #root .site main.shell .documentary-final .documentary-quiz-link:focus-visible {
+  outline:3px solid #ffe3a2!important;outline-offset:5px!important;
+}
+
+/* An intentional warm parchment quiz in every visual/theme mode. It should
+   never use a dark themed card on a light-yellow background. */
+html body #root .site main.shell .journey-page .journey-quiz {
+  color-scheme:light!important;
+  background:radial-gradient(circle at 50% 0,#ffdf99 0%,transparent 42%),#fff0cc!important;
+  color:#173c32!important;-webkit-text-fill-color:#173c32!important;
+  padding-bottom:clamp(65px,6vw,95px)!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz>h2 {
+  font-size:clamp(42px,4.6vw,68px)!important;
+  line-height:1.12!important;
+  font-weight:850!important;letter-spacing:-.04em!important;
+  color:#173e34!important;-webkit-text-fill-color:#173e34!important;
+  text-shadow:none!important;opacity:1!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz :is(
+  .journey-quiz-intro,.journey-signin-reminder
+) {
+  color:#435c4f!important;-webkit-text-fill-color:#435c4f!important;
+  font-size:clamp(19px,1.48vw,23px)!important;line-height:1.5!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz-card {
+  width:min(100%,1060px)!important;max-width:1060px!important;
+  padding:clamp(24px,3.6vw,55px)!important;
+  margin:0 auto!important;
+  background:#fffdf7!important;
+  color:#183d33!important;-webkit-text-fill-color:#183d33!important;
+  border:2px solid #ead9b9!important;
+  border-radius:28px!important;
+  box-shadow:0 10px 0 #eedfbc!important;
+}
+html body #root .site main.shell .journey-page .journey-question {
+  display:block!important;width:100%!important;
+  border:0!important;border-bottom:2px solid #e4e5d9!important;
+  margin:0!important;padding:26px 0 35px!important;
+  min-width:0!important;color:#183d33!important;
+  -webkit-text-fill-color:#183d33!important;
+}
+html body #root .site main.shell .journey-page .journey-question:first-child {
+  padding-top:0!important;
+}
+html body #root .site main.shell .journey-page .journey-question legend {
+  display:block!important;float:none!important;
+  width:100%!important;max-width:100%!important;
+  margin:0!important;padding:0 0 22px!important;
+  color:#173d33!important;-webkit-text-fill-color:#173d33!important;
+  font-size:clamp(22px,1.75vw,29px)!important;
+  font-weight:820!important;line-height:1.34!important;
+  text-shadow:none!important;
+}
+html body #root .site main.shell .journey-page .journey-question legend > .journey-question-prompt {
+  display:grid!important;
+  grid-template-columns:58px minmax(0,1fr)!important;
+  align-items:start!important;gap:19px!important;
+  width:100%!important;min-width:0!important;
+  height:auto!important;min-height:0!important;
+  padding:0!important;border:0!important;
+  background:transparent!important;color:#173d33!important;
+  -webkit-text-fill-color:#173d33!important;
+  border-radius:0!important;
+}
+html body #root .site main.shell .journey-page .journey-question .journey-question-number {
+  display:grid!important;place-items:center!important;
+  width:54px!important;height:54px!important;
+  min-width:54px!important;min-height:54px!important;
+  padding:0!important;margin:0!important;
+  aspect-ratio:1!important;border-radius:50%!important;
+  border:2px solid #ba8039!important;
+  background:#ffdfaa!important;
+  color:#6b3c13!important;-webkit-text-fill-color:#6b3c13!important;
+  font-size:clamp(19px,1.35vw,23px)!important;
+  font-weight:850!important;letter-spacing:0!important;
+  line-height:1!important;box-sizing:border-box!important;
+  text-align:center!important;white-space:nowrap!important;
+}
+html body #root .site main.shell .journey-page .journey-question .journey-question-text {
+  display:block!important;width:auto!important;min-width:0!important;
+  padding:7px 0 0!important;margin:0!important;
+  background:transparent!important;
+  color:#173d33!important;-webkit-text-fill-color:#173d33!important;
+  font-size:clamp(23px,1.75vw,29px)!important;
+  font-weight:820!important;line-height:1.34!important;
+  overflow-wrap:break-word!important;
+}
+html body #root .site main.shell .journey-page .journey-choices {
+  display:grid!important;gap:13px!important;
+}
+html body #root .site main.shell .journey-page .journey-choice {
+  display:flex!important;align-items:center!important;
+  gap:18px!important;min-height:82px!important;
+  padding:20px 24px!important;
+  background:#f4faf6!important;border:2px solid #d1e2d9!important;
+  border-radius:18px!important;color:#22483b!important;
+  -webkit-text-fill-color:#22483b!important;
+  cursor:pointer!important;
+}
+html body #root .site main.shell .journey-page .journey-choice.picked {
+  border-color:#187a62!important;
+  background:#dcf2e6!important;
+}
+html body #root .site main.shell .journey-page .journey-choice:hover{
+  background:#e9f7ef!important;border-color:#57a28b!important;
+}
+html body #root .site main.shell .journey-page .journey-choice>span {
+  color:#22483b!important;-webkit-text-fill-color:#22483b!important;
+  font-size:clamp(20px,1.45vw,24px)!important;
+  line-height:1.42!important;font-weight:700!important;
+}
+html body #root .site main.shell .journey-page .journey-choice input[type="radio"] {
+  width:25px!important;height:25px!important;
+  min-width:25px!important;min-height:25px!important;
+  flex:none!important;margin:0!important;
+  accent-color:#177761!important;
+  color-scheme:light!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz :is(
+  .journey-submit,.journey-retry,.journey-login
+) {
+  min-height:64px!important;padding:16px 26px!important;
+  font-size:clamp(19px,1.35vw,23px)!important;line-height:1.3!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-submit {
+  background:#146a55!important;color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-retry {
+  background:#fffdf7!important;color:#205747!important;
+  -webkit-text-fill-color:#205747!important;
+  border:2px solid #95bfb0!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-quiz-outcome {
+  font-size:var(--wl-kiosk-body)!important;
+  color:#5c3519!important;-webkit-text-fill-color:#5c3519!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz .journey-quiz-outcome.passed{
+  color:#144e3b!important;-webkit-text-fill-color:#144e3b!important;
+}
+html body #root .site main.shell .journey-page .journey-quiz :is(
+  .journey-quiz-error,.journey-badge-earned
+) {
+  font-size:var(--wl-kiosk-body)!important;
+}
+@media(max-width:650px) {
+  html body #root .site main.shell .documentary-final .documentary-action {
+    grid-template-columns:36px minmax(0,1fr)!important;gap:15px!important;
+  }
+  html body #root .site main.shell .documentary-final .documentary-action input[type="checkbox"] {
+    width:30px!important;height:30px!important;
+    min-width:30px!important;min-height:30px!important;
+  }
+  html body #root .site main.shell .journey-page .journey-question legend>.journey-question-prompt {
+    grid-template-columns:48px minmax(0,1fr)!important;gap:12px!important;
+  }
+  html body #root .site main.shell .journey-page .journey-question .journey-question-number {
+    width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;
+  }
+  html body #root .site main.shell .journey-page .journey-question .journey-question-text {
+    font-size:clamp(21px,4.5vw,25px)!important;
+  }
+}
+
+/* The leaderboard badge collection is always visible: the heading is
+   informational, never an accordion. */
+html body #root .site main.shell .badge-panel .badge-panel-heading{
+  display:flex!important;align-items:center!important;gap:13px!important;
+  margin:0!important;
+  font-size:clamp(24px,1.9vw,32px)!important;
+  font-weight:780!important;line-height:1.25!important;
+  color:var(--wl-kiosk-text)!important;
+  -webkit-text-fill-color:var(--wl-kiosk-text)!important;
+}
+html body #root .site main.shell .badge-panel .badge-panel-heading svg{
+  flex:none;width:27px!important;height:27px!important;
+  color:var(--e-accent,var(--wl-kiosk-text))!important;
+}
+html body #root .site main.shell .badge-panel .badge-grid{
+  display:grid!important;margin-top:22px!important;
+}

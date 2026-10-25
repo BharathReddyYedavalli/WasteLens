@@ -91,7 +91,10 @@ export default function BottleJourney({user,onUnlock,onSignIn,onScan,onReturns}:
       <p className="journey-quiz-intro">{language==="en"?"5 questions. Get 4 right to earn the Bottle Explorer badge and 30 XP once.":language==="es"?"5 preguntas. Acertar 4 te da la insignia Bottle Explorer y 30 XP una vez.":"5 सवाल। 4 सही उत्तर पर Bottle Explorer बैज और 30 XP एक बार मिलेंगे।"}</p>
       <div className="journey-quiz-card">
         {quiz.map((q,index)=><fieldset key={q.id} className="journey-question" disabled={loading||Boolean(result?.passed)}>
-          <legend><span>{String(index+1).padStart(2,"0")}</span>{language==="en"?q.question:translatedQuiz[language][index].question}</legend>
+          <legend><span className="journey-question-prompt">
+            <span className="journey-question-number" aria-hidden="true">{String(index+1).padStart(2,"0")}</span>
+            <span className="journey-question-text">{language==="en"?q.question:translatedQuiz[language][index].question}</span>
+          </span></legend>
           <div className="journey-choices">
             {q.options.map(([answer,label],i)=><label key={answer} className={"journey-choice "+(selected[q.id]===answer?"picked":"")}>
               <input type="radio" name={q.id} checked={selected[q.id]===answer}

@@ -1,0 +1,578 @@
+/*
+ * WasteLens kiosk: screenshot-led visual cleanup (Oct 23, 2026).
+ * Loaded LAST. Deliberately scoped to the restored page layout so the
+ * approved Three.js hero, camera, documentary imagery and API logic remain.
+ */
+
+/* 1 — Establish one restrained type scale and visible keyboard/touch controls. */
+.site.is-sidebar-experiment{
+  --fl-side-w:258px;
+  --fl-top-h:72px;
+}
+.site.is-sidebar-experiment .fl-sidebar{
+  padding:26px 14px 18px!important;
+}
+.site.is-sidebar-experiment .fl-side-scroll{
+  padding-top:30px!important;
+  gap:19px!important;
+}
+.site.is-sidebar-experiment .fl-side-heading{
+  font-size:11px!important;
+  letter-spacing:.12em!important;
+  color:var(--e-mute)!important;
+}
+.site.is-sidebar-experiment .fl-side-link{
+  min-height:50px!important;
+  font-size:15px!important;
+  border-radius:10px!important;
+  gap:13px!important;
+}
+.site.is-sidebar-experiment .fl-side-link.active{
+  color:var(--e-ink)!important;
+  background:var(--e-surface)!important;
+  border-color:var(--e-line)!important;
+}
+.site.is-sidebar-experiment .fl-topbar{
+  background:var(--e-bg)!important;
+  border-color:var(--e-line)!important;
+}
+.site.is-sidebar-experiment .fl-language{
+  font-size:12px!important;
+  color:var(--e-ink)!important;
+}
+.site.is-classic-page main.shell{
+  padding-top:calc(var(--fl-top-h) + 38px)!important;
+}
+.site.is-classic-page main.shell > section{
+  width:100%;
+  max-width:1500px!important;
+  box-sizing:border-box;
+}
+.site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about){
+  color:var(--e-ink);
+  min-width:0;
+}
+.site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about) :is(p,li,dd){
+  font-family:var(--e-sans)!important;
+  font-size:clamp(14px,1vw,16px);
+  line-height:1.55;
+}
+.site.is-classic-page main :is(.assistant-screen,.finder-screen,.deposit-page,.audit-kit,.community-audit,.league-page,.community-about) :is(label,small){
+  font-family:var(--e-sans)!important;
+  line-height:1.5;
+}
+.site.is-classic-page main :is(h1,h2,h3){overflow-wrap:break-word}
+.site.is-classic-page main :is(input,select,textarea){
+  min-height:48px;
+  font-size:15px!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:11px!important;
+  background:var(--e-surface)!important;
+  color:var(--e-ink)!important;
+  box-shadow:none!important;
+}
+.site.is-classic-page main textarea{
+  padding:14px 16px!important;
+}
+.site.is-classic-page main :is(button,.button,summary){
+  touch-action:manipulation;
+}
+.site.is-classic-page main :is(.button,button.primary,button.outline){
+  font-family:var(--e-sans)!important;
+  font-size:14px!important;
+  font-weight:650!important;
+  line-height:1.2!important;
+  min-height:44px;
+  box-shadow:none!important;
+  white-space:normal;
+}
+.site.is-classic-page main button:focus-visible,
+.site.is-classic-page main a:focus-visible{
+  outline:3px solid var(--e-accent)!important;
+  outline-offset:2px!important;
+}
+.site.is-classic-page main :is(.error-msg,.inline-error,.chat-error,.community-error){
+  color:var(--e-ink)!important;
+  background:var(--e-surface)!important;
+  border:1px solid var(--e-line)!important;
+  border-left:3px solid #c96f55!important;
+  padding:12px 16px!important;
+}
+.site.is-classic-page main :is(.notice,.deposit-callout,.community-private-note,.audit-note){
+  border:1px solid var(--e-line)!important;
+  background:var(--e-surface)!important;
+  color:var(--e-mute)!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+}
+
+/* 2 — Scan and results: legible actions with no added marketing chrome. */
+.site.is-sidebar-experiment main .res-layout{
+  grid-template-columns:minmax(210px,.64fr) minmax(0,1.55fr)!important;
+  column-gap:clamp(28px,4vw,72px)!important;
+  max-width:1420px!important;
+}
+.site.is-sidebar-experiment main .res-layout .result-title h2{
+  font-size:clamp(28px,2.5vw,44px)!important;
+  line-height:1.12!important;
+  letter-spacing:-.035em!important;
+  text-transform:none!important;
+  color:var(--e-ink)!important;
+}
+.site.is-sidebar-experiment main .res-layout .result-meta-line{
+  font-size:12px!important;
+  line-height:1.55!important;
+  letter-spacing:.04em!important;
+}
+.site.is-sidebar-experiment main .res-layout .scan-action-steps li{
+  font-size:clamp(15px,1.08vw,18px)!important;
+  line-height:1.52!important;
+}
+.site.is-sidebar-experiment main .res-layout .scan-next-actions button{
+  min-height:48px!important;
+  font-size:14px!important;
+  flex:1 1 220px;
+  justify-content:center;
+}
+.site.is-sidebar-experiment main .res-layout .scan-feedback-inline{
+  gap:12px!important;
+  align-items:center!important;
+}
+.site.is-sidebar-experiment main .res-layout .scan-feedback-question{
+  font-size:12px!important;
+  letter-spacing:.06em!important;
+}
+.site.is-sidebar-experiment main .res-layout .feedback-actions .button{
+  min-height:44px!important;
+  padding:0 16px!important;
+}
+
+/* 3 — Ask WasteLens: smaller, calmer bubbles, readable prose and even composer. */
+.site.is-classic-page main .assistant-screen{
+  max-width:1150px!important;
+  width:100%;
+}
+.site.is-classic-page main .assistant-heading{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:20px!important;
+}
+.site.is-classic-page main .assistant-card{
+  border:1px solid var(--e-line)!important;
+  border-radius:20px!important;
+  background:var(--e-surface)!important;
+  overflow:hidden;
+}
+.site.is-classic-page main .assistant-context{
+  border-bottom:1px solid var(--e-line)!important;
+  background:transparent!important;
+}
+.site.is-classic-page main .assistant-messages{
+  min-height:clamp(250px,36vh,510px);
+  max-height:clamp(300px,48vh,650px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:clamp(16px,2vw,26px)!important;
+}
+.site.is-classic-page main .chat-bubble{
+  max-width:min(720px,90%)!important;
+  font-size:15px!important;
+  line-height:1.65!important;
+  padding:14px 17px!important;
+  border-radius:15px!important;
+  overflow-wrap:anywhere;
+  box-shadow:none!important;
+}
+.site.is-classic-page main .chat-turn.from-user .chat-bubble{
+  background:var(--e-ink)!important;
+  color:var(--e-on-ink)!important;
+  border-color:var(--e-ink)!important;
+}
+.site.is-classic-page main .chat-turn.from-ai .chat-bubble{
+  color:var(--e-ink)!important;
+  background:var(--e-bg)!important;
+  border:1px solid var(--e-line)!important;
+}
+.site.is-classic-page main .assistant-composer{
+  gap:12px!important;
+  align-items:end;
+  border-top:1px solid var(--e-line)!important;
+  background:var(--e-surface)!important;
+}
+.site.is-classic-page main .assistant-composer textarea{
+  min-height:58px!important;
+  resize:vertical;
+  background:var(--e-bg)!important;
+}
+.site.is-classic-page main .assistant-composer button{
+  min-width:48px;min-height:48px;
+  background:var(--e-ink)!important;
+  color:var(--e-on-ink)!important;
+  border-radius:12px!important;
+}
+.site.is-classic-page main .chat-suggestions button{
+  font-size:14px!important;
+  min-height:44px;
+  text-align:left;
+}
+
+/* 4 — Bottle returns: replace low-contrast purple card with unified ink/green. */
+.site.is-classic-page main .deposit-page{
+  max-width:1340px!important;
+  gap:20px;
+}
+.site.is-classic-page main .deposit-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+  gap:20px!important;
+  align-items:start;
+}
+.site.is-classic-page main .deposit-top{
+  align-items:center;
+  gap:18px;
+  margin-bottom:0!important;
+}
+.site.is-classic-page main .deposit-top h1{
+  font-size:clamp(32px,3.15vw,54px)!important;
+}
+.site.is-classic-page main .deposit-form-card{
+  background:var(--e-surface)!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:18px!important;
+  padding:clamp(20px,2vw,30px)!important;
+  box-shadow:none!important;
+}
+.site.is-classic-page main .deposit-fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px!important;
+}
+.site.is-classic-page main .deposit-fields label{
+  min-width:0;
+  display:grid;
+  align-content:start;
+  gap:7px;
+  color:var(--e-ink)!important;
+  font-size:13px!important;
+  font-weight:650!important;
+}
+.site.is-classic-page main .deposit-fields :is(input,select){width:100%;min-width:0}
+.site.is-classic-page main .deposit-size-hint{font-size:12px!important;color:var(--e-mute)!important}
+.site.is-classic-page main .deposit-result{
+  position:sticky;
+  top:calc(var(--fl-top-h) + 16px);
+  min-width:0;
+  border-radius:18px!important;
+  padding:clamp(22px,2.3vw,34px)!important;
+  background:#153e33!important;
+  border:1px solid rgba(255,255,255,.15)!important;
+  color:#f5faf7!important;
+  box-shadow:none!important;
+}
+.site.is-classic-page main .deposit-result :is(h2,h3,p,strong,b,small,span,summary,div){
+  color:#f5faf7!important;
+}
+.site.is-classic-page main .deposit-result .deposit-amount{
+  color:#b5f0ce!important;
+  font-size:clamp(44px,4.4vw,72px)!important;
+  font-weight:750!important;
+  line-height:1.05!important;
+  letter-spacing:-.05em;
+}
+.site.is-classic-page main .deposit-result h2{
+  font-size:clamp(23px,2vw,32px)!important;
+  line-height:1.13!important;
+  margin:12px 0!important;
+  color:#fff!important;
+}
+.site.is-classic-page main .deposit-result>p{
+  color:#e1eee6!important;
+  font-size:14px!important;
+  line-height:1.6!important;
+}
+.site.is-classic-page main .deposit-result .deposit-official{
+  color:#c3efd7!important;
+  font-size:13px!important;
+  display:inline-flex;
+  align-items:center;gap:7px;
+  overflow-wrap:anywhere;
+}
+.site.is-classic-page main .deposit-result .deposit-state-tip{
+  border:1px solid rgba(255,255,255,.28)!important;
+  background:rgba(255,255,255,.07)!important;
+  color:#f5faf7!important;
+}
+.site.is-classic-page main .deposit-result .deposit-state-tip summary{
+  color:#f5faf7!important;
+  font-size:13px!important;
+}
+.site.is-classic-page main .deposit-result .deposit-result-note{
+  border-top:1px solid rgba(255,255,255,.22)!important;
+  padding-top:14px;
+  color:#e1eee6!important;
+  line-height:1.5;
+}
+.site.is-classic-page main .deposit-callout{
+  padding:12px 16px!important;margin:0!important;
+  font-size:14px!important;
+}
+.site.is-classic-page main .deposit-callout p{
+  margin:0!important;color:var(--e-ink)!important;
+}
+
+/* 5 — Audit: one neutral visual language, deliberate selected states. */
+.site.is-classic-page main .audit-kit,
+.site.is-classic-page main .community-audit{
+  max-width:1320px!important;
+}
+.site.is-classic-page main .audit-hero{
+  padding:0 0 22px!important;
+  margin-bottom:16px!important;
+}
+.site.is-classic-page main .audit-options{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px!important;
+}
+.site.is-classic-page main .audit-option{
+  min-width:0;
+  min-height:138px!important;
+  background:var(--e-surface)!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:15px!important;
+  box-shadow:none!important;
+  color:var(--e-ink)!important;
+  padding:16px 12px!important;
+  transition:border-color .2s,background .2s,transform .2s;
+}
+.site.is-classic-page main .audit-option :is(strong,span){
+  color:var(--e-ink)!important;
+}
+.site.is-classic-page main .audit-option:hover{
+  border-color:var(--e-accent)!important;
+  transform:translateY(-2px);
+}
+.site.is-classic-page main .audit-option:active{transform:scale(.985)}
+.site.is-classic-page main .audit-option-count{
+  color:var(--e-accent-ink)!important;
+  font-size:clamp(23px,2.4vw,36px)!important;
+}
+.site.is-classic-page main .audit-actions{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.site.is-classic-page main .audit-actions button{
+  min-height:44px!important;
+  padding:10px 16px!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:999px!important;
+  font-size:13px!important;
+  background:var(--e-surface)!important;
+  color:var(--e-ink)!important;
+}
+.site.is-classic-page main .audit-actions button:first-child{
+  background:var(--e-ink)!important;color:var(--e-on-ink)!important;
+}
+.site.is-classic-page main .community-saved,
+.site.is-classic-page main .audit-session{
+  border:1px solid var(--e-line)!important;
+  border-radius:16px!important;
+  padding:clamp(16px,2vw,24px)!important;
+  margin-top:18px;
+  background:var(--e-surface)!important;
+}
+.site.is-classic-page main .audit-observation-fields,
+.site.is-classic-page main .community-audit input{min-width:0}
+
+/* 6 — About: fixed dark-on-dark hero, text hierarchy, calmer action row. */
+.site.is-classic-page main .community-about{
+  max-width:1280px!important;
+  margin-top:8px!important;
+}
+.site.is-classic-page main .community-about-hero{
+  background:linear-gradient(115deg,#0f4d40,#153b42)!important;
+  color:#f7faf7!important;
+  border-radius:22px!important;
+  padding:clamp(28px,3.6vw,58px)!important;
+  border:1px solid rgba(255,255,255,.09)!important;
+  box-shadow:none!important;
+}
+.site.is-classic-page main .community-about-hero h1{
+  color:#fff!important;
+  font-family:var(--e-sans)!important;
+  font-size:clamp(36px,3.8vw,62px)!important;
+  line-height:1.07!important;
+  letter-spacing:-.045em!important;
+  max-width:16ch;
+}
+.site.is-classic-page main .community-about-hero>p{
+  color:#e6f1ed!important;
+  font-size:clamp(15px,1.12vw,17px)!important;
+  line-height:1.6!important;
+  max-width:66ch!important;
+  margin-bottom:0!important;
+}
+.site.is-classic-page main .community-about-mark{
+  background:#d6f6e4!important;
+  color:#164c3b!important;
+}
+.site.is-classic-page main .community-about-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin:16px 0!important;
+}
+.site.is-classic-page main .community-about-grid article{
+  background:var(--e-surface)!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:16px!important;
+  padding:clamp(18px,2.1vw,28px)!important;
+  box-shadow:none!important;
+}
+.site.is-classic-page main .community-about-grid h2{
+  font-family:var(--e-sans)!important;
+  font-size:clamp(21px,1.6vw,26px)!important;
+  line-height:1.15!important;
+  color:var(--e-ink)!important;
+  margin:12px 0 10px!important;
+}
+.site.is-classic-page main .community-about-grid p{
+  font:400 15px/1.55 var(--e-sans)!important;
+  color:var(--e-mute)!important;
+  margin-bottom:0;
+}
+.site.is-classic-page main .community-about-footer{
+  background:var(--e-surface)!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:15px!important;
+  padding:16px 20px!important;
+}
+.site.is-classic-page main .community-about-links{
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.site.is-classic-page main .community-about-links button{
+  min-height:46px!important;
+  padding:10px 16px!important;
+  background:transparent!important;
+  border:1px solid var(--e-line)!important;
+  border-radius:999px!important;
+  color:var(--e-ink)!important;
+  font:600 14px var(--e-sans)!important;
+}
+.site.is-classic-page main .community-about-links button:hover{
+  background:var(--e-bg)!important;
+  border-color:var(--e-accent)!important;
+}
+
+/* 7 — Finder, account, rewards: consistent boxes, visible muted copy. */
+.site.is-classic-page main .finder-screen{max-width:1480px!important}
+.site.is-classic-page main .finder-screen h1{margin:0 0 18px!important}
+.site.is-classic-page main .finder-form{
+  gap:12px!important;align-items:end;
+}
+.site.is-classic-page main .finder-form .button{min-height:48px!important}
+.site.is-classic-page main .google-places-shell{
+  border:1px solid var(--e-line)!important;
+  border-radius:18px!important;
+}
+.site.is-classic-page main .google-places-shell .map-summary-loc :is(h2,h3,h4){
+  color:var(--e-ink)!important;
+  font-family:var(--e-sans)!important;
+}
+.site.is-classic-page main .google-places-shell .location-entry{
+  border-top:1px solid var(--e-line)!important;
+}
+.site.is-classic-page main .google-places-shell .location-info :is(strong,small){
+  color:var(--e-ink)!important;
+}
+.site.is-classic-page main .google-places-shell .location-info small{
+  color:var(--e-mute)!important;
+}
+.site.is-classic-page main .account-card:has(.auth-form){
+  width:min(100%,620px)!important;
+  max-width:620px!important;
+  margin:clamp(12px,4vh,40px) auto!important;
+  border:1px solid var(--e-line)!important;
+  background:var(--e-surface)!important;
+  box-shadow:none!important;
+  border-radius:18px!important;
+  padding:clamp(24px,3vw,38px)!important;
+}
+.site.is-classic-page main .account-card:has(.auth-form) .auth-form{
+  width:100%!important;
+  max-width:none!important;
+}
+.site.is-classic-page main .account-card:has(.auth-form) .auth-form :is(input,button){
+  width:100%;max-width:none;min-height:48px;
+}
+.site.is-classic-page main :is(.level-panel,.badge-panel,.league-ranking,.league-guest,.history-card){
+  background:var(--e-surface)!important;
+  border:1px solid var(--e-line)!important;
+  box-shadow:none!important;
+  border-radius:16px!important;
+}
+.site.is-classic-page main :is(.level-panel,.badge-panel,.league-ranking) :is(h2,h3,strong){
+  color:var(--e-ink)!important;
+}
+.site.is-classic-page main :is(.level-panel,.badge-panel,.league-ranking) :is(p,small){
+  color:var(--e-mute)!important;
+}
+
+/* 8 — Do not flatten the documentary; improve quiz label readability only. */
+.site.is-classic-page main .journey-quiz-card :is(label,legend,small){
+  font-size:14px!important;
+  line-height:1.45!important;
+}
+.site.is-classic-page main .journey-quiz-card :is(button,input){
+  min-height:44px;
+}
+.site.is-classic-page main .journey-quiz-card{
+  border:1px solid var(--e-line)!important;
+  box-shadow:none!important;
+}
+
+/* Responsive kiosk widths: no horizontal overflow or squeezed controls. */
+@media(max-width:1200px){
+  .site.is-classic-page main .deposit-layout{grid-template-columns:1fr}
+  .site.is-classic-page main .deposit-result{position:static}
+  .site.is-classic-page main .community-about-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .site.is-classic-page main .audit-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:960px){
+  .site.is-sidebar-experiment .fl-sidebar{width:min(340px,88vw)!important}
+  .site.is-sidebar-experiment main.shell{margin-left:0!important;width:100%!important}
+  .site.is-sidebar-experiment main .res-layout{grid-template-columns:1fr!important}
+}
+@media(max-width:680px){
+  .site.is-classic-page main.shell{padding:calc(var(--fl-top-h) + 18px) 16px 48px!important}
+  .site.is-classic-page main .community-about-grid{grid-template-columns:1fr}
+  .site.is-classic-page main .deposit-fields{grid-template-columns:1fr}
+  .site.is-classic-page main .deposit-fields .wide{grid-column:auto}
+  .site.is-classic-page main .audit-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .site.is-classic-page main .assistant-messages{min-height:250px;max-height:60vh}
+  .site.is-classic-page main .chat-bubble{max-width:100%!important}
+  .site.is-classic-page main .community-about-hero h1{font-size:clamp(32px,9vw,48px)!important}
+  .site.is-classic-page main .finder-form{display:grid;grid-template-columns:1fr}
+  .site.is-classic-page main .finder-form .button{width:100%}
+  .site.is-classic-page main .account-card:has(.auth-form){padding:20px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .site.is-classic-page main .audit-option{transition:none!important;transform:none!important}
+}
+
+/* Hindi text needs native shaping and breathing room; never apply the
+   Latin display tracking to Devanagari. Spanish can wrap naturally. */
+.site.is-classic-page[data-lang="hi"] main :is(h1,h2,h3),
+.site.is-classic-page[data-lang="hi"] main .community-about-hero h1,
+.site.is-classic-page[data-lang="hi"] main .community-about-grid h2{
+  letter-spacing:normal!important;
+  line-height:1.33!important;
+  overflow-wrap:anywhere;
+}
+.site.is-sidebar-experiment[data-lang="hi"] .fl-side-link,
+.site.is-sidebar-experiment[data-lang="hi"] .fl-side-heading{
+  letter-spacing:normal!important;
+  line-height:1.35!important;
+}
+.site.is-sidebar-experiment[data-lang="es"] .fl-side-link{
+  white-space:normal;
+  overflow-wrap:break-word;
+}
