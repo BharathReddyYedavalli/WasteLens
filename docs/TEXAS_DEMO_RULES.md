@@ -27,7 +27,9 @@ The ZIP control is intentionally removed from this particular panel. It remains 
 Frisco ISD publicly describes classroom recycling, Green Teams and district bag/film and battery drives:
 https://www.friscoisd.org/article/2660069
 
-It does **not** publish a comprehensive, exact campus-by-campus daily bin acceptance policy in the sources reviewed. The six Frisco ISD profiles only give *conditional special collection* guidance for bag/film and batteries; everything else is unconfirmed. The school's exact current collection availability must be checked. UT Dallas campus has a more detailed, officially published recycling program:
+It does **not** publish a comprehensive, exact campus-by-campus daily bin acceptance policy in the sources reviewed. The six Frisco ISD profiles only give *conditional special collection* guidance for bag/film and batteries; everything else is unconfirmed. The school's exact current collection availability must be checked.
+
+**AA-battery scan matching:** Each school profile has a source-linked `alkaline_battery` entry for a clearly identified **alkaline AA or AAA battery**, in addition to the more general `household_battery` entry. These entries lead to **conditional special collection**, not an ordinary recycling bin and not blanket campus acceptance. The six Frisco ISD profiles refer to district battery drives: staff must confirm that a drive is running and accepts that chemistry. UT Dallas refers to designated campus battery recycling collection; visitors must confirm eligibility. A plain **AA battery** does not prove it is alkaline—AA is a battery size, so unspecified AA photos follow the general household-battery guidance. If identification is uncertain, the user must confirm the item before a rule is shown. UT Dallas campus has a more detailed, officially published recycling program:
 https://sustainability.utdallas.edu/download/Sustainable_Development_Goal_Report.pdf
 https://sustainability.utdallas.edu/download/Green_Initiative_Student_Sustainability_Guide.pdf
 

@@ -16,7 +16,8 @@
     "Customer store collection programs must not be presented as employee or office sorting policies.",
     "Food-chain examples are brand-specific post-consumer packaging/reuse guidance, NOT confirmed local-bin acceptance at named Frisco stores.",
     "Aluminum trays have a verified positive entry only for TDS (exact named item); do not propagate to other institution profiles.",
-    "Raspberry Pi acceptance is not listed verbatim by local electronics recyclers, so show Confirm with recycling center status instead of a guaranteed drop-off."
+    "Raspberry Pi acceptance is not listed verbatim by local electronics recyclers, so show Confirm with recycling center status instead of a guaranteed drop-off.",
+    "AA describes battery size, not battery chemistry. Generic AA scans follow household-battery guidance; explicitly alkaline AA uses an alkaline-specific school rule. All school guidance is conditional special collection, never guaranteed campus acceptance."
   ],
   "status_values": {
     "recycle": "Designated normal recycling bin",
@@ -59,6 +60,13 @@
           "source_url": "https://www.friscoisd.org/article/2660069",
           "item_key": "household_battery",
           "condition": "Only at an announced drive and if the battery type is accepted."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes school battery recycling drives. Ask school staff whether an active drive is accepting AA alkaline batteries, then follow their drop-off instructions. Do not put batteries in normal recycling bins.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "alkaline_battery",
+          "condition": "Collection is only possible during an active drive that accepts AA alkaline batteries."
         }
       }
     },
@@ -92,6 +100,13 @@
           "source_url": "https://www.friscoisd.org/article/2660069",
           "item_key": "household_battery",
           "condition": "Only at an announced drive and if the battery type is accepted."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes school battery recycling drives. Ask school staff whether an active drive is accepting AA alkaline batteries, then follow their drop-off instructions. Do not put batteries in normal recycling bins.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "alkaline_battery",
+          "condition": "Collection is only possible during an active drive that accepts AA alkaline batteries."
         }
       }
     },
@@ -125,6 +140,13 @@
           "source_url": "https://www.friscoisd.org/article/2660069",
           "item_key": "household_battery",
           "condition": "Only at an announced drive and if the battery type is accepted."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes school battery recycling drives. Ask school staff whether an active drive is accepting AA alkaline batteries, then follow their drop-off instructions. Do not put batteries in normal recycling bins.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "alkaline_battery",
+          "condition": "Collection is only possible during an active drive that accepts AA alkaline batteries."
         }
       }
     },
@@ -158,6 +180,13 @@
           "source_url": "https://www.friscoisd.org/article/2660069",
           "item_key": "household_battery",
           "condition": "Only at an announced drive and if the battery type is accepted."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes school battery recycling drives. Ask school staff whether an active drive is accepting AA alkaline batteries, then follow their drop-off instructions. Do not put batteries in normal recycling bins.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "alkaline_battery",
+          "condition": "Collection is only possible during an active drive that accepts AA alkaline batteries."
         }
       }
     },
@@ -191,6 +220,13 @@
           "source_url": "https://www.friscoisd.org/article/2660069",
           "item_key": "household_battery",
           "condition": "Only at an announced drive and if the battery type is accepted."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes school battery recycling drives. Ask school staff whether an active drive is accepting AA alkaline batteries, then follow their drop-off instructions. Do not put batteries in normal recycling bins.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "alkaline_battery",
+          "condition": "Collection is only possible during an active drive that accepts AA alkaline batteries."
         }
       }
     },
@@ -224,6 +260,13 @@
           "source_url": "https://www.friscoisd.org/article/2660069",
           "item_key": "household_battery",
           "condition": "Only at an announced drive and if the battery type is accepted."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "Frisco ISD organizes school battery recycling drives. Ask school staff whether an active drive is accepting AA alkaline batteries, then follow their drop-off instructions. Do not put batteries in normal recycling bins.",
+          "source_url": "https://www.friscoisd.org/article/2660069",
+          "item_key": "alkaline_battery",
+          "condition": "Collection is only possible during an active drive that accepts AA alkaline batteries."
         }
       }
     },
@@ -318,6 +361,13 @@
           "source_url": "https://sustainability.utdallas.edu/campus/sustainablelabs/",
           "item_key": "household_battery",
           "condition": "Follow campus battery safety instructions and collection-site eligibility."
+        },
+        "alkaline_battery": {
+          "status": "special_dropoff",
+          "instruction": "UT Dallas has designated battery recycling collection. Ask the campus recycling team whether your AA alkaline battery is accepted, and take it only to an approved battery collection point—not a regular recycling bin.",
+          "source_url": "https://sustainability.utdallas.edu/campus/sustainablelabs/",
+          "item_key": "alkaline_battery",
+          "condition": "A designated battery collection point must accept this battery type."
         },
         "cell_phone": {
           "status": "special_dropoff",

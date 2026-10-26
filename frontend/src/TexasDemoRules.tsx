@@ -65,13 +65,13 @@ const itemNames:Record<string,string>={
  plastic_cold_cup:"Plastic cold-drink cup",
 };
 const popular:Record<string,string[]>={
- school_purefoy_elementary_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
- school_spears_elementary_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
- school_scoggins_middle_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_wrapper"],
- school_maus_middle_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_wrapper"],
- school_panther_creek_high_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
- school_wakeland_high_tx:["plastic_grocery_bag","household_battery","plastic_bottle","paper","food_scraps"],
- school_ut_dallas_tx:["plastic_bottle","aluminum_can","clean_cardboard","plastic_wrap","household_battery","cell_phone"],
+ school_purefoy_elementary_tx:["plastic_grocery_bag","household_battery","alkaline_battery","plastic_bottle","paper","food_scraps"],
+ school_spears_elementary_tx:["plastic_grocery_bag","household_battery","alkaline_battery","plastic_bottle","paper","food_scraps"],
+ school_scoggins_middle_tx:["plastic_grocery_bag","household_battery","alkaline_battery","plastic_bottle","paper","food_wrapper"],
+ school_maus_middle_tx:["plastic_grocery_bag","household_battery","alkaline_battery","plastic_bottle","paper","food_wrapper"],
+ school_panther_creek_high_tx:["plastic_grocery_bag","household_battery","alkaline_battery","plastic_bottle","paper","food_scraps"],
+ school_wakeland_high_tx:["plastic_grocery_bag","household_battery","alkaline_battery","plastic_bottle","paper","food_scraps"],
+ school_ut_dallas_tx:["plastic_bottle","aluminum_can","clean_cardboard","alkaline_battery","plastic_wrap","household_battery","cell_phone"],
  office_ut_dallas_tx:["paper","clean_cardboard","plastic_bottle","printer_cartridge","household_battery"],
  business_heb_frisco_tx:["plastic_grocery_bag","bread_bag","bubble_wrap","plastic_bottle","compostable_bag"],
  business_bestbuy_frisco_tx:["cell_phone","raspberry_pi","standalone_battery","laptop"],
@@ -137,7 +137,8 @@ export function inferDemoItem(itemName:string, material:string, profileId:string
   if(/newspaper/.test(n))return "newspaper";
   if(/food scraps|leftover food|food waste/.test(n))return "food_scraps";
   if(/rechargeable battery|lithium[\s-]?ion battery|power tool battery|rechargeable aa battery|rechargeable aaa battery/.test(n))return "rechargeable_battery";
-  if(/alkaline|single[- ]use battery|disposable battery|non[- ]rechargeable battery|\baa battery\b|\baaa battery\b|\baa\/aaa battery/.test(n))return "alkaline_battery";
+  // AA and AAA describe battery size, not chemistry. Only explicitly alkaline/non-rechargeable scans use this key.
+  if(/alkaline|single[- ]use battery|disposable battery|non[- ]rechargeable battery/.test(n))return "alkaline_battery";
   if(/battery|batteries/.test(n))return profileId==="business_bestbuy_frisco_tx"?"standalone_battery":"household_battery";
   if(/glass bottle|glass jar/.test(n))return "glass_bottle";
   if(/milk jug|milk container/.test(n))return "milk_jug";
