@@ -147,7 +147,9 @@ test("Item name aliases match common scans without guessing from material alone"
     ["Foil food container","aluminum_tray"],
     ["Aluminum pie plate","aluminum_pie_plate"],
     ["Alkaline AA battery","alkaline_battery"],
-    ["AAA battery","alkaline_battery"],
+    // AAA is a battery size, not a chemistry. Without an alkaline label, use generic guidance.
+    ["AAA battery","household_battery"],
+    ["Alkaline AAA battery","alkaline_battery"],
     ["Rechargeable lithium-ion battery","rechargeable_battery"],
     ["Power tool battery","rechargeable_battery"],
     ["Reusable metal bottle",""],
