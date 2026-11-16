@@ -1,0 +1,13 @@
+# Deploy the frontend and API together on one HTTPS origin.
+# Free Render instances are for demonstrations only: local SQLite data is ephemeral.
+services:
+  - type: web
+    name: wastelens-demo
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: WASTELENS_COOKIE_SECURE
+        value: "1"
