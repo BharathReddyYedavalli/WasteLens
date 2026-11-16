@@ -52,13 +52,12 @@ From the repository root, if Docker is installed:
 
 ```bash
 docker build -t wastelens-demo .
-docker run --rm -p 10000:10000 -e GEMINI_API_KEY=YOUR_LOCAL_TEST_KEY wastelens-demo
+docker run --rm -p 10000:10000 --env-file /path/to/private/wastelens.env wastelens-demo
 ```
 
 Visit http://localhost:10000 and http://localhost:10000/api/health.
-The example above puts the key into your shell history, so for real use
-prefer a private `--env-file` outside source control or a secure secret
-manager. Do not commit a file containing credentials.
+Create the private env file with a `GEMINI_API_KEY=...` line, keep it outside
+source control, and protect its permissions. Do not commit or share it.
 
 ## Longer-lived deployment
 
