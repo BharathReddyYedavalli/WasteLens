@@ -76,6 +76,17 @@ WasteLens is not just an AI classifier with a text response. Its interface is in
 
 The Vite development server proxies `/api` requests to the local FastAPI backend.
 
+## Publish a public demo
+
+For a Hack Club certificate or portfolio demo, WasteLens needs a publicly accessible
+HTTPS link to the **working frontend and API together**, not just a static UI.
+The repository includes a Docker build and a Render configuration for an optional
+same-origin demo, along with a [deployment and verification guide](docs/PUBLIC_DEMO_DEPLOYMENT.md).
+
+Free hosting can restart or lose its local SQLite data, so use this configuration
+for testing and demonstrations rather than long-term user accounts. Never publish
+Gemini API keys or real administrator credentials.
+
 ## Run WasteLens locally
 
 ### Requirements

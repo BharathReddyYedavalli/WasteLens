@@ -124,3 +124,14 @@ async def ai_chat(payload: ChatRequest):
         raise HTTPException(exc.status_code, exc.reason) from exc
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+# Optional same-origin public hosting: serve the Vite build from FastAPI.
+# Local development continues to use Vite's separate server and /api proxy.
+if os.environ.get("WASTELENS_SERVE_FRONTEND") == "1":
+    from fastapi.staticfiles import StaticFiles
+
+    _frontend_dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+    if not (_frontend_dist / "index.html").is_file():
+        raise RuntimeError("Missing frontend/dist/index.html: build the Vite frontend before serving it")
+    app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="frontend")
