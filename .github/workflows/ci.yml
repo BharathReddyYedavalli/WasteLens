@@ -33,3 +33,10 @@ jobs:
         run: python -m pytest -q
       - name: Compile backend
         run: python -m compileall -q backend
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify deployable frontend + API image
+        run: docker build -t wastelens-ci .
